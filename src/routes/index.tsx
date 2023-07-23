@@ -1,35 +1,41 @@
 import { component$ } from "@builder.io/qwik";
 
-import type { DocumentHead } from "@builder.io/qwik-city";
+import { routeLoader$, type DocumentHead } from "@builder.io/qwik-city";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
+import {
+  getTrendingMovieWithBackdrops,
+  getTrendingTvWithBackdrops,
+} from "~/services/tmdb";
+
+export const useContentLoader = routeLoader$(async (event) => {
+  try {
+    const [movies, tv] = await Promise.all([
+      getTrendingMovieWithBackdrops({ page: 1 }),
+      getTrendingTvWithBackdrops({ page: 1 }),
+    ]);
+    return { movies, tv };
+  } catch {
+    throw event.redirect(302, "/404");
+  }
+});
 
 export default component$(() => {
+  const resource = useContentLoader();
   const m = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   return (
     <>
-      <MediaCarousel title="Popular Movies">
-        {m.map(() => (
+      <MediaCarousel title="Trenging Movies">
+        {resource.value.movies.results!.map((m) => (
           <>
             <div class="carousel-item">
               <MediaCard
-                title="Guardians of the Galaxy Vol. 3"
+                title={m.title!}
                 width={500}
-                rating={8.3}
-                year={2023}
-                picfile="u3a7hKGhQehkgVq9dt1DohzNk8F.jpg"
-                isPerson={false}
-                isHorizontal={true}
-              />
-            </div>
-            <div class="carousel-item">
-              <MediaCard
-                title="Avatar: The Way of Water"
-                width={500}
-                picfile="rdtZokC7lYFUuGjn1zGaY4WrVXU.jpg"
-                rating={8.5}
-                year={2021}
+                rating={m.vote_average!}
+                year={parseInt(m.release_date!.substring(0, 4), 10)}
+                picfile={m.backdrop_path!}
                 isPerson={false}
                 isHorizontal={true}
               />
@@ -37,27 +43,16 @@ export default component$(() => {
           </>
         ))}
       </MediaCarousel>
-      <MediaCarousel title="Popular Movies">
-        {m.map(() => (
+      <MediaCarousel title="Trenging TV Shows">
+        {resource.value.tv.results!.map((m) => (
           <>
             <div class="carousel-item">
               <MediaCard
-                title="Guardians of the Galaxy Vol. 3"
+                title={m.name!}
                 width={500}
-                rating={8.3}
-                year={2023}
-                picfile="u3a7hKGhQehkgVq9dt1DohzNk8F.jpg"
-                isPerson={false}
-                isHorizontal={true}
-              />
-            </div>
-            <div class="carousel-item">
-              <MediaCard
-                title="Avatar: The Way of Water"
-                width={500}
-                picfile="rdtZokC7lYFUuGjn1zGaY4WrVXU.jpg"
-                rating={8.5}
-                year={2021}
+                rating={m.vote_average!}
+                year={parseInt(m.first_air_date!.substring(0, 4), 10)}
+                picfile={m.backdrop_path!}
                 isPerson={false}
                 isHorizontal={true}
               />

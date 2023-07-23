@@ -20,10 +20,12 @@ export const MediaCard = component$(
     rating,
     year,
     isPerson,
-    isHorizontal
+    isHorizontal,
   }: MovieCardProps) => {
     const height = useComputed$(() => {
-      if (isHorizontal) {return width *3 / 2;}
+      if (isHorizontal) {
+        return (width * 3) / 2;
+      }
       return (width * 2) / 3;
     });
 
@@ -36,25 +38,26 @@ export const MediaCard = component$(
       } else {
         return "width: 20vw;";
       }
-      
     });
 
     const cardWidthClass = useComputed$(() => {
       if (!isHorizontal) {
         if (isPerson) {
-          return "min-w-[100px] max-w-[150px]";
+          return "min-w-[120px] max-w-[180px]";
         }
         return "min-w-[150px] max-w-[200px]";
       } else {
         return "min-w-[300px] max-w-[500px]";
       }
-      
     });
+
+    const colorClass =
+      "bg-teal-50 text-teal-950 dark:bg-teal-950 dark:text-teal-50";
 
     return (
       <div class={cardWidthClass} style={cardWidthStyle}>
         {charName && (
-          <span class="block truncate text-sm text-gray-700 dark:text-white ">
+          <span class="block truncate text-sm font-normal italic text-teal-950 dark:text-teal-50">
             {charName}
           </span>
         )}
@@ -63,25 +66,35 @@ export const MediaCard = component$(
           <div class="drop-shadow transition-scale scale-95 duration-300 ease-in-out group-hover:scale-100 group-hover:drop-shadow-md">
             <picture>
               <img
-                class="rounded-md border-2 border-base-300"
+                class="rounded-md border-2 border-base-300 border-white dark:border-teal-800"
                 src={"https://image.tmdb.org/t/p/w" + width + "/" + picfile}
                 width={width}
                 height={height.value}
                 alt=""
               />
               {rating && (
-                <span class="absolute bg-amber-100 text-violet-800 text-xs font-medium px-2.5 py-0.5 bottom-2 left-2 rounded-full dark:bg-violet-900 dark:text-amber-300">
+                <span
+                  class={[
+                    "absolute text-xs font-bold px-2.5 py-0.5 bottom-2 left-2 rounded-full",
+                    colorClass,
+                  ]}
+                >
                   {rating.toFixed(1)}
                 </span>
               )}
               {year && (
-                <span class="absolute bg-amber-100 text-violet-800 text-xs font-medium px-2.5 py-0.5 bottom-2 right-2 rounded-full dark:bg-violet-900 dark:text-amber-300">
+                <span
+                  class={[
+                    "absolute text-xs font-bold px-2.5 py-0.5 bottom-2 right-2 rounded-full",
+                    colorClass,
+                  ]}
+                >
                   {year}
                 </span>
               )}
             </picture>
           </div>
-          <span class="block truncate text-sm text-ellipsis overflow-hidden text-gray-900 dark:text-white transition-scale font-medium duration-300 ease-in-out group-hover:font-bold">
+          <span class="block truncate text-sm text-ellipsis overflow-hidden text-teal-950 dark:text-teal-50 transition-scale font-normal duration-300 ease-in-out group-hover:font-extrabold">
             {title}
           </span>
         </div>

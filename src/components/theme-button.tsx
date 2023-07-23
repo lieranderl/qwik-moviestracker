@@ -1,4 +1,9 @@
-import { component$, useVisibleTask$, $ } from "@builder.io/qwik";
+import {
+  component$,
+  useVisibleTask$,
+  $,
+  QwikMouseEvent,
+} from "@builder.io/qwik";
 
 export const ThemeButton = component$(() => {
   const updateTheme = $(
@@ -57,30 +62,34 @@ export const ThemeButton = component$(() => {
     }
   });
 
-  const toggleTheme = $((_, element: HTMLElement) => {
-    const themeToggleLightIcon = element.querySelector(
-      "#theme-toggle-light-icon"
-    );
-    const themeToggleDarkIcon = element.querySelector(
-      "#theme-toggle-dark-icon"
-    );
-    updateTheme(
-      themeToggleDarkIcon! as HTMLElement,
-      themeToggleLightIcon! as HTMLElement
-    );
-  });
+  const toggleTheme = $(
+    (
+      _: QwikMouseEvent<HTMLButtonElement, MouseEvent>,
+      element: HTMLElement
+    ) => {
+      const themeToggleLightIcon = element.querySelector(
+        "#theme-toggle-light-icon"
+      );
+      const themeToggleDarkIcon = element.querySelector(
+        "#theme-toggle-dark-icon"
+      );
+      updateTheme(
+        themeToggleDarkIcon! as HTMLElement,
+        themeToggleLightIcon! as HTMLElement
+      );
+    }
+  );
 
   return (
     <button
       onClick$={toggleTheme}
       id="theme-toggle"
       type="button"
-      class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5"
+      class=" hover:bg-teal-100 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg text-sm p-2.5"
     >
       <svg
         id="theme-toggle-dark-icon"
-        class="hidden w-5 h-5"
-        fill="currentColor"
+        class="hidden w-5 h-5 fill-teal-950 dark:fill-teal-50"
         viewBox="0 0 20 20"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -88,8 +97,7 @@ export const ThemeButton = component$(() => {
       </svg>
       <svg
         id="theme-toggle-light-icon"
-        class="hidden w-5 h-5"
-        fill="currentColor"
+        class="hidden w-5 h-5 fill-teal-950 dark:fill-teal-50"
         viewBox="0 0 20 20"
         xmlns="http://www.w3.org/2000/svg"
       >

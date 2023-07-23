@@ -1,4 +1,4 @@
-import { component$, $, useVisibleTask$ } from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { MediaCard } from "~/components/media-card";
@@ -99,7 +99,7 @@ export default component$(() => {
       </MediaCarousel>
 
       <section>
-        <div class="text-2xl text-gray-800 dark:text-white">Movies Grid</div>
+        <div class="text-xl text-teal-950 font-bold dark:text-teal-50">Movies Grid</div>
         <MediaGrid>
           {m.map(() => (
             <>

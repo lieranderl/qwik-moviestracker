@@ -1,4 +1,4 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useVisibleTask$ } from "@builder.io/qwik";
 import {
   QwikCityProvider,
   RouterOutlet,
@@ -16,11 +16,17 @@ export default component$(() => {
    * Don't remove the `<head>` and `<body>` elements.
    */
 
+  useVisibleTask$(async () => {
+    (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) ?
+        document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark')
+  });
+
   return (
     <QwikCityProvider>
       <head>
         <meta charSet="utf-8" />
         <link rel="manifest" href="/manifest.json" />
+
         <RouterHead />
       </head>
       <body class="container py-4 px-4 mx-auto bg-teal-50 dark:bg-teal-950 font-poppins" lang="en">

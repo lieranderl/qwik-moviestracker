@@ -1,15 +1,88 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, $, useVisibleTask$ } from "@builder.io/qwik";
 
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
-import { MediaGrid } from "~/components/router-head/media-grid";
+import { MediaGrid } from "~/components/media-grid";
+import { ThemeButton } from "~/components/theme-button";
 
 export default component$(() => {
   const m = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
+  // const updateTheme = $(
+  //   (themeToggleDarkIcon: HTMLElement, themeToggleLightIcon: HTMLElement) => {
+  //     themeToggleDarkIcon.classList.toggle("hidden");
+  //     themeToggleLightIcon.classList.toggle("hidden");
+
+  //     // if set via local storage previously
+  //     if (localStorage.getItem("color-theme")) {
+  //       if (localStorage.getItem("color-theme") === "light") {
+  //         document.documentElement.classList.add("dark");
+  //         localStorage.setItem("color-theme", "dark");
+  //       } else {
+  //         document.documentElement.classList.remove("dark");
+  //         localStorage.setItem("color-theme", "light");
+  //       }
+
+  //       // if NOT set via local storage previously
+  //     } else {
+  //       if (document.documentElement.classList.contains("dark")) {
+  //         document.documentElement.classList.remove("dark");
+  //         localStorage.setItem("color-theme", "light");
+  //       } else {
+  //         document.documentElement.classList.add("dark");
+  //         localStorage.setItem("color-theme", "dark");
+  //       }
+  //     }
+  //   }
+  // );
+
+  // useVisibleTask$(async () => {
+  //   const themeToggleDarkIcon = document.getElementById(
+  //     "theme-toggle-dark-icon"
+  //   );
+  //   const themeToggleLightIcon = document.getElementById(
+  //     "theme-toggle-light-icon"
+  //   );
+
+  //   window
+  //     .matchMedia("(prefers-color-scheme: dark)")
+  //     .addEventListener("change", (e) => {
+  //       console.log(e);
+  //       const theme = e.matches ? "light" : "dark";
+  //       localStorage.setItem("color-theme", theme);
+  //       updateTheme(themeToggleDarkIcon!, themeToggleLightIcon!);
+  //     });
+
+  //   if (
+  //     localStorage.getItem("color-theme") === "dark" ||
+  //     (!("color-theme" in localStorage) &&
+  //       window.matchMedia("(prefers-color-scheme: dark)").matches)
+  //   ) {
+  //     themeToggleLightIcon!.classList.remove("hidden");
+  //   } else {
+  //     themeToggleDarkIcon!.classList.remove("hidden");
+  //   }
+  // });
+
+  // const toggleTheme = $((_, element: HTMLElement) => {
+  //   const themeToggleLightIcon = element.querySelector(
+  //     "#theme-toggle-light-icon"
+  //   );
+  //   const themeToggleDarkIcon = element.querySelector(
+  //     "#theme-toggle-dark-icon"
+  //   );
+  //   updateTheme(
+  //     themeToggleDarkIcon! as HTMLElement,
+  //     themeToggleLightIcon! as HTMLElement
+  //   );
+  // });
+
   return (
     <>
+      <div class="container">
+       <ThemeButton />
+      </div>
 
       <MediaCarousel title="Popular Movies">
         {m.map(() => (

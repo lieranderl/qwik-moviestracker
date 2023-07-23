@@ -29,7 +29,7 @@ export default component$(() => {
 
         <RouterHead />
       </head>
-      <body class="container py-4 px-4 mx-auto bg-teal-50 dark:bg-teal-950 font-poppins" lang="en">
+      <body class="bg-teal-50 dark:bg-teal-950 font-poppins" lang="en">
         <RouterOutlet />
         <ServiceWorkerRegister />
       </body>

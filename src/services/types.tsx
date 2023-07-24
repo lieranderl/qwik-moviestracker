@@ -1,3 +1,4 @@
+
 export type TvMedia = {
     backdrop_path?: string | null;
     first_air_date?: string;
@@ -31,6 +32,7 @@ export type TvMedia = {
     video?: boolean;
     vote_average?: number;
     vote_count?: number;
+    lastTimeFound?: number;
   };
   
   export type ProductionMedia = TvMedia | MovieMedia;

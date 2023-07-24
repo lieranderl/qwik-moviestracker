@@ -10,6 +10,8 @@ import type {
   TvMedia,
   TvMediaDetails,
 } from "./types";
+import type { getMoviesIdsType } from "./firestore";
+import { getMoviesIds } from "./firestore";
 
 const baseURL = "https://api.themoviedb.org/3";
 
@@ -35,6 +37,7 @@ const fetchTMDB = async <T = unknown,>(
 
 type GetTrendingTv = {
   page: number;
+  language: string;
 };
 
 export const getTrendingTv = ({ page }: GetTrendingTv) => {
@@ -45,49 +48,52 @@ export const getTrendingTv = ({ page }: GetTrendingTv) => {
 
 type GetTrendingMovie = {
   page: number;
+  language: string;
 };
 
-export const getTrendingMovie = ({ page }: GetTrendingMovie) => {
+export const getTrendingMovie = ({ page, language }: GetTrendingMovie) => {
   return fetchTMDB<Collection<MovieMedia>>(`trending/movie/week`, {
     page: String(page),
+    language: language,
   });
 };
 
 export const getTrendingTvWithBackdrops = async ({
-    page,
-  }: GetTrendingTv) => {
-    const result = await fetchTMDB<Collection<TvMedia>>(
-      `trending/tv/week`,
-      {
-        page: String(page),
-      }
-    );
-    if (!result.results) return result;
-    const newMovieMedia = result.results.map(async (item) => {
-      const images = await fetchTMDB<any>(`tv/${item.id}/images`, {
-        include_image_language: "en",
-      });
-      if (images.backdrops.length == 0) return item;
-      const backdrop = images.backdrops[0];
-      item.backdrop_path = backdrop.file_path;
-      return item;
+  page,
+  language,
+}: GetTrendingTv) => {
+  const result = await fetchTMDB<Collection<TvMedia>>(`trending/tv/week`, {
+    page: String(page),
+    language: language,
+  });
+  if (!result.results) return result;
+  const newMovieMedia = result.results.map(async (item) => {
+    const images = await fetchTMDB<any>(`tv/${item.id}/images`, {
+      include_image_language: "en",
     });
-    try {
-      result.results = await Promise.all(newMovieMedia);
-    } catch (error) {
-      console.log("skip tv backdrop");
-    }
-  
-    return result;
-  };
+    if (images.backdrops.length == 0) return item;
+    const backdrop = images.backdrops[0];
+    item.backdrop_path = backdrop.file_path;
+    return item;
+  });
+  try {
+    result.results = await Promise.all(newMovieMedia);
+  } catch (error) {
+    console.log("skip tv backdrop");
+  }
+
+  return result;
+};
 
 export const getTrendingMovieWithBackdrops = async ({
   page,
+  language,
 }: GetTrendingMovie) => {
   const result = await fetchTMDB<Collection<MovieMedia>>(
     `trending/movie/week`,
     {
       page: String(page),
+      language: language,
     }
   );
   if (!result.results) return result;
@@ -109,15 +115,73 @@ export const getTrendingMovieWithBackdrops = async ({
   return result;
 };
 
+
+type getFirebaseMoviesType = {
+    language: string;
+    entries: number;
+    startTime: number;
+    db_name: string
+    sortDirection?: "asc" | "desc";
+}
+
+export const getFirebaseMovies = async ({
+    entries,
+    startTime,
+    language,
+    db_name,
+    sortDirection,
+  }: getFirebaseMoviesType) => {
+    const getMoviesIdsInput: getMoviesIdsType = {
+      page: entries,
+      dbName: db_name,
+      startTime: startTime,
+    };
+    const mIds = await getMoviesIds(getMoviesIdsInput);
+    const movies: MovieMediaDetails[] = [];
+  
+    for (const mId of mIds) {
+      const m = await getMovie({ id: mId.id, language: language })
+      m.lastTimeFound = mId.lastTimeFound;
+      movies.push(m);
+    }
+    if (sortDirection === "asc") {
+        const newtorMovies = movies.sort((a,b)=>(a.lastTimeFound! - b.lastTimeFound!));
+        return newtorMovies;
+    } else {
+        const newtorMovies = movies.sort((a,b)=>(b.lastTimeFound! - a.lastTimeFound!));
+        return newtorMovies;
+    }
+
+    
+  };
+
+
+
+
 type GetMovie = {
   id: number;
+  language: string;
+  append_to_response?: string;
 };
 
-export const getMovie = async ({ id }: GetMovie) => {
+export const getMovie = async ({
+  id,
+  language,
+  append_to_response,
+}: GetMovie) => {
   const result = await fetchTMDB<MovieMediaDetails>(`movie/${id}`, {
-    append_to_response: "videos,credits,images,external_ids,release_dates",
+    //"videos,credits,images,external_ids,release_dates"
+    append_to_response: append_to_response ? append_to_response : "",
+    include_image_language: "en",
+    language: language,
+  });
+  const images = await fetchTMDB<any>(`movie/${result.id}/images`, {
     include_image_language: "en",
   });
+  if (images.backdrops.length == 0)
+    return { ...result, media_type: "movie" as const };
+  result.backdrop_path = images.backdrops[0].file_path;
+
   return { ...result, media_type: "movie" as const };
 };
 

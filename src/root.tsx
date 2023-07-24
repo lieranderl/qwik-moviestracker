@@ -1,4 +1,4 @@
-import { component$, useVisibleTask$ } from "@builder.io/qwik";
+import { component$, createContextId, useContextProvider, useStore, useVisibleTask$ } from "@builder.io/qwik";
 import {
   QwikCityProvider,
   RouterOutlet,
@@ -6,7 +6,12 @@ import {
 } from "@builder.io/qwik-city";
 import { RouterHead } from "./components/router-head/router-head";
 
+
 import "./global.css";
+
+export const firebaseStoreContext = createContextId<{ moviesLastTimeFound: number }>(
+  "firebaseStoreContext"
+);
 
 export default component$(() => {
   /**
@@ -15,6 +20,9 @@ export default component$(() => {
    *
    * Don't remove the `<head>` and `<body>` elements.
    */
+
+  const firebaseStore = useStore({ moviesLastTimeFound: 0 });
+  useContextProvider(firebaseStoreContext, firebaseStore);
 
   useVisibleTask$(async () => {
     (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) ?

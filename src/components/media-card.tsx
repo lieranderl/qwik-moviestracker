@@ -2,7 +2,7 @@ import { component$, useComputed$ } from "@builder.io/qwik";
 
 interface MovieCardProps {
   title: string;
-  picfile: string;
+  picfile: string | null | undefined;
   width: number;
   charName?: string;
   rating?: number;
@@ -24,9 +24,9 @@ export const MediaCard = component$(
   }: MovieCardProps) => {
     const height = useComputed$(() => {
       if (isHorizontal) {
-        return (width * 3) / 2;
+        return (width * 9) / 16;
       }
-      return (width * 2) / 3;
+      return (width * 16) / 9;
     });
 
     const cardWidthStyle = useComputed$(() => {
@@ -67,19 +67,26 @@ export const MediaCard = component$(
             <picture>
               <img
                 class="rounded-md border-2 border-base-300 border-white dark:border-teal-800"
-                src={"https://image.tmdb.org/t/p/w" + width + "/" + picfile}
+                src={
+                  picfile
+                    ? "https://image.tmdb.org/t/p/w" + width + "/" + picfile
+                    : "https://via.placeholder.com/" +
+                      width +
+                      "x" +
+                      height.value
+                }
                 width={width}
                 height={height.value}
                 alt=""
               />
-              {rating && (
+              {(rating || rating! > 0) && (
                 <span
                   class={[
                     "absolute text-xs font-bold px-2.5 py-0.5 bottom-2 left-2 rounded-full",
                     colorClass,
                   ]}
                 >
-                  {rating.toFixed(1)}
+                  {rating!.toFixed(1)}
                 </span>
               )}
               {year && (

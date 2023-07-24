@@ -1,17 +1,30 @@
 import { Slot, component$ } from "@builder.io/qwik";
 
 interface MediaCarouselProps {
-    title: string;
+  title: string;
+  type?: string;
 }
 
-export const MediaCarousel = component$(({title}: MediaCarouselProps) => {
+export const MediaCarousel = component$(({ title, type }: MediaCarouselProps) => {
   return (
-    <section>
-    <div class="text-xl text-teal-950 font-bold dark:text-teal-50">{title}</div>
+    <section class="my-4">
+      <div class="flex flex-row justify-between items-center">
+        <div class="text-xl text-teal-950 font-bold dark:text-teal-50">
+          {title}
+        </div>
+        <a
+          href={`/mock/${type}`}
+          class="group text-sm text-teal-950 dark:text-teal-50 transition duration-300"
+        >
+          Explore All
+          <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-teal-950 dark:bg-teal-50"></span>
+        </a>
+      </div>
+
       <div class="relative">
         <div class="overflow-y-auto px-8 py-4">
           <div class="carousel flex w-max flex-row gap-4">
-                <Slot />
+            <Slot />
           </div>
         </div>
       </div>

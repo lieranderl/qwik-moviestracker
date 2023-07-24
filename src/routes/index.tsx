@@ -1,33 +1,109 @@
 import { component$ } from "@builder.io/qwik";
 
 import { routeLoader$, type DocumentHead } from "@builder.io/qwik-city";
+import { Timestamp } from "firebase/firestore";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
 import {
+
+  getFirebaseMovies,
   getTrendingMovieWithBackdrops,
-  getTrendingTvWithBackdrops,
+
 } from "~/services/tmdb";
 
+const lang = "ru-RU";
+
+
+
 export const useContentLoader = routeLoader$(async (event) => {
+
   try {
-    const [movies, tv] = await Promise.all([
-      getTrendingMovieWithBackdrops({ page: 1 }),
-      getTrendingTvWithBackdrops({ page: 1 }),
+    const [
+      movies, 
+      // tv, 
+      torMovies, 
+      hdrMovies, 
+      // dolbyMovies
+    ] = await Promise.all([
+      getTrendingMovieWithBackdrops({ page: 1, language: lang }),
+      // getTrendingTvWithBackdrops({ page: 1, language: lang}),
+      getFirebaseMovies({entries: 20, language: lang, startTime: Timestamp.now().toMillis(), db_name: "latesttorrentsmovies", sortDirection: "desc" }),
+      getFirebaseMovies({entries: 20, language: lang, startTime: Timestamp.now().toMillis(), db_name: "hdr10movies", sortDirection: "desc" }),
+
+      // getTorUpdatedMoviesDolbyTrend({entries: 20, language: lang }),
     ]);
-    return { movies, tv };
+    // const newhdrMovies = hdrMovies.movies.sort((a, b) => (torMovies.mIds.indexOf(a.id) - torMovies.mIds.indexOf(b.id)));
+    // const newdolbyMovies = dolbyMovies.movies.sort((a, b) => (torMovies.mIds.indexOf(a.id) - torMovies.mIds.indexOf(b.id)));
+    
+    return { 
+      movies, 
+      // tv, 
+      torMovies, 
+      hdrMovies, 
+      // newdolbyMovies
+    };
   } catch {
     throw event.redirect(302, "/404");
   }
 });
 
 export default component$(() => {
-  const resource = useContentLoader();
-  const m = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
+  const tmdbResource = useContentLoader();
   return (
     <>
-      <MediaCarousel title="Trenging Movies">
-        {resource.value.movies.results!.map((m) => (
+     <MediaCarousel title="Latest Movies" type="latesttorrentsmovies">
+        {tmdbResource.value.torMovies.map((m) => (
+          <>
+            <div class="carousel-item">
+              <MediaCard
+                title={m.title!}
+                width={500}
+                rating={m.vote_average!}
+                year={parseInt(m.release_date!.substring(0, 4), 10)}
+                picfile={m.backdrop_path}
+                isPerson={false}
+                isHorizontal={true}
+              />
+            </div>
+          </>
+        ))}
+      </MediaCarousel>
+      <MediaCarousel title="Trending Movies">
+        {tmdbResource.value.movies.results!.map((m) => (
+          <>
+            <div class="carousel-item">
+              <MediaCard
+                title={m.title!}
+                width={500}
+                rating={m.vote_average!}
+                year={parseInt(m.release_date!.substring(0, 4), 10)}
+                picfile={m.backdrop_path!}
+                isPerson={false}
+                isHorizontal={true}
+              />
+            </div>
+          </>
+        ))}
+      </MediaCarousel>
+      <MediaCarousel title="Latest HDR10 Movies" type="hdr10movies">
+        {tmdbResource.value.hdrMovies.map((m) => (
+          <>
+            <div class="carousel-item">
+              <MediaCard
+                title={m.title!}
+                width={500}
+                rating={m.vote_average!}
+                year={parseInt(m.release_date!.substring(0, 4), 10)}
+                picfile={m.backdrop_path!}
+                isPerson={false}
+                isHorizontal={true}
+              />
+            </div>
+          </>
+        ))}
+      </MediaCarousel>
+      {/* <MediaCarousel title="Latest DolbyVision Movies">
+        {tmdbResource.value.newdolbyMovies.map((m) => (
           <>
             <div class="carousel-item">
               <MediaCard
@@ -44,7 +120,7 @@ export default component$(() => {
         ))}
       </MediaCarousel>
       <MediaCarousel title="Trenging TV Shows">
-        {resource.value.tv.results!.map((m) => (
+        {tmdbResource.value.tv.results!.map((m) => (
           <>
             <div class="carousel-item">
               <MediaCard
@@ -59,17 +135,17 @@ export default component$(() => {
             </div>
           </>
         ))}
-      </MediaCarousel>
+      </MediaCarousel> */}
     </>
   );
 });
 
 export const head: DocumentHead = {
-  title: "Welcome to Qwik",
+  title: "Moviestracker",
   meta: [
     {
       name: "description",
-      content: "Qwik site description",
+      content: "Moviestracker",
     },
   ],
 };

@@ -11,6 +11,7 @@ export const MediaGrid = component$(({ title }: MediaGridProps) => {
         {title}
       </div>
       <div class="flex flex-wrap gap-4 px-8 justify-center">
+        
         <Slot />
       </div>
     </>

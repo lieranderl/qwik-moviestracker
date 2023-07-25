@@ -61,17 +61,18 @@ export default component$(() => {
       >
         {resource.value.torMovies.map((m) => (
           <>
-            <div class="carousel-item">
-              <MediaCard
-                title={m.original_title!}
-                width={500}
-                rating={m.vote_average!}
-                year={parseInt(m.release_date!.substring(0, 4), 10)}
-                picfile={m.backdrop_path}
-                isPerson={false}
-                isHorizontal={true}
-              />
-            </div>
+            <MediaCard
+              title={m.original_title!}
+              width={500}
+              rating={m.vote_average!}
+              year={parseInt(m.release_date!.substring(0, 4), 10)}
+              picfile={m.backdrop_path}
+              isPerson={false}
+              isHorizontal={true}
+              id={m.id}
+              type="movie"
+              lang={resource.value.lang}
+            />
           </>
         ))}
       </MediaCarousel>
@@ -83,17 +84,18 @@ export default component$(() => {
       >
         {resource.value.movies.results!.map((m) => (
           <>
-            <div class="carousel-item">
-              <MediaCard
-                title={m.title!}
-                width={500}
-                rating={m.vote_average!}
-                year={parseInt(m.release_date!.substring(0, 4), 10)}
-                picfile={m.backdrop_path!}
-                isPerson={false}
-                isHorizontal={true}
-              />
-            </div>
+            <MediaCard
+              title={m.title!}
+              width={500}
+              rating={m.vote_average!}
+              year={parseInt(m.release_date!.substring(0, 4), 10)}
+              picfile={m.backdrop_path!}
+              isPerson={false}
+              isHorizontal={true}
+              id={m.id}
+              type="movie"
+              lang={resource.value.lang}
+            />
           </>
         ))}
       </MediaCarousel>
@@ -139,17 +141,18 @@ export default component$(() => {
       >
         {resource.value.tv.results!.map((m) => (
           <>
-            <div class="carousel-item">
-              <MediaCard
-                title={m.name!}
-                width={500}
-                rating={m.vote_average!}
-                year={parseInt(m.first_air_date!.substring(0, 4), 10)}
-                picfile={m.backdrop_path!}
-                isPerson={false}
-                isHorizontal={true}
-              />
-            </div>
+            <MediaCard
+              title={m.name!}
+              width={500}
+              rating={m.vote_average!}
+              year={parseInt(m.first_air_date!.substring(0, 4), 10)}
+              picfile={m.backdrop_path!}
+              isPerson={false}
+              isHorizontal={true}
+              id={m.id}
+              type="tv"
+              lang={resource.value.lang}
+            />
           </>
         ))}
       </MediaCarousel>

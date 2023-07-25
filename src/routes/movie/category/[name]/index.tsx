@@ -6,6 +6,7 @@ import {
   useStore,
   useVisibleTask$,
 } from "@builder.io/qwik";
+import type { DocumentHead} from "@builder.io/qwik-city";
 import { routeLoader$, server$ } from "@builder.io/qwik-city";
 import { Timestamp } from "firebase/firestore";
 import { ButtonPrimary } from "~/components/button-primary";
@@ -130,17 +131,18 @@ export default component$(() => {
         {moviesSig.length > 0 &&
           moviesSig.map((m) => (
             <>
-              <div class="carousel-item" key={m.id}>
-                <MediaCard
-                  title={m.title!}
-                  width={300}
-                  rating={m.vote_average!}
-                  year={parseInt(m.release_date!.substring(0, 4), 10)}
-                  picfile={m.poster_path}
-                  isPerson={false}
-                  isHorizontal={false}
-                />
-              </div>
+              <MediaCard
+                title={m.title!}
+                width={300}
+                rating={m.vote_average!}
+                year={parseInt(m.release_date!.substring(0, 4), 10)}
+                picfile={m.poster_path}
+                isPerson={false}
+                isHorizontal={false}
+                id={m.id}
+                type="movie"
+                lang={resource.value.lang}
+              />
             </>
           ))}
       </MediaGrid>
@@ -154,3 +156,13 @@ export default component$(() => {
     </section>
   );
 });
+
+export const head: DocumentHead = {
+  title: "Moviestracker",
+  meta: [
+    {
+      name: "description",
+      content: "Catalog of movies",
+    },
+  ],
+};

@@ -28,6 +28,7 @@ export const useContentLoader = routeLoader$(async (event) => {
         startTime: Timestamp.now().toMillis(),
         db_name: "latesttorrentsmovies",
         sortDirection: "desc",
+        need_backdrop: true,
       }),
       // getFirebaseMovies({entries: 20, language: lang, startTime: Timestamp.now().toMillis(), db_name: "hdr10movies", sortDirection: "desc" }),
 

@@ -37,6 +37,7 @@ export const useContentLoader = routeLoader$(async (event) => {
           startTime: Timestamp.now().toMillis(),
           db_name: categoryToDb(event.params.name),
           sortDirection: "desc",
+          need_backdrop: false,
         }),
       ]);
       return {
@@ -102,6 +103,7 @@ export default component$(() => {
           startTime: firebaseStore.moviesLastTimeFound,
           db_name: resource.value.db,
           sortDirection: "desc",
+          need_backdrop: false,
         });
       } else {
         return getTrendingMovie({
@@ -127,7 +129,7 @@ export default component$(() => {
 
   return (
     <section>
-      <MediaGrid title={categoryToTitle(resource.value.category)}>
+      <MediaGrid title={categoryToTitle(resource.value.category, "movie")}>
         {moviesSig.length > 0 &&
           moviesSig.map((m) => (
             <>

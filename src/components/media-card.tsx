@@ -91,7 +91,7 @@ export const MediaCard = component$(
                 {(rating || rating! > 0) && (
                   <span
                     class={[
-                      "absolute text-xs font-bold px-2.5 py-0.5 bottom-2 left-2 rounded-full",
+                      "absolute text-sm font-bold px-2.5 py-0.5 bottom-2 left-2 rounded-full text-teal-950",
                       colorClass,
                     ]}
                   >
@@ -101,7 +101,7 @@ export const MediaCard = component$(
                 {year && (
                   <span
                     class={[
-                      "absolute text-xs font-bold px-2.5 py-0.5 bottom-2 right-2 rounded-full",
+                      "absolute text-sm font-bold px-2.5 py-0.5 bottom-2 right-2 rounded-full",
                       colorClass,
                     ]}
                   >

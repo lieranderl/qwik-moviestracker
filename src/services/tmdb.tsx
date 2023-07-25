@@ -115,73 +115,86 @@ export const getTrendingMovieWithBackdrops = async ({
   return result;
 };
 
-
 type getFirebaseMoviesType = {
-    language: string;
-    entries: number;
-    startTime: number;
-    db_name: string
-    sortDirection?: "asc" | "desc";
-}
+  language: string;
+  entries: number;
+  startTime: number;
+  db_name: string;
+  sortDirection?: "asc" | "desc";
+  need_backdrop: boolean;
+};
 
 export const getFirebaseMovies = async ({
-    entries,
-    startTime,
-    language,
-    db_name,
-    sortDirection,
-  }: getFirebaseMoviesType) => {
-    const getMoviesIdsInput: getMoviesIdsType = {
-      page: entries,
-      dbName: db_name,
-      startTime: startTime,
-    };
-    const mIds = await getMoviesIds(getMoviesIdsInput);
-    const movies: MovieMediaDetails[] = [];
-  
-    for (const mId of mIds) {
-      const m = await getMovie({ id: mId.id, language: language })
-      m.lastTimeFound = mId.lastTimeFound;
-      movies.push(m);
-    }
-    if (sortDirection === "asc") {
-        const newtorMovies = movies.sort((a,b)=>(a.lastTimeFound! - b.lastTimeFound!));
-        return newtorMovies;
-    } else {
-        const newtorMovies = movies.sort((a,b)=>(b.lastTimeFound! - a.lastTimeFound!));
-        return newtorMovies;
-    }
-
-    
+  entries,
+  startTime,
+  language,
+  db_name,
+  sortDirection,
+  need_backdrop
+}: getFirebaseMoviesType) => {
+  const getMoviesIdsInput: getMoviesIdsType = {
+    page: entries,
+    dbName: db_name,
+    startTime: startTime,
   };
+  const mIds = await getMoviesIds(getMoviesIdsInput);
+  const movies: MovieMediaDetails[] = [];
 
-
-
+  for (const mId of mIds) {
+    const m = await getMovie({ id: mId.id, language: language, need_backdrop: need_backdrop });
+    m.lastTimeFound = mId.lastTimeFound;
+    movies.push(m);
+  }
+  if (sortDirection === "asc") {
+    const newtorMovies = movies.sort(
+      (a, b) => a.lastTimeFound! - b.lastTimeFound!
+    );
+    return newtorMovies;
+  } else {
+    const newtorMovies = movies.sort(
+      (a, b) => b.lastTimeFound! - a.lastTimeFound!
+    );
+    return newtorMovies;
+  }
+};
 
 type GetMovie = {
   id: number;
   language: string;
   append_to_response?: string;
+  need_backdrop: boolean;
 };
 
 export const getMovie = async ({
   id,
   language,
-  append_to_response,
-}: GetMovie) => {
+  need_backdrop,
+}: // append_to_response,
+GetMovie) => {
   const result = await fetchTMDB<MovieMediaDetails>(`movie/${id}`, {
     //"videos,credits,images,external_ids,release_dates"
-    append_to_response: append_to_response ? append_to_response : "",
+    // append_to_response: append_to_response ? append_to_response : "",
     include_image_language: "en",
     language: language,
   });
-  const images = await fetchTMDB<any>(`movie/${result.id}/images`, {
-    include_image_language: "en",
-  });
-  if (images.backdrops.length == 0)
-    return { ...result, media_type: "movie" as const };
-  result.backdrop_path = images.backdrops[0].file_path;
+  if (need_backdrop) {
+    const images = await fetchTMDB<any>(`movie/${result.id}/images`, {
+      include_image_language: "en",
+    });
+    if (images.backdrops.length == 0)
+      return { ...result, media_type: "movie" as const };
+    result.backdrop_path = images.backdrops[0].file_path;
+  }
 
+  return { ...result, media_type: "movie" as const };
+};
+
+export const getMovieDetails = async ({ id, language }: GetMovie) => {
+  const result = await fetchTMDB<MovieMediaDetails>(`movie/${id}`, {
+    append_to_response: "videos,credits,images,external_ids,release_dates",
+    include_image_language: "en",
+    language: language,
+  });
   return { ...result, media_type: "movie" as const };
 };
 
@@ -203,12 +216,14 @@ export const getMovies = async ({ query, page }: GetMovies) => {
 
 type GetTvShow = {
   id: number;
+  language: string;
 };
 
-export const getTvShow = async ({ id }: GetTvShow) => {
+export const getTvShowDetails = async ({ id, language }: GetTvShow) => {
   const result = await fetchTMDB<TvMediaDetails>(`tv/${id}`, {
     append_to_response: "videos,credits,images,external_ids,content_ratings",
     include_image_language: "en",
+    language: language,
   });
   return { ...result, media_type: "tv" as const };
 };
@@ -216,11 +231,13 @@ export const getTvShow = async ({ id }: GetTvShow) => {
 type GetTvShows = {
   query: string;
   page: number;
+  language: string;
 };
 
-export const getTvShows = async ({ query, page }: GetTvShows) => {
+export const getTvShows = async ({ query, page, language }: GetTvShows) => {
   const result = await fetchTMDB<Collection<TvMedia>>(`tv/${query}`, {
     page: String(page),
+    language: language,
   });
   const results = result.results?.map((item) => ({
     ...item,

@@ -1,8 +1,9 @@
+import type {
+  QwikMouseEvent} from "@builder.io/qwik";
 import {
   component$,
   useVisibleTask$,
-  $,
-  QwikMouseEvent,
+  $
 } from "@builder.io/qwik";
 
 export const ThemeButton = component$(() => {

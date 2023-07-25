@@ -1,11 +1,14 @@
 import { Slot, component$ } from "@builder.io/qwik";
+import { paths } from "~/utils/paths";
 
 interface MediaCarouselProps {
   title: string;
-  type?: string;
+  category: string;
+  type: string
+  lang: string
 }
 
-export const MediaCarousel = component$(({ title, type }: MediaCarouselProps) => {
+export const MediaCarousel = component$(({ title, type, category, lang }: MediaCarouselProps) => {
   return (
     <section class="my-4">
       <div class="flex flex-row justify-between items-center">
@@ -13,7 +16,7 @@ export const MediaCarousel = component$(({ title, type }: MediaCarouselProps) =>
           {title}
         </div>
         <a
-          href={`/mock/${type}`}
+          href={paths.category(type, category, lang)}
           class="group text-sm text-teal-950 dark:text-teal-50 transition duration-300"
         >
           Explore All

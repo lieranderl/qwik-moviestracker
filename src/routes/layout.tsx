@@ -1,5 +1,5 @@
 import { component$, Slot } from "@builder.io/qwik";
-import type { RequestHandler } from "@builder.io/qwik-city";
+import { routeLoader$, type RequestHandler } from "@builder.io/qwik-city";
 import { Toolbar } from "~/components/toolbar";
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
@@ -13,10 +13,16 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
   });
 };
 
+export const useContentLoader = routeLoader$(async (event) => {
+  const lang = event.query.get("lang") || "en-US"
+  return {lang};
+  });
+
 export default component$(() => {
+  const resource = useContentLoader();
   return (
     <>
-      <Toolbar />
+      <Toolbar lang={resource.value.lang}/>
       <div class="py-[100px] container mx-auto px-4">
         <Slot />
       </div>

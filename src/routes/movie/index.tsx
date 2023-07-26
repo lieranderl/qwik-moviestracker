@@ -61,98 +61,100 @@ export default component$(() => {
   const resource = useContentLoader();
   return (
     <>
-      <MediaCarousel
-        title="Latest Movies"
-        type="movie"
-        category="updated"
-        lang={resource.value.lang}
-      >
-        {resource.value.torMovies.map((m) => (
-          <>
-            <MediaCard
-              title={m.original_title!}
-              width={500}
-              rating={m.vote_average!}
-              year={parseInt(m.release_date!.substring(0, 4), 10)}
-              picfile={m.backdrop_path}
-              isPerson={false}
-              isHorizontal={true}
-              id={m.id}
-              type="movie"
-              lang={resource.value.lang}
-            />
-          </>
-        ))}
-      </MediaCarousel>
-      <MediaCarousel
-        title="Trending Movies"
-        type="movie"
-        category="trending"
-        lang={resource.value.lang}
-      >
-        {resource.value.movies.results!.map((m) => (
-          <>
-            <MediaCard
-              title={m.title!}
-              width={500}
-              rating={m.vote_average!}
-              year={parseInt(m.release_date!.substring(0, 4), 10)}
-              picfile={m.backdrop_path!}
-              isPerson={false}
-              isHorizontal={true}
-              id={m.id}
-              type="movie"
-              lang={resource.value.lang}
-            />
-          </>
-        ))}
-      </MediaCarousel>
-      <MediaCarousel
-        title="Latest HDR10 Movies"
-        type="movie"
-        category="hdr10"
-        lang={resource.value.lang}
-      >
-        {resource.value.hdrMovies.map((m) => (
-          <>
-            <MediaCard
-              title={m.title!}
-              width={500}
-              rating={m.vote_average!}
-              year={parseInt(m.release_date!.substring(0, 4), 10)}
-              picfile={m.backdrop_path!}
-              isPerson={false}
-              isHorizontal={true}
-              id={m.id}
-              type="movie"
-              lang={resource.value.lang}
-            />
-          </>
-        ))}
-      </MediaCarousel>
-      <MediaCarousel
-        title="Latest DolbyVision Movies"
-        type="movie"
-        category="dolbyvision"
-        lang={resource.value.lang}
-      >
-        {resource.value.dolbyMovies.map((m) => (
-          <>
-            <MediaCard
-              title={m.title!}
-              width={500}
-              rating={m.vote_average!}
-              year={parseInt(m.release_date!.substring(0, 4), 10)}
-              picfile={m.backdrop_path!}
-              isPerson={false}
-              isHorizontal={true}
-              id={m.id}
-              type="movie"
-              lang={resource.value.lang}
-            />
-          </>
-        ))}
-      </MediaCarousel>
+      <div class="container mx-auto px-4">
+        <MediaCarousel
+          title="Latest Movies"
+          type="movie"
+          category="updated"
+          lang={resource.value.lang}
+        >
+          {resource.value.torMovies.map((m) => (
+            <>
+              <MediaCard
+                title={m.original_title!}
+                width={500}
+                rating={m.vote_average!}
+                year={parseInt(m.release_date!.substring(0, 4), 10)}
+                picfile={m.backdrop_path}
+                isPerson={false}
+                isHorizontal={true}
+                id={m.id}
+                type="movie"
+                lang={resource.value.lang}
+              />
+            </>
+          ))}
+        </MediaCarousel>
+        <MediaCarousel
+          title="Trending Movies"
+          type="movie"
+          category="trending"
+          lang={resource.value.lang}
+        >
+          {resource.value.movies.results!.map((m) => (
+            <>
+              <MediaCard
+                title={m.title!}
+                width={500}
+                rating={m.vote_average!}
+                year={parseInt(m.release_date!.substring(0, 4), 10)}
+                picfile={m.backdrop_path!}
+                isPerson={false}
+                isHorizontal={true}
+                id={m.id}
+                type="movie"
+                lang={resource.value.lang}
+              />
+            </>
+          ))}
+        </MediaCarousel>
+        <MediaCarousel
+          title="Latest HDR10 Movies"
+          type="movie"
+          category="hdr10"
+          lang={resource.value.lang}
+        >
+          {resource.value.hdrMovies.map((m) => (
+            <>
+              <MediaCard
+                title={m.title!}
+                width={500}
+                rating={m.vote_average!}
+                year={parseInt(m.release_date!.substring(0, 4), 10)}
+                picfile={m.backdrop_path!}
+                isPerson={false}
+                isHorizontal={true}
+                id={m.id}
+                type="movie"
+                lang={resource.value.lang}
+              />
+            </>
+          ))}
+        </MediaCarousel>
+        <MediaCarousel
+          title="Latest Dolby Vision Movies"
+          type="movie"
+          category="dolbyvision"
+          lang={resource.value.lang}
+        >
+          {resource.value.dolbyMovies.map((m) => (
+            <>
+              <MediaCard
+                title={m.title!}
+                width={500}
+                rating={m.vote_average!}
+                year={parseInt(m.release_date!.substring(0, 4), 10)}
+                picfile={m.backdrop_path!}
+                isPerson={false}
+                isHorizontal={true}
+                id={m.id}
+                type="movie"
+                lang={resource.value.lang}
+              />
+            </>
+          ))}
+        </MediaCarousel>
+      </div>
     </>
   );
 });

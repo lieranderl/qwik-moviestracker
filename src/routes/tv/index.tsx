@@ -32,6 +32,7 @@ export default component$(() => {
   const resource = useContentLoader();
   return (
     <>
+    <div class="container mx-auto px-4">
       <MediaCarousel
         title="Trending Tv Shows"
         type="tv"
@@ -78,7 +79,7 @@ export default component$(() => {
           </>
         ))}
       </MediaCarousel>
-     
+     </div>
     </>
   );
 });

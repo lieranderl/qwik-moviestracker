@@ -54,56 +54,38 @@ export default component$(() => {
   const resource = useContentLoader();
   return (
     <>
-      <MediaCarousel
-        title="Latest Movies"
-        type="movie"
-        category="updated"
-        lang={resource.value.lang}
-      >
-        {resource.value.torMovies.map((m) => (
-          <>
-            <MediaCard
-              title={m.original_title!}
-              width={500}
-              rating={m.vote_average!}
-              year={parseInt(m.release_date!.substring(0, 4), 10)}
-              picfile={m.backdrop_path}
-              isPerson={false}
-              isHorizontal={true}
-              id={m.id}
-              type="movie"
-              lang={resource.value.lang}
-            />
-          </>
-        ))}
-      </MediaCarousel>
-      <MediaCarousel
-        title="Trending Movies"
-        type="movie"
-        category="trending"
-        lang={resource.value.lang}
-      >
-        {resource.value.movies.results!.map((m) => (
-          <>
-            <MediaCard
-              title={m.title!}
-              width={500}
-              rating={m.vote_average!}
-              year={parseInt(m.release_date!.substring(0, 4), 10)}
-              picfile={m.backdrop_path!}
-              isPerson={false}
-              isHorizontal={true}
-              id={m.id}
-              type="movie"
-              lang={resource.value.lang}
-            />
-          </>
-        ))}
-      </MediaCarousel>
-      {/* <MediaCarousel title="Latest HDR10 Movies" type="movie" category="hdr10" lang={resource.value.lang}>
-        {resource.value.hdrMovies.map((m) => (
-          <>
-            <div class="carousel-item">
+      <div class="container mx-auto px-4">
+        <MediaCarousel
+          title="Latest Movies"
+          type="movie"
+          category="updated"
+          lang={resource.value.lang}
+        >
+          {resource.value.torMovies.map((m) => (
+            <>
+              <MediaCard
+                title={m.original_title!}
+                width={500}
+                rating={m.vote_average!}
+                year={parseInt(m.release_date!.substring(0, 4), 10)}
+                picfile={m.backdrop_path}
+                isPerson={false}
+                isHorizontal={true}
+                id={m.id}
+                type="movie"
+                lang={resource.value.lang}
+              />
+            </>
+          ))}
+        </MediaCarousel>
+        <MediaCarousel
+          title="Trending Movies"
+          type="movie"
+          category="trending"
+          lang={resource.value.lang}
+        >
+          {resource.value.movies.results!.map((m) => (
+            <>
               <MediaCard
                 title={m.title!}
                 width={500}
@@ -112,51 +94,37 @@ export default component$(() => {
                 picfile={m.backdrop_path!}
                 isPerson={false}
                 isHorizontal={true}
+                id={m.id}
+                type="movie"
+                lang={resource.value.lang}
               />
-            </div>
-          </>
-        ))}
-      </MediaCarousel> */}
-      {/* <MediaCarousel title="Latest DolbyVision Movies">
-        {tmdbResource.value.newdolbyMovies.map((m) => (
-          <>
-            <div class="carousel-item">
+            </>
+          ))}
+        </MediaCarousel>
+        <MediaCarousel
+          title="Trenging TV Shows"
+          type="tv"
+          category="trending"
+          lang={resource.value.lang}
+        >
+          {resource.value.tv.results!.map((m) => (
+            <>
               <MediaCard
-                title={m.title!}
+                title={m.name!}
                 width={500}
                 rating={m.vote_average!}
-                year={parseInt(m.release_date!.substring(0, 4), 10)}
+                year={parseInt(m.first_air_date!.substring(0, 4), 10)}
                 picfile={m.backdrop_path!}
                 isPerson={false}
                 isHorizontal={true}
+                id={m.id}
+                type="tv"
+                lang={resource.value.lang}
               />
-            </div>
-          </>
-        ))}
-      </MediaCarousel>*/}
-      <MediaCarousel
-        title="Trenging TV Shows"
-        type="tv"
-        category="trending"
-        lang={resource.value.lang}
-      >
-        {resource.value.tv.results!.map((m) => (
-          <>
-            <MediaCard
-              title={m.name!}
-              width={500}
-              rating={m.vote_average!}
-              year={parseInt(m.first_air_date!.substring(0, 4), 10)}
-              picfile={m.backdrop_path!}
-              isPerson={false}
-              isHorizontal={true}
-              id={m.id}
-              type="tv"
-              lang={resource.value.lang}
-            />
-          </>
-        ))}
-      </MediaCarousel>
+            </>
+          ))}
+        </MediaCarousel>
+      </div>
     </>
   );
 });

@@ -58,6 +58,21 @@ export const getTrendingMovie = ({ page, language }: GetTrendingMovie) => {
   });
 };
 
+export const getMediaBackdrop = async ({
+  id,
+  media_type,
+}: {
+  id: number;
+  media_type: "movie" | "tv";
+}) => {
+  const images = await fetchTMDB<any>(`${media_type}/${id}/images`, {
+    include_image_language: "en",
+  });
+  if (images.backdrops.length == 0) return "";
+  const backdrop = images.backdrops[0];
+  return backdrop.file_path as string;
+};
+
 export const getTrendingTvWithBackdrops = async ({
   page,
   language,
@@ -68,12 +83,9 @@ export const getTrendingTvWithBackdrops = async ({
   });
   if (!result.results) return result;
   const newMovieMedia = result.results.map(async (item) => {
-    const images = await fetchTMDB<any>(`tv/${item.id}/images`, {
-      include_image_language: "en",
-    });
-    if (images.backdrops.length == 0) return item;
-    const backdrop = images.backdrops[0];
-    item.backdrop_path = backdrop.file_path;
+    const backdrop = await getMediaBackdrop({ id: item.id, media_type: "tv" });
+    if (backdrop === "") return item;
+    item.backdrop_path = backdrop;
     return item;
   });
   try {
@@ -98,12 +110,12 @@ export const getTrendingMovieWithBackdrops = async ({
   );
   if (!result.results) return result;
   const newMovieMedia = result.results.map(async (item) => {
-    const images = await fetchTMDB<any>(`movie/${item.id}/images`, {
-      include_image_language: "en",
+    const backdrop = await getMediaBackdrop({
+      id: item.id,
+      media_type: "movie",
     });
-    if (images.backdrops.length == 0) return item;
-    const backdrop = images.backdrops[0];
-    item.backdrop_path = backdrop.file_path;
+    if (backdrop === "") return item;
+    item.backdrop_path = backdrop;
     return item;
   });
   try {
@@ -130,7 +142,7 @@ export const getFirebaseMovies = async ({
   language,
   db_name,
   sortDirection,
-  need_backdrop
+  need_backdrop,
 }: getFirebaseMoviesType) => {
   const getMoviesIdsInput: getMoviesIdsType = {
     page: entries,
@@ -141,7 +153,11 @@ export const getFirebaseMovies = async ({
   const movies: MovieMediaDetails[] = [];
 
   for (const mId of mIds) {
-    const m = await getMovie({ id: mId.id, language: language, need_backdrop: need_backdrop });
+    const m = await getMovie({
+      id: mId.id,
+      language: language,
+      need_backdrop: need_backdrop,
+    });
     m.lastTimeFound = mId.lastTimeFound;
     movies.push(m);
   }
@@ -178,14 +194,10 @@ GetMovie) => {
     language: language,
   });
   if (need_backdrop) {
-    const images = await fetchTMDB<any>(`movie/${result.id}/images`, {
-      include_image_language: "en",
-    });
-    if (images.backdrops.length == 0)
-      return { ...result, media_type: "movie" as const };
-    result.backdrop_path = images.backdrops[0].file_path;
+    const backdrop = await getMediaBackdrop({ id: id, media_type: "movie" });
+    if (backdrop === "") return { ...result, media_type: "movie" as const };
+    result.backdrop_path = backdrop;
   }
-
   return { ...result, media_type: "movie" as const };
 };
 

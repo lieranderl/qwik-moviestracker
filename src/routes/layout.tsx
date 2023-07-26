@@ -23,7 +23,7 @@ export default component$(() => {
   return (
     <>
       <Toolbar lang={resource.value.lang}/>
-      <div class="py-[100px] container mx-auto px-4">
+      <div class="py-[64px]">
         <Slot />
       </div>
     </>

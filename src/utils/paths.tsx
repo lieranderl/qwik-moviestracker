@@ -12,7 +12,7 @@ export const categoryToTitle = (category: string, type: "movie" | "tv") => {
   if (type === "movie") {
     if (category === "updated") return "All Updated Movies";
     if (category === "hdr10") return "All HDR10 Movies";
-    if (category === "dolbyvision") return "All DolbyVision Movies";
+    if (category === "dolbyvision") return "All Dolby Vision Movies";
     if (category === "trending") return "All Trending Movies";
     return "All Updated Movies";
   } else if (type === "tv") {

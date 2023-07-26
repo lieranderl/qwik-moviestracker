@@ -17,10 +17,14 @@ export default component$(() => {
   const resource = useContentLoader();
   return (
     <>
+      <div class="bg-fixed" style={"background-image: url(https://image.tmdb.org/t/p/w500"+resource.value?.movie.backdrop_path+")"}>
       <div>{resource.value!.lang}</div>
       <div>{resource.value!.id}</div>
       <div>{resource.value!.movie.title}</div>
       <div>{resource.value!.movie.release_date?.substring(0,4)}</div>
+      <div>{resource.value!.movie.release_date?.substring(0,4)}</div>
+      </div>
+     
     </>
   );
 });

@@ -128,7 +128,7 @@ export default component$(() => {
   });
 
   return (
-    <section>
+    <div class="container mx-auto px-4">
       <MediaGrid title={categoryToTitle(resource.value.category, "movie")}>
         {moviesSig.length > 0 &&
           moviesSig.map((m) => (
@@ -155,7 +155,7 @@ export default component$(() => {
           isLoading={isloadingMovies.value}
         />
       </div>
-    </section>
+    </div>
   );
 });
 

@@ -46,6 +46,8 @@ export type TvMedia = {
     popularity?: number;
     media_type?: "person";
     job?: string;
+    character?: string;
+
   };
   
   export type PersonMediaDetails = PersonMedia & {
@@ -56,6 +58,7 @@ export type TvMedia = {
     birthday?: string;
     deathday?: string;
     place_of_birth?: string;
+    gender?: number;
     combined_credits?: {
       cast: ProductionMedia[];
       crew: ProductionMedia[];
@@ -76,7 +79,7 @@ export type TvMedia = {
 
   export type Country = {
     name: string;
-    id: number;
+    iso_3166_1: string;
   };
   
   export type Video = {
@@ -110,6 +113,8 @@ export type TvMedia = {
     genres?: Genre[];
     budget?: number;
     revenue?: number;
+    imdb_id?: string;
+    belongs_to_collection?: number;
     production_companies?: Production[];
     production_countries?: Country[];
     tagline: string;

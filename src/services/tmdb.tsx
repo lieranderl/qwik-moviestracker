@@ -260,12 +260,14 @@ export const getTvShows = async ({ query, page, language }: GetTvShows) => {
 
 type GetPerson = {
   id: number;
+  language: string,
 };
 
-export const getPerson = async ({ id }: GetPerson) => {
+export const getPerson = async ({ id, language }: GetPerson) => {
   const result = await fetchTMDB<PersonMediaDetails>(`person/${id}`, {
     append_to_response: "images,combined_credits,external_ids",
     include_image_language: "en",
+    language: language,
   });
   return { ...result, media_type: "person" as const };
 };

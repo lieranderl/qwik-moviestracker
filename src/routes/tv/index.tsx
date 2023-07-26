@@ -32,7 +32,7 @@ export default component$(() => {
   const resource = useContentLoader();
   return (
     <>
-    <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4 pt-[64px]">
       <MediaCarousel
         title="Trending Tv Shows"
         type="tv"

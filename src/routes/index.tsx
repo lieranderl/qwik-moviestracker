@@ -54,7 +54,7 @@ export default component$(() => {
   const resource = useContentLoader();
   return (
     <>
-      <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4 pt-[64px]">
         <MediaCarousel
           title="Latest Movies"
           type="movie"

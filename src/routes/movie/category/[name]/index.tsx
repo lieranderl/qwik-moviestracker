@@ -128,7 +128,7 @@ export default component$(() => {
   });
 
   return (
-    <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4 pt-[64px]">
       <MediaGrid title={categoryToTitle(resource.value.category, "movie")}>
         {moviesSig.length > 0 &&
           moviesSig.map((m) => (

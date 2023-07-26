@@ -73,6 +73,11 @@ export type TvMedia = {
     logo_path?: string | null;
     origin_country?: string;
   };
+
+  export type Country = {
+    name: string;
+    id: number;
+  };
   
   export type Video = {
     iso_639_1?: string;
@@ -106,6 +111,8 @@ export type TvMedia = {
     budget?: number;
     revenue?: number;
     production_companies?: Production[];
+    production_countries?: Country[];
+    tagline: string;
     credits?: {
       cast?: PersonMedia[];
       crew?: PersonMedia[];

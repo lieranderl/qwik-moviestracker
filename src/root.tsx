@@ -9,15 +9,17 @@ import {
   QwikCityProvider,
   RouterOutlet,
   ServiceWorkerRegister,
+  useLocation,
+  useNavigate,
 } from "@builder.io/qwik-city";
 import { RouterHead } from "./components/router-head/router-head";
 
 import "./global.css";
+import { DarkThemeLauncher, LangLauncher } from "./utils/DarkThemeLauncher";
 
 export const firebaseStoreContext = createContextId<{
   moviesLastTimeFound: number;
 }>("firebaseStoreContext");
-
 
 export default component$(() => {
   /**
@@ -29,20 +31,13 @@ export default component$(() => {
   const firebaseStore = useStore({ moviesLastTimeFound: 0 });
   useContextProvider(firebaseStoreContext, firebaseStore);
 
-  useVisibleTask$(async () => {
-    localStorage.getItem("color-theme") === "dark" ||
-    (!("color-theme" in localStorage) &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches)
-      ? document.documentElement.classList.add("dark")
-      : document.documentElement.classList.remove("dark");
-  });
-
   return (
     <QwikCityProvider>
       <head>
         <meta charSet="utf-8" />
         <link rel="manifest" href="/manifest.json" />
         <RouterHead />
+        <DarkThemeLauncher />
       </head>
       <body class="bg-teal-50 dark:bg-teal-950 font-poppins" lang="en">
         <RouterOutlet />

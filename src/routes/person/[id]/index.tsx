@@ -17,7 +17,10 @@ export const useContentLoader = routeLoader$(async (event) => {
   } catch (error) {
     event.redirect(302, "/404");
   }
+
 });
+
+  
 
 export default component$(() => {
   const resource = useContentLoader();

@@ -34,6 +34,7 @@ export const MediaCard = component$(
       if (isHorizontal) {
         return (width * 9) / 16;
       }
+      if (isPerson) { return width * 3/2 }
       return (width * 16) / 9;
     });
 
@@ -82,7 +83,7 @@ export const MediaCard = component$(
                       : "https://via.placeholder.com/" +
                         width +
                         "x" +
-                        height.value
+                        height.value+"/14b8a6/042f2e?text=No+Image&font=bebas"
                   }
                   width={width}
                   height={height.value}

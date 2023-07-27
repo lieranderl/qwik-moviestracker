@@ -1,5 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 import { ThemeButton } from "./theme-button";
+import { LangButton } from "./lang-button";
 
 interface ToolbarProps {
   lang: string;
@@ -24,6 +25,7 @@ export const Toolbar = component$(({ lang }: ToolbarProps) => {
 
         <div class="flex items-center">
           <div class="flex items-center md:order-2">
+            <LangButton />
             <ThemeButton />
             <button
               id="theme-toggle"

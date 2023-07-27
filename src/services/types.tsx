@@ -114,7 +114,7 @@ export type TvMedia = {
     budget?: number;
     revenue?: number;
     imdb_id?: string;
-    belongs_to_collection?: number;
+    belongs_to_collection?: {id: number};
     production_companies?: Production[];
     production_countries?: Country[];
     tagline: string;
@@ -143,4 +143,5 @@ export type TvMedia = {
     results?: T[];
     total_pages?: number;
     total_results?: number;
+    parts: T[];
   };

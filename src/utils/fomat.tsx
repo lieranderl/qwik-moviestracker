@@ -35,7 +35,7 @@ export function formatRuntime(minutes: number) {
 }
 
 export function formatYear(time: string) {
-  return time.substring(0, 4);
+  return parseInt(time.substring(0, 4), 10);
 }
 
 export function formatRating(r: number) {

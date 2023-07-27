@@ -226,6 +226,90 @@ export const getMovies = async ({ query, page }: GetMovies) => {
   return { ...result, results };
 };
 
+type GetSimilarType = {
+  id: number;
+  lang: string;
+};
+
+export const getSimilarMovies = async ({ id, lang }: GetSimilarType) => {
+  const result = await fetchTMDB<Collection<MovieMedia>>(
+    `movie/${id}/similar`,
+    {
+      language: lang,
+    }
+  );
+
+  if (!result.results) return result;
+  const newMovieMedia = result.results.map(async (item) => {
+    const backdrop = await getMediaBackdrop({
+      id: item.id,
+      media_type: "movie",
+    });
+    if (backdrop === "") return item;
+    item.backdrop_path = backdrop;
+    return item;
+  });
+  try {
+    result.results = await Promise.all(newMovieMedia);
+  } catch (error) {
+    console.log("skip movie backdrop");
+  }
+
+  return result;
+};
+
+export const getRecommendationMovies = async ({ id, lang }: GetSimilarType) => {
+  const result = await fetchTMDB<Collection<MovieMedia>>(
+    `movie/${id}/recommendations`,
+    {
+      language: lang,
+    }
+  );
+  if (!result.results) return result;
+  const newMovieMedia = result.results.map(async (item) => {
+    const backdrop = await getMediaBackdrop({
+      id: item.id,
+      media_type: "movie",
+    });
+    if (backdrop === "") return item;
+    item.backdrop_path = backdrop;
+    return item;
+  });
+  try {
+    result.results = await Promise.all(newMovieMedia);
+  } catch (error) {
+    console.log("skip movie backdrop");
+  }
+
+  return result;
+};
+
+export const getCollectionMovies = async ({ id, lang }: GetSimilarType) => {
+  const result = await fetchTMDB<Collection<MovieMedia>>(
+    `collection/${id}`,
+    {
+      language: lang,
+    }
+  );
+  if (result.parts.length == 0) return result;
+  const newMovieMedia = result.parts.map(async (item) => {
+    const backdrop = await getMediaBackdrop({
+      id: item.id,
+      media_type: "movie",
+    });
+    if (backdrop === "") return item;
+    item.backdrop_path = backdrop;
+    return item;
+  });
+  try {
+    result.parts = await Promise.all(newMovieMedia);
+  } catch (error) {
+    console.log("skip movie backdrop");
+  }
+
+  return result;
+};
+
 type GetTvShow = {
   id: number;
   language: string;
@@ -260,7 +344,7 @@ export const getTvShows = async ({ query, page, language }: GetTvShows) => {
 
 type GetPerson = {
   id: number;
-  language: string,
+  language: string;
 };
 
 export const getPerson = async ({ id, language }: GetPerson) => {

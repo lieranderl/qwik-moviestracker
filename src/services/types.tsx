@@ -14,7 +14,56 @@ export type TvMedia = {
     poster_path?: string | null;
     vote_average?: number;
     vote_count?: number;
+    created_by: CreatedBy[]
+    seasons: Seasons[];
+    in_production: boolean;
+    last_air_date: string;
+    next_episode_to_air?: Episode ;
+    last_episode_to_air?: Episode;
+    episode_run_time: number[];
+    networks: Network[];
+    number_of_seasons: number;
+    number_of_episodes: number;
   };
+
+  export type Network = {
+    name: string;
+    id: number;
+    logo_path: string;
+    origin_country: string;
+  }
+
+  export type Episode = {
+    air_date: string;
+    episode_number: number;
+    id: number;
+    name: string;
+    overview: string;
+    production_code: string;
+    season_number: number;
+    still_path: string;
+    vote_average: number;
+    vote_count: number;
+  }
+  
+  export type Seasons = {
+    air_date: string;
+    episode_count: number;
+    id: number;
+    name: string;
+    overview: string;
+    poster_path: string;
+    season_number: number;
+  }
+
+  export type CreatedBy = {
+      id: number
+      credit_id: string
+      name: string
+      gender: number
+      profile_path: string
+    
+  }
   
   export type MovieMedia = {
     adult?: boolean;

@@ -10,9 +10,6 @@ import {
 
 export const useContentLoader = routeLoader$(async (event) => {
 
-
-  console.log("movies details");
-
   const lang = event.query.get("lang") || "en-US";
   const id = parseInt(event.params.id, 10);
   try {
@@ -20,7 +17,6 @@ export const useContentLoader = routeLoader$(async (event) => {
       getMovieDetails({
         id,
         language: lang,
-        need_backdrop: false,
       }),
       getSimilarMovies({ id: id, lang: lang }),
       getRecommendationMovies({ id: id, lang: lang }),

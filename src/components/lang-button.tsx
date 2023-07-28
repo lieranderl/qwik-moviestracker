@@ -6,12 +6,16 @@ export const LangButton = component$(() => {
   const nav = useNavigate();
 
   const toggleLang = $(async () => {
-    if (loc.url.searchParams.get("lang") === "en-US") {
-      loc.url.searchParams.set("lang", "ru-RU");
-    } else if (loc.url.searchParams.get("lang") === "ru-RU") {
-      loc.url.searchParams.set("lang", "en-US");
-    } else {
-      loc.url.searchParams.set("lang", "ru-RU");
+    switch (loc.url.searchParams.get("lang")) {
+      case "en-US":
+        loc.url.searchParams.set("lang", "ru-RU");
+        break;
+      case "ru-RU":
+        loc.url.searchParams.set("lang", "en-US");
+        break;
+      default:
+        loc.url.searchParams.set("lang", "ru-RU");
+        break;
     }
     await nav(loc.url.href, { forceReload: true });
   });

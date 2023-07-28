@@ -12,6 +12,7 @@ import type {
 } from "./types";
 import type { getMoviesIdsType } from "./firestore";
 import { getMoviesIds } from "./firestore";
+import { formatYear } from "~/utils/fomat";
 
 const baseURL = "https://api.themoviedb.org/3";
 
@@ -178,7 +179,7 @@ type GetMovie = {
   id: number;
   language: string;
   append_to_response?: string;
-  need_backdrop: boolean;
+  need_backdrop?: boolean;
 };
 
 export const getMovie = async ({
@@ -251,6 +252,9 @@ export const getSimilarMovies = async ({ id, lang }: GetSimilarType) => {
   });
   try {
     result.results = await Promise.all(newMovieMedia);
+    result.results = result.results.sort(
+      (a, b) => formatYear(b.release_date!) - formatYear(a.release_date!)
+    );
   } catch (error) {
     console.log("skip movie backdrop");
   }
@@ -277,6 +281,9 @@ export const getRecommendationMovies = async ({ id, lang }: GetSimilarType) => {
   });
   try {
     result.results = await Promise.all(newMovieMedia);
+    result.results = result.results.sort(
+      (a, b) => formatYear(b.release_date!) - formatYear(a.release_date!)
+    );
   } catch (error) {
     console.log("skip movie backdrop");
   }
@@ -300,6 +307,9 @@ export const getCollectionMovies = async ({ id, lang }: GetSimilarType) => {
   });
   try {
     result.parts = await Promise.all(newMovieMedia);
+    result.parts = result.parts.sort(
+      (a, b) => formatYear(b.release_date!) - formatYear(a.release_date!)
+    );
   } catch (error) {
     console.log("skip movie backdrop");
   }
@@ -338,6 +348,67 @@ export const getTvShows = async ({ query, page, language }: GetTvShows) => {
   }));
   return { ...result, results };
 };
+
+
+export const getSimilarTv = async ({ id, lang }: GetSimilarType) => {
+  const result = await fetchTMDB<Collection<TvMedia>>(
+    `tv/${id}/similar`,
+    {
+      language: lang,
+    }
+  );
+
+  if (!result.results) return result;
+  const newMovieMedia = result.results.map(async (item) => {
+    const backdrop = await getMediaBackdrop({
+      id: item.id,
+      media_type: "tv",
+    });
+    if (backdrop === "") return item;
+    item.backdrop_path = backdrop;
+    return item;
+  });
+  try {
+    result.results = await Promise.all(newMovieMedia);
+    result.results = result.results.sort(
+      (a, b) => formatYear(b.first_air_date!) - formatYear(a.first_air_date!)
+    );
+  } catch (error) {
+    console.log("skip movie backdrop");
+  }
+
+  return result;
+};
+
+export const getRecommendationTv = async ({ id, lang }: GetSimilarType) => {
+  const result = await fetchTMDB<Collection<TvMedia>>(
+    `tv/${id}/recommendations`,
+    {
+      language: lang,
+    }
+  );
+  if (!result.results) return result;
+  const newMovieMedia = result.results.map(async (item) => {
+    const backdrop = await getMediaBackdrop({
+      id: item.id,
+      media_type: "tv",
+    });
+    if (backdrop === "") return item;
+    item.backdrop_path = backdrop;
+    return item;
+  });
+  try {
+    result.results = await Promise.all(newMovieMedia);
+    result.results = result.results.sort(
+      (a, b) => formatYear(b.first_air_date!) - formatYear(a.first_air_date!)
+    );
+  } catch (error) {
+    console.log("skip movie backdrop");
+  }
+
+  return result;
+};
+
 
 type GetPerson = {
   id: number;
@@ -415,9 +486,7 @@ export const getGenreList = async ({ media }: GetGenreList) => {
   return res.genres;
 };
 
-const baseCGURL =
-  "https://moviestracker-gw-eu-w1-8vmmbwbl.ew.gateway.dev"
-
+const baseCGURL = "https://moviestracker-gw-eu-w1-8vmmbwbl.ew.gateway.dev";
 
 export type ImdbRating = {
   Id: string;
@@ -434,7 +503,12 @@ const fetchAPI = async <T = unknown,>(
     key: import.meta.env.VITE_GC_API_KEY,
   });
   const url = `${baseCGURL}/${path}?${params}`;
-  const response = await fetch(url, {headers : {'Origin': 'https://moviestracker.web.app', 'Referer': 'https://moviestracker.web.app'}});
+  const response = await fetch(url, {
+    headers: {
+      Origin: "https://moviestracker.web.app",
+      Referer: "https://moviestracker.web.app",
+    },
+  });
   if (!response.ok) {
     // eslint-disable-next-line no-console
     console.error(response.headers);

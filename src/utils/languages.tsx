@@ -1,3 +1,5 @@
+import { $ } from "@builder.io/qwik";
+
 export const languages = [
     { english_name: "No Language", iso_639_1: "xx" },
     { english_name: "Afar", iso_639_1: "aa" },
@@ -187,3 +189,38 @@ export const languages = [
     { english_name: "Belarusian", iso_639_1: "be" },
     { english_name: "Yoruba", iso_639_1: "yo" },
   ];
+
+
+export  const langBudget = $((lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Budget";
+    case "ru-RU":
+      return "Бюджет";
+    default:
+      return "Бюджет";
+  }
+});
+
+export  const langRevenue = $((lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Revenue";
+    case "ru-RU":
+      return "Выручка";
+    default:
+      return "Выручка";
+  }
+});
+
+export  const langMinutes = $((lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "minutes";
+    case "ru-RU":
+      return "мин.";
+    default:
+      return "мин.";
+  }
+});
+

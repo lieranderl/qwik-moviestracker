@@ -36,7 +36,7 @@ export const Toolbar = component$(({ lang }: ToolbarProps) => {
                 class="group transition duration-300"
               >
                 Movies
-                <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5"></span>
+                <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-teal-950 dark:bg-teal-50"></span>
               </a>
             </li>
             <li class="mx-4">
@@ -45,7 +45,7 @@ export const Toolbar = component$(({ lang }: ToolbarProps) => {
                 class="group transition duration-300"
               >
                 Series
-                <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5"></span>
+                <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-teal-950 dark:bg-teal-50"></span>
               </a>
             </li>
             <li class="mx-4">
@@ -54,7 +54,7 @@ export const Toolbar = component$(({ lang }: ToolbarProps) => {
                 class="group transition duration-300"
               >
                 Search
-                <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5"></span>
+                <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-teal-950 dark:bg-teal-50"></span>
               </a>
             </li>
           </ul>

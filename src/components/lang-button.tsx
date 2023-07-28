@@ -1,5 +1,5 @@
 import { component$, $ } from "@builder.io/qwik";
-import { Link, useLocation, useNavigate } from "@builder.io/qwik-city";
+import { useLocation, useNavigate } from "@builder.io/qwik-city";
 
 export const LangButton = component$(() => {
   const loc = useLocation();
@@ -17,7 +17,7 @@ export const LangButton = component$(() => {
   });
 
   return (
-    <Link href={loc.url.href} onClick$={toggleLang}>
+    <a onClick$={toggleLang}>
       <button
         id="theme-toggle"
         type="button"
@@ -25,6 +25,6 @@ export const LangButton = component$(() => {
       >
         {loc.url.searchParams.get("lang") || "en-US"}
       </button>
-    </Link>
+    </a>
   );
 });

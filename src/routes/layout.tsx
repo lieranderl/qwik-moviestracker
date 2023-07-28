@@ -13,17 +13,17 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
   });
 };
 
-export const useContentLoader = routeLoader$(async (event) => {
-  const lang = event.query.get("lang") || "en-US"
-  return {lang};
-  });
+export const useQueryParamsLoader = routeLoader$(async (event) => {
+  const lang = event.query.get("lang") || "en-US";
+  return { lang };
+});
 
 export default component$(() => {
-  const resource = useContentLoader();
+  const resource = useQueryParamsLoader();
   return (
     <>
-      <Toolbar lang={resource.value.lang}/>
-        <Slot />
+      <Toolbar lang={resource.value.lang} />
+      <Slot />
     </>
   );
 });

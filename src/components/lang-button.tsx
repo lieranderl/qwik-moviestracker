@@ -21,7 +21,7 @@ export const LangButton = component$(() => {
       <button
         id="theme-toggle"
         type="button"
-        class="text-teal-950 dark:text-teal-50 hover:bg-teal-100 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg text-sm p-2.5"
+        class="hover:bg-teal-100 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg text-sm p-2.5"
       >
         {loc.url.searchParams.get("lang") || "en-US"}
       </button>

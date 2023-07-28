@@ -61,13 +61,13 @@ export const MediaCard = component$(
     });
 
     const colorClass =
-      "bg-teal-50 text-teal-950 dark:bg-teal-950 dark:text-teal-50";
+      "bg-teal-50 dark:bg-teal-950";
 
     return (
       <a href={paths.media(type, id, lang)}>
         <div class={cardWidthClass} style={cardWidthStyle}>
           {charName && (
-            <span class="block truncate text-sm font-normal italic text-teal-950 dark:text-teal-50">
+            <span class="block truncate text-sm font-normal italic">
               {charName}
             </span>
           )}
@@ -92,7 +92,7 @@ export const MediaCard = component$(
                 {(rating || rating! > 0) && (
                   <span
                     class={[
-                      "absolute text-sm font-bold px-2.5 py-0.5 bottom-2 left-2 rounded-full text-teal-950",
+                      "absolute text-sm font-bold px-2.5 py-0.5 bottom-2 left-2 rounded-full",
                       colorClass,
                     ]}
                   >
@@ -111,7 +111,7 @@ export const MediaCard = component$(
                 )}
               </picture>
             </div>
-            <span class="block truncate text-sm text-ellipsis overflow-hidden text-teal-950 dark:text-teal-50 transition-scale font-normal duration-300 ease-in-out group-hover:font-extrabold">
+            <span class="block truncate text-sm text-ellipsis overflow-hidden transition-scale font-normal duration-300 ease-in-out group-hover:font-extrabold">
               {title}
             </span>
           </div>

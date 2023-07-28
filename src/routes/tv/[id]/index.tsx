@@ -19,7 +19,7 @@ export default component$(() => {
   return (
     <>
       <div class="absolute bg-fixed bg-gradient-to-b w-screen h-screen from-teal-50 to-teal-50 dark:from-teal-950 dark:to-teal-950 z-10 opacity-70"></div>
-      <div class="absolute  pt-[100px] overflow-auto w-screen h-screen z-20 text-teal-950 font-bold dark:text-teal-50 ">
+      <div class="absolute  pt-[100px] overflow-auto w-screen h-screen z-20 font-bold">
         <div class="container mx-auto px-4">
           <TvDetails tv={resource.value!.tv} />
         </div>

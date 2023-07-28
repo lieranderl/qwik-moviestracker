@@ -36,7 +36,10 @@ export default component$(() => {
         <RouterHead />
         <DarkThemeLauncher />
       </head>
-      <body class="bg-teal-50 dark:bg-teal-950 font-poppins" lang="en">
+      <body
+        class="bg-teal-50 dark:bg-teal-950 text-teal-950 dark:text-teal-50 font-poppins tracking-tight antialiased"
+        lang="en"
+      >
         <RouterOutlet />
         <ServiceWorkerRegister />
       </body>

@@ -14,13 +14,7 @@ import { formatYear } from "~/utils/fomat";
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   try {
-    const [
-      movies,
-      tv,
-      torMovies,
-      // hdrMovies,
-      // dolbyMovies
-    ] = await Promise.all([
+    const [movies, tv, torMovies] = await Promise.all([
       getTrendingMovieWithBackdrops({ page: 1, language: lang }),
       getTrendingTvWithBackdrops({ page: 1, language: lang }),
       getFirebaseMovies({
@@ -31,20 +25,12 @@ export const useContentLoader = routeLoader$(async (event) => {
         sortDirection: "desc",
         need_backdrop: true,
       }),
-      // getFirebaseMovies({entries: 20, language: lang, startTime: Timestamp.now().toMillis(), db_name: "hdr10movies", sortDirection: "desc" }),
-
-      // getTorUpdatedMoviesDolbyTrend({entries: 20, language: lang }),
     ]);
-    // const newhdrMovies = hdrMovies.movies.sort((a, b) => (torMovies.mIds.indexOf(a.id) - torMovies.mIds.indexOf(b.id)));
-    // const newdolbyMovies = dolbyMovies.movies.sort((a, b) => (torMovies.mIds.indexOf(a.id) - torMovies.mIds.indexOf(b.id)));
-
     return {
       movies,
       tv,
       torMovies,
-      // hdrMovies,
       lang,
-      // newdolbyMovies
     };
   } catch {
     throw event.redirect(302, "/404");
@@ -68,7 +54,9 @@ export default component$(() => {
                 title={m.original_title!}
                 width={500}
                 rating={m.vote_average}
-                year={m.release_date && formatYear(m.release_date) || undefined}
+                year={
+                  (m.release_date && formatYear(m.release_date)) || undefined
+                }
                 picfile={m.backdrop_path}
                 isPerson={false}
                 isHorizontal={true}
@@ -91,7 +79,9 @@ export default component$(() => {
                 title={m.title!}
                 width={500}
                 rating={m.vote_average}
-                year={m.release_date && formatYear(m.release_date) || undefined}
+                year={
+                  (m.release_date && formatYear(m.release_date)) || undefined
+                }
                 picfile={m.backdrop_path}
                 isPerson={false}
                 isHorizontal={true}
@@ -114,7 +104,10 @@ export default component$(() => {
                 title={m.name!}
                 width={500}
                 rating={m.vote_average}
-                year={m.first_air_date && formatYear(m.first_air_date) || undefined}
+                year={
+                  (m.first_air_date && formatYear(m.first_air_date)) ||
+                  undefined
+                }
                 picfile={m.backdrop_path}
                 isPerson={false}
                 isHorizontal={true}

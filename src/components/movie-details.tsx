@@ -98,7 +98,7 @@ export const MovieDetails = component$(
         </section>
 
         <section class="text-sm">
-          <ul class="flex flex-wrap items-center justify-start text-teal-950 dark:text-teal-50 ">
+          <ul class="flex flex-wrap items-center justify-start">
             <li>
               {movie.release_date && (
                 <div class="after:content-['\3164\2022\3164']">

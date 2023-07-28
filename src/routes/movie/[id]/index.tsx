@@ -1,4 +1,4 @@
-import { component$, } from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import { MovieDetails } from "~/components/movie-details";
 import {
@@ -22,7 +22,10 @@ export const useContentLoader = routeLoader$(async (event) => {
       getRecommendationMovies({ id: id, lang: lang }),
     ]);
     if (movie.belongs_to_collection) {
-      const colMovies = await getCollectionMovies({id: movie.belongs_to_collection.id, lang: lang});
+      const colMovies = await getCollectionMovies({
+        id: movie.belongs_to_collection.id,
+        lang: lang,
+      });
       return { movie, simMovies, recMovies, colMovies, lang };
     }
     return { movie, simMovies, recMovies, lang };
@@ -37,7 +40,7 @@ export default component$(() => {
   return (
     <>
       <div class="absolute bg-fixed bg-gradient-to-b w-screen h-screen from-teal-50 to-teal-50 dark:from-teal-950 dark:to-teal-950 z-10 opacity-70"></div>
-      <div class="absolute  pt-[100px] overflow-auto w-screen h-screen z-20 text-teal-950 font-bold dark:text-teal-50 ">
+      <div class="absolute  pt-[100px] overflow-auto w-screen h-screen z-20 font-bold ">
         <div class="container mx-auto px-4">
           <MovieDetails
             movie={resource.value!.movie}

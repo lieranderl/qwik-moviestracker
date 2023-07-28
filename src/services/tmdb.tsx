@@ -285,12 +285,9 @@ export const getRecommendationMovies = async ({ id, lang }: GetSimilarType) => {
 };
 
 export const getCollectionMovies = async ({ id, lang }: GetSimilarType) => {
-  const result = await fetchTMDB<Collection<MovieMedia>>(
-    `collection/${id}`,
-    {
-      language: lang,
-    }
-  );
+  const result = await fetchTMDB<Collection<MovieMedia>>(`collection/${id}`, {
+    language: lang,
+  });
   if (result.parts.length == 0) return result;
   const newMovieMedia = result.parts.map(async (item) => {
     const backdrop = await getMediaBackdrop({
@@ -416,4 +413,38 @@ type GetGenreList = {
 export const getGenreList = async ({ media }: GetGenreList) => {
   const res = await fetchTMDB<{ genres: Genre[] }>(`genre/${media}/list`, {});
   return res.genres;
+};
+
+const baseCGURL =
+  "https://moviestracker-gw-eu-w1-8vmmbwbl.ew.gateway.dev"
+
+
+export type ImdbRating = {
+  Id: string;
+  Rating: string;
+  Votes: string;
+};
+
+const fetchAPI = async <T = unknown,>(
+  path: string,
+  search: Record<string, string> = {}
+): Promise<T> => {
+  const params = new URLSearchParams({
+    ...search,
+    key: import.meta.env.VITE_GC_API_KEY,
+  });
+  const url = `${baseCGURL}/${path}?${params}`;
+  const response = await fetch(url, {headers : {'Origin': 'https://moviestracker.web.app', 'Referer': 'https://moviestracker.web.app'}});
+  if (!response.ok) {
+    // eslint-disable-next-line no-console
+    console.error(response.headers);
+    console.error(url);
+    throw new Error(response.statusText);
+  }
+
+  return response.json() as T;
+};
+
+export const getImdbRating = (imdb_id: string) => {
+  return fetchAPI<ImdbRating>(`getimdb`, { imdb_id });
 };

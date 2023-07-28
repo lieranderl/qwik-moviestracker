@@ -16,6 +16,7 @@ import { ButtonPrimary } from "./button-primary";
 import { MediaCarousel } from "./media-carousel";
 import { MediaCard } from "./media-card";
 import { paths } from "~/utils/paths";
+import { Imdb } from "./imdb";
 
 interface MovieDetailsProps {
   movie: MovieMediaDetails;
@@ -25,8 +26,11 @@ interface MovieDetailsProps {
   lang: string;
 }
 
+
+
 export const MovieDetails = component$(
   ({ movie, recMovies, simMovies, colMovies, lang }: MovieDetailsProps) => {
+
     return (
       <div class="pt-[20vh] lg:mx-20 xl:mx-40 font-normal">
         <section class="my-4">
@@ -69,8 +73,8 @@ export const MovieDetails = component$(
               </div>
             )}
 
-            {/* {movie.imdb_id && <div>{movie.imdb_id}</div>} */}
-            {movie.vote_average! > 0 && (
+            {movie.imdb_id && <Imdb id={movie.imdb_id}/>}
+            {/* {movie.vote_average! > 0 && (
               <div class="flex items-center">
                 <div class="w-8 h-8 fill-teal-950 dark:fill-teal-50 me-2">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -86,7 +90,7 @@ export const MovieDetails = component$(
                   )}
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         </section>
 

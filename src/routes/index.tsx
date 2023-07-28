@@ -9,6 +9,7 @@ import {
   getTrendingMovieWithBackdrops,
   getTrendingTvWithBackdrops,
 } from "~/services/tmdb";
+import { formatYear } from "~/utils/fomat";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
@@ -66,8 +67,8 @@ export default component$(() => {
               <MediaCard
                 title={m.original_title!}
                 width={500}
-                rating={m.vote_average!}
-                year={parseInt(m.release_date!.substring(0, 4), 10)}
+                rating={m.vote_average}
+                year={m.release_date && formatYear(m.release_date) || undefined}
                 picfile={m.backdrop_path}
                 isPerson={false}
                 isHorizontal={true}
@@ -89,9 +90,9 @@ export default component$(() => {
               <MediaCard
                 title={m.title!}
                 width={500}
-                rating={m.vote_average!}
-                year={parseInt(m.release_date!.substring(0, 4), 10)}
-                picfile={m.backdrop_path!}
+                rating={m.vote_average}
+                year={m.release_date && formatYear(m.release_date) || undefined}
+                picfile={m.backdrop_path}
                 isPerson={false}
                 isHorizontal={true}
                 id={m.id}
@@ -112,9 +113,9 @@ export default component$(() => {
               <MediaCard
                 title={m.name!}
                 width={500}
-                rating={m.vote_average!}
-                year={parseInt(m.first_air_date!.substring(0, 4), 10)}
-                picfile={m.backdrop_path!}
+                rating={m.vote_average}
+                year={m.first_air_date && formatYear(m.first_air_date) || undefined}
+                picfile={m.backdrop_path}
                 isPerson={false}
                 isHorizontal={true}
                 id={m.id}

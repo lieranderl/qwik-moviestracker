@@ -3,19 +3,16 @@ import {
   createContextId,
   useContextProvider,
   useStore,
-  useVisibleTask$,
 } from "@builder.io/qwik";
 import {
   QwikCityProvider,
   RouterOutlet,
   ServiceWorkerRegister,
-  useLocation,
-  useNavigate,
 } from "@builder.io/qwik-city";
 import { RouterHead } from "./components/router-head/router-head";
 
 import "./global.css";
-import { DarkThemeLauncher, LangLauncher } from "./utils/DarkThemeLauncher";
+import { DarkThemeLauncher } from "./utils/darkThemeLauncher";
 
 export const firebaseStoreContext = createContextId<{
   moviesLastTimeFound: number;

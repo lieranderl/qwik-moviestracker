@@ -1,6 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 
-import { routeLoader$, type DocumentHead, Link } from "@builder.io/qwik-city";
+import { routeLoader$, type DocumentHead } from "@builder.io/qwik-city";
 import { Timestamp } from "firebase/firestore";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
@@ -71,7 +71,7 @@ export default component$(() => {
         >
           {resource.value.torMovies.map((m) => (
             <>
-              <Link href={paths.media("movie", m.id, resource.value.lang)}>
+              <a href={paths.media("movie", m.id, resource.value.lang)}>
                 <MediaCard
                   title={m.original_title!}
                   width={500}
@@ -81,7 +81,7 @@ export default component$(() => {
                   isPerson={false}
                   isHorizontal={true}
                 />
-              </Link>
+              </a>
             </>
           ))}
         </MediaCarousel>
@@ -93,7 +93,7 @@ export default component$(() => {
         >
           {resource.value.movies.results!.map((m) => (
             <>
-              <Link href={paths.media("movie", m.id, resource.value.lang)}>
+              <a href={paths.media("movie", m.id, resource.value.lang)}>
                 <MediaCard
                   title={m.title!}
                   width={500}
@@ -103,7 +103,7 @@ export default component$(() => {
                   isPerson={false}
                   isHorizontal={true}
                 />
-              </Link>
+              </a>
             </>
           ))}
         </MediaCarousel>
@@ -115,7 +115,7 @@ export default component$(() => {
         >
           {resource.value.hdrMovies.map((m) => (
             <>
-              <Link href={paths.media("movie", m.id, resource.value.lang)}>
+              <a href={paths.media("movie", m.id, resource.value.lang)}>
                 <MediaCard
                   title={m.title!}
                   width={500}
@@ -125,7 +125,7 @@ export default component$(() => {
                   isPerson={false}
                   isHorizontal={true}
                 />
-              </Link>
+              </a>
             </>
           ))}
         </MediaCarousel>
@@ -137,7 +137,7 @@ export default component$(() => {
         >
           {resource.value.dolbyMovies.map((m) => (
             <>
-              <Link href={paths.media("movie", m.id, resource.value.lang)}>
+              <a href={paths.media("movie", m.id, resource.value.lang)}>
                 <MediaCard
                   title={m.title!}
                   width={500}
@@ -147,7 +147,7 @@ export default component$(() => {
                   isPerson={false}
                   isHorizontal={true}
                 />
-              </Link>
+              </a>
             </>
           ))}
         </MediaCarousel>

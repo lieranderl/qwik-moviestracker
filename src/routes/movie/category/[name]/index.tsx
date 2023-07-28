@@ -6,8 +6,8 @@ import {
   useStore,
   useVisibleTask$,
 } from "@builder.io/qwik";
-import type { DocumentHead} from "@builder.io/qwik-city";
-import { Link, routeLoader$, server$ } from "@builder.io/qwik-city";
+import type { DocumentHead } from "@builder.io/qwik-city";
+import { routeLoader$, server$ } from "@builder.io/qwik-city";
 import { Timestamp } from "firebase/firestore";
 import { ButtonPrimary } from "~/components/button-primary";
 import { MediaCard } from "~/components/media-card";
@@ -133,18 +133,17 @@ export default component$(() => {
         {moviesSig.length > 0 &&
           moviesSig.map((m) => (
             <>
-            <Link href={paths.media("movie", m.id, resource.value.lang)}>
-            <MediaCard
-                title={m.title!}
-                width={300}
-                rating={m.vote_average!}
-                year={parseInt(m.release_date!.substring(0, 4), 10)}
-                picfile={m.poster_path}
-                isPerson={false}
-                isHorizontal={false}
-              />
-            </Link>
-              
+              <a href={paths.media("movie", m.id, resource.value.lang)}>
+                <MediaCard
+                  title={m.title!}
+                  width={300}
+                  rating={m.vote_average!}
+                  year={parseInt(m.release_date!.substring(0, 4), 10)}
+                  picfile={m.poster_path}
+                  isPerson={false}
+                  isHorizontal={false}
+                />
+              </a>
             </>
           ))}
       </MediaGrid>

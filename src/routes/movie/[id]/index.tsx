@@ -9,6 +9,10 @@ import {
 } from "~/services/tmdb";
 
 export const useContentLoader = routeLoader$(async (event) => {
+
+
+  console.log("movies details");
+
   const lang = event.query.get("lang") || "en-US";
   const id = parseInt(event.params.id, 10);
   try {

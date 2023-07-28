@@ -15,7 +15,6 @@ import {
 import { ButtonPrimary } from "./button-primary";
 import { MediaCarousel } from "./media-carousel";
 import { MediaCard } from "./media-card";
-import { Link } from "@builder.io/qwik-city";
 import { paths } from "~/utils/paths";
 
 interface MovieDetailsProps {
@@ -173,18 +172,16 @@ export const MovieDetails = component$(
         <MediaCarousel title="Actors" type="person" lang={lang}>
           {movie.credits?.cast!.slice(0, 10).map((c) => (
             <>
-              <div class="carousel-item">
-                <Link href={paths.media("person", c.id, lang)}>
-                  <MediaCard
-                    title={c.name!}
-                    width={300}
-                    picfile={c.profile_path!}
-                    isPerson={true}
-                    isHorizontal={false}
-                    charName={c.character!}
-                  />
-                </Link>
-              </div>
+              <a href={paths.media("person", c.id, lang)}>
+                <MediaCard
+                  title={c.name!}
+                  width={300}
+                  picfile={c.profile_path!}
+                  isPerson={true}
+                  isHorizontal={false}
+                  charName={c.character!}
+                />
+              </a>
             </>
           ))}
         </MediaCarousel>
@@ -195,18 +192,16 @@ export const MovieDetails = component$(
               .slice(0, 10)
               .map((c) => (
                 <>
-                  <div class="carousel-item">
-                    <Link href={paths.media("person", c.id, lang)}>
-                      <MediaCard
-                        title={c.name!}
-                        width={300}
-                        picfile={c.profile_path!}
-                        isPerson={true}
-                        isHorizontal={false}
-                        charName={c.job!}
-                      />
-                    </Link>
-                  </div>
+                  <a href={paths.media("person", c.id, lang)}>
+                    <MediaCard
+                      title={c.name!}
+                      width={300}
+                      picfile={c.profile_path!}
+                      isPerson={true}
+                      isHorizontal={false}
+                      charName={c.job!}
+                    />
+                  </a>
                 </>
               ))}
           </MediaCarousel>
@@ -221,7 +216,7 @@ export const MovieDetails = component$(
           >
             {colMovies.parts.map((m) => (
               <>
-                <Link href={paths.media("movie", m.id, lang)}>
+                <a href={paths.media("movie", m.id, lang)}>
                   <MediaCard
                     title={m.original_title!}
                     width={500}
@@ -234,7 +229,7 @@ export const MovieDetails = component$(
                     isPerson={false}
                     isHorizontal={true}
                   />
-                </Link>
+                </a>
               </>
             ))}
           </MediaCarousel>
@@ -249,7 +244,7 @@ export const MovieDetails = component$(
           >
             {recMovies.results.map((m) => (
               <>
-                <Link href={paths.media("movie", m.id, lang)}>
+                <a href={paths.media("movie", m.id, lang)}>
                   <MediaCard
                     title={m.original_title!}
                     width={500}
@@ -262,7 +257,7 @@ export const MovieDetails = component$(
                     isPerson={false}
                     isHorizontal={true}
                   />
-                </Link>
+                </a>
               </>
             ))}
           </MediaCarousel>
@@ -277,7 +272,7 @@ export const MovieDetails = component$(
           >
             {simMovies.results.map((m) => (
               <>
-                <Link href={paths.media("movie", m.id, lang)}>
+                <a href={paths.media("movie", m.id, lang)}>
                   <MediaCard
                     title={m.original_title!}
                     width={500}
@@ -290,7 +285,7 @@ export const MovieDetails = component$(
                     isPerson={false}
                     isHorizontal={true}
                   />
-                </Link>
+                </a>
               </>
             ))}
           </MediaCarousel>

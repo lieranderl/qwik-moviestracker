@@ -6,12 +6,12 @@ import {
   useVisibleTask$,
 } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
-import { Link, routeLoader$, server$ } from "@builder.io/qwik-city";
+import { routeLoader$, server$ } from "@builder.io/qwik-city";
 import { ButtonPrimary } from "~/components/button-primary";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import { getTrendingTv, getTvShows } from "~/services/tmdb";
-import type { Collection, TvMedia, TvMediaDetails } from "~/services/types";
+import type { TvMediaDetails } from "~/services/types";
 import { categoryToTitle, paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
@@ -101,7 +101,7 @@ export default component$(() => {
         {moviesSig.length > 0 &&
           moviesSig.map((m) => (
             <>
-              <Link href={paths.media("tv", m.id, resource.value!.lang)}>
+              <a href={paths.media("tv", m.id, resource.value!.lang)}>
                 <MediaCard
                   title={m.name!}
                   width={300}
@@ -111,7 +111,7 @@ export default component$(() => {
                   isPerson={false}
                   isHorizontal={false}
                 />
-              </Link>
+              </a>
             </>
           ))}
       </MediaGrid>

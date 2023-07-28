@@ -207,9 +207,9 @@ export  const langRevenue = $((lang: string) => {
     case "en-US":
       return "Revenue";
     case "ru-RU":
-      return "Выручка";
+      return "Сборы";
     default:
-      return "Выручка";
+      return "Сборы";
   }
 });
 

@@ -7,7 +7,7 @@ import {
   useVisibleTask$,
 } from "@builder.io/qwik";
 import type { DocumentHead} from "@builder.io/qwik-city";
-import { routeLoader$, server$ } from "@builder.io/qwik-city";
+import { Link, routeLoader$, server$ } from "@builder.io/qwik-city";
 import { Timestamp } from "firebase/firestore";
 import { ButtonPrimary } from "~/components/button-primary";
 import { MediaCard } from "~/components/media-card";
@@ -15,7 +15,7 @@ import { MediaGrid } from "~/components/media-grid";
 import { firebaseStoreContext } from "~/root";
 import { getFirebaseMovies, getTrendingMovie } from "~/services/tmdb";
 import type { MovieMediaDetails } from "~/services/types";
-import { categoryToDb, categoryToTitle } from "~/utils/paths";
+import { categoryToDb, categoryToTitle, paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
@@ -133,7 +133,8 @@ export default component$(() => {
         {moviesSig.length > 0 &&
           moviesSig.map((m) => (
             <>
-              <MediaCard
+            <Link href={paths.media("movie", m.id, resource.value.lang)}>
+            <MediaCard
                 title={m.title!}
                 width={300}
                 rating={m.vote_average!}
@@ -141,10 +142,9 @@ export default component$(() => {
                 picfile={m.poster_path}
                 isPerson={false}
                 isHorizontal={false}
-                id={m.id}
-                type="movie"
-                lang={resource.value.lang}
               />
+            </Link>
+              
             </>
           ))}
       </MediaGrid>

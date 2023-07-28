@@ -1,6 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 
-import { routeLoader$, type DocumentHead } from "@builder.io/qwik-city";
+import { routeLoader$, type DocumentHead, Link } from "@builder.io/qwik-city";
 import { Timestamp } from "firebase/firestore";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
@@ -8,6 +8,7 @@ import {
   getFirebaseMovies,
   getTrendingMovieWithBackdrops,
 } from "~/services/tmdb";
+import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
@@ -70,18 +71,17 @@ export default component$(() => {
         >
           {resource.value.torMovies.map((m) => (
             <>
-              <MediaCard
-                title={m.original_title!}
-                width={500}
-                rating={m.vote_average!}
-                year={parseInt(m.release_date!.substring(0, 4), 10)}
-                picfile={m.backdrop_path}
-                isPerson={false}
-                isHorizontal={true}
-                id={m.id}
-                type="movie"
-                lang={resource.value.lang}
-              />
+              <Link href={paths.media("movie", m.id, resource.value.lang)}>
+                <MediaCard
+                  title={m.original_title!}
+                  width={500}
+                  rating={m.vote_average!}
+                  year={parseInt(m.release_date!.substring(0, 4), 10)}
+                  picfile={m.backdrop_path}
+                  isPerson={false}
+                  isHorizontal={true}
+                />
+              </Link>
             </>
           ))}
         </MediaCarousel>
@@ -93,18 +93,17 @@ export default component$(() => {
         >
           {resource.value.movies.results!.map((m) => (
             <>
-              <MediaCard
-                title={m.title!}
-                width={500}
-                rating={m.vote_average!}
-                year={parseInt(m.release_date!.substring(0, 4), 10)}
-                picfile={m.backdrop_path!}
-                isPerson={false}
-                isHorizontal={true}
-                id={m.id}
-                type="movie"
-                lang={resource.value.lang}
-              />
+              <Link href={paths.media("movie", m.id, resource.value.lang)}>
+                <MediaCard
+                  title={m.title!}
+                  width={500}
+                  rating={m.vote_average!}
+                  year={parseInt(m.release_date!.substring(0, 4), 10)}
+                  picfile={m.backdrop_path!}
+                  isPerson={false}
+                  isHorizontal={true}
+                />
+              </Link>
             </>
           ))}
         </MediaCarousel>
@@ -116,18 +115,17 @@ export default component$(() => {
         >
           {resource.value.hdrMovies.map((m) => (
             <>
-              <MediaCard
-                title={m.title!}
-                width={500}
-                rating={m.vote_average!}
-                year={parseInt(m.release_date!.substring(0, 4), 10)}
-                picfile={m.backdrop_path!}
-                isPerson={false}
-                isHorizontal={true}
-                id={m.id}
-                type="movie"
-                lang={resource.value.lang}
-              />
+              <Link href={paths.media("movie", m.id, resource.value.lang)}>
+                <MediaCard
+                  title={m.title!}
+                  width={500}
+                  rating={m.vote_average!}
+                  year={parseInt(m.release_date!.substring(0, 4), 10)}
+                  picfile={m.backdrop_path!}
+                  isPerson={false}
+                  isHorizontal={true}
+                />
+              </Link>
             </>
           ))}
         </MediaCarousel>
@@ -139,18 +137,17 @@ export default component$(() => {
         >
           {resource.value.dolbyMovies.map((m) => (
             <>
-              <MediaCard
-                title={m.title!}
-                width={500}
-                rating={m.vote_average!}
-                year={parseInt(m.release_date!.substring(0, 4), 10)}
-                picfile={m.backdrop_path!}
-                isPerson={false}
-                isHorizontal={true}
-                id={m.id}
-                type="movie"
-                lang={resource.value.lang}
-              />
+              <Link href={paths.media("movie", m.id, resource.value.lang)}>
+                <MediaCard
+                  title={m.title!}
+                  width={500}
+                  rating={m.vote_average!}
+                  year={parseInt(m.release_date!.substring(0, 4), 10)}
+                  picfile={m.backdrop_path!}
+                  isPerson={false}
+                  isHorizontal={true}
+                />
+              </Link>
             </>
           ))}
         </MediaCarousel>

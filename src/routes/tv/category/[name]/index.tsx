@@ -6,13 +6,13 @@ import {
   useVisibleTask$,
 } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
-import { routeLoader$, server$ } from "@builder.io/qwik-city";
+import { Link, routeLoader$, server$ } from "@builder.io/qwik-city";
 import { ButtonPrimary } from "~/components/button-primary";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import { getTrendingTv, getTvShows } from "~/services/tmdb";
-import type { TvMediaDetails } from "~/services/types";
-import { categoryToTitle } from "~/utils/paths";
+import type { Collection, TvMedia, TvMediaDetails } from "~/services/types";
+import { categoryToTitle, paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
@@ -88,7 +88,7 @@ export default component$(() => {
       console.log(res);
       moviesSig.push(...res);
     } else {
-      moviesSig.push(...(movies as TvMediaDetails[]));
+      moviesSig.push(...movies);
     }
 
     console.log(moviesSig.length);
@@ -101,18 +101,17 @@ export default component$(() => {
         {moviesSig.length > 0 &&
           moviesSig.map((m) => (
             <>
-              <MediaCard
-                title={m.name!}
-                width={300}
-                rating={m.vote_average!}
-                year={parseInt(m.first_air_date!.substring(0, 4), 10)}
-                picfile={m.poster_path}
-                isPerson={false}
-                isHorizontal={false}
-                id={m.id}
-                type="tv"
-                lang={resource.value!.lang}
-              />
+              <Link href={paths.media("tv", m.id, resource.value!.lang)}>
+                <MediaCard
+                  title={m.name!}
+                  width={300}
+                  rating={m.vote_average!}
+                  year={parseInt(m.first_air_date!.substring(0, 4), 10)}
+                  picfile={m.poster_path}
+                  isPerson={false}
+                  isHorizontal={false}
+                />
+              </Link>
             </>
           ))}
       </MediaGrid>

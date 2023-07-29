@@ -53,7 +53,7 @@ export default component$(() => {
             <>
               <a href={paths.media("movie", m.id, resource.value.lang)}>
                 <MediaCard
-                  title={m.original_title!}
+                  title={m.title!}
                   width={500}
                   rating={m.vote_average}
                   year={

@@ -35,7 +35,7 @@ export const Imdb = component$(({ id }: { id: string }) => {
       <Resource
         value={imdbResource}
         onPending={() => <DotPulseLoader />}
-        onRejected={() => <div>Failed to load</div>}
+        onRejected={() => <div></div>}
         onResolved={(imdb) => (
           <>
             {imdb && (

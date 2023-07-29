@@ -24,22 +24,24 @@
     "@builder.io/qwik": "^1.2.6",
     "@builder.io/qwik-city": "^1.2.6",
     "@types/eslint": "8.40.2",
-    "@types/node": "^20.4.0",
+    "@types/node": "^20.4.5",
     "@typescript-eslint/eslint-plugin": "5.61.0",
     "@typescript-eslint/parser": "5.61.0",
     "autoprefixer": "^10.4.14",
     "eslint": "8.44.0",
     "eslint-plugin-qwik": "^1.2.6",
-    "postcss": "^8.4.23",
+    "postcss": "^8.4.27",
     "prettier": "2.8.8",
     "sass": "^1.64.1",
-    "tailwindcss": "^3.3.1",
+    "tailwindcss": "^3.3.3",
     "typescript": "5.1.6",
     "undici": "5.22.1",
     "vite": "4.4.0",
     "vite-tsconfig-paths": "4.2.0"
   },
   "dependencies": {
-    "firebase": "10.1.0"
+    "@modular-forms/qwik": "^0.19.1",
+    "firebase": "10.1.0",
+    "flowbite": "^1.8.0"
   }
 }

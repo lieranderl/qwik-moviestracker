@@ -1,3 +1,4 @@
+/* eslint-disable qwik/valid-lexical-scope */
 import {
   component$,
   $,

@@ -8,6 +8,7 @@ import {
   startAfter,
 } from "firebase/firestore";
 import { collection, getDocs } from "firebase/firestore";
+import { MovieMedia } from "./types";
 
 const firebase_config = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG);
 const firebase_app = initializeApp(firebase_config);
@@ -40,6 +41,27 @@ export const getMoviesIds = async ({
   });
   console.log(moviesIds.length);
   return moviesIds;
+};
+
+export const getMoviesFirebase = async ({
+  page,
+  dbName,
+  startTime,
+}: getMoviesIdsType) => {
+  const lastmoviesRef = collection(db, dbName);
+  const moviesQuery = query(
+    lastmoviesRef,
+    orderBy("LastTimeFound", "desc"),
+    limit(page),
+    startAfter(Timestamp.fromMillis(startTime))
+  );
+  const moviesSnapshot = await getDocs(moviesQuery);
+  const movies: MovieMedia[] = [];
+  moviesSnapshot.forEach((doc) => {
+    movies.push(doc.data() as MovieMedia);
+  });
+  console.log(movies.length);
+  return movies as MovieMedia[];
 };
 
 // const lastmoviesRef = collection(db, "latesttorrentsmovies")

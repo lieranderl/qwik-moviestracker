@@ -63,3 +63,15 @@ export function formatCrew(crew: PersonMedia[]) {
     if (mycrew.length == 0) { return [] }
     return mycrew
   }
+
+
+  export function showYearOld(birth: string): string {
+    const bdate = new Date(birth);
+    return (new Date().getFullYear() - bdate.getFullYear()).toString();
+  }
+
+  export function showDeathYear(birth: string, death: string): string {
+    const bdate = new Date(birth);
+    const ddate = new Date(death);
+    return (ddate.getFullYear() - bdate.getFullYear()).toString();
+  }

@@ -6,9 +6,8 @@ import {
   formatDate,
   formatLanguage,
   formatCurrency,
-  formatCrew,
 } from "~/utils/fomat";
-import { langMinutes, langBudget, langRevenue } from "~/utils/languages";
+import { langBudget, langRevenue } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 import { ButtonPrimary } from "./button-primary";
 import { Imdb } from "./imdb";
@@ -67,8 +66,10 @@ export const TvDetails = component$(
           </div>
         </section>
 
-        <section class="my-4">
-          <ButtonPrimary text="Trailers" />
+        <section class="my-4 flex">
+          <div class="mr-2">
+            <ButtonPrimary text="Trailers" />
+          </div>
           <ButtonPrimary text="Torrents" />
         </section>
 
@@ -202,7 +203,7 @@ export const TvDetails = component$(
         </section>
 
         {tv.created_by.length > 0 && (
-          <MediaCarousel title="Crew" type="person" lang={lang}>
+          <MediaCarousel title="Created by" type="person" lang={lang}>
             {tv.created_by.slice(0, 10).map((c) => (
               <>
                 <a href={paths.media("person", c.id, lang)}>
@@ -247,7 +248,7 @@ export const TvDetails = component$(
               <>
                 <a href={paths.media("tv", m.id, lang)}>
                   <MediaCard
-                    title={m.original_name!}
+                    title={m.name!}
                     width={500}
                     rating={m.vote_average!}
                     year={
@@ -275,7 +276,7 @@ export const TvDetails = component$(
               <>
                 <a href={paths.media("tv", m.id, lang)}>
                   <MediaCard
-                    title={m.original_name!}
+                    title={m.name!}
                     width={500}
                     rating={m.vote_average!}
                     year={

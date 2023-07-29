@@ -29,7 +29,6 @@ interface MovieDetailsProps {
 
 export const MovieDetails = component$(
   ({ movie, recMovies, simMovies, colMovies, lang }: MovieDetailsProps) => {
-    
     return (
       <div class="pt-[20vh] lg:mx-20 xl:mx-40 font-normal">
         <section class="my-4">
@@ -41,7 +40,9 @@ export const MovieDetails = component$(
               </span>
             )}
           </h2>
-          {movie.original_title && <div class="text-xl">{movie.original_title}</div>}
+          {movie.original_title && (
+            <div class="text-xl">{movie.original_title}</div>
+          )}
         </section>
 
         <section class="my-4 text-lg">
@@ -64,9 +65,7 @@ export const MovieDetails = component$(
                 <div class="font-bold">
                   {formatRating(movie.vote_average!)}{" "}
                   {movie.vote_count && movie.vote_count > 0 && (
-                    <span class="text-sm italic">
-                      ({movie.vote_count})
-                    </span>
+                    <span class="text-sm italic">({movie.vote_count})</span>
                   )}
                 </div>
               </div>
@@ -75,8 +74,10 @@ export const MovieDetails = component$(
           </div>
         </section>
 
-        <section class="my-4">
-          <ButtonPrimary text="Trailers" />
+        <section class="my-4 flex">
+          <div class="mr-2">
+            <ButtonPrimary text="Trailers" />
+          </div>
           <ButtonPrimary text="Torrents" />
         </section>
 
@@ -203,7 +204,7 @@ export const MovieDetails = component$(
               <>
                 <a href={paths.media("movie", m.id, lang)}>
                   <MediaCard
-                    title={m.original_title!}
+                    title={m.title!}
                     width={500}
                     rating={m.vote_average!}
                     year={
@@ -231,7 +232,7 @@ export const MovieDetails = component$(
               <>
                 <a href={paths.media("movie", m.id, lang)}>
                   <MediaCard
-                    title={m.original_title!}
+                    title={m.title!}
                     width={500}
                     rating={m.vote_average!}
                     year={
@@ -259,7 +260,7 @@ export const MovieDetails = component$(
               <>
                 <a href={paths.media("movie", m.id, lang)}>
                   <MediaCard
-                    title={m.original_title!}
+                    title={m.title!}
                     width={500}
                     rating={m.vote_average!}
                     year={

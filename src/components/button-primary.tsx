@@ -14,7 +14,7 @@ export const ButtonPrimary = component$(
         onClick$={onClick}
         type="button"
         disabled={isLoading}
-        class="text-teal-50 bg-teal-600 hover:bg-teal-700 focus:ring-2 focus:ring-teal-500 font-medium rounded-lg text-md px-5 py-2.5 mr-2 mb-2 dark:bg-teal-700 dark:hover:bg-teal-800 focus:outline-none dark:focus:ring-teal-600"
+        class="text-teal-50 bg-teal-600 hover:bg-teal-700 focus:ring-2 focus:ring-teal-500 font-medium rounded-lg text-md px-5 py-2.5 dark:bg-teal-700 dark:hover:bg-teal-800 focus:outline-none dark:focus:ring-teal-600"
       >
         {isLoading && (
           <>

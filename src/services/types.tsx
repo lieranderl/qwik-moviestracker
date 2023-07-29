@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase/firestore";
 
 export type TvMedia = {
     backdrop_path?: string | null;
@@ -24,6 +25,8 @@ export type TvMedia = {
     networks: Network[];
     number_of_seasons: number;
     number_of_episodes: number;
+    character: string;
+    job: string;
   };
 
   export type Network = {
@@ -82,7 +85,32 @@ export type TvMedia = {
     vote_average?: number;
     vote_count?: number;
     lastTimeFound?: number;
+    LastTimeFound?: number | Timestamp;
+    Torrents: Torrent[];
+    character: string;
+    job: string;
+    Year: string;
   };
+
+  export type Torrent = {
+    Name: string;
+    DetailsUrl: string;
+    OriginalName: string;
+    RussianName: string;
+    Year: string;
+    Size: number;
+    Magnet: string;
+    Date: string;
+    K4: boolean;
+    FHD: boolean;
+    HDR: boolean;
+    HDR10: boolean;
+    HDR10plus: boolean;
+    DV: boolean;
+    Seeds: number;
+    Leeches: number;
+    Hash: string;
+  }
   
   export type ProductionMedia = TvMedia | MovieMedia;
   
@@ -193,4 +221,6 @@ export type TvMedia = {
     total_pages?: number;
     total_results?: number;
     parts: T[];
+    cast: T[];
+    crew: T[];
   };

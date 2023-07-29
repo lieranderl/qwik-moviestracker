@@ -7,12 +7,14 @@ import type {
   MovieMediaDetails,
   PersonMediaDetails,
   ProductionMedia,
+  Torrent,
   TvMedia,
   TvMediaDetails,
 } from "./types";
 import type { getMoviesIdsType } from "./firestore";
-import { getMoviesIds } from "./firestore";
+import { getMoviesFirebase } from "./firestore";
 import { formatYear } from "~/utils/fomat";
+import type { Timestamp } from "firebase/firestore";
 
 const baseURL = "https://api.themoviedb.org/3";
 
@@ -26,13 +28,11 @@ const fetchTMDB = async <T = unknown,>(
   });
   const url = `${baseURL}/${path}?${params}`;
   const response = await fetch(url);
-
   if (!response.ok) {
     // eslint-disable-next-line no-console
     console.error(url);
     throw new Error(response.statusText);
   }
-
   return response.json() as T;
 };
 
@@ -150,28 +150,40 @@ export const getFirebaseMovies = async ({
     dbName: db_name,
     startTime: startTime,
   };
-  const mIds = await getMoviesIds(getMoviesIdsInput);
-  const movies: MovieMediaDetails[] = [];
+  let movies = await getMoviesFirebase(getMoviesIdsInput);
+  if (movies.length == 0) return movies;
+  movies = await Promise.all(
+    movies.map(async (item) => {
+      if (need_backdrop) {
+        const backdrop = await getMediaBackdrop({
+          id: item.id,
+          media_type: "movie",
+        });
+        item.backdrop_path = backdrop;
+      }
 
-  for (const mId of mIds) {
-    const m = await getMovie({
-      id: mId.id,
-      language: language,
-      need_backdrop: need_backdrop,
-    });
-    m.lastTimeFound = mId.lastTimeFound;
-    movies.push(m);
-  }
+      if (language == "en-US") {
+        item.title = item.original_title;
+      }
+      item.Torrents = [];
+      item.lastTimeFound = (item.LastTimeFound! as Timestamp).toMillis();
+      item.LastTimeFound = (item.LastTimeFound! as Timestamp).toMillis();
+
+      return item;
+    })
+  );
+
+  // result.results = await Promise.all(newMovieMedia);
   if (sortDirection === "asc") {
-    const newtorMovies = movies.sort(
-      (a, b) => a.lastTimeFound! - b.lastTimeFound!
+    movies = movies.sort(
+      (a, b) => (a.lastTimeFound! as number) - (b.lastTimeFound! as number)
     );
-    return newtorMovies;
+    return movies;
   } else {
-    const newtorMovies = movies.sort(
-      (a, b) => b.lastTimeFound! - a.lastTimeFound!
+    movies = movies.sort(
+      (a, b) => (b.lastTimeFound! as number) - (a.lastTimeFound! as number)
     );
-    return newtorMovies;
+    return movies;
   }
 };
 
@@ -349,14 +361,10 @@ export const getTvShows = async ({ query, page, language }: GetTvShows) => {
   return { ...result, results };
 };
 
-
 export const getSimilarTv = async ({ id, lang }: GetSimilarType) => {
-  const result = await fetchTMDB<Collection<TvMedia>>(
-    `tv/${id}/similar`,
-    {
-      language: lang,
-    }
-  );
+  const result = await fetchTMDB<Collection<TvMedia>>(`tv/${id}/similar`, {
+    language: lang,
+  });
 
   if (!result.results) return result;
   const newMovieMedia = result.results.map(async (item) => {
@@ -409,7 +417,6 @@ export const getRecommendationTv = async ({ id, lang }: GetSimilarType) => {
   return result;
 };
 
-
 type GetPerson = {
   id: number;
   language: string;
@@ -422,6 +429,66 @@ export const getPerson = async ({ id, language }: GetPerson) => {
     language: language,
   });
   return { ...result, media_type: "person" as const };
+};
+
+export const getPersonMovies = async ({ id, lang }: GetSimilarType) => {
+  const result = await fetchTMDB<Collection<MovieMedia>>(
+    `person/${id}/movie_credits`,
+    {
+      append_to_response: "credits",
+      language: lang,
+    }
+  );
+  if (result.cast.length == 0) return result;
+  const newMovieMedia = result.cast.map(async (item) => {
+    const backdrop = await getMediaBackdrop({
+      id: item.id,
+      media_type: "movie",
+    });
+    if (backdrop === "") return item;
+    item.backdrop_path = backdrop;
+    return item;
+  });
+  try {
+    result.cast = await Promise.all(newMovieMedia);
+    result.cast = result.cast.sort(
+      (a, b) => formatYear(b.release_date!) - formatYear(a.release_date!)
+    );
+  } catch (error) {
+    console.log("skip movie backdrop");
+  }
+
+  return result;
+};
+
+export const getPersonTv = async ({ id, lang }: GetSimilarType) => {
+  const result = await fetchTMDB<Collection<TvMedia>>(
+    `person/${id}/tv_credits`,
+    {
+      language: lang,
+      append_to_response: "credits",
+    }
+  );
+  if (result.cast.length == 0) return result;
+  const newMovieMedia = result.cast.map(async (item) => {
+    const backdrop = await getMediaBackdrop({
+      id: item.id,
+      media_type: "tv",
+    });
+    if (backdrop === "") return item;
+    item.backdrop_path = backdrop;
+    return item;
+  });
+  try {
+    result.cast = await Promise.all(newMovieMedia);
+    result.cast = result.cast.sort(
+      (a, b) => formatYear(b.first_air_date!) - formatYear(a.first_air_date!)
+    );
+  } catch (error) {
+    console.log("skip movie backdrop");
+  }
+
+  return result;
 };
 
 type Search = {
@@ -521,4 +588,15 @@ const fetchAPI = async <T = unknown,>(
 
 export const getImdbRating = (imdb_id: string) => {
   return fetchAPI<ImdbRating>(`getimdb`, { imdb_id });
+};
+
+export type getTorrentsType = {
+  name: string;
+  year: string;
+  isMovie: boolean;
+};
+
+export const getTorrents = ({name, year, isMovie}: getTorrentsType) => {
+
+  return fetchAPI<Torrent[]>(`gettorrents`, {MovieName: name, Year: year, isMovie: String(isMovie)});
 };

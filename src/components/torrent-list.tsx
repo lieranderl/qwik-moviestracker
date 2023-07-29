@@ -8,7 +8,9 @@ import type { SearchTorrForm } from "~/routes/mock";
 import { searchTorrSchema, useSearchTorrFormLoader } from "~/routes/mock";
 import type { Torrent } from "~/services/types";
 import { DotPulseLoader } from "./dot-pulse-loader/dot-pulse-loader";
-import { getTorrents, getTorrentsType } from "~/services/tmdb";
+import type { getTorrentsType } from "~/services/tmdb";
+import { getTorrents } from "~/services/tmdb";
+import { TorrentBlock } from "./torrent";
 
 // export const useTorrSearchAction = formAction$<SearchTorrForm>((values) => {
 //     // Runs on server
@@ -93,10 +95,6 @@ export const TorrentList = component$(
                 </option>
               ))}
             </select>
-
-            {/* <button class="fill-teal-950 dark:fill-teal-50 hover:bg-teal-100 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg text-sm p-2.5">
-          <SearchSVG />
-        </button> */}
           </div>
 
           <Form onSubmit$={handleSubmit} class="flex items-center !my-4">
@@ -155,9 +153,7 @@ export const TorrentList = component$(
           {sortedTorrents.value !== null &&
             sortedTorrents.value.map((torrent) => (
               <>
-                <div>
-                  {torrent.Name} {torrent.Size} {torrent.Date}
-                </div>
+                <TorrentBlock torrent={torrent} />
               </>
             ))}
         </section>

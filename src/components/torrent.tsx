@@ -10,7 +10,7 @@ interface TorrentListProps {
 export const TorrentBlock = component$(({ torrent }: TorrentListProps) => {
   return (
     <>
-      <div class="rounded my-2 p-2 border border-2 border-teal-700 dark:border-teal-100">
+      <div class="rounded my-2 p-2 border border-1 border-teal-700 dark:border-teal-100">
         <div class="flex flex-wrap items-center justify-between">
           <div class="text-start mb-2 font-bold">
             {torrent.K4 && (

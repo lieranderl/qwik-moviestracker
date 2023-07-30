@@ -33,8 +33,8 @@ export const TorrentList = component$(
       { value: "Seeds", text: "Сидам" },
       { value: "Leeches", text: "Личам" },
     ];
-
-    const sortedTorrents = useStore({ value: torrents as Torrent[] | null });
+    const initTorrents = useStore({ value: torrents as Torrent[] | null });
+    const sortedTorrents = useStore({ value: null as Torrent[] | null });
     const selectedSort = useSignal("Date");
     const filterChecked = useSignal(false);
     const k4 = useSignal(false);
@@ -42,6 +42,43 @@ export const TorrentList = component$(
     const hdr10 = useSignal(false);
     const hdr10plus = useSignal(false);
     const dv = useSignal(false);
+
+    const filterTorrents = $(() => {
+      if (initTorrents.value) {
+        sortedTorrents.value = initTorrents.value;
+        if (k4.value) {
+          sortedTorrents.value = initTorrents.value.filter(
+            (torrents) => torrents.K4 == true
+          );
+        }
+        if (hdr.value) {
+          sortedTorrents.value = initTorrents.value.filter(
+            (torrents) => torrents.HDR == true
+          );
+        }
+        if (hdr10.value) {
+          sortedTorrents.value = initTorrents.value.filter(
+            (torrents) => torrents.HDR10 == true
+          );
+        }
+
+        if (hdr10plus.value) {
+          sortedTorrents.value = initTorrents.value.filter(
+            (torrents) => torrents.HDR10plus == true
+          );
+        }
+
+        if (dv.value) {
+          sortedTorrents.value = initTorrents.value.filter(
+            (torrents) => torrents.DV == true
+          );
+        }
+
+        sortedTorrents.value = sortedTorrents.value.sort((a, b) =>
+          a[selectedSort.value] > b[selectedSort.value] ? -1 : 1
+        );
+      }
+    });
 
     const [searchTorrForm, { Form, Field }] = useForm<SearchTorrForm>({
       loader: { value: { name: title, year: year } },
@@ -62,9 +99,7 @@ export const TorrentList = component$(
           isMovie: isMovie,
         });
         if (torrents.length > 0) {
-          sortedTorrents.value = torrents.sort((a, b) =>
-            a[selectedSort.value] > b[selectedSort.value] ? -1 : 1
-          );
+          initTorrents.value = torrents;
           return;
         }
         sortedTorrents.value = [];
@@ -73,41 +108,13 @@ export const TorrentList = component$(
 
     useVisibleTask$((ctx) => {
       ctx.track(() => torrents);
+      initTorrents.value = torrents;
+    });
+
+    useVisibleTask$((ctx) => {
+      ctx.track(() => initTorrents.value);
       ctx.track(() => filterChecked.value);
-      if (torrents) {
-        sortedTorrents.value = torrents;
-        if (k4.value) {
-          sortedTorrents.value = torrents.filter(
-            (torrents) => torrents.K4 == true
-          );
-        }
-        if (hdr.value) {
-          sortedTorrents.value = torrents.filter(
-            (torrents) => torrents.HDR == true
-          );
-        }
-        if (hdr10.value) {
-          sortedTorrents.value = sortedTorrents.value.filter(
-            (torrents) => torrents.HDR10 == true
-          );
-        }
-
-        if (hdr10plus.value) {
-          sortedTorrents.value = sortedTorrents.value.filter(
-            (torrents) => torrents.HDR10plus == true
-          );
-        }
-
-        if (dv.value) {
-          sortedTorrents.value = sortedTorrents.value.filter(
-            (torrents) => torrents.DV == true
-          );
-        }
-
-        sortedTorrents.value = sortedTorrents.value.sort((a, b) =>
-          a[selectedSort.value] > b[selectedSort.value] ? -1 : 1
-        );
-      }
+      filterTorrents();
     });
 
     return (
@@ -233,13 +240,14 @@ export const TorrentList = component$(
           </div>
         </div>
 
-        {sortedTorrents.value === null && <DotPulseLoader />}
-        {sortedTorrents.value !== null && sortedTorrents.value.length === 0 && (
-          <div>Ничего не найдено</div>
-        )}
-        {sortedTorrents.value !== null && sortedTorrents.value.length > 0 && (
-          <div>Найдено {sortedTorrents.value.length} торрентов</div>
-        )}
+        <section class="my-4">
+          {sortedTorrents.value === null && <DotPulseLoader />}
+          {sortedTorrents.value !== null &&
+            sortedTorrents.value.length === 0 && <div>Ничего не найдено</div>}
+          {sortedTorrents.value !== null && sortedTorrents.value.length > 0 && (
+            <div>Найдено {sortedTorrents.value.length} торрентов</div>
+          )}
+        </section>
 
         <section class="my-4">
           {sortedTorrents.value !== null &&

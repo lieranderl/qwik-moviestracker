@@ -8,7 +8,7 @@ interface ToolbarProps {
 
 export const Toolbar = component$(({ lang }: ToolbarProps) => {
   return (
-    <nav class="block bg-teal-50 bg-opacity-50 dark:bg-teal-950 dark:bg-opacity-50 backdrop-blur-sm fixed z-[1000]">
+    <nav class="block bg-teal-50 bg-opacity-50 dark:bg-teal-950 dark:bg-opacity-50 backdrop-blur-sm fixed z-10">
       <div class="w-screen flex flex-wrap items-center justify-between mx-auto p-4 bg-opacity-100 ">
         <a href={lang ? `/?lang=${lang}` : `/`} class="flex items-center">
           <svg

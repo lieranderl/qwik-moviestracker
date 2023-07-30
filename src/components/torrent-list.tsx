@@ -1,29 +1,32 @@
-import { component$, $, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import {
+  component$,
+  $,
+  useSignal,
+  useVisibleTask$,
+  useStore,
+} from "@builder.io/qwik";
 import { SearchSVG } from "~/utils/icons/searchSVG";
 import type { SubmitHandler } from "@modular-forms/qwik";
 import { useForm, zodForm$ } from "@modular-forms/qwik";
 
 import { server$ } from "@builder.io/qwik-city";
-import type { SearchTorrForm } from "~/routes/mock";
-import { searchTorrSchema, useSearchTorrFormLoader } from "~/routes/mock";
 import type { Torrent } from "~/services/types";
 import { DotPulseLoader } from "./dot-pulse-loader/dot-pulse-loader";
 import type { getTorrentsType } from "~/services/tmdb";
 import { getTorrents } from "~/services/tmdb";
 import { TorrentBlock } from "./torrent";
-
-// export const useTorrSearchAction = formAction$<SearchTorrForm>((values) => {
-//     // Runs on server
-//     console.log("SERVER:", values);
-//   }, zodForm$(searchTorrSchema));
+import type { SearchTorrForm} from "./torrents-list-modal";
+import { searchTorrSchema } from "./torrents-list-modal";
 
 interface TorrentListProps {
   torrents: Torrent[] | null;
+  title: string;
+  year: number;
   isMovie: boolean;
 }
 
 export const TorrentList = component$(
-  ({ torrents, isMovie }: TorrentListProps) => {
+  ({ torrents, isMovie, title, year }: TorrentListProps) => {
     const sortAttrib = [
       { value: "Date", text: "Дате" },
       { value: "Size", text: "Размеру" },
@@ -31,10 +34,11 @@ export const TorrentList = component$(
       { value: "Leeches", text: "Личам" },
     ];
 
-    const sortedTorrents = useSignal(torrents);
+    const sortedTorrents = useStore({ value: torrents as Torrent[] | null });
+    const selectedSort = useSignal("Date");
 
     const [searchTorrForm, { Form, Field }] = useForm<SearchTorrForm>({
-      loader: useSearchTorrFormLoader(),
+      loader: { value: { name: title, year: year } },
       // action: useTorrSearchAction(),
       validate: zodForm$(searchTorrSchema),
     });
@@ -48,12 +52,12 @@ export const TorrentList = component$(
           }
         )({
           name: values.name,
-          year: values.year.toString(),
+          year: values.year,
           isMovie: isMovie,
         });
         if (torrents.length > 0) {
           sortedTorrents.value = torrents.sort((a, b) =>
-            a.Date < b.Date ? -1 : 1
+            a[selectedSort.value] < b[selectedSort.value] ? -1 : 1
           );
           return;
         }
@@ -63,10 +67,9 @@ export const TorrentList = component$(
 
     useVisibleTask$((ctx) => {
       ctx.track(() => torrents);
-      sortedTorrents.value = torrents;
       if (torrents) {
         sortedTorrents.value = torrents.sort((a, b) =>
-          a.Date < b.Date ? -1 : 1
+          a[selectedSort.value] < b[selectedSort.value] ? -1 : 1
         );
       }
       console.log(sortedTorrents.value);
@@ -80,12 +83,14 @@ export const TorrentList = component$(
             <select
               onChange$={(e) => {
                 console.log(e.target.value);
+                console.log(sortedTorrents.value);
                 if (sortedTorrents.value) {
                   sortedTorrents.value = sortedTorrents.value.sort((a, b) =>
-                    a[e.target.value] > b[e.target.value] ? -1 : 1
+                    a[selectedSort.value] < b[selectedSort.value] ? -1 : 1
                   );
                 }
               }}
+              bind:value={selectedSort}
               id="attrib"
               class="mr-2 bg-teal-50 border border-teal-300 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500"
             >

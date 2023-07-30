@@ -87,9 +87,7 @@ export default component$(() => {
       const res = movies.results as TvMediaDetails[];
       console.log(res);
       moviesSig.push(...res);
-    } else {
-      moviesSig.push(...movies);
-    }
+    } 
 
     console.log(moviesSig.length);
     isloadingMovies.value = false;

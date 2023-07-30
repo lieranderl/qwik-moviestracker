@@ -85,28 +85,7 @@ export default component$(() => {
             </>
           ))}
         </MediaCarousel>
-        <MediaCarousel
-          title="Trending Movies"
-          type="movie"
-          category="trending"
-          lang={resource.value.lang}
-        >
-          {resource.value.movies.results!.map((m) => (
-            <>
-              <a href={paths.media("movie", m.id, resource.value.lang)}>
-                <MediaCard
-                  title={m.title!}
-                  width={500}
-                  rating={m.vote_average!}
-                  year={parseInt(m.release_date!.substring(0, 4), 10)}
-                  picfile={m.backdrop_path!}
-                  isPerson={false}
-                  isHorizontal={true}
-                />
-              </a>
-            </>
-          ))}
-        </MediaCarousel>
+
         <MediaCarousel
           title="Latest HDR10 Movies"
           type="movie"
@@ -129,6 +108,7 @@ export default component$(() => {
             </>
           ))}
         </MediaCarousel>
+
         <MediaCarousel
           title="Latest Dolby Vision Movies"
           type="movie"
@@ -136,6 +116,29 @@ export default component$(() => {
           lang={resource.value.lang}
         >
           {resource.value.dolbyMovies.map((m) => (
+            <>
+              <a href={paths.media("movie", m.id, resource.value.lang)}>
+                <MediaCard
+                  title={m.title!}
+                  width={500}
+                  rating={m.vote_average!}
+                  year={parseInt(m.release_date!.substring(0, 4), 10)}
+                  picfile={m.backdrop_path!}
+                  isPerson={false}
+                  isHorizontal={true}
+                />
+              </a>
+            </>
+          ))}
+        </MediaCarousel>
+        
+        <MediaCarousel
+          title="Trending Movies"
+          type="movie"
+          category="trending"
+          lang={resource.value.lang}
+        >
+          {resource.value.movies.results!.map((m) => (
             <>
               <a href={paths.media("movie", m.id, resource.value.lang)}>
                 <MediaCard

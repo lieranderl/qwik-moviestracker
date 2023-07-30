@@ -18,17 +18,20 @@ import { MediaCard } from "./media-card";
 import { paths } from "~/utils/paths";
 import { Imdb } from "./imdb";
 import { langBudget, langRevenue, langMinutes } from "~/utils/languages";
+import { TorrentsModal } from "./torrents-list-modal";
 
 interface MovieDetailsProps {
   movie: MovieMediaDetails;
   recMovies: Collection<MovieMedia>;
-  simMovies: Collection<MovieMedia>;
+  // simMovies: Collection<MovieMedia>;
   colMovies?: Collection<MovieMedia>;
   lang: string;
 }
 
 export const MovieDetails = component$(
-  ({ movie, recMovies, simMovies, colMovies, lang }: MovieDetailsProps) => {
+  ({ movie, recMovies, 
+    // simMovies, 
+    colMovies, lang }: MovieDetailsProps) => {
     return (
       <div class="pt-[20vh] lg:mx-20 xl:mx-40 font-normal">
         <section class="my-4">
@@ -78,7 +81,11 @@ export const MovieDetails = component$(
           <div class="mr-2">
             <ButtonPrimary text="Trailers" />
           </div>
-          <ButtonPrimary text="Torrents" />
+          <TorrentsModal
+            title={movie.title!}
+            year={formatYear(movie.release_date!)}
+            isMovie={true}
+          />
         </section>
 
         <section class="text-md">
@@ -249,7 +256,7 @@ export const MovieDetails = component$(
           </MediaCarousel>
         )}
 
-        {simMovies.results && simMovies.results.length > 0 && (
+        {/* {simMovies.results && simMovies.results.length > 0 && (
           <MediaCarousel
             title="Similar Movies"
             type="person"
@@ -275,7 +282,7 @@ export const MovieDetails = component$(
               </>
             ))}
           </MediaCarousel>
-        )}
+        )} */}
       </div>
     );
   }

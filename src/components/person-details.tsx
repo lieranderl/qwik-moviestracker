@@ -134,9 +134,9 @@ export const PersonDetails = component$(
                         (m.release_date && formatYear(m.release_date)) ||
                         undefined
                       }
-                      picfile={m.backdrop_path}
+                      picfile={m.poster_path}
                       isPerson={false}
-                      isHorizontal={true}
+                      isHorizontal={false}
                       charName={m.character}
                     />
                   </a>
@@ -163,9 +163,9 @@ export const PersonDetails = component$(
                         (m.first_air_date && formatYear(m.first_air_date)) ||
                         undefined
                       }
-                      picfile={m.backdrop_path}
+                      picfile={m.poster_path}
                       isPerson={false}
-                      isHorizontal={true}
+                      isHorizontal={false}
                       charName={m.character}
                     />
                   </a>
@@ -192,9 +192,9 @@ export const PersonDetails = component$(
                         (m.release_date && formatYear(m.release_date)) ||
                         undefined
                       }
-                      picfile={m.backdrop_path}
+                      picfile={m.poster_path}
                       isPerson={false}
-                      isHorizontal={true}
+                      isHorizontal={false}
                       charName={m.job}
                     />
                   </a>
@@ -221,9 +221,9 @@ export const PersonDetails = component$(
                         (m.first_air_date && formatYear(m.first_air_date)) ||
                         undefined
                       }
-                      picfile={m.backdrop_path}
+                      picfile={m.poster_path}
                       isPerson={false}
-                      isHorizontal={true}
+                      isHorizontal={false}
                       charName={m.job}
                     />
                   </a>

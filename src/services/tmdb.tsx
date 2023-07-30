@@ -62,16 +62,22 @@ export const getTrendingMovie = ({ page, language }: GetTrendingMovie) => {
 export const getMediaBackdrop = async ({
   id,
   media_type,
+  langString,
 }: {
   id: number;
   media_type: "movie" | "tv";
+  langString: string;
 }) => {
-  const images = await fetchTMDB<any>(`${media_type}/${id}/images`, {
-    include_image_language: "en",
-  });
-  if (images.backdrops.length == 0) return "";
-  const backdrop = images.backdrops[0];
-  return backdrop.file_path as string;
+  try {
+    const images = await fetchTMDB<any>(`${media_type}/${id}/images`, {
+      include_image_language: langString,
+    });
+    if (images.backdrops.length == 0) return;
+    const backdrop = images.backdrops[0];
+    return backdrop.file_path as string;
+  } catch (error) {
+    console.log("skip backdrop");
+  }
 };
 
 export const getTrendingTvWithBackdrops = async ({
@@ -84,7 +90,11 @@ export const getTrendingTvWithBackdrops = async ({
   });
   if (!result.results) return result;
   const newMovieMedia = result.results.map(async (item) => {
-    const backdrop = await getMediaBackdrop({ id: item.id, media_type: "tv" });
+    const backdrop = await getMediaBackdrop({
+      id: item.id,
+      media_type: "tv",
+      langString: "en",
+    });
     if (backdrop === "") return item;
     item.backdrop_path = backdrop;
     return item;
@@ -114,6 +124,7 @@ export const getTrendingMovieWithBackdrops = async ({
     const backdrop = await getMediaBackdrop({
       id: item.id,
       media_type: "movie",
+      langString: "en",
     });
     if (backdrop === "") return item;
     item.backdrop_path = backdrop;
@@ -158,8 +169,18 @@ export const getFirebaseMovies = async ({
         const backdrop = await getMediaBackdrop({
           id: item.id,
           media_type: "movie",
+          langString: "en",
         });
-        item.backdrop_path = backdrop;
+        if (backdrop) {
+          item.backdrop_path = backdrop;
+        } else {
+          const backdrop = await getMediaBackdrop({
+            id: item.id,
+            media_type: "movie",
+            langString: "",
+          });
+          item.backdrop_path = backdrop;
+        }
       }
 
       if (language == "en-US") {
@@ -207,7 +228,11 @@ GetMovie) => {
     language: language,
   });
   if (need_backdrop) {
-    const backdrop = await getMediaBackdrop({ id: id, media_type: "movie" });
+    const backdrop = await getMediaBackdrop({
+      id: id,
+      media_type: "movie",
+      langString: "en",
+    });
     if (backdrop === "") return { ...result, media_type: "movie" as const };
     result.backdrop_path = backdrop;
   }
@@ -257,6 +282,7 @@ export const getSimilarMovies = async ({ id, lang }: GetSimilarType) => {
     const backdrop = await getMediaBackdrop({
       id: item.id,
       media_type: "movie",
+      langString: "en",
     });
     if (backdrop === "") return item;
     item.backdrop_path = backdrop;
@@ -286,9 +312,18 @@ export const getRecommendationMovies = async ({ id, lang }: GetSimilarType) => {
     const backdrop = await getMediaBackdrop({
       id: item.id,
       media_type: "movie",
+      langString: "en",
     });
-    if (backdrop === "") return item;
-    item.backdrop_path = backdrop;
+    if (backdrop) {
+      item.backdrop_path = backdrop;
+    } else {
+      const backdrop = await getMediaBackdrop({
+        id: item.id,
+        media_type: "movie",
+        langString: "",
+      });
+      item.backdrop_path = backdrop;
+    }
     return item;
   });
   try {
@@ -312,6 +347,7 @@ export const getCollectionMovies = async ({ id, lang }: GetSimilarType) => {
     const backdrop = await getMediaBackdrop({
       id: item.id,
       media_type: "movie",
+      langString: "en",
     });
     if (backdrop === "") return item;
     item.backdrop_path = backdrop;
@@ -371,6 +407,7 @@ export const getSimilarTv = async ({ id, lang }: GetSimilarType) => {
     const backdrop = await getMediaBackdrop({
       id: item.id,
       media_type: "tv",
+      langString: "en",
     });
     if (backdrop === "") return item;
     item.backdrop_path = backdrop;
@@ -400,9 +437,18 @@ export const getRecommendationTv = async ({ id, lang }: GetSimilarType) => {
     const backdrop = await getMediaBackdrop({
       id: item.id,
       media_type: "tv",
+      langString: "en",
     });
-    if (backdrop === "") return item;
-    item.backdrop_path = backdrop;
+    if (backdrop) {
+      item.backdrop_path = backdrop;
+    } else {
+      const backdrop = await getMediaBackdrop({
+        id: item.id,
+        media_type: "tv",
+        langString: "",
+      });
+      item.backdrop_path = backdrop;
+    }
     return item;
   });
   try {
@@ -439,19 +485,12 @@ export const getPersonMovies = async ({ id, lang }: GetSimilarType) => {
       language: lang,
     }
   );
-  if (result.cast.length == 0) return result;
-  const newMovieMedia = result.cast.map(async (item) => {
-    const backdrop = await getMediaBackdrop({
-      id: item.id,
-      media_type: "movie",
-    });
-    if (backdrop === "") return item;
-    item.backdrop_path = backdrop;
-    return item;
-  });
+
   try {
-    result.cast = await Promise.all(newMovieMedia);
     result.cast = result.cast.sort(
+      (a, b) => formatYear(b.release_date!) - formatYear(a.release_date!)
+    );
+    result.crew = result.crew.sort(
       (a, b) => formatYear(b.release_date!) - formatYear(a.release_date!)
     );
   } catch (error) {
@@ -469,19 +508,12 @@ export const getPersonTv = async ({ id, lang }: GetSimilarType) => {
       append_to_response: "credits",
     }
   );
-  if (result.cast.length == 0) return result;
-  const newMovieMedia = result.cast.map(async (item) => {
-    const backdrop = await getMediaBackdrop({
-      id: item.id,
-      media_type: "tv",
-    });
-    if (backdrop === "") return item;
-    item.backdrop_path = backdrop;
-    return item;
-  });
+
   try {
-    result.cast = await Promise.all(newMovieMedia);
     result.cast = result.cast.sort(
+      (a, b) => formatYear(b.first_air_date!) - formatYear(a.first_air_date!)
+    );
+    result.crew = result.crew.sort(
       (a, b) => formatYear(b.first_air_date!) - formatYear(a.first_air_date!)
     );
   } catch (error) {
@@ -592,11 +624,14 @@ export const getImdbRating = (imdb_id: string) => {
 
 export type getTorrentsType = {
   name: string;
-  year: string;
+  year: number;
   isMovie: boolean;
 };
 
-export const getTorrents = ({name, year, isMovie}: getTorrentsType) => {
-
-  return fetchAPI<Torrent[]>(`gettorrents`, {MovieName: name, Year: year, isMovie: String(isMovie)});
+export const getTorrents = ({ name, year, isMovie }: getTorrentsType) => {
+  return fetchAPI<Torrent[]>(`gettorrents`, {
+    MovieName: name,
+    Year: year.toString(),
+    isMovie: String(isMovie),
+  });
 };

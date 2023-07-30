@@ -13,16 +13,19 @@ import { ButtonPrimary } from "./button-primary";
 import { Imdb } from "./imdb";
 import { MediaCard } from "./media-card";
 import { MediaCarousel } from "./media-carousel";
+import { TorrentsModal } from "./torrents-list-modal";
 
 interface TvDetailsProps {
   tv: TvMediaDetails;
   recTv: Collection<TvMedia>;
-  simTv: Collection<TvMedia>;
+  // simTv: Collection<TvMedia>;
   lang: string;
 }
 
 export const TvDetails = component$(
-  ({ tv, recTv, simTv, lang }: TvDetailsProps) => {
+  ({ tv, recTv, 
+    // simTv,
+     lang }: TvDetailsProps) => {
     return (
       <div class="pt-[20vh] lg:mx-20 xl:mx-40 font-normal">
         <section class="my-4">
@@ -70,7 +73,11 @@ export const TvDetails = component$(
           <div class="mr-2">
             <ButtonPrimary text="Trailers" />
           </div>
-          <ButtonPrimary text="Torrents" />
+          <TorrentsModal
+            title={tv.name!}
+            year={formatYear(tv.first_air_date!)}
+            isMovie={false}
+          />
         </section>
 
         <section class="flex my-4 text-md items-center">
@@ -265,7 +272,7 @@ export const TvDetails = component$(
           </MediaCarousel>
         )}
 
-        {simTv.results && simTv.results.length > 0 && (
+        {/* {simTv.results && simTv.results.length > 0 && (
           <MediaCarousel
             title="Similar TV Shows"
             type="person"
@@ -291,7 +298,7 @@ export const TvDetails = component$(
               </>
             ))}
           </MediaCarousel>
-        )}
+        )} */}
       </div>
     );
   }

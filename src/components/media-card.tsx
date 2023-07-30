@@ -26,10 +26,7 @@ export const MediaCard = component$(
       if (isHorizontal) {
         return (width * 9) / 16;
       }
-      if (isPerson) {
-        return (width * 3) / 2;
-      }
-      return (width * 16) / 9;
+      return (width * 3) / 2;
     });
 
     const cardWidthStyle = useComputed$(() => {

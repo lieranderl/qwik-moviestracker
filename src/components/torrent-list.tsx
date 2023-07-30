@@ -15,7 +15,7 @@ import { DotPulseLoader } from "./dot-pulse-loader/dot-pulse-loader";
 import type { getTorrentsType } from "~/services/tmdb";
 import { getTorrents } from "~/services/tmdb";
 import { TorrentBlock } from "./torrent";
-import type { SearchTorrForm} from "./torrents-list-modal";
+import type { SearchTorrForm } from "./torrents-list-modal";
 import { searchTorrSchema } from "./torrents-list-modal";
 
 interface TorrentListProps {

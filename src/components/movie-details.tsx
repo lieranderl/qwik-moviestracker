@@ -179,9 +179,9 @@ export const MovieDetails = component$(
           ))}
         </MediaCarousel>
 
-        {movie.credits && movie.credits.crew && (
+        {movie.credits && movie.credits.crew!.length>0 && (
           <MediaCarousel title="Crew" type="person" lang={lang}>
-            {formatCrew(movie.credits.crew)
+            {formatCrew(movie.credits.crew!)
               .slice(0, 10)
               .map((c) => (
                 <>

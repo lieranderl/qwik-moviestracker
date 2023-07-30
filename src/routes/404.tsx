@@ -16,7 +16,7 @@ export default component$(() => {
           </p>
 
           <a rel="noopener noreferrer" href="/">
-            <ButtonPrimary text="Back to home" />
+            <ButtonPrimary text="Back to home" size="lg" />
           </a>
         </div>
       </div>

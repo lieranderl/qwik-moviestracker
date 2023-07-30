@@ -174,7 +174,7 @@ export const TorrentList = component$(
 
             <button
               type="submit"
-              disabled={searchTorrForm.invalid}
+              disabled={searchTorrForm.invalid || sortedTorrents.value == null}
               class="fill-teal-950 dark:fill-teal-50 hover:bg-teal-100 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg text-sm p-2.5"
             >
               <SearchSVG />

@@ -1,6 +1,7 @@
 import { component$ } from "@builder.io/qwik";
 import type { Torrent } from "~/services/types";
 import { formatRating } from "~/utils/fomat";
+import { ButtonPrimary } from "./button-primary";
 
 interface TorrentListProps {
   torrent: Torrent;
@@ -9,65 +10,64 @@ interface TorrentListProps {
 export const TorrentBlock = component$(({ torrent }: TorrentListProps) => {
   return (
     <>
-      <div class="w-100 my-2 p-2 border border-primary">
-        <div class="d-lg-flex align-items-center">
-          <div class="text-start flex-grow-1">
+      <div class="rounded my-2 p-2 border border-2 border-teal-700 dark:border-teal-100">
+        <div class="flex flex-wrap items-center justify-between">
+          <div class="text-start mb-2 font-bold">
             {torrent.K4 && (
-              <div class="badge rounded-3 bg-primary text-secondary me-2">
+              <span class="bg-teal-100 text-teal-800 text-sm mr-2 px-2.5 py-0.5 rounded dark:bg-teal-900 dark:text-teal-300">
                 4K
-              </div>
+              </span>
             )}
             {torrent.DV && (
-              <div class="badge rounded-3 bg-primary text-secondary me-2">
+              <span class="bg-teal-100 text-teal-800 text-sm mr-2 px-2.5 py-0.5 rounded dark:bg-teal-900 dark:text-teal-300">
                 Dolby Vision
-              </div>
+              </span>
             )}
             {torrent.HDR && !torrent.HDR10 && !torrent.HDR10plus && (
-              <div class="badge rounded-3 bg-primary text-secondary me-2">
+              <span class="bg-teal-100 text-teal-800 text-sm mr-2 px-2.5 py-0.5 rounded dark:bg-teal-900 dark:text-teal-300">
                 HDR
-              </div>
+              </span>
             )}
             {torrent.HDR10 && !torrent.HDR10plus && (
-              <div class="badge rounded-3 bg-primary text-secondary me-2">
+              <span class="bg-teal-100 text-teal-800 text-sm  mr-2 px-2.5 py-0.5 rounded dark:bg-teal-900 dark:text-teal-300">
                 HDR10
-              </div>
+              </span>
             )}
             {torrent.HDR10plus && (
-              <div class="badge rounded-3 bg-primary text-secondary me-2">
+              <span class="bg-teal-100 text-teal-800 text-sm  mr-2 px-2.5 py-0.5 rounded dark:bg-teal-900 dark:text-teal-300">
                 HDR10+
-              </div>
+              </span>
             )}
-            <span class="badge rounded-3 bg-primary text-secondary me-2">
+          </div>
+
+          <div class="flex flex-wrap items-center">
+            <span class="bg-teal-100 text-teal-800 text-sm mr-2 px-2.5 py-0.5 rounded dark:bg-teal-900 dark:text-teal-300">
               {formatRating(torrent.Size)} Gb
             </span>
-            <span>
-              <i class="bi bi-arrow-up text-success"></i>
-            </span>
-            <span class="badge rounded-pill bg-primary text-secondary">
+
+            <span class="bg-green-100 text-green-800 text-sm  mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
               {torrent.Seeds}
             </span>
-            <span>
-              <i class="bi bi-arrow-down text-danger"></i>
-            </span>
-            <span class="badge rounded-pill bg-primary text-secondary me-2 flex-grow-1">
+
+            <span class="bg-red-100 text-red-800 text-sm  mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
               {torrent.Leeches}
             </span>
-          </div>
-          <div class="btn-group btn-group-sm mt-2 mb-2 " role="group">
-            <a href={torrent.Magnet} target="_blank">
-              <button type="button" class="btn btn-outline-primary">
-                Открыть
-              </button>
-            </a>
+            <div class="flex space-x-1 my-2">
+              <a href={torrent.Magnet} target="_blank" >
+                <ButtonPrimary text="Открыть" size="sm" />
+              </a>
+              {/* <a href={torrent.Magnet} target="_blank">
+                <ButtonPrimary text="Открыть" size="sm" />
+              </a> */}
+            </div>
+
             {/* <button type="button" class="btn btn-outline-primary" (click)="addTorrentToTS(torrent.Magnet, '[MOVIESTRACKER] '+torrent.Name, 'http://image.tmdb.org/t/p/w300/'+poster)" [disabled]="(this.torrserverurl$|async)===''">Добавить в TorrServer</button> */}
           </div>
         </div>
 
-        <div class="row pb-1">
-          <div class="col text-start">
-            <div>{torrent.Name}</div>
-            <div class="fw-light">{torrent.Date}</div>
-          </div>
+        <div class="text-start">
+          <div>{torrent.Name}</div>
+          <div class="font-light text-sm">{torrent.Date.slice(0, 10)}</div>
         </div>
       </div>
     </>

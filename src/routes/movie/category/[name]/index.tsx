@@ -153,6 +153,7 @@ export default component$(() => {
           text="Load more"
           onClick={getNewMovies}
           isLoading={isloadingMovies.value}
+          size="lg"
         />
       </div>
     </div>

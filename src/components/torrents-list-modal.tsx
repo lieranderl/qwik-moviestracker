@@ -46,7 +46,7 @@ export const TorrentsModal = component$(
         <button
           data-modal-target="torrentsModal"
           data-modal-toggle="torrentsModal"
-          class="text-teal-50 bg-teal-600 hover:bg-teal-700 focus:ring-2 focus:ring-teal-500 font-medium rounded-lg text-md px-5 py-2.5 mr-2 mb-2 dark:bg-teal-700 dark:hover:bg-teal-800 focus:outline-none dark:focus:ring-teal-600"
+          class="px-3 py-2 text-base font-medium text-center text-teal-50 bg-teal-700 rounded-lg hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800"
           type="button"
           onClick$={getTorrentsToggle}
         >
@@ -57,9 +57,9 @@ export const TorrentsModal = component$(
           id="torrentsModal"
           tabIndex={0}
           aria-hidden="true"
-          class="fixed z-50 top-0 left-0 right-0 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
-        >
-          <div class="relative w-full max-w-2xl max-h-full">
+          class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
+          >
+          <div class="relative w-full max-w-4xl max-h-full">
             <div class="relative bg-teal-50 rounded-lg shadow dark:bg-teal-950">
               <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-teal-800">
                 <h3 class="text-xl font-semibold ">Torrents</h3>

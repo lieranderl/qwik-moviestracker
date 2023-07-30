@@ -36,6 +36,12 @@ export const TorrentList = component$(
 
     const sortedTorrents = useStore({ value: torrents as Torrent[] | null });
     const selectedSort = useSignal("Date");
+    const filterChecked = useSignal(false);
+    const k4 = useSignal(false);
+    const hdr = useSignal(false);
+    const hdr10 = useSignal(false);
+    const hdr10plus = useSignal(false);
+    const dv = useSignal(false);
 
     const [searchTorrForm, { Form, Field }] = useForm<SearchTorrForm>({
       loader: { value: { name: title, year: year } },
@@ -57,7 +63,7 @@ export const TorrentList = component$(
         });
         if (torrents.length > 0) {
           sortedTorrents.value = torrents.sort((a, b) =>
-            a[selectedSort.value] < b[selectedSort.value] ? -1 : 1
+            a[selectedSort.value] > b[selectedSort.value] ? -1 : 1
           );
           return;
         }
@@ -67,12 +73,41 @@ export const TorrentList = component$(
 
     useVisibleTask$((ctx) => {
       ctx.track(() => torrents);
+      ctx.track(() => filterChecked.value);
       if (torrents) {
-        sortedTorrents.value = torrents.sort((a, b) =>
-          a[selectedSort.value] < b[selectedSort.value] ? -1 : 1
+        sortedTorrents.value = torrents;
+        if (k4.value) {
+          sortedTorrents.value = torrents.filter(
+            (torrents) => torrents.K4 == true
+          );
+        }
+        if (hdr.value) {
+          sortedTorrents.value = torrents.filter(
+            (torrents) => torrents.HDR == true
+          );
+        }
+        if (hdr10.value) {
+          sortedTorrents.value = sortedTorrents.value.filter(
+            (torrents) => torrents.HDR10 == true
+          );
+        }
+
+        if (hdr10plus.value) {
+          sortedTorrents.value = sortedTorrents.value.filter(
+            (torrents) => torrents.HDR10plus == true
+          );
+        }
+
+        if (dv.value) {
+          sortedTorrents.value = sortedTorrents.value.filter(
+            (torrents) => torrents.DV == true
+          );
+        }
+
+        sortedTorrents.value = sortedTorrents.value.sort((a, b) =>
+          a[selectedSort.value] > b[selectedSort.value] ? -1 : 1
         );
       }
-      console.log(sortedTorrents.value);
     });
 
     return (
@@ -81,14 +116,8 @@ export const TorrentList = component$(
           <div class="flex flex-wrap  items-center justify-start me-4">
             <div class="mr-2">Сортировать по:</div>
             <select
-              onChange$={(e) => {
-                console.log(e.target.value);
-                console.log(sortedTorrents.value);
-                if (sortedTorrents.value) {
-                  sortedTorrents.value = sortedTorrents.value.sort((a, b) =>
-                    a[selectedSort.value] < b[selectedSort.value] ? -1 : 1
-                  );
-                }
+              onChange$={() => {
+                filterChecked.value = !filterChecked.value;
               }}
               bind:value={selectedSort}
               id="attrib"
@@ -144,6 +173,64 @@ export const TorrentList = component$(
               <SearchSVG />
             </button>
           </Form>
+        </div>
+
+        <div class="flex items-center">
+          <div class="mr-2">
+            <input
+              type="checkbox"
+              class="mr-2 w-4 h-4 text-teal-600 bg-teal-100 border-teal-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-teal-800 focus:ring-2 dark:bg-teal-700 dark:border-teal-600"
+              onChange$={(e) => {
+                filterChecked.value = !filterChecked.value;
+                k4.value = e.target.checked;
+              }}
+            />
+            <label>4K</label>
+          </div>
+          <div class="mr-2">
+            <input
+              type="checkbox"
+              class="mr-2 w-4 h-4 text-teal-600 bg-teal-100 border-teal-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-teal-800 focus:ring-2 dark:bg-teal-700 dark:border-teal-600"
+              onChange$={(e) => {
+                filterChecked.value = !filterChecked.value;
+                hdr.value = e.target.checked;
+              }}
+            />
+            <label>HDR</label>
+          </div>
+          <div class="mr-2">
+            <input
+              type="checkbox"
+              class="mr-2 w-4 h-4 text-teal-600 bg-teal-100 border-teal-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-teal-800 focus:ring-2 dark:bg-teal-700 dark:border-teal-600"
+              onChange$={(e) => {
+                filterChecked.value = !filterChecked.value;
+                hdr10.value = e.target.checked;
+              }}
+            />
+            <label>HDR10</label>
+          </div>
+          <div class="mr-2">
+            <input
+              type="checkbox"
+              class="mr-2 w-4 h-4 text-teal-600 bg-teal-100 border-teal-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-teal-800 focus:ring-2 dark:bg-teal-700 dark:border-teal-600"
+              onChange$={(e) => {
+                filterChecked.value = !filterChecked.value;
+                hdr10plus.value = e.target.checked;
+              }}
+            />
+            <label>HDR10+</label>
+          </div>
+          <div class="mr-2">
+            <input
+              type="checkbox"
+              class="mr-2 w-4 h-4 text-teal-600 bg-teal-100 border-teal-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-teal-800 focus:ring-2 dark:bg-teal-700 dark:border-teal-600"
+              onChange$={(e) => {
+                filterChecked.value = !filterChecked.value;
+                dv.value = e.target.checked;
+              }}
+            />
+            <label>DV</label>
+          </div>
         </div>
 
         {sortedTorrents.value === null && <DotPulseLoader />}

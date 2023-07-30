@@ -71,7 +71,7 @@ export const TvDetails = component$(
 
         <section class="my-4 flex">
           <div class="mr-2">
-            <ButtonPrimary text="Trailers" />
+            <ButtonPrimary text="Trailers" size="md" />
           </div>
           <TorrentsModal
             title={tv.name!}

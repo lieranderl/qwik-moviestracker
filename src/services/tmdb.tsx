@@ -526,11 +526,13 @@ export const getPersonTv = async ({ id, lang }: GetSimilarType) => {
 type Search = {
   query: string;
   page: number;
+  language: string;
 };
 
-export const search = ({ query, page }: Search) => {
+export const search = ({ query, page, language }: Search) => {
   return fetchTMDB<Collection<ProductionMedia>>("search/multi", {
     page: String(page),
+    language: language,
     query,
   });
 };

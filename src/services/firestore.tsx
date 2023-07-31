@@ -60,7 +60,6 @@ export const getMoviesFirebase = async ({
   moviesSnapshot.forEach((doc) => {
     movies.push(doc.data() as MovieMedia);
   });
-  console.log(movies.length);
   return movies as MovieMedia[];
 };
 

@@ -1,9 +1,8 @@
 import { component$, $ } from "@builder.io/qwik";
-import { useLocation, useNavigate } from "@builder.io/qwik-city";
+import { useLocation } from "@builder.io/qwik-city";
 
 export const LangButton = component$(() => {
   const loc = useLocation();
-  const nav = useNavigate();
 
   const toggleLang = $(async () => {
     switch (loc.url.searchParams.get("lang")) {
@@ -17,11 +16,12 @@ export const LangButton = component$(() => {
         loc.url.searchParams.set("lang", "ru-RU");
         break;
     }
-    await nav(loc.url.href, { forceReload: true });
+    console.log(loc.url.href);
+    window.location.assign(loc.url.href);
   });
 
   return (
-    <a onClick$={toggleLang}>
+    <a onClick$={toggleLang} >
       <button
         id="theme-toggle"
         type="button"

@@ -8,7 +8,7 @@ import {
   startAfter,
 } from "firebase/firestore";
 import { collection, getDocs } from "firebase/firestore";
-import { MovieMedia } from "./types";
+import type { MovieMedia } from "./types";
 
 const firebase_config = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG);
 const firebase_app = initializeApp(firebase_config);

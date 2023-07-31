@@ -9,7 +9,6 @@ import {
 } from "~/utils/fomat";
 import { langBudget, langRevenue } from "~/utils/languages";
 import { paths } from "~/utils/paths";
-import { ButtonPrimary } from "./button-primary";
 import { Imdb } from "./imdb";
 import { MediaCard } from "./media-card";
 import { MediaCarousel } from "./media-carousel";

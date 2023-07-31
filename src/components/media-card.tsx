@@ -61,7 +61,7 @@ export const MediaCard = component$(
           </span>
         )}
         {!charName && <span class="block text-sm">&nbsp;</span>}
-        <div class={["group"]}>
+        <div class="group">
           <div class="drop-shadow transition-scale scale-95 duration-300 ease-in-out group-hover:scale-100 group-hover:drop-shadow-md">
             <picture>
               <img

@@ -19,6 +19,7 @@ import { paths } from "~/utils/paths";
 import { Imdb } from "./imdb";
 import { langBudget, langRevenue, langMinutes } from "~/utils/languages";
 import { TorrentsModal } from "./torrents-list-modal";
+import { TrailersModal } from "./trailers-list-modal";
 
 interface MovieDetailsProps {
   movie: MovieMediaDetails;
@@ -29,9 +30,13 @@ interface MovieDetailsProps {
 }
 
 export const MovieDetails = component$(
-  ({ movie, recMovies, 
-    // simMovies, 
-    colMovies, lang }: MovieDetailsProps) => {
+  ({
+    movie,
+    recMovies,
+    // simMovies,
+    colMovies,
+    lang,
+  }: MovieDetailsProps) => {
     return (
       <div class="pt-[20vh] lg:mx-20 xl:mx-40 font-normal">
         <section class="my-4">
@@ -78,9 +83,10 @@ export const MovieDetails = component$(
         </section>
 
         <section class="my-4 flex">
-          <div class="mr-2">
-            <ButtonPrimary text="Trailers" size="md" />
-          </div>
+         { movie.videos!.results!.length > 0 && <div class="mr-2">
+            <TrailersModal videos={movie.videos!.results} />
+          </div>}
+          
           <TorrentsModal
             title={movie.title!}
             year={formatYear(movie.release_date!)}
@@ -180,7 +186,7 @@ export const MovieDetails = component$(
           ))}
         </MediaCarousel>
 
-        {movie.credits && movie.credits.crew!.length>0 && (
+        {movie.credits && movie.credits.crew!.length > 0 && (
           <MediaCarousel title="Crew" type="person" lang={lang}>
             {formatCrew(movie.credits.crew!)
               .slice(0, 10)

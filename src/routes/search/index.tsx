@@ -89,12 +89,12 @@ export default component$(() => {
                                       )
                                     : parseInt(
                                         "first_air_date" in m
-                                          ? m.first_air_date.substring(0, 4)
+                                          ? m.first_air_date!.substring(0, 4)
                                           : "",
                                         10
                                       )
                                 }
-                                picfile={(m.media_type != "movie" && m.media_type != "tv") ? m.profile_path: m.poster_path}
+                                picfile={(m.media_type != "movie" && m.media_type != "tv") ? m.profile_path!: m.poster_path}
                                 isPerson={(m.media_type != "movie" && m.media_type != "tv") ? true : false}
                                 isHorizontal={false}
                               />

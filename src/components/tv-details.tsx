@@ -23,9 +23,12 @@ interface TvDetailsProps {
 }
 
 export const TvDetails = component$(
-  ({ tv, recTv, 
+  ({
+    tv,
+    recTv,
     // simTv,
-     lang }: TvDetailsProps) => {
+    lang,
+  }: TvDetailsProps) => {
     return (
       <div class="pt-[20vh] lg:mx-20 xl:mx-40 font-normal">
         <section class="my-4">
@@ -77,6 +80,7 @@ export const TvDetails = component$(
             title={tv.name!}
             year={formatYear(tv.first_air_date!)}
             isMovie={false}
+            seasons={tv.seasons}
           />
         </section>
 
@@ -105,43 +109,67 @@ export const TvDetails = component$(
         </section>
 
         <section class="my-4">
-          <table class="table-fixed" style="max-width: 400px;">
-            <tbody>
-              {tv.last_episode_to_air && (
+          {tv.in_production && (
+            <table class="table-fixed" style="max-width: 400px;">
+              <tbody>
+                {tv.last_episode_to_air && (
+                  <tr>
+                    <td>
+                      Последняя вышедшая серия
+                      <span class="ps-1">
+                        {" "}
+                        {tv.last_episode_to_air.season_number}.
+                        {tv.last_episode_to_air.episode_number}:
+                      </span>
+                    </td>
+                    <td class="ps-4">{tv.last_episode_to_air.air_date}</td>
+                  </tr>
+                )}
+                {!tv.next_episode_to_air && tv.last_episode_to_air && (
+                  <tr>
+                    <td>
+                      Текущий сезон ({tv.last_episode_to_air.season_number})
+                      завершен.
+                    </td>
+                  </tr>
+                )}
+                {tv.next_episode_to_air && (
+                  <tr>
+                    <td>
+                      Следующая серия
+                      <span class="ps-1">
+                        {tv.next_episode_to_air.season_number}.
+                        {tv.next_episode_to_air.episode_number}:
+                      </span>
+                    </td>
+                    <td class="ps-4">{tv.next_episode_to_air.air_date}</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+
+          {!tv.in_production && (
+            <table class="table-fixed" style="max-width: 400px;">
+              <tbody>
+                {tv.last_episode_to_air && (
+                  <tr>
+                    <td>
+                      Последняя вышедшая серия
+                      <span class="ps-1">
+                        {tv.last_episode_to_air.season_number}.
+                        {tv.last_episode_to_air.episode_number}:
+                      </span>
+                    </td>
+                    <td class="ps-4">{tv.last_episode_to_air.air_date}</td>
+                  </tr>
+                )}
                 <tr>
-                  <td>
-                    Последняя вышедшая серия
-                    <span class="ps-1">
-                      {" "}
-                      {tv.last_episode_to_air.season_number}.
-                      {tv.last_episode_to_air.episode_number}:
-                    </span>
-                  </td>
-                  <td class="ps-4">{tv.last_episode_to_air.air_date}</td>
+                  <td>Cериал завершен.</td>
                 </tr>
-              )}
-              {!tv.next_episode_to_air && tv.last_episode_to_air && (
-                <tr>
-                  <td>
-                    Текущий сезон ({tv.last_episode_to_air.season_number})
-                    завершен.
-                  </td>
-                </tr>
-              )}
-              {tv.next_episode_to_air && (
-                <tr>
-                  <td>
-                    Следующая серия
-                    <span class="ps-1">
-                      {tv.next_episode_to_air.season_number}.
-                      {tv.next_episode_to_air.episode_number}:
-                    </span>
-                  </td>
-                  <td class="ps-4">{tv.next_episode_to_air.air_date}</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          )}
         </section>
 
         <section class="text-md">

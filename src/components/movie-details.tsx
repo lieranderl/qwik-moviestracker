@@ -85,6 +85,7 @@ export const MovieDetails = component$(
             title={movie.title!}
             year={formatYear(movie.release_date!)}
             isMovie={true}
+            seasons={[]}
           />
         </section>
 

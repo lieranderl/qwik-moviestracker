@@ -1,13 +1,8 @@
-import {
-  component$,
-  $,
-  useSignal,
-  useVisibleTask$,
-  useStore,
-} from "@builder.io/qwik";
+import type { Signal } from "@builder.io/qwik";
+import { component$, $, useVisibleTask$, useStore } from "@builder.io/qwik";
 import { SearchSVG } from "~/utils/icons/searchSVG";
 import type { SubmitHandler } from "@modular-forms/qwik";
-import { useForm, zodForm$ } from "@modular-forms/qwik";
+import { setValue, useForm, zodForm$ } from "@modular-forms/qwik";
 
 import { server$ } from "@builder.io/qwik-city";
 import type { Torrent } from "~/services/types";
@@ -21,7 +16,7 @@ import { searchTorrSchema } from "./torrents-list-modal";
 interface TorrentListProps {
   torrents: Torrent[] | null;
   title: string;
-  year: number;
+  year: Signal<number>;
   isMovie: boolean;
 }
 
@@ -33,55 +28,60 @@ export const TorrentList = component$(
       { value: "Seeds", text: "Сидам" },
       { value: "Leeches", text: "Личам" },
     ];
+
     const initTorrents = useStore({ value: torrents as Torrent[] | null });
     const sortedTorrents = useStore({ value: null as Torrent[] | null });
-    const selectedSort = useSignal("Date");
-    const filterChecked = useSignal(false);
-    const k4 = useSignal(false);
-    const hdr = useSignal(false);
-    const hdr10 = useSignal(false);
-    const hdr10plus = useSignal(false);
-    const dv = useSignal(false);
+    const sortFilterStore = useStore({
+      selectedSort: "Date" as string,
+      filterChecked: false as boolean,
+      k4: false as boolean,
+      hdr: false as boolean,
+      hdr10: false as boolean,
+      hdr10plus: false as boolean,
+      dv: false as boolean,
+    });
 
     const filterTorrents = $(() => {
       if (initTorrents.value) {
         sortedTorrents.value = initTorrents.value;
-        if (k4.value) {
+        if (sortFilterStore.k4) {
           sortedTorrents.value = initTorrents.value.filter(
             (torrents) => torrents.K4 == true
           );
         }
-        if (hdr.value) {
+        if (sortFilterStore.hdr) {
           sortedTorrents.value = initTorrents.value.filter(
             (torrents) => torrents.HDR == true
           );
         }
-        if (hdr10.value) {
+        if (sortFilterStore.hdr10) {
           sortedTorrents.value = initTorrents.value.filter(
             (torrents) => torrents.HDR10 == true
           );
         }
 
-        if (hdr10plus.value) {
+        if (sortFilterStore.hdr10plus) {
           sortedTorrents.value = initTorrents.value.filter(
             (torrents) => torrents.HDR10plus == true
           );
         }
 
-        if (dv.value) {
+        if (sortFilterStore.dv) {
           sortedTorrents.value = initTorrents.value.filter(
             (torrents) => torrents.DV == true
           );
         }
 
         sortedTorrents.value = sortedTorrents.value.sort((a, b) =>
-          a[selectedSort.value] > b[selectedSort.value] ? -1 : 1
+          a[sortFilterStore.selectedSort] > b[sortFilterStore.selectedSort]
+            ? -1
+            : 1
         );
       }
     });
 
     const [searchTorrForm, { Form, Field }] = useForm<SearchTorrForm>({
-      loader: { value: { name: title, year: year } },
+      loader: { value: { name: title, year: 0 } },
       // action: useTorrSearchAction(),
       validate: zodForm$(searchTorrSchema),
     });
@@ -89,22 +89,33 @@ export const TorrentList = component$(
     const handleSubmit: SubmitHandler<SearchTorrForm> = $(
       async (values: SearchTorrForm) => {
         sortedTorrents.value = null;
-        const torrents = await server$(
-          ({ name, year, isMovie }: getTorrentsType) => {
-            return getTorrents({ name: name, year: year, isMovie: isMovie });
+        try {
+          const torrents = await server$(
+            ({ name, year, isMovie }: getTorrentsType) => {
+              return getTorrents({ name: name, year: year, isMovie: isMovie });
+            }
+          )({
+            name: values.name,
+            year: values.year,
+            isMovie: isMovie,
+          });
+          if (torrents.length > 0) {
+            initTorrents.value = torrents;
+            return;
           }
-        )({
-          name: values.name,
-          year: values.year,
-          isMovie: isMovie,
-        });
-        if (torrents.length > 0) {
-          initTorrents.value = torrents;
-          return;
+        } catch (error) {
+          sortedTorrents.value = [];
         }
+
         sortedTorrents.value = [];
       }
     );
+
+    useVisibleTask$((ctx) => {
+      ctx.track(() => year.value);
+      sortedTorrents.value = null;
+      setValue(searchTorrForm, "year", year.value);
+    });
 
     useVisibleTask$((ctx) => {
       ctx.track(() => torrents);
@@ -113,7 +124,7 @@ export const TorrentList = component$(
 
     useVisibleTask$((ctx) => {
       ctx.track(() => initTorrents.value);
-      ctx.track(() => filterChecked.value);
+      ctx.track(() => sortFilterStore.filterChecked);
       filterTorrents();
     });
 
@@ -123,10 +134,11 @@ export const TorrentList = component$(
           <div class="flex flex-wrap  items-center justify-start me-4">
             <div class="mr-2">Сортировать по:</div>
             <select
-              onChange$={() => {
-                filterChecked.value = !filterChecked.value;
+              onChange$={(_, e) => {
+                sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
+                sortFilterStore.selectedSort = e.value;
               }}
-              bind:value={selectedSort}
+              // bind:value={sortFilterStore.selectedSort}
               id="attrib"
               class="mr-2 bg-teal-50 border border-teal-300 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500"
             >
@@ -188,8 +200,8 @@ export const TorrentList = component$(
               type="checkbox"
               class="mr-2 w-4 h-4 text-teal-600 bg-teal-100 border-teal-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-teal-800 focus:ring-2 dark:bg-teal-700 dark:border-teal-600"
               onChange$={(e) => {
-                filterChecked.value = !filterChecked.value;
-                k4.value = e.target.checked;
+                sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
+                sortFilterStore.k4 = e.target.checked;
               }}
             />
             <label>4K</label>
@@ -199,8 +211,8 @@ export const TorrentList = component$(
               type="checkbox"
               class="mr-2 w-4 h-4 text-teal-600 bg-teal-100 border-teal-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-teal-800 focus:ring-2 dark:bg-teal-700 dark:border-teal-600"
               onChange$={(e) => {
-                filterChecked.value = !filterChecked.value;
-                hdr.value = e.target.checked;
+                sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
+                sortFilterStore.hdr = e.target.checked;
               }}
             />
             <label>HDR</label>
@@ -210,8 +222,8 @@ export const TorrentList = component$(
               type="checkbox"
               class="mr-2 w-4 h-4 text-teal-600 bg-teal-100 border-teal-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-teal-800 focus:ring-2 dark:bg-teal-700 dark:border-teal-600"
               onChange$={(e) => {
-                filterChecked.value = !filterChecked.value;
-                hdr10.value = e.target.checked;
+                sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
+                sortFilterStore.hdr10 = e.target.checked;
               }}
             />
             <label>HDR10</label>
@@ -221,8 +233,8 @@ export const TorrentList = component$(
               type="checkbox"
               class="mr-2 w-4 h-4 text-teal-600 bg-teal-100 border-teal-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-teal-800 focus:ring-2 dark:bg-teal-700 dark:border-teal-600"
               onChange$={(e) => {
-                filterChecked.value = !filterChecked.value;
-                hdr10plus.value = e.target.checked;
+                sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
+                sortFilterStore.hdr10plus = e.target.checked;
               }}
             />
             <label>HDR10+</label>
@@ -232,8 +244,8 @@ export const TorrentList = component$(
               type="checkbox"
               class="mr-2 w-4 h-4 text-teal-600 bg-teal-100 border-teal-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-teal-800 focus:ring-2 dark:bg-teal-700 dark:border-teal-600"
               onChange$={(e) => {
-                filterChecked.value = !filterChecked.value;
-                dv.value = e.target.checked;
+                sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
+                sortFilterStore.dv = e.target.checked;
               }}
             />
             <label>DV</label>
@@ -251,9 +263,9 @@ export const TorrentList = component$(
 
         <section class="my-4">
           {sortedTorrents.value !== null &&
-            sortedTorrents.value.map((torrent) => (
+            sortedTorrents.value.map((torrent, key) => (
               <>
-                <TorrentBlock torrent={torrent} />
+                <TorrentBlock torrent={torrent} key={key} />
               </>
             ))}
         </section>

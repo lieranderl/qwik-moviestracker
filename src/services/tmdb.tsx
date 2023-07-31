@@ -16,6 +16,7 @@ import { getMoviesFirebase } from "./firestore";
 import { formatYear } from "~/utils/fomat";
 import type { Timestamp } from "firebase/firestore";
 
+
 const baseURL = "https://api.themoviedb.org/3";
 
 const fetchTMDB = async <T = unknown,>(
@@ -637,3 +638,5 @@ export const getTorrents = ({ name, year, isMovie }: getTorrentsType) => {
     isMovie: String(isMovie),
   });
 };
+
+

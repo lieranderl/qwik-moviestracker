@@ -1,7 +1,6 @@
 import type { Signal } from "@builder.io/qwik";
 import { component$, $, useVisibleTask$, useStore } from "@builder.io/qwik";
 import { SearchSVG } from "~/utils/icons/searchSVG";
-import type { SubmitHandler } from "@modular-forms/qwik";
 import { setValue, useForm, zodForm$ } from "@modular-forms/qwik";
 
 import { server$ } from "@builder.io/qwik-city";
@@ -73,7 +72,7 @@ export const TorrentList = component$(
         }
 
         sortedTorrents.value = sortedTorrents.value.sort((a, b) =>
-          a[sortFilterStore.selectedSort] > b[sortFilterStore.selectedSort]
+          a[sortFilterStore.selectedSort as keyof typeof a] > b[sortFilterStore.selectedSort as keyof typeof b]
             ? -1
             : 1
         );
@@ -86,7 +85,7 @@ export const TorrentList = component$(
       validate: zodForm$(searchTorrSchema),
     });
 
-    const handleSubmit: SubmitHandler<SearchTorrForm> = $(
+    const handleSubmit = $(
       async (values: SearchTorrForm) => {
         sortedTorrents.value = null;
         try {

@@ -85,7 +85,7 @@ export default component$(() => {
                             >
                               <MediaCard
                                 title={
-                                  m.media_type === "movie" ? m.title : m.name
+                                  m.media_type === "movie" ? m.title! : m.name!
                                 }
                                 width={300}
                                 rating={m.vote_average}
@@ -106,7 +106,7 @@ export default component$(() => {
                                   m.media_type != "movie" &&
                                   m.media_type != "tv"
                                     ? m.profile_path!
-                                    : m.poster_path
+                                    : m.poster_path!
                                 }
                                 isPerson={
                                   m.media_type != "movie" &&

@@ -27,6 +27,7 @@ export type TvMedia = {
     number_of_episodes: number;
     character: string;
     job: string;
+    profile_path?: string;
   };
 
   export type Network = {
@@ -90,6 +91,8 @@ export type TvMedia = {
     character: string;
     job: string;
     Year: string;
+    name: string
+    profile_path?: string;
   };
 
   export type Torrent = {

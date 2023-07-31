@@ -12,7 +12,6 @@ import {
   formatDate,
   formatCrew,
 } from "~/utils/fomat";
-import { ButtonPrimary } from "./button-primary";
 import { MediaCarousel } from "./media-carousel";
 import { MediaCard } from "./media-card";
 import { paths } from "~/utils/paths";

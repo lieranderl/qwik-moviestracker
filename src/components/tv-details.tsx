@@ -14,6 +14,7 @@ import { Imdb } from "./imdb";
 import { MediaCard } from "./media-card";
 import { MediaCarousel } from "./media-carousel";
 import { TorrentsModal } from "./torrents-list-modal";
+import { TrailersModal } from "./trailers-list-modal";
 
 interface TvDetailsProps {
   tv: TvMediaDetails;
@@ -73,9 +74,11 @@ export const TvDetails = component$(
         </section>
 
         <section class="my-4 flex">
-          <div class="mr-2">
-            <ButtonPrimary text="Trailers" size="md" />
-          </div>
+          {tv.videos!.results!.length > 0 && (
+            <div class="mr-2">
+              <TrailersModal videos={tv.videos!.results} />
+            </div>
+          )}
           <TorrentsModal
             title={tv.name!}
             year={formatYear(tv.first_air_date!)}

@@ -39,14 +39,21 @@ export default component$(() => {
 
   return (
     <>
-      <div class="container mx-auto px-4 pt-[80px]">
+      <div class="container text-center mx-auto px-4 pt-[80px]">
         <input
           type="text"
-          class="mr-2 py-2 pl-2 text-sm border border-teal-300 rounded-lg bg-teal-50 focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500"
+          class="w-[50%] mr-2 py-2 pl-2 text-sm border border-teal-300 rounded-lg bg-teal-50 focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500 placeholder-teal-900"
           placeholder="Search here..."
-          onChange$={(e) => {
-            if (e.target.value.length > 2) {
-              phrase.value = e.target.value;
+          // onChange$={(e) => {
+          //   if (e.target.value.length > 2) {
+          //     phrase.value = e.target.value;
+          //   }
+          // }}
+          onKeyDown$={(e, elem) => {
+            if (e.keyCode === 13) {
+              if (elem.value.length > 2) {
+                phrase.value = elem.value;
+              }
             }
           }}
         />
@@ -69,6 +76,7 @@ export default component$(() => {
                         movies.results!.map((m) => (
                           <>
                             <a
+                              class="text-left"
                               href={paths.media(
                                 m.media_type as "movie" | "tv" | "person",
                                 m.id,
@@ -94,8 +102,18 @@ export default component$(() => {
                                         10
                                       )
                                 }
-                                picfile={(m.media_type != "movie" && m.media_type != "tv") ? m.profile_path!: m.poster_path}
-                                isPerson={(m.media_type != "movie" && m.media_type != "tv") ? true : false}
+                                picfile={
+                                  m.media_type != "movie" &&
+                                  m.media_type != "tv"
+                                    ? m.profile_path!
+                                    : m.poster_path
+                                }
+                                isPerson={
+                                  m.media_type != "movie" &&
+                                  m.media_type != "tv"
+                                    ? true
+                                    : false
+                                }
                                 isHorizontal={false}
                               />
                             </a>
@@ -105,10 +123,10 @@ export default component$(() => {
                   </div>
                 );
               } else {
-                return <div class="my-2">no result</div>;
+                return <div class="my-2 text-sm">no results</div>;
               }
             } else {
-              return <div class="my-2">no result</div>;
+              return <div class="my-2 text-sm">no results</div>;
             }
           }}
         />

@@ -3,14 +3,25 @@ import { component$, $, useVisibleTask$, useStore } from "@builder.io/qwik";
 import { SearchSVG } from "~/utils/icons/searchSVG";
 import { setValue, useForm, zodForm$ } from "@modular-forms/qwik";
 
-import { server$ } from "@builder.io/qwik-city";
+import { server$, z } from "@builder.io/qwik-city";
 import type { Torrent } from "~/services/types";
 import { DotPulseLoader } from "./dot-pulse-loader/dot-pulse-loader";
 import type { getTorrentsType } from "~/services/tmdb";
 import { getTorrents } from "~/services/tmdb";
 import { TorrentBlock } from "./torrent";
-import type { SearchTorrForm } from "./torrents-list-modal";
-import { searchTorrSchema } from "./torrents-list-modal";
+
+
+const searchTorrSchema = z.object({
+  name: z.string().min(3, "Please enter movie name."),
+  year: z
+    .number()
+    .int()
+    .nonnegative()
+    .max(new Date().getFullYear(), "Please enter a valid year."),
+});
+
+type SearchTorrForm = z.infer<typeof searchTorrSchema>;
+
 
 interface TorrentListProps {
   torrents: Torrent[] | null;

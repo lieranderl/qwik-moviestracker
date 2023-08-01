@@ -15,7 +15,7 @@ export const Imdb = component$(({ id }: { id: string }) => {
 
   const imdbResource = useResource$(async ({ track }) => {
     track(() => isBrowserSig.value);
-    if (isBrowser) {
+    if (isBrowserSig.value) {
       const serverImdb = server$((id) => {
         return getImdbRating(id);
       });

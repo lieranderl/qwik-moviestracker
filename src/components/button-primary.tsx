@@ -1,25 +1,37 @@
 import type { PropFunction } from "@builder.io/qwik";
-import { component$ } from "@builder.io/qwik";
+import { component$, useSignal, useTask$ } from "@builder.io/qwik";
 
 interface ButtonPrimaryProps {
   text: string;
   isLoading?: boolean;
   size: "sm" | "md" | "lg";
   onClick?: PropFunction<() => void>;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
 }
 
 export const ButtonPrimary = component$(
-  ({ text, onClick, isLoading, size }: ButtonPrimaryProps) => {
+  ({ text, onClick, isLoading, size, type, disabled }: ButtonPrimaryProps) => {
     // const sizeClass = size === "sm" ? "px-3 py-2 text-xs" : size === "lg" ? "px-3.5 py-2.5 text-base" : "px-3 py-2 text-sm";
-    
+    const typeSig = useSignal(type);
+    const disabledSig = useSignal(disabled);
+
+    useTask$(() => {
+      if (type == undefined) {
+        typeSig.value = "button";
+      }
+      if (disabled == undefined) {
+        disabledSig.value = false;
+      }
+    });
+
     return (
       <>
         {size == "sm" && (
           <button
             onClick$={onClick}
-            type="button"
-            disabled={isLoading}
-
+            type={typeSig.value}
+            disabled={isLoading || disabledSig.value}
             class="px-3 py-2 text-xs font-medium text-center text-teal-50 bg-teal-700 rounded-lg hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800"
             // class="px-3.5 py-2.5 text-base font-medium text-center text-teal-50 bg-teal-700 rounded-lg hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800"
           >
@@ -48,12 +60,11 @@ export const ButtonPrimary = component$(
             {!isLoading && text}
           </button>
         )}
-         {size == "lg" && (
+        {size == "lg" && (
           <button
             onClick$={onClick}
-            type="button"
-            disabled={isLoading}
-
+            type={typeSig.value}
+            disabled={isLoading || disabledSig.value}
             // class="px-3 py-2 text-xs font-medium text-center text-teal-50 bg-teal-700 rounded-lg hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800"
             class="px-3.5 py-2.5 text-base font-medium text-center text-teal-50 bg-teal-700 rounded-lg hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800"
           >
@@ -82,12 +93,11 @@ export const ButtonPrimary = component$(
             {!isLoading && text}
           </button>
         )}
-         {size == "md" && (
+        {size == "md" && (
           <button
             onClick$={onClick}
-            type="button"
-            disabled={isLoading}
-
+            type={typeSig.value}
+            disabled={isLoading || disabledSig.value}
             class="px-3 py-2 text-base font-medium text-center text-teal-50 bg-teal-700 rounded-lg hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800"
           >
             {isLoading && (

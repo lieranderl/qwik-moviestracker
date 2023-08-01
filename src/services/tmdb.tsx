@@ -605,12 +605,14 @@ const fetchAPI = async <T = unknown,>(
     key: import.meta.env.VITE_GC_API_KEY,
   });
   const url = `${baseCGURL}/${path}?${params}`;
+  console.log(url);
   const response = await fetch(url, {
     headers: {
       Origin: "https://moviestracker.web.app",
       Referer: "https://moviestracker.web.app",
     },
   });
+  console.log(response.status);
   if (!response.ok) {
     // eslint-disable-next-line no-console
     console.error(response.headers);

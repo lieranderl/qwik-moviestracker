@@ -1,8 +1,5 @@
 import {
   component$,
-  createContextId,
-  useContextProvider,
-  useStore,
 } from "@builder.io/qwik";
 import {
   QwikCityProvider,
@@ -13,10 +10,8 @@ import { RouterHead } from "./components/router-head/router-head";
 
 import "./global.css";
 import { DarkThemeLauncher } from "./utils/darkThemeLauncher";
+import { ToastStack } from "./components/toast/toastStack";
 
-export const firebaseStoreContext = createContextId<{
-  moviesLastTimeFound: number;
-}>("firebaseStoreContext");
 
 export default component$(() => {
   /**
@@ -25,15 +20,16 @@ export default component$(() => {
    *
    * Don't remove the `<head>` and `<body>` elements.
    */
-  const firebaseStore = useStore({ moviesLastTimeFound: 0 });
-  useContextProvider(firebaseStoreContext, firebaseStore);
 
   return (
     <QwikCityProvider>
       <head>
         <meta charSet="utf-8" />
         <link rel="manifest" href="/manifest.json" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.js" nonce=""></script>
+        <script
+          src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.js"
+          nonce=""
+        ></script>
         <RouterHead />
         <DarkThemeLauncher />
       </head>
@@ -41,8 +37,10 @@ export default component$(() => {
         class="bg-teal-50 dark:bg-teal-950 text-teal-950 dark:text-teal-50 font-poppins tracking-tight antialiased"
         lang="en"
       >
-        <RouterOutlet />
-        <ServiceWorkerRegister />
+        <ToastStack>
+          <RouterOutlet />
+          <ServiceWorkerRegister />
+        </ToastStack>
       </body>
     </QwikCityProvider>
   );

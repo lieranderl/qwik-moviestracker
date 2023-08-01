@@ -1,21 +1,12 @@
 import { component$, $, useStore, useSignal } from "@builder.io/qwik";
-import { z, server$ } from "@builder.io/qwik-city";
+import { server$ } from "@builder.io/qwik-city";
 import { TorrentList } from "~/components/torrent-list";
 import type { getTorrentsType } from "~/services/tmdb";
 import { getTorrents } from "~/services/tmdb";
 import type { Seasons, Torrent } from "~/services/types";
 import { formatYear } from "~/utils/fomat";
 
-export const searchTorrSchema = z.object({
-  name: z.string().min(3, "Please enter movie name."),
-  year: z
-    .number()
-    .int()
-    .nonnegative()
-    .max(new Date().getFullYear(), "Please enter a valid year."),
-});
 
-export type SearchTorrForm = z.infer<typeof searchTorrSchema>;
 
 export interface TorModalPros {
   title: string;

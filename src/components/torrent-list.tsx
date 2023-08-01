@@ -158,7 +158,7 @@ export const TorrentList = component$(
                     type="text"
                     value={field.value}
                     placeholder="название"
-                    class="py-2 pl-2 text-sm border border-teal-300 rounded-l-lg bg-teal-50 focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500"
+                    class="py-2 pl-2 w-48 text-sm border border-teal-300 rounded-l-lg bg-teal-50 focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500"
                   />
                   {field.error && (
                     <div class="text-xs text-red-400">{field.error}</div>

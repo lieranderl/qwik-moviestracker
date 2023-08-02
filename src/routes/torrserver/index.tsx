@@ -102,6 +102,10 @@ export default component$(() => {
         autocloseTime: 5000,
       });
       isCheckingTorrServer.value = false;
+      if (torrServerStore.list.length === 1) {
+        torrServerStore.list = []
+        localStorage.removeItem("torrServerList");
+      }
     }
   });
 

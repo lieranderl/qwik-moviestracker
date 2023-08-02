@@ -88,7 +88,8 @@ export const MediaCard = component$(
                 >
                   {rating!.toFixed(1)}
                 </span>
-              )}
+               
+              )} 
               {year && (
                 <span
                   class={[

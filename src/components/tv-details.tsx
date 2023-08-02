@@ -1,5 +1,5 @@
 import { component$ } from "@builder.io/qwik";
-import type { Collection, TvMedia, TvMediaDetails } from "~/services/types";
+import type { Collection, ProductionMediaDetails, TvMedia, TvMediaDetails } from "~/services/types";
 import {
   formatYear,
   formatRating,
@@ -83,6 +83,7 @@ export const TvDetails = component$(
             year={formatYear(tv.first_air_date!)}
             isMovie={false}
             seasons={tv.seasons}
+            media={tv as ProductionMediaDetails}
           />
         </section>
 

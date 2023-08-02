@@ -3,6 +3,7 @@ import type {
   Collection,
   MovieMedia,
   MovieMediaDetails,
+  ProductionMediaDetails,
 } from "~/services/types";
 import {
   formatYear,
@@ -91,6 +92,7 @@ export const MovieDetails = component$(
             year={formatYear(movie.release_date!)}
             isMovie={true}
             seasons={[]}
+            media={movie as ProductionMediaDetails}
           />
         </section>
 

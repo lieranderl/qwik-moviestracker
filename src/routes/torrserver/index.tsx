@@ -8,14 +8,12 @@ import {
 } from "@builder.io/qwik";
 import { routeLoader$, z } from "@builder.io/qwik-city";
 import { setValue, useForm, zodForm$ } from "@modular-forms/qwik";
-import { ButtonPrimary } from "~/components/button-primary";
 import { DotPulseLoader } from "~/components/dot-pulse-loader/dot-pulse-loader";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import { toastManagerContext } from "~/components/toast/toastStack";
 import { listTorrent, torrServerEcho } from "~/services/torrserver";
-import { TSResult } from "~/services/types";
-import { paths } from "~/utils/paths";
+import type { TSResult } from "~/services/types";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
@@ -29,7 +27,6 @@ export const torrServerSchema = z.object({
 export type torrServerForm = z.infer<typeof torrServerSchema>;
 
 export default component$(() => {
-  const resource = useContentLoader();
   const toastManager = useContext(toastManagerContext);
   const selectedTorServer = useSignal("");
   const isLoading = useSignal(false);
@@ -112,11 +109,8 @@ export default component$(() => {
     <div class="container mx-auto px-4 pt-[64px]">
       <div class="grid md:grid-cols-6 my-4 sm:grid-cols-3 grid-cols-2">
         <div class="md:col-start-3 col-span-2 col-start-1">
-          <Form
-            onSubmit$={handleSubmit}
-            class="flex items-start justify-end"
-          >
-            <Field name="ipaddress" >
+          <Form onSubmit$={handleSubmit} class="flex items-start justify-end">
+            <Field name="ipaddress">
               {(field, props) => (
                 <div>
                   <input
@@ -132,14 +126,20 @@ export default component$(() => {
                 </div>
               )}
             </Field>
-            <div class="my-1">
-              <ButtonPrimary
+            <div class="mb-3">
+              <button
                 type="submit"
                 disabled={newTorrServerForm.invalid}
-                isLoading={isLoading.value}
-                text="+"
-                size="sm"
-              />
+                class="hover:bg-teal-100 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg text-sm p-2.5"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="fill-teal-500 w-5 h-5"
+                  viewBox="0 0 448 512"
+                >
+                  <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" />
+                </svg>
+              </button>
             </div>
           </Form>
         </div>
@@ -162,13 +162,10 @@ export default component$(() => {
               ))}
             </select>
             <div class="my-1">
-              <ButtonPrimary
+              <button
                 type="button"
-                // disabled={newTorrServerForm.invalid}
-                isLoading={isLoading.value}
-                text="-"
-                size="sm"
-                onClick={$(() => {
+                class="hover:bg-teal-100 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg text-sm p-2.5"
+                onClick$={$(() => {
                   const index = torrServerStore.list.indexOf(
                     selectedTorServer.value
                   );
@@ -187,90 +184,60 @@ export default component$(() => {
                     localStorage.setItem("selectedTorServer", "");
                   }
                 })}
-              />
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="fill-teal-500 w-5 h-5"
+                  viewBox="0 0 448 512"
+                >
+                  <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
+                </svg>
+              </button>
             </div>
           </section>
         </div>
       </div>
-
-      {/* <section class="flex my-4 items-center justify-center">
-        <div class="text-2xl font-bold mr-2">
-          TorrServer: {selectedTorServer.value}
-        </div>
-        <div class="my-1">
-          <ButtonPrimary
-            type="button"
-            // disabled={newTorrServerForm.invalid}
-            isLoading={isLoading.value}
-            text="Delete"
-            size="sm"
-            onClick={$(() => {
-              const index = torrServerStore.list.indexOf(
-                selectedTorServer.value
-              );
-              if (index > -1) {
-                torrServerStore.list.splice(index, 1);
-                localStorage.setItem(
-                  "torrServerList",
-                  JSON.stringify(torrServerStore.list)
-                );
-                toastManager.addToast({
-                  message: `Torrserver ${selectedTorServer.value} has been deleted.`,
-                  type: "success",
-                  autocloseTime: 5000,
-                });
-                selectedTorServer.value = "";
-                localStorage.setItem("selectedTorServer", "");
-              }
-            })}
-          />
-        </div>
-      </section> */}
-
       <section>
         {isCheckingTorrServer.value && <DotPulseLoader />}
-
         <MediaGrid title={""}>
           {torrentsSig.value.length > 0 &&
             torrentsSig.value.map((data) => {
               const m = JSON.parse(data.data);
-              if (m.lampa || m.moviestracker) {
-                return (
-                  <>
-                    <a
-                      href={`magnet:?xt=urn:btih:${data.hash}`}
-                      //   href={paths.media(
-                      //     m.movie.seasons ? "tv" : "movie",
-                      //     m.movie.id,
-                      //     resource.value.lang
-                      //   )}
-                    >
-                      <MediaCard
-                        title={m.movie.title ? m.movie.title! : m.movie.name!}
-                        width={300}
-                        rating={m.movie.vote_average}
-                        year={
-                          m.movie.release_date
-                            ? parseInt(
-                                m.movie.release_date!.substring(0, 4),
-                                10
-                              )
-                            : parseInt(
-                                m.movie.first_air_date!.substring(0, 4),
-                                10
-                              )
-                        }
-                        picfile={m.movie.poster_path}
-                        isPerson={false}
-                        isHorizontal={false}
-                      />
-                    </a>
-                  </>
-                );
-              }
+              //   if (m.lampa || m.moviestracker) {
+              return (
+                <>
+                  <a
+                    href={`magnet:?xt=urn:btih:${data.hash}`}
+                    //   href={paths.media(
+                    //     m.movie.seasons ? "tv" : "movie",
+                    //     m.movie.id,
+                    //     resource.value.lang
+                    //   )}
+                  >
+                    <MediaCard
+                      title={data.title}
+                      width={300}
+                      rating={m.movie ? m.movie.vote_average : null}
+                      year={
+                        m.movie
+                          ? parseInt(
+                              m.movie.release_date
+                                ? m.movie.release_date!.substring(0, 4)
+                                : m.movie.first_air_date!.substring(0, 4),
+                              10
+                            )
+                          : 0
+                      }
+                      picfile={data.poster}
+                      isPerson={false}
+                      isHorizontal={false}
+                    />
+                  </a>
+                </>
+              );
+              //   }
             })}
         </MediaGrid>
-
         {torrentsSig.value.length === 0 && !isCheckingTorrServer.value && (
           <div>No Torrents</div>
         )}

@@ -1,4 +1,4 @@
-import type { TSResult } from "./types";
+import type { ProductionMediaDetails, TSResult, Torrent } from "./types";
 
 const fetchWithTimeout = async (resource: string, options: any) => {
   const { timeout = 8000 } = options;
@@ -15,15 +15,16 @@ const fetchWithTimeout = async (resource: string, options: any) => {
   return response;
 };
 
-type MethodType = "GET"
-| "POST"
-| "DELETE"
-| "PUT"
-| "PATCH"
-| "HEAD"
-| "OPTIONS"
-| "CONNECT"
-| "TRACE"
+type MethodType =
+  | "GET"
+  | "POST"
+  | "DELETE"
+  | "PUT"
+  | "PATCH"
+  | "HEAD"
+  | "OPTIONS"
+  | "CONNECT"
+  | "TRACE";
 
 const fetchTorrServer = async <T = unknown,>(
   resource: string,
@@ -31,7 +32,12 @@ const fetchTorrServer = async <T = unknown,>(
   path: string,
   body?: any
 ): Promise<T> => {
-  const requestOptions: {timeout: number, method: MethodType, body?: any, headers: any } = {
+  const requestOptions: {
+    timeout: number;
+    method: MethodType;
+    body?: any;
+    headers: any;
+  } = {
     timeout: 5000,
     method: method,
     headers: { "Content-Type": "application/json" },
@@ -65,5 +71,22 @@ export const listTorrent = async (url: string) => {
     action: "list",
   };
 
+  return fetchTorrServer<TSResult[]>(url, "POST", "torrents", body);
+};
+
+export const addTorrent = async (
+  url: string,
+  torrent: Torrent,
+  media: ProductionMediaDetails
+) => {
+  const data = JSON.stringify({ moviestracker: true, movie: media }) || "";
+  const body = {
+    action: "add",
+    link: torrent.Magnet,
+    poster: "http://image.tmdb.org/t/p/w300"+media.poster_path,
+    data: data,
+    save_to_db: true,
+    title: "[MOVIESTRACKER] " + torrent.Name,
+  };
   return fetchTorrServer<TSResult[]>(url, "POST", "torrents", body);
 };

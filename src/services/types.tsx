@@ -115,7 +115,9 @@ export type TvMedia = {
     Hash: string;
   }
   
-  export type ProductionMedia = TvMedia | MovieMedia;
+  export type ProductionMedia = TvMedia & MovieMedia;
+
+  export type ProductionMediaDetails = TvMediaDetails & MovieMediaDetails;
   
   export type PersonMedia = {
     profile_path?: string;

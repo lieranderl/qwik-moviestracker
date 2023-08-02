@@ -3,7 +3,7 @@ import { server$ } from "@builder.io/qwik-city";
 import { TorrentList } from "~/components/torrent-list";
 import type { getTorrentsType } from "~/services/tmdb";
 import { getTorrents } from "~/services/tmdb";
-import type { Seasons, Torrent } from "~/services/types";
+import type { ProductionMediaDetails, Seasons, Torrent } from "~/services/types";
 import { formatYear } from "~/utils/fomat";
 
 
@@ -13,10 +13,11 @@ export interface TorModalPros {
   year: number;
   isMovie: boolean;
   seasons: Seasons[];
+  media: ProductionMediaDetails;
 }
 
 export const TorrentsModal = component$(
-  ({ title, year, isMovie, seasons }: TorModalPros) => {
+  ({ title, year, isMovie, seasons, media }: TorModalPros) => {
     // const torrentsSignal = useSignal<Torrent[] | null>(null);
     const selectedYear = useSignal(year);
     const torrentsStore = useStore({ torrents: null as Torrent[] | null });
@@ -158,6 +159,7 @@ export const TorrentsModal = component$(
                   title={title}
                   year={selectedYear}
                   isMovie={isMovie}
+                  movie={media}
                 />
               </div>
             </div>

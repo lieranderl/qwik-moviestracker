@@ -4,7 +4,7 @@ import { SearchSVG } from "~/utils/icons/searchSVG";
 import { setValue, useForm, zodForm$ } from "@modular-forms/qwik";
 
 import { server$, z } from "@builder.io/qwik-city";
-import type { Torrent } from "~/services/types";
+import type { ProductionMediaDetails, Torrent } from "~/services/types";
 import { DotPulseLoader } from "./dot-pulse-loader/dot-pulse-loader";
 import type { getTorrentsType } from "~/services/tmdb";
 import { getTorrents } from "~/services/tmdb";
@@ -28,10 +28,11 @@ interface TorrentListProps {
   title: string;
   year: Signal<number>;
   isMovie: boolean;
+  movie: ProductionMediaDetails
 }
 
 export const TorrentList = component$(
-  ({ torrents, isMovie, title, year }: TorrentListProps) => {
+  ({ torrents, isMovie, title, year, movie }: TorrentListProps) => {
     const sortAttrib = [
       { value: "Date", text: "Дате" },
       { value: "Size", text: "Размеру" },
@@ -275,7 +276,7 @@ export const TorrentList = component$(
           {sortedTorrents.value !== null &&
             sortedTorrents.value.map((torrent, key) => (
               <>
-                <TorrentBlock torrent={torrent} key={key} />
+                <TorrentBlock torrent={torrent} movie={movie} key={key} />
               </>
             ))}
         </section>

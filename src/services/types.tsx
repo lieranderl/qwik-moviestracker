@@ -227,3 +227,16 @@ export type TvMedia = {
     cast: T[];
     crew: T[];
   };
+
+
+  export type TSResult = {
+    stat_string: string;
+    data: string;
+    hash: string;
+    poster: string;
+    stat: string;
+    timestamp: number;
+    title: string;
+    torrent_size: number;
+    name: string;
+  }

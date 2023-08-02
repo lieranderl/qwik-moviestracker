@@ -9,6 +9,7 @@ import { DotPulseLoader } from "~/components/dot-pulse-loader/dot-pulse-loader";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import { search } from "~/services/tmdb";
+import { MediaType } from "~/services/types";
 import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
@@ -78,7 +79,7 @@ export default component$(() => {
                             <a
                               class="text-left"
                               href={paths.media(
-                                m.media_type as "movie" | "tv" | "person",
+                                m.media_type! as MediaType,
                                 m.id,
                                 resource.value.lang
                               )}

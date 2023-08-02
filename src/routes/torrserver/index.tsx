@@ -17,7 +17,7 @@ export const useContentLoader = routeLoader$(async (event) => {
 });
 
 export const torrServerSchema = z.object({
-  ipaddress: z.string().nonempty(" ").ip(),
+  ipaddress: z.string().nonempty(" ").url(),
 });
 
 export type torrServerForm = z.infer<typeof torrServerSchema>;
@@ -39,13 +39,21 @@ export default component$(() => {
       isLoading.value = false;
       setValue(newTorrServerForm, "ipaddress", "");
       toastManager.addToast({
-        message: "TorrServer already exists!",
+        message: `TorrServer ${values.ipaddress} is already in the list!`,
         type: "error",
         autocloseTime: 5000,
       });
       return;
     }
     torrServerStore.list.push(values.ipaddress);
+    if (torrServerStore.list.length === 1) {
+      selectedTorServer.value = values.ipaddress;
+      localStorage.setItem("selectedTorServer", values.ipaddress);
+    }
+    localStorage.setItem(
+      "torrServerList",
+      JSON.stringify(torrServerStore.list)
+    );
     toastManager.addToast({
       message: `Torrserver ${values.ipaddress} has been added.`,
       type: "success",
@@ -56,8 +64,11 @@ export default component$(() => {
   });
 
   useVisibleTask$(async () => {
-    torrServerStore.list = ["1.1.1.1", "1.1.1.2"];
-    selectedTorServer.value = "1.1.1.2";
+    const tors = localStorage.getItem("torrServerList");
+    if (tors) {
+      torrServerStore.list = JSON.parse(tors) || [];
+    }
+    selectedTorServer.value = localStorage.getItem("selectedTorServer") || "";
   });
 
   return (
@@ -73,7 +84,7 @@ export default component$(() => {
                 {...props}
                 type="text"
                 value={field.value}
-                placeholder="Add New TorrServer IP address..."
+                placeholder="Add New TorrServer URL..."
                 class="w-64 mr-2 py-2 pl-2 text-sm border border-teal-300 rounded-lg bg-teal-50 focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500 placeholder-teal-900"
               />
               {field.error && (
@@ -101,6 +112,11 @@ export default component$(() => {
           class="mr-2 bg-teal-50 border border-teal-300 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500"
           onChange$={(_, e) => {
             selectedTorServer.value = e.value;
+            localStorage.setItem("selectedTorServer", e.value);
+          }}
+          onClick$={(_, e) => {
+            selectedTorServer.value = e.value;
+            localStorage.setItem("selectedTorServer", e.value);
           }}
         >
           {torrServerStore.list.map((item) => (
@@ -110,9 +126,37 @@ export default component$(() => {
           ))}
         </select>
       </section>
-      <section class="my-4 text-center">
-        <div class="text-2xl font-bold">
+      <section class="flex my-4 items-center justify-center">
+        <div class="text-2xl font-bold mr-2">
           TorrServer: {selectedTorServer.value}
+        </div>
+        <div class="my-1">
+          <ButtonPrimary
+            type="button"
+            // disabled={newTorrServerForm.invalid}
+            isLoading={isLoading.value}
+            text="Delete"
+            size="sm"
+            onClick={$(() => {
+              const index = torrServerStore.list.indexOf(
+                selectedTorServer.value
+              );
+              if (index > -1) {
+                torrServerStore.list.splice(index, 1);
+                localStorage.setItem(
+                  "torrServerList",
+                  JSON.stringify(torrServerStore.list)
+                );
+                toastManager.addToast({
+                  message: `Torrserver ${selectedTorServer.value} has been deleted.`,
+                  type: "success",
+                  autocloseTime: 5000,
+                });
+                selectedTorServer.value = "";
+                localStorage.setItem("selectedTorServer", "");
+              }
+            })}
+          />
         </div>
       </section>
     </div>

@@ -6,16 +6,15 @@ import {
   useContextProvider,
   useStore,
   $,
-  useVisibleTask$,
 } from "@builder.io/qwik";
 import type { ToastProps, ToastType } from "./toast";
 import { Toast } from "./toast";
 import { v4 as uuidv4 } from "uuid";
 
-export const toastsFuncContext = createContextId<{
+export const toastManagerContext = createContextId<{
   addToast: QRL<(toast: ToastBody) => string>;
   removeToast: QRL<(id: string) => void>;
-}>("toastsFuncContext");
+}>("toastManagerContext");
 
 export type ToastBody = {
     message: string;
@@ -25,7 +24,7 @@ export type ToastBody = {
 
 export const ToastStack = component$(() => {
   const toastsStore = useStore({ toasts: [] as ToastProps[] });
-  const toastsFunc = useStore({
+  const toastManager = useStore({
     addToast: $((toast: ToastBody) => {
       const ui = uuidv4();
       toastsStore.toasts.push({ ...toast, id: ui });
@@ -38,14 +37,14 @@ export const ToastStack = component$(() => {
     }),
   });
 
-  useContextProvider(toastsFuncContext, toastsFunc);
+  useContextProvider(toastManagerContext, toastManager);
 
-  useVisibleTask$(async () => { 
-    toastsFunc.addToast({ message: "TorrServer already exists", type: "error", autocloseTime: 5000 });
-    toastsFunc.addToast({ message: "TorrServer already exists sdsfsdf", type: "success" });
-    toastsFunc.addToast({ message: "TorrServer already exists", type: "warning" });
-    toastsFunc.addToast({ message: "TorrServer ", type: "info" });
-    });
+//   useVisibleTask$(async () => { 
+//     toastsFunc.addToast({ message: "TorrServer already exists", type: "error", autocloseTime: 5000 });
+//     toastsFunc.addToast({ message: "TorrServer already exists sdsfsdf", type: "success" });
+//     toastsFunc.addToast({ message: "TorrServer already exists", type: "warning" });
+//     toastsFunc.addToast({ message: "TorrServer ", type: "info" });
+//     });
 
   return (
     <>

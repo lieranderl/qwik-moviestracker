@@ -9,7 +9,7 @@ import {
 import { routeLoader$, z } from "@builder.io/qwik-city";
 import { setValue, useForm, zodForm$ } from "@modular-forms/qwik";
 import { ButtonPrimary } from "~/components/button-primary";
-import { toastsFuncContext } from "~/components/toast/toastStack";
+import { toastManagerContext } from "~/components/toast/toastStack";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
@@ -23,7 +23,7 @@ export const torrServerSchema = z.object({
 export type torrServerForm = z.infer<typeof torrServerSchema>;
 
 export default component$(() => {
-  const toastFunc = useContext(toastsFuncContext);
+  const toastManager = useContext(toastManagerContext);
   const selectedTorServer = useSignal("");
   const isLoading = useSignal(false);
   const torrServerStore = useStore({ list: [] as string[] });
@@ -35,17 +35,22 @@ export default component$(() => {
 
   const handleSubmit = $(async (values: torrServerForm) => {
     isLoading.value = true;
-    // newTorrServer.value = values.ipaddress;
     if (torrServerStore.list.includes(values.ipaddress)) {
       isLoading.value = false;
       setValue(newTorrServerForm, "ipaddress", "");
-      toastFunc.addToast({ message: "TorrServer already exists", type: "error" });
-      toastFunc.addToast({ message: "TorrServer already exists sdsfsdf", type: "success" });
-      toastFunc.addToast({ message: "TorrServer already exists", type: "warning" });
-      toastFunc.addToast({ message: "TorrServer ", type: "info" });
+      toastManager.addToast({
+        message: "TorrServer already exists!",
+        type: "error",
+        autocloseTime: 5000,
+      });
       return;
     }
     torrServerStore.list.push(values.ipaddress);
+    toastManager.addToast({
+      message: `Torrserver ${values.ipaddress} has been added.`,
+      type: "success",
+      autocloseTime: 5000,
+    });
     setValue(newTorrServerForm, "ipaddress", "");
     isLoading.value = false;
   });

@@ -95,7 +95,6 @@ export const TorrentBlock = component$(
                 />
               </div>
 
-              {/* <button type="button" class="btn btn-outline-primary" (click)="addTorrentToTS(torrent.Magnet, '[MOVIESTRACKER] '+torrent.Name, 'http://image.tmdb.org/t/p/w300/'+poster)" [disabled]="(this.torrserverurl$|async)===''">Добавить в TorrServer</button> */}
             </div>
           </div>
 

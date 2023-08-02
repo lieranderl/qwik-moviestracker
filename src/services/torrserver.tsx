@@ -86,7 +86,7 @@ export const addTorrent = async (
     poster: "http://image.tmdb.org/t/p/w300"+media.poster_path,
     data: data,
     save_to_db: true,
-    title: "[MOVIESTRACKER] " + torrent.Name,
+    title: "[MT] " + torrent.Name,
   };
   return fetchTorrServer<TSResult[]>(url, "POST", "torrents", body);
 };

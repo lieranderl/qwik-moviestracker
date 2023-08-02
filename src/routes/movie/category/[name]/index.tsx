@@ -2,7 +2,6 @@
 import {
   component$,
   $,
-  useContext,
   useSignal,
   useStore,
   useVisibleTask$,
@@ -13,7 +12,6 @@ import { Timestamp } from "firebase/firestore";
 import { ButtonPrimary } from "~/components/button-primary";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
-import { firebaseStoreContext } from "~/root";
 import { getFirebaseMovies, getTrendingMovie } from "~/services/tmdb";
 import type { MovieMediaDetails } from "~/services/types";
 import { categoryToDb, categoryToTitle, paths } from "~/utils/paths";
@@ -63,7 +61,7 @@ export const useContentLoader = routeLoader$(async (event) => {
 
 export default component$(() => {
   const resource = useContentLoader();
-  const firebaseStore = useContext(firebaseStoreContext);
+  const firebaseStore = useStore({moviesLastTimeFound: Timestamp.now().toMillis()});
   const moviesSig = useStore(resource.value.movies as MovieMediaDetails[]);
   const isloadingMovies = useSignal(false);
   const pageSig = useSignal(1);

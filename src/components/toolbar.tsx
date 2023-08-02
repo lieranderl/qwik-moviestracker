@@ -84,6 +84,15 @@ export const Toolbar = component$(({ lang }: ToolbarProps) => {
                 <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-teal-950 dark:bg-teal-50"></span>
               </a>
             </li>
+            <li class="mx-4">
+              <a
+                href={lang ? `/torrserver?lang=${lang}` : `/torrserver`}
+                class="group transition duration-300"
+              >
+                TorrServer
+                <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-teal-950 dark:bg-teal-50"></span>
+              </a>
+            </li>
               </ul>
             </div>
           </div>
@@ -113,6 +122,15 @@ export const Toolbar = component$(({ lang }: ToolbarProps) => {
                 class="group transition duration-300"
               >
                 Search
+                <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-teal-950 dark:bg-teal-50"></span>
+              </a>
+            </li>
+            <li class="mx-4">
+              <a
+                href={lang ? `/torrserver?lang=${lang}` : `/torrserver`}
+                class="group transition duration-300"
+              >
+                TorrServer
                 <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-teal-950 dark:bg-teal-50"></span>
               </a>
             </li>

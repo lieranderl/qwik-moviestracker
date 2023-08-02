@@ -8,27 +8,27 @@ import {
   $,
   useVisibleTask$,
 } from "@builder.io/qwik";
-import type { ToastType } from "./toast";
+import type { ToastProps, ToastType } from "./toast";
 import { Toast } from "./toast";
 import { v4 as uuidv4 } from "uuid";
 
 export const toastsFuncContext = createContextId<{
-  addToast: QRL<(message: string, type: ToastType) => string>;
+  addToast: QRL<(toast: ToastBody) => string>;
   removeToast: QRL<(id: string) => void>;
 }>("toastsFuncContext");
 
-export type Toast = {
-  id: string;
-  message: string;
-  type: ToastType;
-};
+export type ToastBody = {
+    message: string;
+    type: ToastType;
+    autocloseTime?: number;
+}
 
 export const ToastStack = component$(() => {
-  const toastsStore = useStore({ toasts: [] as Toast[] });
+  const toastsStore = useStore({ toasts: [] as ToastProps[] });
   const toastsFunc = useStore({
-    addToast: $((message: string, type: ToastType) => {
+    addToast: $((toast: ToastBody) => {
       const ui = uuidv4();
-      toastsStore.toasts.push({ id: ui, message, type });
+      toastsStore.toasts.push({ ...toast, id: ui });
       return ui;
     }),
     removeToast: $((id: string) => {
@@ -41,10 +41,10 @@ export const ToastStack = component$(() => {
   useContextProvider(toastsFuncContext, toastsFunc);
 
   useVisibleTask$(async () => { 
-    toastsFunc.addToast("TorrServer already exists", "error");
-    toastsFunc.addToast("TorrServer already exists sdsfsdf", "success");
-    toastsFunc.addToast("TorrServer already exists", "warning");
-    toastsFunc.addToast("TorrServer ", "info");
+    toastsFunc.addToast({ message: "TorrServer already exists", type: "error", autocloseTime: 5000 });
+    toastsFunc.addToast({ message: "TorrServer already exists sdsfsdf", type: "success" });
+    toastsFunc.addToast({ message: "TorrServer already exists", type: "warning" });
+    toastsFunc.addToast({ message: "TorrServer ", type: "info" });
     });
 
   return (

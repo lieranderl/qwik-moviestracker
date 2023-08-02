@@ -39,10 +39,10 @@ export default component$(() => {
     if (torrServerStore.list.includes(values.ipaddress)) {
       isLoading.value = false;
       setValue(newTorrServerForm, "ipaddress", "");
-      toastFunc.addToast("TorrServer already exists", "error")
-      toastFunc.addToast("TorrServer already exists sdsfsdf", "success")
-      toastFunc.addToast("TorrServer already exists", "warning")
-      toastFunc.addToast("TorrServer ", "info")
+      toastFunc.addToast({ message: "TorrServer already exists", type: "error" });
+      toastFunc.addToast({ message: "TorrServer already exists sdsfsdf", type: "success" });
+      toastFunc.addToast({ message: "TorrServer already exists", type: "warning" });
+      toastFunc.addToast({ message: "TorrServer ", type: "info" });
       return;
     }
     torrServerStore.list.push(values.ipaddress);

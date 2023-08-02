@@ -16,6 +16,7 @@ module.exports = {
       animation: {
         "slide-in-right": "slide_in_right 0.5s",
         "slide-out-right": "slide_out_right 0.5s",
+        "progress-slide": 'progress_slide var(--bar-duration) linear',
       },
       keyframes: {
         slide_in_right: {
@@ -32,6 +33,10 @@ module.exports = {
             visibility: "hidden",
           },
         },
+        progress_slide: {
+          "from": { width: "0%" },
+          "to": { width: "100%" },
+        }
       },
     },
   },

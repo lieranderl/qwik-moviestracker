@@ -205,15 +205,8 @@ export default component$(() => {
               const m = JSON.parse(data.data);
               //   if (m.lampa || m.moviestracker) {
               return (
-                <>
-                  <a
-                    href={`magnet:?xt=urn:btih:${data.hash}`}
-                    //   href={paths.media(
-                    //     m.movie.seasons ? "tv" : "movie",
-                    //     m.movie.id,
-                    //     resource.value.lang
-                    //   )}
-                  >
+                <div key={data.hash}>
+                  <a href={`magnet:?xt=urn:btih:${data.hash}`}>
                     <MediaCard
                       title={data.title}
                       width={300}
@@ -233,7 +226,7 @@ export default component$(() => {
                       isHorizontal={false}
                     />
                   </a>
-                </>
+                </div>
               );
               //   }
             })}

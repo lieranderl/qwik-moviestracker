@@ -16,7 +16,6 @@ export const LangButton = component$(() => {
         loc.url.searchParams.set("lang", "ru-RU");
         break;
     }
-    console.log(loc.url.href);
     window.location.assign(loc.url.href);
   });
 

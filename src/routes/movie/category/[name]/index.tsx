@@ -21,10 +21,6 @@ import { categoryToDb, categoryToTitle, paths } from "~/utils/paths";
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
 
-  if (event.params.name === "trending") {
-    console.log("trending movies");
-  }
-
   if (
     event.params.name === "updated" ||
     event.params.name === "hdr10" ||
@@ -118,7 +114,6 @@ export default component$(() => {
 
     if ("results" in movies) {
       const res = movies.results as MovieMediaDetails[];
-      console.log(res);
       moviesSig.push(...res);
     } else {
       moviesSig.push(...(movies as MovieMediaDetails[]));

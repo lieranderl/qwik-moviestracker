@@ -1,0 +1,14 @@
+{
+  "hosting": {
+    "site": "moviestracker",
+    "rewrites": [
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "my-cloud-run-app",
+          "region": "europe-west1"
+        }
+      }
+    ]
+  }
+}

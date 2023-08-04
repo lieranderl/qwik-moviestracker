@@ -1,6 +1,5 @@
 import type { Signal } from "@builder.io/qwik";
 import { component$, $, useVisibleTask$, useStore } from "@builder.io/qwik";
-import { SearchSVG } from "~/utils/icons/searchSVG";
 import { setValue, useForm, zodForm$ } from "@modular-forms/qwik";
 
 import { server$, z } from "@builder.io/qwik-city";
@@ -9,7 +8,7 @@ import { DotPulseLoader } from "./dot-pulse-loader/dot-pulse-loader";
 import type { getTorrentsType } from "~/services/tmdb";
 import { getTorrents } from "~/services/tmdb";
 import { TorrentBlock } from "./torrent";
-
+import {  HiMagnifyingGlassOutline } from "@qwikest/icons/heroicons";
 
 const searchTorrSchema = z.object({
   name: z.string().min(3, "Please enter movie name."),
@@ -22,13 +21,12 @@ const searchTorrSchema = z.object({
 
 type SearchTorrForm = z.infer<typeof searchTorrSchema>;
 
-
 interface TorrentListProps {
   torrents: Torrent[] | null;
   title: string;
   year: Signal<number>;
   isMovie: boolean;
-  movie: ProductionMediaDetails
+  movie: ProductionMediaDetails;
 }
 
 export const TorrentList = component$(
@@ -84,7 +82,8 @@ export const TorrentList = component$(
         }
 
         sortedTorrents.value = sortedTorrents.value.sort((a, b) =>
-          a[sortFilterStore.selectedSort as keyof typeof a] > b[sortFilterStore.selectedSort as keyof typeof b]
+          a[sortFilterStore.selectedSort as keyof typeof a] >
+          b[sortFilterStore.selectedSort as keyof typeof b]
             ? -1
             : 1
         );
@@ -97,30 +96,28 @@ export const TorrentList = component$(
       validate: zodForm$(searchTorrSchema),
     });
 
-    const handleSubmit = $(
-      async (values: SearchTorrForm) => {
-        sortedTorrents.value = null;
-        try {
-          const torrents = await server$(
-            ({ name, year, isMovie }: getTorrentsType) => {
-              return getTorrents({ name: name, year: year, isMovie: isMovie });
-            }
-          )({
-            name: values.name,
-            year: values.year,
-            isMovie: isMovie,
-          });
-          if (torrents.length > 0) {
-            initTorrents.value = torrents;
-            return;
+    const handleSubmit = $(async (values: SearchTorrForm) => {
+      sortedTorrents.value = null;
+      try {
+        const torrents = await server$(
+          ({ name, year, isMovie }: getTorrentsType) => {
+            return getTorrents({ name: name, year: year, isMovie: isMovie });
           }
-        } catch (error) {
-          sortedTorrents.value = [];
+        )({
+          name: values.name,
+          year: values.year,
+          isMovie: isMovie,
+        });
+        if (torrents.length > 0) {
+          initTorrents.value = torrents;
+          return;
         }
-
+      } catch (error) {
         sortedTorrents.value = [];
       }
-    );
+
+      sortedTorrents.value = [];
+    });
 
     useVisibleTask$((ctx) => {
       ctx.track(() => year.value);
@@ -198,9 +195,9 @@ export const TorrentList = component$(
             <button
               type="submit"
               disabled={searchTorrForm.invalid || sortedTorrents.value == null}
-              class="fill-teal-950 dark:fill-teal-50 hover:bg-teal-100 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg text-sm p-2.5"
+              class="fill-teal-950 dark:fill-teal-50 hover:bg-teal-100 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg text-lg p-2.5"
             >
-              <SearchSVG />
+              <HiMagnifyingGlassOutline />
             </button>
           </Form>
         </div>

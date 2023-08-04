@@ -1,11 +1,14 @@
 FROM node:18-bullseye-slim AS build-env
 
-COPY . /app
+COPY dist /app/dist
+COPY server /app/server
+COPY package.json /app/package.json
+COPY pnpm-lock.yaml /app/pnpm-lock.yaml
+
 WORKDIR /app
 
-# It is recommended that you only install production dependencies with
-# `npm i --omit=dev`. You may need to check which dependencies are missing
-RUN npm i
+RUN npm install -g pnpm
+RUN pnpm i 
 
 
 # A light-weight image for running the app

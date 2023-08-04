@@ -8,7 +8,6 @@ import { DotPulseLoader } from "./dot-pulse-loader/dot-pulse-loader";
 import type { getTorrentsType } from "~/services/tmdb";
 import { getTorrents } from "~/services/tmdb";
 import { TorrentBlock } from "./torrent";
-import {  HiMagnifyingGlassOutline } from "@qwikest/icons/heroicons";
 
 const searchTorrSchema = z.object({
   name: z.string().min(3, "Please enter movie name."),
@@ -197,7 +196,7 @@ export const TorrentList = component$(
               disabled={searchTorrForm.invalid || sortedTorrents.value == null}
               class="fill-teal-950 dark:fill-teal-50 hover:bg-teal-100 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg text-lg p-2.5"
             >
-              <HiMagnifyingGlassOutline />
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" width="1em" height="1em" data-qwikest-icon="" q:key="A5_0"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path></svg>
             </button>
           </Form>
         </div>

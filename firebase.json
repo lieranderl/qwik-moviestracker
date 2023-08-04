@@ -5,7 +5,7 @@
       {
         "source": "**",
         "run": {
-          "serviceId": "my-cloud-run-app",
+          "serviceId": "moviestracker-app",
           "region": "europe-west1"
         }
       }

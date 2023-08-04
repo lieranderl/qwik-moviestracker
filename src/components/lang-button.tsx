@@ -16,7 +16,7 @@ export const LangButton = component$(() => {
         loc.url.searchParams.set("lang", "ru-RU");
         break;
     }
-    const url = loc.url.href.replace("https://my-cloud-run-app-asjvzhlb3q-ew.a.run.app/", "https://moviestracker.web.app/");
+    const url = loc.url.href.replace("https://moviestracker-app-asjvzhlb3q-ew.a.run.app/", "https://moviestracker.web.app/");
     document.location.assign(url);
   });
 

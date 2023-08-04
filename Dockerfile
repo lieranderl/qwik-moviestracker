@@ -3,7 +3,7 @@ FROM node:18-bullseye-slim AS build-env
 COPY dist /app/dist
 COPY server /app/server
 COPY package.json /app/package.json
-COPY pnpm-lock.yaml /app/pnpm-lock.yaml
+COPY public /app/public
 
 WORKDIR /app
 

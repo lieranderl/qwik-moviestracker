@@ -14,6 +14,7 @@ import { MaleSVG } from "~/utils/icons/maleSVG";
 import { NonbiSVG } from "~/utils/icons/nonbiSVG";
 import { PlaceSVG } from "~/utils/icons/placeSVG";
 import { PersonSVG } from "~/utils/icons/personSVG";
+import { Image } from '@unpic/qwik';
 
 interface MovieDetailsProps {
   person: PersonMediaDetails;
@@ -47,7 +48,7 @@ export const PersonDetails = component$(
         <section class="md:grid md:grid-rows-1 md:grid-flow-col flex-wrap md:gap-8 ">
           {person.profile_path && (
             <div class="flex w-full justify-center md:block">
-              <img
+              <Image
                 width="300"
                 height="450"
                 src={`https://image.tmdb.org/t/p/w300${person.profile_path}`}

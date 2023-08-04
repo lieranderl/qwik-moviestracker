@@ -16,6 +16,17 @@ import {
 } from "@builder.io/qwik/server";
 import { manifest } from "@qwik-client-manifest";
 import Root from "./root";
+import { isDev } from '@builder.io/qwik/build'
+
+if (isDev) {
+  const consoleWarn = console.warn
+  const SUPPRESSED_WARNINGS = ['Duplicate implementations of "JSXNode" found']
+
+  console.warn = function filterWarnings (msg, ...args) {
+    if (!SUPPRESSED_WARNINGS.some(entry => msg.includes(entry) || args.some(arg => arg.includes(entry))))
+      consoleWarn(msg, ...args)
+  }
+}
 
 export default function (opts: RenderToStreamOptions) {
   return renderToStream(<Root />, {

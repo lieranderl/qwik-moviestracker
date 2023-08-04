@@ -1,5 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 import type { Video } from "~/services/types";
+import { Image } from '@unpic/qwik';
 
 export interface TorModalPros {
   videos?: Video[];
@@ -63,7 +64,7 @@ export const TrailersModal = component$(({ videos }: TorModalPros) => {
                         key={video.id}
                         target="_none"
                       >
-                        <img
+                        <Image
                           alt={video.name}
                           class="h-full max-h-full md:w-full w-[300px]  object-cover rounded-md border-2 border-base-300 border-white dark:border-teal-800"
                           height={300}

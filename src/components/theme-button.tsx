@@ -40,11 +40,11 @@ export const ThemeButton = component$(() => {
       onClick$={updateTheme}
     >
       {themeSig.value === "dark" ? (
-        <div class="text-lg fill-teal-950 dark:fill-teal-50">
+        <div class="text-xl fill-teal-950 dark:fill-teal-50">
           <HiMoonOutline />
         </div>
       ) : (
-        <div class="text-lg fill-teal-950 dark:fill-teal-50">
+        <div class="text-xl fill-teal-950 dark:fill-teal-50">
           <HiSunOutline />
         </div>
       )}

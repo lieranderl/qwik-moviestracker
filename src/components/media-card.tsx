@@ -1,4 +1,5 @@
 import { component$, useComputed$ } from "@builder.io/qwik";
+import { Image } from '@unpic/qwik';
 
 interface MovieCardProps {
   title: string;
@@ -9,6 +10,7 @@ interface MovieCardProps {
   year?: number;
   isPerson: boolean;
   isHorizontal: boolean;
+  
 }
 
 export const MediaCard = component$(
@@ -64,7 +66,7 @@ export const MediaCard = component$(
         <div class="group">
           <div class="drop-shadow transition-scale scale-95 duration-300 ease-in-out group-hover:scale-100 group-hover:drop-shadow-md">
             <picture>
-              <img
+              <Image
                 class="rounded-md border-2 border-base-300 border-white dark:border-teal-800"
                 src={
                   picfile

@@ -21,6 +21,7 @@ import { langBudget, langRevenue, langMinutes } from "~/utils/languages";
 import { TorrentsModal } from "./torrents-list-modal";
 import { TrailersModal } from "./trailers-list-modal";
 import { SiThemoviedatabase } from "@qwikest/icons/simpleicons";
+import { ExternalIds } from "./external_ids";
 
 interface MovieDetailsProps {
   movie: MovieMediaDetails;
@@ -149,6 +150,8 @@ export const MovieDetails = component$(
             </div>
           )}
         </section>
+
+        <ExternalIds external_ids={movie.external_ids} type={"tv"} />
 
         <section class="my-8">
           <div>{movie.overview}</div>

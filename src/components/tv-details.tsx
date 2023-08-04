@@ -14,6 +14,7 @@ import { MediaCard } from "./media-card";
 import { MediaCarousel } from "./media-carousel";
 import { TorrentsModal } from "./torrents-list-modal";
 import { TrailersModal } from "./trailers-list-modal";
+import { ExternalIds } from "./external_ids";
 
 interface TvDetailsProps {
   tv: TvMediaDetails;
@@ -228,6 +229,9 @@ export const TvDetails = component$(
             </div>
           )}
         </section>
+
+        <ExternalIds external_ids={tv.external_ids} type={"tv"}/>
+
 
         <section class="my-8">
           <div>{tv.overview}</div>

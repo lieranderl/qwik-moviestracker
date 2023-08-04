@@ -14,7 +14,8 @@ import { MaleSVG } from "~/utils/icons/maleSVG";
 import { NonbiSVG } from "~/utils/icons/nonbiSVG";
 import { PlaceSVG } from "~/utils/icons/placeSVG";
 import { PersonSVG } from "~/utils/icons/personSVG";
-import { Image } from '@unpic/qwik';
+import { Image } from "@unpic/qwik";
+import { ExternalIds } from "./external_ids";
 
 interface MovieDetailsProps {
   person: PersonMediaDetails;
@@ -92,6 +93,8 @@ export const PersonDetails = component$(
                 </div>
               )}
             </section>
+
+            <ExternalIds external_ids={person.external_ids} type={"person"} />
 
             {person.biography && person.biography.length > bioSize.value && (
               <>

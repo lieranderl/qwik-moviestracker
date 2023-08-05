@@ -14,6 +14,12 @@ const firebase_config = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG);
 const firebase_app = initializeApp(firebase_config);
 const db = getFirestore(firebase_app);
 
+export enum DbType {
+  LastMovies = "latesttorrentsmovies",
+  HDR10 = "hdr10movies",
+  DV = "dvmovies",
+}
+
 type getMovieFirestoreType = {
   page: number;
   dbName: string;
@@ -33,9 +39,9 @@ export const getMoviesFirebase = async ({
     startAfter(Timestamp.fromMillis(startTime))
   );
   const moviesSnapshot = await getDocs(moviesQuery);
-  const movies: (MovieShort & MovieFirestore)[] = [];
+  const movies: MovieFirestore[] = [];
   moviesSnapshot.forEach((doc) => {
-    movies.push(doc.data() as MovieShort & MovieFirestore);
+    movies.push(doc.data() as MovieFirestore);
   });
   return movies;
 };

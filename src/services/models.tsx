@@ -13,7 +13,7 @@ export type MovieShort = {
   vote_count?: number;
   poster_path?: string;
   original_title?: string;
-  release_date?: Date;
+  release_date?: string;
   title?: string;
   video?: boolean;
 };
@@ -32,7 +32,7 @@ export type TvShort = {
   poster_path?: string;
   name?: string;
   original_name?: string;
-  first_air_date?: Date;
+  first_air_date?: string;
   origin_country?: string[];
 };
 
@@ -52,7 +52,7 @@ export type MovieDetails = {
   poster_path?: string;
   production_companies?: ProductionCompany[];
   production_countries?: ProductionCountry[];
-  release_date?: Date;
+  release_date?: string;
   revenue?: number;
   runtime?: number;
   spoken_languages?: SpokenLanguage[];
@@ -69,13 +69,13 @@ export type TvDetails = {
   backdrop_path?: string;
   created_by?: CreatedBy[];
   episode_run_time?: number[];
-  first_air_date?: Date;
+  first_air_date?: string;
   genres?: Genre[];
   homepage?: string;
   id: number;
   in_production?: boolean;
   languages?: string[];
-  last_air_date?: Date;
+  last_air_date?: string;
   last_episode_to_air?: LastEpisodeToAir;
   name?: string;
   next_episode_to_air?: string;
@@ -108,7 +108,7 @@ export type CreatedBy = {
 };
 
 export type Season = {
-  air_date?: Date;
+  air_date?: string;
   episode_count?: number;
   id?: number;
   name?: string;
@@ -124,7 +124,7 @@ export type LastEpisodeToAir = {
   overview?: string;
   vote_average?: number;
   vote_count?: number;
-  air_date?: Date;
+  air_date?: string;
   episode_number?: number;
   episode_type?: string;
   production_code?: string;
@@ -203,22 +203,22 @@ export type VideoResult = {
   size?: number;
   type?: string;
   official?: boolean;
-  published_at?: Date;
+  published_at?: string;
   id?: string;
 };
 
 export type Images = {
-  backdrops?: ImagesDetails[];
-  id?: number;
-  logos?: ImagesDetails[];
-  posters?: ImagesDetails[];
+  backdrops: ImagesDetails[];
+  id: number;
+  logos: ImagesDetails[];
+  posters: ImagesDetails[];
 };
 
 export type ImagesDetails = {
   aspect_ratio?: number;
   height?: number;
   iso_639_1?: null | string;
-  file_path?: string;
+  file_path: string;
   vote_average?: number;
   vote_count?: number;
   width?: number;
@@ -301,8 +301,8 @@ export type PersonDetails = {
   adult?: boolean;
   also_known_as?: string[];
   biography?: string;
-  birthday?: Date;
-  deathday?: Date;
+  birthday?: string;
+  deathday?: string;
   gender?: number;
   homepage?: string;
   id: number;
@@ -321,18 +321,27 @@ export type MediaFull = MovieFull | TvFull | PersonFull;
 export type MediaShort = MovieShort | TvShort | PersonShort;
 export type MediaDetails = MovieDetails | TvDetails | PersonDetails;
 
-export type MediaCollection = {
-  page?: number;
-  results?: MediaShort[];
-  total_pages?: number;
-  total_results?: number;
+export type MediaShortStrict<T extends MediaType.Movie | MediaType.Tv | MediaType.Person> =
+  T extends MediaType.Movie
+    ? MovieFirestore
+    : T extends MediaType.Tv
+    ? TvShort
+    : PersonShort;
+
+export type MediaCollection<T> = {
+  page: number;
+  results: T[];
+  total_pages: number;
+  total_results: number;
 };
 
-export type MovieFirestore = {
+export type MovieFirestoreAttribs = {
   Year: string;
   LastTimeFound?: number | Timestamp;
   lastTimeFound?: number;
 };
+
+export type MovieFirestore = MovieShort & MovieFirestoreAttribs
 
 export type Torrent = {
   Name: string;
@@ -352,7 +361,7 @@ export type Torrent = {
   Seeds: number;
   Leeches: number;
   Hash: string;
-}
+};
 
 export type ImdbRating = {
   Id: string;

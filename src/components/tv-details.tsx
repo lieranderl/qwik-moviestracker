@@ -277,6 +277,8 @@ export const TvDetails = component$(
                   <MediaCard
                     title={c.name!}
                     width={300}
+                    year={0}
+                    rating={0}
                     picfile={c.profile_path!}
                     isPerson={true}
                     isHorizontal={false}
@@ -294,6 +296,8 @@ export const TvDetails = component$(
                 <MediaCard
                   title={c.name!}
                   width={300}
+                  year={0}
+                  rating={0}
                   picfile={c.profile_path!}
                   isPerson={true}
                   isHorizontal={false}
@@ -315,12 +319,12 @@ export const TvDetails = component$(
               <>
                 <a href={paths.media("tv", m.id, lang)}>
                   <MediaCard
-                    title={m.name!}
+                    title={m.name ? m.name : ""}  
                     width={500}
-                    rating={m.vote_average!}
+                    rating={m.vote_average ? m.vote_average : 0}
                     year={
                       (m.first_air_date && formatYear(m.first_air_date)) ||
-                      undefined
+                      0
                     }
                     picfile={m.backdrop_path}
                     isPerson={false}

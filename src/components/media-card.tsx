@@ -6,8 +6,8 @@ interface MovieCardProps {
   picfile: string | null | undefined;
   width: number;
   charName?: string;
-  rating?: number;
-  year?: number;
+  rating: number;
+  year: number;
   isPerson: boolean;
   isHorizontal: boolean;
   
@@ -81,17 +81,17 @@ export const MediaCard = component$(
                 height={height.value}
                 alt=""
               />
-              {(rating || rating! > 0) && (
+              {rating > 0 && (
                 <span
                   class={[
                     "absolute text-sm font-bold px-2.5 py-0.5 bottom-2 left-2 rounded-full",
                     colorClass,
                   ]}
                 >
-                  {rating!.toFixed(1)}
+                  {rating.toFixed(1)}
                 </span>
               )}
-              {year && (
+              {year > 0 && (
                 <span
                   class={[
                     "absolute text-sm font-bold px-2.5 py-0.5 bottom-2 right-2 rounded-full",

@@ -12,8 +12,9 @@ import { Timestamp } from "firebase/firestore";
 import { ButtonPrimary } from "~/components/button-primary";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
-import { getFirebaseMovies, getTrendingMovie } from "~/services/tmdb";
-import type { MovieMediaDetails } from "~/services/types";
+import type { MovieFirestore, MovieShort } from "~/services/models";
+import { MediaType } from "~/services/models";
+import { getFirebaseMovies, getTrandingMedia } from "~/services/tmdb";
 import { categoryToDb, categoryToTitle, paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
@@ -46,9 +47,13 @@ export const useContentLoader = routeLoader$(async (event) => {
     }
   } else {
     try {
-      const res = await getTrendingMovie({ page: 1, language: lang });
+      const res = await getTrandingMedia({
+        page: 1,
+        language: lang,
+        type: MediaType.Movie,
+      });
       return {
-        movies: res.results as MovieMediaDetails[],
+        movies: res.results,
         db: categoryToDb(event.params.name),
         category: event.params.name,
         lang: lang,
@@ -61,8 +66,12 @@ export const useContentLoader = routeLoader$(async (event) => {
 
 export default component$(() => {
   const resource = useContentLoader();
-  const firebaseStore = useStore({moviesLastTimeFound: Timestamp.now().toMillis()});
-  const moviesSig = useStore(resource.value.movies as MovieMediaDetails[]);
+  const firebaseStore = useStore({
+    moviesLastTimeFound: Timestamp.now().toMillis(),
+  });
+  const moviesSig = useStore(
+    resource.value.movies as MovieFirestore[]
+  );
   const isloadingMovies = useSignal(false);
   const pageSig = useSignal(1);
 
@@ -101,9 +110,10 @@ export default component$(() => {
           need_backdrop: false,
         });
       } else {
-        return getTrendingMovie({
+        return getTrandingMedia({
           page: pageSig.value,
           language: resource.value.lang,
+          type: MediaType.Movie,
         });
       }
     });
@@ -111,10 +121,10 @@ export default component$(() => {
     const movies = await moviesFunc();
 
     if ("results" in movies) {
-      const res = movies.results as MovieMediaDetails[];
+      const res = movies.results as MovieFirestore[];
       moviesSig.push(...res);
     } else {
-      moviesSig.push(...(movies as MovieMediaDetails[]));
+      moviesSig.push(...movies);
     }
 
     console.log(moviesSig.length);
@@ -129,10 +139,10 @@ export default component$(() => {
             <>
               <a href={paths.media("movie", m.id, resource.value.lang)}>
                 <MediaCard
-                  title={m.title!}
+                  title={m.title ? m.title : ""}
                   width={300}
-                  rating={m.vote_average!}
-                  year={parseInt(m.release_date!.substring(0, 4), 10)}
+                  rating={m.vote_average ? m.vote_average : 0}
+                  year={parseInt((m.release_date ? m.release_date.substring(0, 4) : "0"), 10)}
                   picfile={m.poster_path}
                   isPerson={false}
                   isHorizontal={false}

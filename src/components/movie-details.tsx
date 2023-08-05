@@ -183,8 +183,10 @@ export const MovieDetails = component$(
             <>
               <a href={paths.media("person", c.id, lang)}>
                 <MediaCard
-                  title={c.name!}
+                  title={c.name ? c.name : ""}
                   width={300}
+                  year={0}
+                  rating={0}
                   picfile={c.profile_path!}
                   isPerson={true}
                   isHorizontal={false}
@@ -205,6 +207,8 @@ export const MovieDetails = component$(
                     <MediaCard
                       title={c.name!}
                       width={300}
+                      year={0}
+                      rating={0}
                       picfile={c.profile_path!}
                       isPerson={true}
                       isHorizontal={false}
@@ -229,10 +233,10 @@ export const MovieDetails = component$(
                   <MediaCard
                     title={m.title!}
                     width={500}
-                    rating={m.vote_average!}
+                    rating={m.vote_average ? m.vote_average : 0}
                     year={
                       (m.release_date && formatYear(m.release_date)) ||
-                      undefined
+                      0
                     }
                     picfile={m.backdrop_path}
                     isPerson={false}
@@ -255,12 +259,12 @@ export const MovieDetails = component$(
               <>
                 <a href={paths.media("movie", m.id, lang)}>
                   <MediaCard
-                    title={m.title!}
+                    title={m.title ? m.title : ""}
                     width={500}
-                    rating={m.vote_average!}
+                    rating={m.vote_average ? m.vote_average : 0}
                     year={
                       (m.release_date && formatYear(m.release_date)) ||
-                      undefined
+                      0
                     }
                     picfile={m.backdrop_path}
                     isPerson={false}

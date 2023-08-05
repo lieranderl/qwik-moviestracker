@@ -7,15 +7,12 @@ import type {
   MovieMediaDetails,
   PersonMediaDetails,
   ProductionMedia,
-  Torrent,
   TvMedia,
   TvMediaDetails,
 } from "./types";
-import type { getMoviesIdsType } from "./firestore";
 import { getMoviesFirebase } from "./firestore";
 import { formatYear } from "~/utils/fomat";
 import type { Timestamp } from "firebase/firestore";
-
 
 const baseURL = "https://api.themoviedb.org/3";
 
@@ -157,12 +154,11 @@ export const getFirebaseMovies = async ({
   sortDirection,
   need_backdrop,
 }: getFirebaseMoviesType) => {
-  const getMoviesIdsInput: getMoviesIdsType = {
+  let movies = await getMoviesFirebase({
     page: entries,
     dbName: db_name,
     startTime: startTime,
-  };
-  let movies = await getMoviesFirebase(getMoviesIdsInput);
+  });
   if (movies.length == 0) return movies;
   movies = await Promise.all(
     movies.map(async (item) => {
@@ -187,15 +183,12 @@ export const getFirebaseMovies = async ({
       if (language == "en-US") {
         item.title = item.original_title;
       }
-      item.Torrents = [];
       item.lastTimeFound = (item.LastTimeFound! as Timestamp).toMillis();
       item.LastTimeFound = (item.LastTimeFound! as Timestamp).toMillis();
-
       return item;
     })
   );
 
-  // result.results = await Promise.all(newMovieMedia);
   if (sortDirection === "asc") {
     movies = movies.sort(
       (a, b) => (a.lastTimeFound! as number) - (b.lastTimeFound! as number)
@@ -587,58 +580,4 @@ export const getGenreList = async ({ media }: GetGenreList) => {
   const res = await fetchTMDB<{ genres: Genre[] }>(`genre/${media}/list`, {});
   return res.genres;
 };
-
-const baseCGURL = "https://moviestracker-gw-eu-w1-8vmmbwbl.ew.gateway.dev";
-
-export type ImdbRating = {
-  Id: string;
-  Rating: string;
-  Votes: string;
-};
-
-const fetchAPI = async <T = unknown,>(
-  path: string,
-  search: Record<string, string> = {}
-): Promise<T> => {
-  const params = new URLSearchParams({
-    ...search,
-    key: import.meta.env.VITE_GC_API_KEY,
-  });
-  const url = `${baseCGURL}/${path}?${params}`;
-  console.log(url);
-  const response = await fetch(url, {
-    headers: {
-      Origin: "https://moviestracker.web.app",
-      Referer: "https://moviestracker.web.app",
-    },
-  });
-  console.log(response.status);
-  if (!response.ok) {
-    // eslint-disable-next-line no-console
-    console.error(response.headers);
-    console.error(url);
-    throw new Error(response.statusText);
-  }
-
-  return response.json() as T;
-};
-
-export const getImdbRating = (imdb_id: string) => {
-  return fetchAPI<ImdbRating>(`getimdb`, { imdb_id });
-};
-
-export type getTorrentsType = {
-  name: string;
-  year: number;
-  isMovie: boolean;
-};
-
-export const getTorrents = ({ name, year, isMovie }: getTorrentsType) => {
-  return fetchAPI<Torrent[]>(`gettorrents`, {
-    MovieName: name,
-    Year: year.toString(),
-    isMovie: String(isMovie),
-  });
-};
-
 

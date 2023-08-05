@@ -5,11 +5,11 @@ import {
   useVisibleTask$,
   useSignal,
 } from "@builder.io/qwik";
-import { getImdbRating } from "~/services/tmdb";
 import { isBrowser } from "@builder.io/qwik/build";
 import { server$ } from "@builder.io/qwik-city";
 import { DotPulseLoader } from "./dot-pulse-loader/dot-pulse-loader";
 import { SiImdb } from "@qwikest/icons/simpleicons";
+import { getImdbRating } from "~/services/cloud-func-api";
 
 export const Imdb = component$(({ id }: { id: string }) => {
   const isBrowserSig = useSignal(isBrowser);
@@ -44,8 +44,7 @@ export const Imdb = component$(({ id }: { id: string }) => {
                 <div class="text-[2.5rem] fill-teal-950 dark:fill-teal-50 me-2">
                   <SiImdb />
                 </div>
-                
-                
+
                 <div class="text-md font-bold">
                   {imdb.Rating}{" "}
                   {imdb.Votes && (

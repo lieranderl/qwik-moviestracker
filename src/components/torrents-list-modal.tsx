@@ -1,12 +1,11 @@
 import { component$, $, useStore, useSignal } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
 import { TorrentList } from "~/components/torrent-list";
-import type { getTorrentsType } from "~/services/tmdb";
-import { getTorrents } from "~/services/tmdb";
-import type { ProductionMediaDetails, Seasons, Torrent } from "~/services/types";
+import type { getTorrentsType } from "~/services/cloud-func-api";
+import { getTorrents } from "~/services/cloud-func-api";
+import type { Torrent } from "~/services/models";
+import type { ProductionMediaDetails, Seasons } from "~/services/types";
 import { formatYear } from "~/utils/fomat";
-
-
 
 export interface TorModalPros {
   title: string;

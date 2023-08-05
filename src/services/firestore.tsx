@@ -8,13 +8,13 @@ import {
   startAfter,
 } from "firebase/firestore";
 import { collection, getDocs } from "firebase/firestore";
-import type { MovieMedia } from "./types";
+import type { MovieShort, MovieFirestore } from "./models";
 
 const firebase_config = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG);
 const firebase_app = initializeApp(firebase_config);
 const db = getFirestore(firebase_app);
 
-export type getMovieType = {
+type getMovieFirestoreType = {
   page: number;
   dbName: string;
   startTime: number;
@@ -24,7 +24,7 @@ export const getMoviesFirebase = async ({
   page,
   dbName,
   startTime,
-}: getMovieType) => {
+}: getMovieFirestoreType) => {
   const lastmoviesRef = collection(db, dbName);
   const moviesQuery = query(
     lastmoviesRef,
@@ -33,9 +33,9 @@ export const getMoviesFirebase = async ({
     startAfter(Timestamp.fromMillis(startTime))
   );
   const moviesSnapshot = await getDocs(moviesQuery);
-  const movies: MovieMedia[] = [];
+  const movies: (MovieShort & MovieFirestore)[] = [];
   moviesSnapshot.forEach((doc) => {
-    movies.push(doc.data() as MovieMedia);
+    movies.push(doc.data() as MovieShort & MovieFirestore);
   });
-  return movies as MovieMedia[];
+  return movies;
 };

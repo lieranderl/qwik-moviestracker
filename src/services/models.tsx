@@ -1,8 +1,10 @@
+import type { Timestamp } from "firebase/firestore";
+
 export type MovieShort = {
   adult?: boolean;
   backdrop_path?: string;
   genre_ids?: number[];
-  id?: number;
+  id: number;
   media_type?: MediaType;
   original_language?: string;
   overview?: string;
@@ -20,7 +22,7 @@ export type TvShort = {
   adult?: boolean;
   backdrop_path?: string;
   genre_ids?: number[];
-  id?: number;
+  id: number;
   media_type?: MediaType;
   original_language?: string;
   overview?: string;
@@ -34,113 +36,110 @@ export type TvShort = {
   origin_country?: string[];
 };
 
-
-
 export type MovieDetails = {
-  adult?:                 boolean;
-  backdrop_path?:         string;
+  adult?: boolean;
+  backdrop_path?: string;
   belongs_to_collection?: BelongsToCollection;
-  budget?:                number;
-  genres?:                Genre[];
-  homepage?:              string;
-  id?:                    number;
-  imdb_id?:               string;
-  original_language?:     string;
-  original_title?:        string;
-  overview?:              string;
-  popularity?:            number;
-  poster_path?:           string;
-  production_companies?:  ProductionCompany[];
-  production_countries?:  ProductionCountry[];
-  release_date?:          Date;
-  revenue?:               number;
-  runtime?:               number;
-  spoken_languages?:      SpokenLanguage[];
-  status?:                string;
-  tagline?:               string;
-  title?:                 string;
-  video?:                 boolean;
-  vote_average?:          number;
-  vote_count?:            number;
-}
+  budget?: number;
+  genres?: Genre[];
+  homepage?: string;
+  id: number;
+  imdb_id?: string;
+  original_language?: string;
+  original_title?: string;
+  overview?: string;
+  popularity?: number;
+  poster_path?: string;
+  production_companies?: ProductionCompany[];
+  production_countries?: ProductionCountry[];
+  release_date?: Date;
+  revenue?: number;
+  runtime?: number;
+  spoken_languages?: SpokenLanguage[];
+  status?: string;
+  tagline?: string;
+  title?: string;
+  video?: boolean;
+  vote_average?: number;
+  vote_count?: number;
+};
 
 export type TvDetails = {
-  adult?:                boolean;
-  backdrop_path?:        string;
-  created_by?:           CreatedBy[];
-  episode_run_time?:     number[];
-  first_air_date?:       Date;
-  genres?:               Genre[];
-  homepage?:             string;
-  id?:                   number;
-  in_production?:        boolean;
-  languages?:            string[];
-  last_air_date?:        Date;
-  last_episode_to_air?:  LastEpisodeToAir;
-  name?:                 string;
-  next_episode_to_air?:  string;
-  networks?:             Network[];
-  number_of_episodes?:   number;
-  number_of_seasons?:    number;
-  origin_country?:       string[];
-  original_language?:    string;
-  original_name?:        string;
-  overview?:             string;
-  popularity?:           number;
-  poster_path?:          string;
+  adult?: boolean;
+  backdrop_path?: string;
+  created_by?: CreatedBy[];
+  episode_run_time?: number[];
+  first_air_date?: Date;
+  genres?: Genre[];
+  homepage?: string;
+  id: number;
+  in_production?: boolean;
+  languages?: string[];
+  last_air_date?: Date;
+  last_episode_to_air?: LastEpisodeToAir;
+  name?: string;
+  next_episode_to_air?: string;
+  networks?: Network[];
+  number_of_episodes?: number;
+  number_of_seasons?: number;
+  origin_country?: string[];
+  original_language?: string;
+  original_name?: string;
+  overview?: string;
+  popularity?: number;
+  poster_path?: string;
   production_companies?: Network[];
   production_countries?: ProductionCountry[];
-  seasons?:              Season[];
-  spoken_languages?:     SpokenLanguage[];
-  status?:               string;
-  tagline?:              string;
-  type?:                 string;
-  vote_average?:         number;
-  vote_count?:           number;
-}
-
+  seasons?: Season[];
+  spoken_languages?: SpokenLanguage[];
+  status?: string;
+  tagline?: string;
+  type?: string;
+  vote_average?: number;
+  vote_count?: number;
+};
 
 export type CreatedBy = {
-  id?:           number;
-  credit_id?:    string;
-  name?:         string;
-  gender?:       number;
+  id?: number;
+  credit_id?: string;
+  name?: string;
+  gender?: number;
   profile_path?: string;
-}
+};
 
 export type Season = {
-  air_date?:      Date;
+  air_date?: Date;
   episode_count?: number;
-  id?:            number;
-  name?:          string;
-  overview?:      string;
-  poster_path?:   string;
+  id?: number;
+  name?: string;
+  overview?: string;
+  poster_path?: string;
   season_number?: number;
-  vote_average?:  number;
-}
+  vote_average?: number;
+};
 
 export type LastEpisodeToAir = {
-  id?:              number;
-  name?:            string;
-  overview?:        string;
-  vote_average?:    number;
-  vote_count?:      number;
-  air_date?:        Date;
-  episode_number?:  number;
-  episode_type?:    string;
+  id?: number;
+  name?: string;
+  overview?: string;
+  vote_average?: number;
+  vote_count?: number;
+  air_date?: Date;
+  episode_number?: number;
+  episode_type?: string;
   production_code?: string;
-  runtime?:         number;
-  season_number?:   number;
-  show_id?:         number;
-  still_path?:      string;
-}
+  runtime?: number;
+  season_number?: number;
+  show_id?: number;
+  still_path?: string;
+};
 
 export type Network = {
-  id?:             number;
-  logo_path?:      null | string;
-  name?:           string;
+  id?: number;
+  logo_path?: null | string;
+  name?: string;
   origin_country?: string;
-}
+};
 
 export type BelongsToCollection = {
   id?: number;
@@ -171,7 +170,6 @@ export type SpokenLanguage = {
   iso_639_1?: string;
   name?: string;
 };
-
 
 export type Collection = {
   id?: number;
@@ -233,8 +231,8 @@ export type ExternalIDS = {
   facebook_id?: string;
   instagram_id?: string;
   twitter_id?: string;
-  tiktok_id?:    string;
-  youtube_id?:   string;
+  tiktok_id?: string;
+  youtube_id?: string;
 };
 
 export type Credits = {
@@ -281,43 +279,40 @@ export type Similar = {
   results?: MovieShort[];
 };
 
-
 export enum MediaType {
   Movie = "movie",
   Tv = "tv",
-  Person = "person"
+  Person = "person",
 }
 
 export type PersonShort = {
-  adult?:                boolean;
-  id?:                   number;
-  name?:                 string;
-  original_name?:        string;
-  media_type?:           string;
-  popularity?:           number;
-  gender?:               number;
+  adult?: boolean;
+  id: number;
+  name?: string;
+  original_name?: string;
+  media_type?: string;
+  popularity?: number;
+  gender?: number;
   known_for_department?: string;
-  profile_path?:         string;
-}
-
+  profile_path?: string;
+};
 
 export type PersonDetails = {
-  adult?:                boolean;
-  also_known_as?:        string[];
-  biography?:            string;
-  birthday?:             Date;
-  deathday?:             Date;
-  gender?:               number;
-  homepage?:             string;
-  id?:                   number;
-  imdb_id?:              string;
+  adult?: boolean;
+  also_known_as?: string[];
+  biography?: string;
+  birthday?: Date;
+  deathday?: Date;
+  gender?: number;
+  homepage?: string;
+  id: number;
+  imdb_id?: string;
   known_for_department?: string;
-  name?:                 string;
-  place_of_birth?:       string;
-  popularity?:           number;
-  profile_path?:         string;
-}
-
+  name?: string;
+  place_of_birth?: string;
+  popularity?: number;
+  profile_path?: string;
+};
 
 export type MovieFull = MovieDetails & MediaAppended;
 export type TvFull = TvDetails & MediaAppended;
@@ -331,4 +326,36 @@ export type MediaCollection = {
   results?: MediaShort[];
   total_pages?: number;
   total_results?: number;
+};
+
+export type MovieFirestore = {
+  Year: string;
+  LastTimeFound?: number | Timestamp;
+  lastTimeFound?: number;
+};
+
+export type Torrent = {
+  Name: string;
+  DetailsUrl: string;
+  OriginalName: string;
+  RussianName: string;
+  Year: string;
+  Size: number;
+  Magnet: string;
+  Date: string;
+  K4: boolean;
+  FHD: boolean;
+  HDR: boolean;
+  HDR10: boolean;
+  HDR10plus: boolean;
+  DV: boolean;
+  Seeds: number;
+  Leeches: number;
+  Hash: string;
+}
+
+export type ImdbRating = {
+  Id: string;
+  Rating: string;
+  Votes: string;
 };

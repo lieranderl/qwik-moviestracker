@@ -87,7 +87,6 @@ export type TvMedia = {
     vote_count?: number;
     lastTimeFound?: number;
     LastTimeFound?: number | Timestamp;
-    Torrents: Torrent[];
     character: string;
     job: string;
     Year: string;
@@ -95,25 +94,7 @@ export type TvMedia = {
     profile_path?: string;
   };
 
-  export type Torrent = {
-    Name: string;
-    DetailsUrl: string;
-    OriginalName: string;
-    RussianName: string;
-    Year: string;
-    Size: number;
-    Magnet: string;
-    Date: string;
-    K4: boolean;
-    FHD: boolean;
-    HDR: boolean;
-    HDR10: boolean;
-    HDR10plus: boolean;
-    DV: boolean;
-    Seeds: number;
-    Leeches: number;
-    Hash: string;
-  }
+
   
   export type ProductionMedia = TvMedia & MovieMedia;
 

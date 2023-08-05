@@ -1,9 +1,10 @@
 import { component$, useContext, $ } from "@builder.io/qwik";
-import type { ProductionMediaDetails, Torrent } from "~/services/types";
+import type { ProductionMediaDetails } from "~/services/types";
 import { formatRating } from "~/utils/fomat";
 import { ButtonPrimary } from "./button-primary";
 import { addTorrent } from "~/services/torrserver";
 import { toastManagerContext } from "./toast/toastStack";
+import type { Torrent } from "~/services/models";
 
 interface TorrentListProps {
   torrent: Torrent;

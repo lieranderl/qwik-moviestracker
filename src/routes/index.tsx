@@ -57,13 +57,13 @@ export default component$(() => {
       <div class="container mx-auto px-4 pt-[64px]">
         <MediaCarousel
           title="Latest Movies"
-          type="movie"
+          type={MediaType.Movie}
           category="updated"
           lang={resource.value.lang}
         >
           {resource.value.torMovies.map((m) => (
             <>
-              <a href={paths.media("movie", m.id, resource.value.lang)}>
+              <a href={paths.media(MediaType.Movie, m.id, resource.value.lang)}>
                 <MediaCard
                   title={m.title ? m.title : ""}
                   width={500}
@@ -79,13 +79,13 @@ export default component$(() => {
         </MediaCarousel>
         <MediaCarousel
           title="Trending Movies"
-          type="movie"
+          type={MediaType.Movie}
           category="trending"
           lang={resource.value.lang}
         >
           {resource.value.movies.map((m) => (
             <>
-              <a href={paths.media("movie", m.id, resource.value.lang)}>
+              <a href={paths.media(MediaType.Movie, m.id, resource.value.lang)}>
                 <MediaCard
                   title={m.title ? m.title : ""}
                   width={500}
@@ -101,13 +101,13 @@ export default component$(() => {
         </MediaCarousel>
         <MediaCarousel
           title="Trenging TV Shows"
-          type="tv"
+          type={MediaType.Tv}
           category="trending"
           lang={resource.value.lang}
         >
           {resource.value.tv.map((m) => (
             <>
-              <a href={paths.media("tv", m.id, resource.value.lang)}>
+              <a href={paths.media(MediaType.Tv, m.id, resource.value.lang)}>
                 <MediaCard
                   title={m.name ? m.name : ""}
                   width={500}

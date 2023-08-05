@@ -3,16 +3,31 @@ import { component$ } from "@builder.io/qwik";
 import { routeLoader$, type DocumentHead } from "@builder.io/qwik-city";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
-import { getTrendingTvWithBackdrops, getTvShows } from "~/services/tmdb";
+import type { TvShort } from "~/services/models";
+import { MediaType } from "~/services/models";
+import { getMedias, getTrendingMedia } from "~/services/tmdb";
 import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   try {
-    const [tvtrend, tvtoprated] = await Promise.all([
-      getTrendingTvWithBackdrops({ page: 1, language: lang }),
-      getTvShows({ page: 1, query: "top_rated", language: lang }),
+    const [tt, tttop] = await Promise.all([
+      getTrendingMedia({
+        page: 1,
+        language: lang,
+        type: MediaType.Tv,
+        needbackdrop: true,
+      }),
+      getMedias({
+        page: 1,
+        query: "top_rated",
+        language: lang,
+        type: MediaType.Tv,
+        needbackdrop: true,
+      }),
     ]);
+    const tvtrend = tt as TvShort[];
+    const tvtoprated = tttop as TvShort[];
     return {
       tvtrend,
       tvtoprated,
@@ -30,19 +45,22 @@ export default component$(() => {
       <div class="container mx-auto px-4 pt-[64px]">
         <MediaCarousel
           title="Trending Tv Shows"
-          type="tv"
+          type={MediaType.Tv}
           category="trending"
           lang={resource.value.lang}
         >
-          {resource.value.tvtrend.results!.map((m) => (
+          {resource.value.tvtrend.map((m) => (
             <>
-              <a href={paths.media("tv", m.id, resource.value.lang)}>
+              <a href={paths.media(MediaType.Tv, m.id, resource.value.lang)}>
                 <MediaCard
-                  title={m.name!}
+                  title={m.name ? m.name : ""}
                   width={500}
-                  rating={m.vote_average!}
-                  year={parseInt(m.first_air_date!.substring(0, 4), 10)}
-                  picfile={m.backdrop_path!}
+                  rating={m.vote_average ? m.vote_average : 0}
+                  year={parseInt(
+                    m.first_air_date ? m.first_air_date.substring(0, 4) : "0",
+                    10
+                  )}
+                  picfile={m.backdrop_path}
                   isPerson={false}
                   isHorizontal={true}
                 />
@@ -52,19 +70,22 @@ export default component$(() => {
         </MediaCarousel>
         <MediaCarousel
           title="Top Rated Tv Shows"
-          type="tv"
+          type={MediaType.Tv}
           category="toprated"
           lang={resource.value.lang}
         >
-          {resource.value.tvtoprated.results!.map((m) => (
+          {resource.value.tvtoprated.map((m) => (
             <>
-              <a href={paths.media("tv", m.id, resource.value.lang)}>
+              <a href={paths.media(MediaType.Tv, m.id, resource.value.lang)}>
                 <MediaCard
-                  title={m.name!}
+                  title={m.name ? m.name : ""}
                   width={500}
-                  rating={m.vote_average!}
-                  year={parseInt(m.first_air_date!.substring(0, 4), 10)}
-                  picfile={m.backdrop_path!}
+                  rating={m.vote_average ? m.vote_average : 0}
+                  year={parseInt(
+                    m.first_air_date ? m.first_air_date.substring(0, 4) : "0",
+                    10
+                  )}
+                  picfile={m.backdrop_path}
                   isPerson={false}
                   isHorizontal={true}
                 />

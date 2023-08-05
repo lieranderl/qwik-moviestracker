@@ -12,7 +12,7 @@
 import { getMoviesFirebase } from "./firestore";
 import { formatYear } from "~/utils/fomat";
 import type { Timestamp } from "firebase/firestore";
-import type { Images, MediaCollection, MediaShortStrict } from "./models";
+import type { Collection, Images, MediaCollection, MediaShortStrict } from "./models";
 import { MediaType } from "./models";
 
 const baseURL = "https://api.themoviedb.org/3";
@@ -103,61 +103,6 @@ export const getMediaBackdrop = async ({
   return "";
 };
 
-// export const getTrendingMovieWithBackdrops = async ({
-//   page,
-//   language,
-// }: GetTrendingMedia) => {
-//   const result = await fetchTMDB<MediaCollection<MovieShort>>(
-//     `trending/movie/week`,
-//     {
-//       page: String(page),
-//       language: language,
-//     }
-//   );
-//   if (result.total_results === 0) return result;
-//   const newMovieMedia = result.results.map(async (item) => {
-//     item.backdrop_path ==
-//       (await getMediaBackdrop({
-//         id: item.id,
-//         media_type: MediaType.Movie,
-//         langString: "en",
-//       }));
-//     return item;
-//   });
-//   try {
-//     result.results = await Promise.all(newMovieMedia);
-//   } catch (error) {
-//     console.log("skip movie backdrop");
-//   }
-
-//   return result;
-// };
-
-// export const getTrendingTvWithBackdrops = async ({
-//   page,
-//   language,
-// }: GetTrendingTv) => {
-//   const result = await fetchTMDB<MediaCollection<TvShort>>(`trending/tv/week`, {
-//     page: String(page),
-//     language: language,
-//   });
-//   if (!result.results) return result;
-//   const newMovieMedia = result.results.map(async (item) => {
-//     item.backdrop_path = await getMediaBackdrop({
-//       id: item.id,
-//       media_type: MediaType.Tv,
-//       langString: "en",
-//     });
-//     return item;
-//   });
-//   try {
-//     result.results = await Promise.all(newMovieMedia);
-//   } catch (error) {
-//     console.log("skip tv backdrop");
-//   }
-//   return result;
-// };
-
 type getFirebaseMoviesType = {
   language: string;
   entries: number;
@@ -211,6 +156,53 @@ export const getFirebaseMovies = async ({
     return movies;
   }
 };
+
+
+type GetMedias = {
+  query: string;
+  page: number;
+  language: string;
+  type: MediaType;
+  needbackdrop: boolean;
+};
+export const getMedias = async ({ query, page, language, type, needbackdrop }: GetMedias) => {
+  const result = await fetchTMDB<MediaCollection<MediaShortStrict<typeof type>>>(`${type}/${query}`, {
+    page: String(page),
+    language: language,
+  });
+  
+  if (result.total_results === 0) return result.results;
+  let media = result.results;
+  if (type === MediaType.Movie || type === MediaType.Tv) {
+    if (!needbackdrop) {
+      return media;
+    }
+    media = await Promise.all(
+      media.map(async (item) => {
+        const movie = item as MediaShortStrict<typeof type>;
+        movie.backdrop_path = await getMediaBackdrop({
+          id: item.id,
+          media_type: type,
+          langString: "en",
+        });
+        movie.media_type = type
+        return movie;
+      })
+    );
+  }
+  return media;
+
+};
+
+
+
+
+
+
+///////////
+
+
+
 
 type GetMovie = {
   id: number;
@@ -383,23 +375,7 @@ export const getTvShowDetails = async ({ id, language }: GetTvShow) => {
   return { ...result, media_type: "tv" as const };
 };
 
-type GetTvShows = {
-  query: string;
-  page: number;
-  language: string;
-};
 
-export const getTvShows = async ({ query, page, language }: GetTvShows) => {
-  const result = await fetchTMDB<Collection<TvMedia>>(`tv/${query}`, {
-    page: String(page),
-    language: language,
-  });
-  const results = result.results?.map((item) => ({
-    ...item,
-    media_type: "tv" as const,
-  }));
-  return { ...result, results };
-};
 
 export const getSimilarTv = async ({ id, lang }: GetSimilarType) => {
   const result = await fetchTMDB<Collection<TvMedia>>(`tv/${id}/similar`, {

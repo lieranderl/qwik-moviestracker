@@ -4,28 +4,27 @@ import { routeLoader$, type DocumentHead } from "@builder.io/qwik-city";
 import { Timestamp } from "firebase/firestore";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
-import {
-  getFirebaseMovies,
-  getTrendingMovieWithBackdrops,
-} from "~/services/tmdb";
+import { DbType } from "~/services/firestore";
+import type { MovieShort } from "~/services/models";
+import { MediaType } from "~/services/models";
+import { getFirebaseMovies, getTrendingMedia } from "~/services/tmdb";
 import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   try {
-    const [
-      movies,
-      //   tv,
-      torMovies,
-      hdrMovies,
-      dolbyMovies,
-    ] = await Promise.all([
-      getTrendingMovieWithBackdrops({ page: 1, language: lang }),
+    const [m, torMovies, hdrMovies, dolbyMovies] = await Promise.all([
+      getTrendingMedia({
+        page: 1,
+        language: lang,
+        type: MediaType.Movie,
+        needbackdrop: true,
+      }),
       getFirebaseMovies({
         entries: 20,
         language: lang,
         startTime: Timestamp.now().toMillis(),
-        db_name: "latesttorrentsmovies",
+        db_name: DbType.LastMovies,
         sortDirection: "desc",
         need_backdrop: true,
       }),
@@ -33,7 +32,7 @@ export const useContentLoader = routeLoader$(async (event) => {
         entries: 20,
         language: lang,
         startTime: Timestamp.now().toMillis(),
-        db_name: "hdr10movies",
+        db_name: DbType.HDR10,
         sortDirection: "desc",
         need_backdrop: true,
       }),
@@ -41,11 +40,12 @@ export const useContentLoader = routeLoader$(async (event) => {
         entries: 20,
         language: lang,
         startTime: Timestamp.now().toMillis(),
-        db_name: "dvmovies",
+        db_name: DbType.DV,
         sortDirection: "desc",
         need_backdrop: true,
       }),
     ]);
+    const movies = m as MovieShort[];
     return {
       movies,
       torMovies,
@@ -60,24 +60,27 @@ export const useContentLoader = routeLoader$(async (event) => {
 
 export default component$(() => {
   const resource = useContentLoader();
-  
+
   return (
     <>
       <div class="container mx-auto px-4 pt-[64px]">
         <MediaCarousel
           title="Latest Movies"
-          type="movie"
+          type={MediaType.Movie}
           category="updated"
           lang={resource.value.lang}
         >
           {resource.value.torMovies.map((m) => (
             <>
-              <a href={paths.media("movie", m.id, resource.value.lang)}>
+              <a href={paths.media(MediaType.Movie, m.id, resource.value.lang)}>
                 <MediaCard
-                  title={m.title!}
+                  title={m.title ? m.title : ""}
                   width={500}
-                  rating={m.vote_average!}
-                  year={parseInt(m.release_date!.substring(0, 4), 10)}
+                  rating={m.vote_average ? m.vote_average : 0}
+                  year={parseInt(
+                    m.release_date ? m.release_date.substring(0, 4) : "0",
+                    10
+                  )}
                   picfile={m.backdrop_path}
                   isPerson={false}
                   isHorizontal={true}
@@ -89,19 +92,22 @@ export default component$(() => {
 
         <MediaCarousel
           title="Latest HDR10 Movies"
-          type="movie"
+          type={MediaType.Movie}
           category="hdr10"
           lang={resource.value.lang}
         >
           {resource.value.hdrMovies.map((m) => (
             <>
-              <a href={paths.media("movie", m.id, resource.value.lang)}>
+              <a href={paths.media(MediaType.Movie, m.id, resource.value.lang)}>
                 <MediaCard
-                  title={m.title!}
+                  title={m.title ? m.title : ""}
                   width={500}
-                  rating={m.vote_average!}
-                  year={parseInt(m.release_date!.substring(0, 4), 10)}
-                  picfile={m.backdrop_path!}
+                  rating={m.vote_average ? m.vote_average : 0}
+                  year={parseInt(
+                    m.release_date ? m.release_date.substring(0, 4) : "0",
+                    10
+                  )}
+                  picfile={m.backdrop_path}
                   isPerson={false}
                   isHorizontal={true}
                 />
@@ -112,19 +118,22 @@ export default component$(() => {
 
         <MediaCarousel
           title="Latest Dolby Vision Movies"
-          type="movie"
+          type={MediaType.Movie}
           category="dolbyvision"
           lang={resource.value.lang}
         >
           {resource.value.dolbyMovies.map((m) => (
             <>
-              <a href={paths.media("movie", m.id, resource.value.lang)}>
+              <a href={paths.media(MediaType.Movie, m.id, resource.value.lang)}>
                 <MediaCard
-                  title={m.title!}
+                  title={m.title ? m.title : ""}
                   width={500}
-                  rating={m.vote_average!}
-                  year={parseInt(m.release_date!.substring(0, 4), 10)}
-                  picfile={m.backdrop_path!}
+                  rating={m.vote_average ? m.vote_average : 0}
+                  year={parseInt(
+                    m.release_date ? m.release_date.substring(0, 4) : "0",
+                    10
+                  )}
+                  picfile={m.backdrop_path}
                   isPerson={false}
                   isHorizontal={true}
                 />
@@ -132,22 +141,25 @@ export default component$(() => {
             </>
           ))}
         </MediaCarousel>
-        
+
         <MediaCarousel
           title="Trending Movies"
-          type="movie"
+          type={MediaType.Movie}
           category="trending"
           lang={resource.value.lang}
         >
-          {resource.value.movies.results!.map((m) => (
+          {resource.value.movies.map((m) => (
             <>
-              <a href={paths.media("movie", m.id, resource.value.lang)}>
+              <a href={paths.media(MediaType.Movie, m.id, resource.value.lang)}>
                 <MediaCard
-                  title={m.title!}
+                  title={m.title ? m.title : ""}
                   width={500}
-                  rating={m.vote_average!}
-                  year={parseInt(m.release_date!.substring(0, 4), 10)}
-                  picfile={m.backdrop_path!}
+                  rating={m.vote_average ? m.vote_average : 0}
+                  year={parseInt(
+                    m.release_date ? m.release_date.substring(0, 4) : "0",
+                    10
+                  )}
+                  picfile={m.backdrop_path}
                   isPerson={false}
                   isHorizontal={true}
                 />

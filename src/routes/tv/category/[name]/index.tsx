@@ -10,8 +10,9 @@ import { routeLoader$, server$ } from "@builder.io/qwik-city";
 import { ButtonPrimary } from "~/components/button-primary";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
-import { getTrendingTv, getTvShows } from "~/services/tmdb";
-import type { TvMediaDetails } from "~/services/types";
+import type { TvShort } from "~/services/models";
+import { MediaType } from "~/services/models";
+import { getMedias, getTrendingMedia } from "~/services/tmdb";
 import { categoryToTitle, paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
@@ -19,9 +20,14 @@ export const useContentLoader = routeLoader$(async (event) => {
 
   if (event.params.name === "trending") {
     try {
-      const res = await getTrendingTv({ page: 1, language: lang });
+      const res = await getTrendingMedia({
+        page: 1,
+        language: lang,
+        type: MediaType.Tv,
+        needbackdrop: false,
+      });
       return {
-        tv: res.results as TvMediaDetails[],
+        tv: res as TvShort[],
         category: event.params.name,
         lang: lang,
       };
@@ -32,13 +38,15 @@ export const useContentLoader = routeLoader$(async (event) => {
 
   if (event.params.name === "toprated") {
     try {
-      const res = await getTvShows({
+      const res = await getMedias({
         page: 1,
         language: lang,
         query: "top_rated",
+        type: MediaType.Tv,
+        needbackdrop: false,
       });
       return {
-        tv: res.results as TvMediaDetails[],
+        tv: res as TvShort[],
         category: event.params.name,
         lang: lang,
       };
@@ -46,13 +54,16 @@ export const useContentLoader = routeLoader$(async (event) => {
       throw event.redirect(302, "/404");
     }
   }
+  return {
+    tv: [] as TvShort[],
+    category: event.params.name,
+    lang: lang,
+  };
 });
 
 export default component$(() => {
   const resource = useContentLoader();
-  const moviesSig = useStore(
-    resource.value ? (resource.value.tv as TvMediaDetails[]) : []
-  );
+  const moviesSig = useStore(resource.value.tv as TvShort[]);
   const isloadingMovies = useSignal(false);
   const pageSig = useSignal(1);
 
@@ -68,43 +79,43 @@ export default component$(() => {
 
     const moviesFunc = server$(function () {
       if (resource.value!.category === "toprated") {
-        return getTvShows({
+        return getMedias({
           page: pageSig.value,
           language: resource.value!.lang,
           query: "top_rated",
+          type: MediaType.Tv,
+          needbackdrop: false,
         });
       } else {
-        return getTrendingTv({
+        return getTrendingMedia({
           page: pageSig.value,
-          language: resource.value!.lang,
+          language: resource.value.lang,
+          type: MediaType.Tv,
+          needbackdrop: false,
         });
       }
     });
 
-    const movies = await moviesFunc();
-
-    if ("results" in movies) {
-      const res = movies.results as TvMediaDetails[];
-      console.log(res);
-      moviesSig.push(...res);
-    } 
-
-    console.log(moviesSig.length);
+    const movies = (await moviesFunc()) as TvShort[];
+    moviesSig.push(...movies);
     isloadingMovies.value = false;
   });
 
   return (
     <div class="container mx-auto px-4 pt-[64px]">
-      <MediaGrid title={categoryToTitle(resource.value!.category, "tv")}>
+      <MediaGrid title={categoryToTitle(resource.value.category, MediaType.Tv)}>
         {moviesSig.length > 0 &&
           moviesSig.map((m) => (
             <>
-              <a href={paths.media("tv", m.id, resource.value!.lang)}>
+              <a href={paths.media(MediaType.Tv, m.id, resource.value.lang)}>
                 <MediaCard
-                  title={m.name!}
+                  title={m.name ? m.name : ""}
                   width={300}
-                  rating={m.vote_average!}
-                  year={parseInt(m.first_air_date!.substring(0, 4), 10)}
+                  rating={m.vote_average ? m.vote_average : 0}
+                  year={parseInt(
+                    m.first_air_date ? m.first_air_date.substring(0, 4) : "0",
+                    10
+                  )}
                   picfile={m.poster_path}
                   isPerson={false}
                   isHorizontal={false}

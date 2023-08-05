@@ -1,4 +1,4 @@
-import { PersonMedia } from "~/services/types";
+import type { PersonMedia } from "~/services/types";
 import { languages } from "./languages";
 
 export function formatDate(date: string, lang: string) {

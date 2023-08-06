@@ -55,7 +55,7 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
                 </svg>
               </div>
               <div class="font-bold">
-                {formatRating(tv.vote_average!)}{" "}
+                {tv.vote_average && formatRating(tv.vote_average)}{" "}
                 {tv.vote_count && tv.vote_count > 0 && (
                   <span class="text-sm italic">({tv.vote_count})</span>
                 )}

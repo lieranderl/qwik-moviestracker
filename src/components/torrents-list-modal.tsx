@@ -96,8 +96,8 @@ export const TorrentsModal = component$(
                             data-modal-target="torrentsModal"
                             data-modal-toggle="torrentsModal"
                             onClick$={() => {
-                              selectedYear.value = formatYear(s.air_date!);
-                              getTorrentsToggle(formatYear(s.air_date!));
+                              selectedYear.value = formatYear(s.air_date ? s.air_date : "");
+                              getTorrentsToggle(formatYear(s.air_date ? s.air_date : ""));
                             }}
                             href="#"
                             class="block px-4 py-2 hover:bg-teal-100 dark:hover:bg-teal-600 dark:hover:text-teal-50"
@@ -105,7 +105,7 @@ export const TorrentsModal = component$(
                             Сезон
                             <span class="ml-1">
                               {" "}
-                              {s.season_number}({formatYear(s.air_date!)})
+                              {s.season_number}({formatYear(s.air_date ? s.air_date : "")})
                             </span>
                           </a>
                         </li>

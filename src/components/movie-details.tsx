@@ -1,10 +1,5 @@
 import { component$ } from "@builder.io/qwik";
-import type {
-  Collection,
-  MovieMedia,
-  MovieMediaDetails,
-  ProductionMediaDetails,
-} from "~/services/types";
+
 import {
   formatYear,
   formatRating,
@@ -21,23 +16,17 @@ import { langBudget, langRevenue, langMinutes } from "~/utils/languages";
 import { TorrentsModal } from "./torrents-list-modal";
 import { TrailersModal } from "./trailers-list-modal";
 import { ExternalIds } from "./external_ids";
+import type { MovieFull, MovieShort } from "~/services/models";
 
 interface MovieDetailsProps {
-  movie: MovieMediaDetails;
-  recMovies: Collection<MovieMedia>;
-  // simMovies: Collection<MovieMedia>;
-  colMovies?: Collection<MovieMedia>;
+  movie: MovieFull;
+  recMovies: MovieShort[];
+  colMovies: MovieShort[];
   lang: string;
 }
 
 export const MovieDetails = component$(
-  ({
-    movie,
-    recMovies,
-    // simMovies,
-    colMovies,
-    lang,
-  }: MovieDetailsProps) => {
+  ({ movie, recMovies, colMovies, lang }: MovieDetailsProps) => {
     return (
       <div class="pt-[20vh] lg:mx-20 xl:mx-40 font-normal">
         <section class="my-4">
@@ -98,7 +87,7 @@ export const MovieDetails = component$(
             year={formatYear(movie.release_date!)}
             isMovie={true}
             seasons={[]}
-            media={movie as ProductionMediaDetails}
+            media={movie}
           />
         </section>
 
@@ -179,7 +168,7 @@ export const MovieDetails = component$(
         </section>
 
         <MediaCarousel title="Actors" type="person" lang={lang}>
-          {movie.credits?.cast!.slice(0, 10).map((c) => (
+          {movie.credits?.cast.slice(0, 10).map((c) => (
             <>
               <a href={paths.media("person", c.id, lang)}>
                 <MediaCard
@@ -197,7 +186,7 @@ export const MovieDetails = component$(
           ))}
         </MediaCarousel>
 
-        {movie.credits && movie.credits.crew!.length > 0 && (
+        {movie.credits && movie.credits.crew.length > 0 && (
           <MediaCarousel title="Crew" type="person" lang={lang}>
             {formatCrew(movie.credits.crew!)
               .slice(0, 10)
@@ -220,24 +209,21 @@ export const MovieDetails = component$(
           </MediaCarousel>
         )}
 
-        {colMovies && (
+        {colMovies.length > 0 && (
           <MediaCarousel
             title="Collection Movies"
             type="person"
             category="updated"
             lang={lang}
           >
-            {colMovies.parts.map((m) => (
+            {colMovies.map((m) => (
               <>
                 <a href={paths.media("movie", m.id, lang)}>
                   <MediaCard
                     title={m.title!}
                     width={500}
                     rating={m.vote_average ? m.vote_average : 0}
-                    year={
-                      (m.release_date && formatYear(m.release_date)) ||
-                      0
-                    }
+                    year={(m.release_date && formatYear(m.release_date)) || 0}
                     picfile={m.backdrop_path}
                     isPerson={false}
                     isHorizontal={true}
@@ -248,24 +234,21 @@ export const MovieDetails = component$(
           </MediaCarousel>
         )}
 
-        {recMovies.results && recMovies.results.length > 0 && (
+        {recMovies.length > 0 && (
           <MediaCarousel
             title="Recommended Movies"
             type="person"
             category="updated"
             lang={lang}
           >
-            {recMovies.results.map((m) => (
+            {recMovies.map((m) => (
               <>
                 <a href={paths.media("movie", m.id, lang)}>
                   <MediaCard
                     title={m.title ? m.title : ""}
                     width={500}
                     rating={m.vote_average ? m.vote_average : 0}
-                    year={
-                      (m.release_date && formatYear(m.release_date)) ||
-                      0
-                    }
+                    year={(m.release_date && formatYear(m.release_date)) || 0}
                     picfile={m.backdrop_path}
                     isPerson={false}
                     isHorizontal={true}

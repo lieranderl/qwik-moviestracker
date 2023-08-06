@@ -1,10 +1,4 @@
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
-import type {
-  Collection,
-  MovieMedia,
-  PersonMediaDetails,
-  TvMedia,
-} from "~/services/types";
 import { formatYear, showYearOld, showDeathYear } from "~/utils/fomat";
 import { paths } from "~/utils/paths";
 import { MediaCard } from "./media-card";
@@ -16,11 +10,12 @@ import { PlaceSVG } from "~/utils/icons/placeSVG";
 import { PersonSVG } from "~/utils/icons/personSVG";
 import { Image } from "@unpic/qwik";
 import { ExternalIds } from "./external_ids";
+import { type PersonFull, type Cast, MediaType } from "~/services/models";
 
 interface MovieDetailsProps {
-  person: PersonMediaDetails;
-  perMovies: Collection<MovieMedia>;
-  perTv: Collection<TvMedia>;
+  person: PersonFull;
+  perMovies: Cast[];
+  perTv: Cast[];
   lang: string;
 }
 
@@ -120,24 +115,21 @@ export const PersonDetails = component$(
           </div>
         </section>
         <section class="mt-8">
-          {perMovies.cast.length > 0 && (
+          {perMovies.length > 0 && (
             <MediaCarousel
               title="Actor in Movies"
-              type="person"
+              type={MediaType.Person}
               category="updated"
               lang={lang}
             >
-              {perMovies.cast.map((m) => (
+              {perMovies.map((m) => (
                 <>
-                  <a href={paths.media("movie", m.id, lang)}>
+                  <a href={paths.media(MediaType.Movie, m.id, lang)}>
                     <MediaCard
-                      title={m.title!}
+                      title={m.title ? m.title : ""}
                       width={500}
-                      rating={m.vote_average!}
-                      year={
-                        (m.release_date && formatYear(m.release_date)) ||
-                        undefined
-                      }
+                      rating={m.vote_average ? m.vote_average : 0}
+                      year={(m.release_date && formatYear(m.release_date)) || 0}
                       picfile={m.poster_path}
                       isPerson={false}
                       isHorizontal={false}
@@ -149,23 +141,22 @@ export const PersonDetails = component$(
             </MediaCarousel>
           )}
 
-          {perTv.cast.length > 0 && (
+          {perTv.length > 0 && (
             <MediaCarousel
               title="Actor in TV Shows"
-              type="person"
+              type={MediaType.Person}
               category="updated"
               lang={lang}
             >
-              {perTv.cast.map((m) => (
+              {perTv.map((m) => (
                 <>
-                  <a href={paths.media("tv", m.id, lang)}>
+                  <a href={paths.media(MediaType.Tv, m.id, lang)}>
                     <MediaCard
-                      title={m.name!}
+                      title={m.title ? m.title : ""}
                       width={500}
-                      rating={m.vote_average!}
+                      rating={m.vote_average ? m.vote_average : 0}
                       year={
-                        (m.first_air_date && formatYear(m.first_air_date)) ||
-                        undefined
+                        (m.first_air_date && formatYear(m.first_air_date)) || 0
                       }
                       picfile={m.poster_path}
                       isPerson={false}
@@ -178,23 +169,22 @@ export const PersonDetails = component$(
             </MediaCarousel>
           )}
 
-          {perMovies.crew.length > 0 && (
+          {perMovies.length > 0 && (
             <MediaCarousel
               title="Production Movies"
-              type="person"
+              type={MediaType.Person}
               category="updated"
               lang={lang}
             >
-              {perMovies.crew.map((m) => (
+              {perMovies.map((m) => (
                 <>
-                  <a href={paths.media("movie", m.id, lang)}>
+                  <a href={paths.media(MediaType.Movie, m.id, lang)}>
                     <MediaCard
-                      title={m.title!}
+                      title={m.title ? m.title : ""}
                       width={500}
-                      rating={m.vote_average!}
+                      rating={m.vote_average ? m.vote_average : 0}
                       year={
-                        (m.release_date && formatYear(m.release_date)) ||
-                        undefined
+                        (m.first_air_date && formatYear(m.first_air_date)) || 0
                       }
                       picfile={m.poster_path}
                       isPerson={false}
@@ -207,23 +197,22 @@ export const PersonDetails = component$(
             </MediaCarousel>
           )}
 
-          {perTv.crew.length > 0 && (
+          {perTv.length > 0 && (
             <MediaCarousel
               title="Production TV Shows"
-              type="person"
+              type={MediaType.Person}
               category="updated"
               lang={lang}
             >
-              {perTv.crew.map((m) => (
+              {perTv.map((m) => (
                 <>
-                  <a href={paths.media("tv", m.id, lang)}>
+                  <a href={paths.media(MediaType.Tv, m.id, lang)}>
                     <MediaCard
-                      title={m.name!}
+                      title={m.title ? m.title : ""}
                       width={500}
-                      rating={m.vote_average!}
+                      rating={m.vote_average ? m.vote_average : 0}
                       year={
-                        (m.first_air_date && formatYear(m.first_air_date)) ||
-                        undefined
+                        (m.first_air_date && formatYear(m.first_air_date)) || 0
                       }
                       picfile={m.poster_path}
                       isPerson={false}

@@ -1,39 +1,28 @@
 import { component$ } from "@builder.io/qwik";
-import type {
-  Collection,
-  ProductionMediaDetails,
-  TvMedia,
-  TvMediaDetails,
-} from "~/services/types";
+
 import {
   formatYear,
   formatRating,
   formatDate,
   formatLanguage,
-  formatCurrency,
 } from "~/utils/fomat";
-import { langBudget, langRevenue } from "~/utils/languages";
 import { paths } from "~/utils/paths";
-import { Imdb } from "./imdb";
 import { MediaCard } from "./media-card";
 import { MediaCarousel } from "./media-carousel";
 import { TorrentsModal } from "./torrents-list-modal";
 import { TrailersModal } from "./trailers-list-modal";
 import { ExternalIds } from "./external_ids";
-
+import type { TvShort, TvFull } from "~/services/models";
 
 interface TvDetailsProps {
-  tv: TvMediaDetails;
-  recTv: Collection<TvMedia>;
-  // simTv: Collection<TvMedia>;
+  tv: TvFull;
+  recTv: TvShort[];
   lang: string;
 }
-
 export const TvDetails = component$(
   ({
     tv,
     recTv,
-    // simTv,
     lang,
   }: TvDetailsProps) => {
     return (
@@ -78,22 +67,21 @@ export const TvDetails = component$(
                 </div>
               </div>
             )}
-            {tv.imdb_id && <Imdb id={tv.imdb_id} />}
           </div>
         </section>
 
         <section class="my-4 flex">
-          {tv.videos!.results!.length > 0 && (
+          {tv.videos!.results.length > 0 && (
             <div class="mr-2">
               <TrailersModal videos={tv.videos!.results} />
             </div>
           )}
           <TorrentsModal
-            title={tv.name!}
-            year={formatYear(tv.first_air_date!)}
+            title={tv.name ? tv.name : ""}
+            year={formatYear(tv.first_air_date ? tv.first_air_date : "")}
             isMovie={false}
             seasons={tv.seasons}
-            media={tv as ProductionMediaDetails}
+            media={tv}
           />
         </section>
 
@@ -241,7 +229,7 @@ export const TvDetails = component$(
           )}
         </section>
 
-        <section class="my-1 flex flex-wrap text-md">
+        {/* <section class="my-1 flex flex-wrap text-md">
           {tv.budget! > 0 && (
             <div class="me-4 ">
               <span class="me-2">{langBudget(lang)}:</span>
@@ -254,7 +242,7 @@ export const TvDetails = component$(
               {formatCurrency(tv.revenue!, lang)}
             </div>
           )}
-        </section>
+        </section> */}
 
         <ExternalIds external_ids={tv.external_ids} type={"tv"} />
 
@@ -290,7 +278,7 @@ export const TvDetails = component$(
         )}
 
         <MediaCarousel title="Actors" type="person" lang={lang}>
-          {tv.credits?.cast!.slice(0, 10).map((c) => (
+          {tv.credits!.cast.slice(0, 10).map((c) => (
             <>
               <a href={paths.media("person", c.id, lang)}>
                 <MediaCard
@@ -308,23 +296,22 @@ export const TvDetails = component$(
           ))}
         </MediaCarousel>
 
-        {recTv.results && recTv.results.length > 0 && (
+        {recTv.length > 0 && (
           <MediaCarousel
             title="Recommended Tv Shows"
             type="person"
             category="updated"
             lang={lang}
           >
-            {recTv.results.map((m) => (
+            {recTv.map((m) => (
               <>
                 <a href={paths.media("tv", m.id, lang)}>
                   <MediaCard
-                    title={m.name ? m.name : ""}  
+                    title={m.name ? m.name : ""}
                     width={500}
                     rating={m.vote_average ? m.vote_average : 0}
                     year={
-                      (m.first_air_date && formatYear(m.first_air_date)) ||
-                      0
+                      (m.first_air_date && formatYear(m.first_air_date)) || 0
                     }
                     picfile={m.backdrop_path}
                     isPerson={false}

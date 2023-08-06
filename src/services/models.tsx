@@ -62,12 +62,13 @@ export type MovieDetails = {
   video?: boolean;
   vote_average?: number;
   vote_count?: number;
+  media_type?: MediaType;
 };
 
 export type TvDetails = {
   adult?: boolean;
   backdrop_path?: string;
-  created_by?: CreatedBy[];
+  created_by: CreatedBy[];
   episode_run_time?: number[];
   first_air_date?: string;
   genres?: Genre[];
@@ -78,8 +79,8 @@ export type TvDetails = {
   last_air_date?: string;
   last_episode_to_air?: LastEpisodeToAir;
   name?: string;
-  next_episode_to_air?: string;
-  networks?: Network[];
+  next_episode_to_air?: LastEpisodeToAir;
+  networks: Network[];
   number_of_episodes?: number;
   number_of_seasons?: number;
   origin_country?: string[];
@@ -90,17 +91,18 @@ export type TvDetails = {
   poster_path?: string;
   production_companies?: Network[];
   production_countries?: ProductionCountry[];
-  seasons?: Season[];
+  seasons: Season[];
   spoken_languages?: SpokenLanguage[];
   status?: string;
   tagline?: string;
   type?: string;
   vote_average?: number;
   vote_count?: number;
+  media_type?: MediaType;
 };
 
 export type CreatedBy = {
-  id?: number;
+  id: number;
   credit_id?: string;
   name?: string;
   gender?: number;
@@ -110,7 +112,7 @@ export type CreatedBy = {
 export type Season = {
   air_date?: string;
   episode_count?: number;
-  id?: number;
+  id: number;
   name?: string;
   overview?: string;
   poster_path?: string;
@@ -119,7 +121,7 @@ export type Season = {
 };
 
 export type LastEpisodeToAir = {
-  id?: number;
+  id: number;
   name?: string;
   overview?: string;
   vote_average?: number;
@@ -135,26 +137,26 @@ export type LastEpisodeToAir = {
 };
 
 export type Network = {
-  id?: number;
+  id: number;
   logo_path?: null | string;
   name?: string;
   origin_country?: string;
 };
 
 export type BelongsToCollection = {
-  id?: number;
-  name?: string;
+  id: number;
+  name: string;
   poster_path?: string;
   backdrop_path?: string;
 };
 
 export type Genre = {
-  id?: number;
+  id: number;
   name?: string;
 };
 
 export type ProductionCompany = {
-  id?: number;
+  id: number;
   logo_path?: null | string;
   name?: string;
   origin_country?: string;
@@ -172,26 +174,26 @@ export type SpokenLanguage = {
 };
 
 export type Collection = {
-  id?: number;
+  id: number;
   name?: string;
   overview?: string;
   poster_path?: string;
   backdrop_path?: string;
-  parts?: MovieDetails[];
+  parts: MovieDetails[];
 };
 
 export type MediaAppended = {
   videos?: Videos;
   images?: Images;
-  external_ids?: ExternalIDS;
+  external_ids: ExternalIDS;
   credits?: Credits;
   similar?: Similar;
   recommendations?: Similar;
 };
 
 export type Videos = {
-  id?: number;
-  results?: VideoResult[];
+  id: number;
+  results: VideoResult[];
 };
 
 export type VideoResult = {
@@ -204,7 +206,7 @@ export type VideoResult = {
   type?: string;
   official?: boolean;
   published_at?: string;
-  id?: string;
+  id: string;
 };
 
 export type Images = {
@@ -225,7 +227,7 @@ export type ImagesDetails = {
 };
 
 export type ExternalIDS = {
-  id?: number;
+  id: number;
   imdb_id?: string;
   wikidata_id?: string;
   facebook_id?: string;
@@ -236,14 +238,14 @@ export type ExternalIDS = {
 };
 
 export type Credits = {
-  cast?: CastCrew[];
-  crew?: CastCrew[];
+  cast: CastCrew[];
+  crew: CastCrew[];
 };
 
 export type CastCrew = {
   adult?: boolean;
   gender?: number;
-  id?: number;
+  id: number;
   known_for_department?: Department;
   name?: string;
   original_name?: string;
@@ -257,6 +259,39 @@ export type CastCrew = {
   job?: string;
   mediaType?: MediaType;
   known_for?: MovieShort[] | TvShort[];
+};
+
+export type PersonMedia = {
+  cast: Cast[];
+  crew: Cast[];
+  id: number;
+};
+
+export type Cast = {
+  adult?: boolean;
+  backdrop_path: null | string;
+  genre_ids?: number[];
+  id: number;
+  original_language?: string;
+  original_title?: string;
+  overview?: string;
+  popularity?: number;
+  poster_path: null | string;
+  release_date: string;
+  title?: string;
+  video?: boolean;
+  vote_average?: number;
+  vote_count?: number;
+  character?: string;
+  credit_id?: string;
+  order?: number;
+  department?: Department;
+  job?: string;
+  origin_country?: string[];
+  original_name?: string;
+  first_air_date: string;
+  name?: string;
+  episode_count?: number;
 };
 
 export enum Department {
@@ -312,6 +347,7 @@ export type PersonDetails = {
   place_of_birth?: string;
   popularity?: number;
   profile_path?: string;
+  media_type?: MediaType;
 };
 
 export type MovieFull = MovieDetails & MediaAppended;
@@ -321,12 +357,13 @@ export type MediaFull = MovieFull | TvFull | PersonFull;
 export type MediaShort = MovieShort | TvShort | PersonShort;
 export type MediaDetails = MovieDetails | TvDetails | PersonDetails;
 
-export type MediaShortStrict<T extends MediaType.Movie | MediaType.Tv | MediaType.Person> =
-  T extends MediaType.Movie
-    ? MovieFirestore
-    : T extends MediaType.Tv
-    ? TvShort
-    : PersonShort;
+export type MediaShortStrict<
+  T extends MediaType.Movie | MediaType.Tv | MediaType.Person
+> = T extends MediaType.Movie
+  ? MovieFirestore
+  : T extends MediaType.Tv
+  ? TvShort
+  : PersonShort;
 
 export type MediaCollection<T> = {
   page: number;
@@ -341,7 +378,7 @@ export type MovieFirestoreAttribs = {
   lastTimeFound?: number;
 };
 
-export type MovieFirestore = MovieShort & MovieFirestoreAttribs
+export type MovieFirestore = MovieShort & MovieFirestoreAttribs;
 
 export type Torrent = {
   Name: string;

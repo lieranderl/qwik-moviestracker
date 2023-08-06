@@ -2,12 +2,11 @@ import type { Signal } from "@builder.io/qwik";
 import { component$, $, useVisibleTask$, useStore } from "@builder.io/qwik";
 import { setValue, useForm, zodForm$ } from "@modular-forms/qwik";
 import { server$, z } from "@builder.io/qwik-city";
-import type { ProductionMediaDetails,  } from "~/services/types";
 import { DotPulseLoader } from "./dot-pulse-loader/dot-pulse-loader";
 import { TorrentBlock } from "./torrent";
 import type { getTorrentsType} from "~/services/cloud-func-api";
 import { getTorrents } from "~/services/cloud-func-api";
-import type { Torrent } from "~/services/models";
+import type { MovieDetails, Torrent } from "~/services/models";
 
 const searchTorrSchema = z.object({
   name: z.string().min(3, "Please enter movie name."),
@@ -25,7 +24,7 @@ interface TorrentListProps {
   title: string;
   year: Signal<number>;
   isMovie: boolean;
-  movie: ProductionMediaDetails;
+  movie: MovieDetails;
 }
 
 export const TorrentList = component$(

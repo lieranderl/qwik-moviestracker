@@ -1,18 +1,14 @@
-// import type {
-//   Collection,
-//   Genre,
-//   MediaDetails,
-//   MovieMedia,
-//   MovieMediaDetails,
-//   PersonMediaDetails,
-//   ProductionMedia,
-//   TvMedia,
-//   TvMediaDetails,
-// } from "./types";
 import { getMoviesFirebase } from "./firestore";
 import { formatYear } from "~/utils/fomat";
 import type { Timestamp } from "firebase/firestore";
-import type { Collection, Images, MediaCollection, MediaShortStrict } from "./models";
+import type {
+  Collection,
+  Images,
+  MediaCollection,
+  MediaFull,
+  MediaShortStrict,
+  PersonMedia,
+} from "./models";
 import { MediaType } from "./models";
 
 const baseURL = "https://api.themoviedb.org/3";
@@ -157,7 +153,6 @@ export const getFirebaseMovies = async ({
   }
 };
 
-
 type GetMedias = {
   query: string;
   page: number;
@@ -165,12 +160,20 @@ type GetMedias = {
   type: MediaType;
   needbackdrop: boolean;
 };
-export const getMedias = async ({ query, page, language, type, needbackdrop }: GetMedias) => {
-  const result = await fetchTMDB<MediaCollection<MediaShortStrict<typeof type>>>(`${type}/${query}`, {
+export const getMedias = async ({
+  query,
+  page,
+  language,
+  type,
+  needbackdrop,
+}: GetMedias) => {
+  const result = await fetchTMDB<
+    MediaCollection<MediaShortStrict<typeof type>>
+  >(`${type}/${query}`, {
     page: String(page),
     language: language,
   });
-  
+
   if (result.total_results === 0) return result.results;
   let media = result.results;
   if (type === MediaType.Movie || type === MediaType.Tv) {
@@ -185,168 +188,97 @@ export const getMedias = async ({ query, page, language, type, needbackdrop }: G
           media_type: type,
           langString: "en",
         });
-        movie.media_type = type
+        movie.media_type = type;
         return movie;
       })
     );
   }
   return media;
-
 };
 
-
-
-
-
-
-///////////
-
-
-
-
-type GetMovie = {
+type GetMediaDetailsType = {
   id: number;
   language: string;
   append_to_response?: string;
-  need_backdrop?: boolean;
+  type: MediaType;
 };
-
-// export const getMovie = async ({
-//   id,
-//   language,
-//   need_backdrop,
-// }: // append_to_response,
-// GetMovie) => {
-//   const result = await fetchTMDB<MovieMediaDetails>(`movie/${id}`, {
-//     //"videos,credits,images,external_ids,release_dates"
-//     // append_to_response: append_to_response ? append_to_response : "",
-//     include_image_language: "en",
-//     language: language,
-//   });
-//   if (need_backdrop) {
-//     const backdrop = await getMediaBackdrop({
-//       id: id,
-//       media_type: "movie",
-//       langString: "en",
-//     });
-//     if (backdrop === "") return { ...result, media_type: "movie" as const };
-//     result.backdrop_path = backdrop;
-//   }
-//   return { ...result, media_type: "movie" as const };
-// };
-
-export const getMovieDetails = async ({ id, language }: GetMovie) => {
-  const result = await fetchTMDB<MovieMediaDetails>(`movie/${id}`, {
+export const getMediaDetails = ({
+  id,
+  language,
+  type,
+}: GetMediaDetailsType) => {
+  return fetchTMDB<MediaFull>(`${type}/${id}`, {
     append_to_response: "videos,credits,images,external_ids,release_dates",
     include_image_language: "en",
     language: language,
   });
-  return { ...result, media_type: "movie" as const };
 };
 
-type GetMovies = {
-  query: string;
-  page: number;
-};
-
-export const getMovies = async ({ query, page }: GetMovies) => {
-  const result = await fetchTMDB<Collection<MovieMedia>>(`movie/${query}`, {
-    page: String(page),
-  });
-  const results = result.results?.map((item) => ({
-    ...item,
-    media_type: "movie" as const,
-  }));
-  return { ...result, results };
-};
-
-type GetSimilarType = {
+type GetMediaRecomType = {
   id: number;
-  lang: string;
+  query: string;
+  language: string;
+  type: MediaType;
 };
-
-export const getSimilarMovies = async ({ id, lang }: GetSimilarType) => {
-  const result = await fetchTMDB<Collection<MovieMedia>>(
-    `movie/${id}/similar`,
-    {
-      language: lang,
-    }
-  );
-
-  if (!result.results) return result;
-  const newMovieMedia = result.results.map(async (item) => {
-    const backdrop = await getMediaBackdrop({
-      id: item.id,
-      media_type: "movie",
-      langString: "en",
-    });
-    if (backdrop === "") return item;
-    item.backdrop_path = backdrop;
-    return item;
+export const getMediaRecom = async ({
+  id,
+  language,
+  type,
+  query,
+}: GetMediaRecomType) => {
+  const result = await fetchTMDB<
+    MediaCollection<MediaShortStrict<typeof type>>
+  >(`${type}/${id}/${query}`, {
+    language: language,
   });
-  try {
-    result.results = await Promise.all(newMovieMedia);
-    result.results = result.results.sort(
-      (a, b) => formatYear(b.release_date!) - formatYear(a.release_date!)
+
+  if (result.total_results === 0) return result.results;
+  let media = result.results;
+  if (type === MediaType.Movie || type === MediaType.Tv) {
+    media = await Promise.all(
+      media.map(async (item) => {
+        const movie = item as MediaShortStrict<typeof type>;
+        movie.backdrop_path = await getMediaBackdrop({
+          id: item.id,
+          media_type: type,
+          langString: "en",
+        });
+        movie.media_type = type;
+        return movie;
+      })
     );
-  } catch (error) {
-    console.log("skip movie backdrop");
+    if (type === MediaType.Movie) {
+      media = media.sort(
+        (a, b) => formatYear(b.release_date!) - formatYear(a.release_date!)
+      );
+    }
+    if (type === MediaType.Tv) {
+      media = media.sort(
+        (a, b) => formatYear(b.first_air_date!) - formatYear(a.first_air_date!)
+      );
+    }
   }
-
-  return result;
+  return media;
 };
 
-export const getRecommendationMovies = async ({ id, lang }: GetSimilarType) => {
-  const result = await fetchTMDB<Collection<MovieMedia>>(
-    `movie/${id}/recommendations`,
-    {
-      language: lang,
-    }
-  );
-  if (!result.results) return result;
-  const newMovieMedia = result.results.map(async (item) => {
-    const backdrop = await getMediaBackdrop({
-      id: item.id,
-      media_type: "movie",
-      langString: "en",
-    });
-    if (backdrop) {
-      item.backdrop_path = backdrop;
-    } else {
-      const backdrop = await getMediaBackdrop({
-        id: item.id,
-        media_type: "movie",
-        langString: "",
-      });
-      item.backdrop_path = backdrop;
-    }
-    return item;
-  });
-  try {
-    result.results = await Promise.all(newMovieMedia);
-    result.results = result.results.sort(
-      (a, b) => formatYear(b.release_date!) - formatYear(a.release_date!)
-    );
-  } catch (error) {
-    console.log("skip movie backdrop");
-  }
-
-  return result;
+type GetColMoviesType = {
+  id: number;
+  language: string;
 };
-
-export const getCollectionMovies = async ({ id, lang }: GetSimilarType) => {
-  const result = await fetchTMDB<Collection<MovieMedia>>(`collection/${id}`, {
-    language: lang,
+export const getCollectionMovies = async ({
+  id,
+  language,
+}: GetColMoviesType) => {
+  const result = await fetchTMDB<Collection>(`collection/${id}`, {
+    language: language,
   });
-  if (result.parts.length == 0) return result;
+  if (result.parts.length == 0) return result.parts;
   const newMovieMedia = result.parts.map(async (item) => {
-    const backdrop = await getMediaBackdrop({
+    item.backdrop_path = await getMediaBackdrop({
       id: item.id,
-      media_type: "movie",
+      media_type: MediaType.Movie,
       langString: "en",
     });
-    if (backdrop === "") return item;
-    item.backdrop_path = backdrop;
     return item;
   });
   try {
@@ -357,150 +289,43 @@ export const getCollectionMovies = async ({ id, lang }: GetSimilarType) => {
   } catch (error) {
     console.log("skip movie backdrop");
   }
-
-  return result;
+  return result.parts;
 };
 
-type GetTvShow = {
-  id: number;
-  language: string;
-};
-
-export const getTvShowDetails = async ({ id, language }: GetTvShow) => {
-  const result = await fetchTMDB<TvMediaDetails>(`tv/${id}`, {
-    append_to_response: "videos,credits,images,external_ids,content_ratings",
-    include_image_language: "en",
-    language: language,
-  });
-  return { ...result, media_type: "tv" as const };
-};
-
-
-
-export const getSimilarTv = async ({ id, lang }: GetSimilarType) => {
-  const result = await fetchTMDB<Collection<TvMedia>>(`tv/${id}/similar`, {
-    language: lang,
-  });
-
-  if (!result.results) return result;
-  const newMovieMedia = result.results.map(async (item) => {
-    const backdrop = await getMediaBackdrop({
-      id: item.id,
-      media_type: "tv",
-      langString: "en",
-    });
-    if (backdrop === "") return item;
-    item.backdrop_path = backdrop;
-    return item;
-  });
-  try {
-    result.results = await Promise.all(newMovieMedia);
-    result.results = result.results.sort(
-      (a, b) => formatYear(b.first_air_date!) - formatYear(a.first_air_date!)
-    );
-  } catch (error) {
-    console.log("skip movie backdrop");
-  }
-
-  return result;
-};
-
-export const getRecommendationTv = async ({ id, lang }: GetSimilarType) => {
-  const result = await fetchTMDB<Collection<TvMedia>>(
-    `tv/${id}/recommendations`,
-    {
-      language: lang,
-    }
-  );
-  if (!result.results) return result;
-  const newMovieMedia = result.results.map(async (item) => {
-    const backdrop = await getMediaBackdrop({
-      id: item.id,
-      media_type: "tv",
-      langString: "en",
-    });
-    if (backdrop) {
-      item.backdrop_path = backdrop;
-    } else {
-      const backdrop = await getMediaBackdrop({
-        id: item.id,
-        media_type: "tv",
-        langString: "",
-      });
-      item.backdrop_path = backdrop;
-    }
-    return item;
-  });
-  try {
-    result.results = await Promise.all(newMovieMedia);
-    result.results = result.results.sort(
-      (a, b) => formatYear(b.first_air_date!) - formatYear(a.first_air_date!)
-    );
-  } catch (error) {
-    console.log("skip movie backdrop");
-  }
-
-  return result;
-};
 
 type GetPerson = {
   id: number;
   language: string;
 };
 
-export const getPerson = async ({ id, language }: GetPerson) => {
-  const result = await fetchTMDB<PersonMediaDetails>(`person/${id}`, {
-    append_to_response: "images,combined_credits,external_ids",
-    include_image_language: "en",
+export const getPersonMovies = async ({ id, language }: GetPerson) => {
+  const result = await fetchTMDB<PersonMedia>(`person/${id}/movie_credits`, {
+    append_to_response: "credits",
     language: language,
   });
-  return { ...result, media_type: "person" as const };
+
+  result.cast = result.cast.sort(
+    (a, b) => formatYear(b.release_date) - formatYear(a.release_date)
+  );
+  result.crew = result.crew.sort(
+    (a, b) => formatYear(b.release_date) - formatYear(a.release_date)
+  );
+  return result.cast;
 };
 
-export const getPersonMovies = async ({ id, lang }: GetSimilarType) => {
-  const result = await fetchTMDB<Collection<MovieMedia>>(
-    `person/${id}/movie_credits`,
-    {
-      append_to_response: "credits",
-      language: lang,
-    }
+export const getPersonTv = async ({ id, language }: GetPerson) => {
+  const result = await fetchTMDB<PersonMedia>(`person/${id}/tv_credits`, {
+    append_to_response: "credits",
+    language: language,
+  });
+
+  result.cast = result.cast.sort(
+    (a, b) => formatYear(b.first_air_date) - formatYear(a.first_air_date)
   );
-
-  try {
-    result.cast = result.cast.sort(
-      (a, b) => formatYear(b.release_date!) - formatYear(a.release_date!)
-    );
-    result.crew = result.crew.sort(
-      (a, b) => formatYear(b.release_date!) - formatYear(a.release_date!)
-    );
-  } catch (error) {
-    console.log("skip movie backdrop");
-  }
-
-  return result;
-};
-
-export const getPersonTv = async ({ id, lang }: GetSimilarType) => {
-  const result = await fetchTMDB<Collection<TvMedia>>(
-    `person/${id}/tv_credits`,
-    {
-      language: lang,
-      append_to_response: "credits",
-    }
+  result.crew = result.crew.sort(
+    (a, b) => formatYear(b.first_air_date) - formatYear(a.first_air_date)
   );
-
-  try {
-    result.cast = result.cast.sort(
-      (a, b) => formatYear(b.first_air_date!) - formatYear(a.first_air_date!)
-    );
-    result.crew = result.crew.sort(
-      (a, b) => formatYear(b.first_air_date!) - formatYear(a.first_air_date!)
-    );
-  } catch (error) {
-    console.log("skip movie backdrop");
-  }
-
-  return result;
+  return result.cast;
 };
 
 type Search = {
@@ -510,59 +335,9 @@ type Search = {
 };
 
 export const search = ({ query, page, language }: Search) => {
-  return fetchTMDB<Collection<ProductionMedia>>("search/multi", {
+  return fetchTMDB<MediaCollection<MediaFull>>("search/multi", {
     page: String(page),
     language: language,
     query,
   });
-};
-
-type GetRandomMedia<T> = {
-  collections: Collection<T>[];
-};
-
-export const getRandomMedia = ({ collections }: GetRandomMedia<any>) => {
-  const items = collections.flatMap((collection) => collection.results || []);
-  const randomItem = items[Math.floor(Math.random() * items.length)];
-  return randomItem;
-};
-
-type GetMediaByGenre = {
-  media: MediaType;
-  genre: number;
-  page: number;
-};
-
-export const getMediaByGenre = async ({
-  media,
-  genre,
-  page,
-}: GetMediaByGenre) => {
-  const result = await fetchTMDB<Collection<ProductionMedia>>(
-    `discover/${media}`,
-    {
-      append_to_response: "genres",
-      page: String(page),
-      with_genres: String(genre),
-    }
-  );
-  const results = result.results?.map((item) => ({
-    ...item,
-    media_type: media,
-  })) as (TvMedia | MovieMedia)[];
-
-  const firstId = results[0].id;
-  const first = await fetchTMDB<MediaDetails>(`${media}/${firstId}`);
-  const found = first.genres?.find((entry) => entry.id === genre);
-
-  return { ...result, genre: found, results };
-};
-
-type GetGenreList = {
-  media: MediaType;
-};
-
-export const getGenreList = async ({ media }: GetGenreList) => {
-  const res = await fetchTMDB<{ genres: Genre[] }>(`genre/${media}/list`, {});
-  return res.genres;
 };

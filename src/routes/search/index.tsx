@@ -9,7 +9,6 @@ import { DotPulseLoader } from "~/components/dot-pulse-loader/dot-pulse-loader";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import { search } from "~/services/tmdb";
-import { MediaType } from "~/services/types";
 import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
@@ -28,11 +27,12 @@ export default component$(() => {
     console.log(phrase.value);
 
     try {
-      return search({
+      const s = await search({
         query: phrase.value,
         language: resource.value.lang,
         page: 1,
       });
+      return s
     } catch (error) {
       throw new Error("Search failed");
     }
@@ -45,11 +45,6 @@ export default component$(() => {
           type="text"
           class="w-[50%] mr-2 py-2 pl-2 text-sm border border-teal-300 rounded-lg bg-teal-50 focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500 placeholder-teal-900"
           placeholder="Search here..."
-          // onChange$={(e) => {
-          //   if (e.target.value.length > 2) {
-          //     phrase.value = e.target.value;
-          //   }
-          // }}
           onKeyDown$={(e, elem) => {
             if (e.keyCode === 13) {
               if (elem.value.length > 2) {
@@ -79,7 +74,7 @@ export default component$(() => {
                             <a
                               class="text-left"
                               href={paths.media(
-                                m.media_type! as MediaType,
+                                m.media_type!,
                                 m.id,
                                 resource.value.lang
                               )}

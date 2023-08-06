@@ -1,7 +1,8 @@
 import { component$ } from "@builder.io/qwik";
+import { ExternalIDS } from "~/services/models";
 
 type ExternalIdsProps = {
-    external_ids?: Record<string, string>;
+    external_ids?: ExternalIDS;
     type: "movie" | "tv" | "person";
 }
 

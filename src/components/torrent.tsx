@@ -1,14 +1,13 @@
 import { component$, useContext, $ } from "@builder.io/qwik";
-import type { ProductionMediaDetails } from "~/services/types";
 import { formatRating } from "~/utils/fomat";
 import { ButtonPrimary } from "./button-primary";
 import { addTorrent } from "~/services/torrserver";
 import { toastManagerContext } from "./toast/toastStack";
-import type { Torrent } from "~/services/models";
+import type { MovieDetails, Torrent } from "~/services/models";
 
 interface TorrentListProps {
   torrent: Torrent;
-  movie: ProductionMediaDetails;
+  movie: MovieDetails;
 }
 
 export const TorrentBlock = component$(
@@ -95,7 +94,6 @@ export const TorrentBlock = component$(
                   })}
                 />
               </div>
-
             </div>
           </div>
 

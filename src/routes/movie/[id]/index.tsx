@@ -1,47 +1,53 @@
 import { component$ } from "@builder.io/qwik";
-import type { DocumentHead} from "@builder.io/qwik-city";
+import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import { MovieDetails } from "~/components/movie-details";
+import type { MovieFull, MovieShort } from "~/services/models";
+import { MediaType } from "~/services/models";
 import {
   getCollectionMovies,
-  getMovieDetails,
-  getRecommendationMovies,
-  // getSimilarMovies,
+  getMediaDetails,
+  getMediaRecom,
 } from "~/services/tmdb";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   const id = parseInt(event.params.id, 10);
   try {
-    const [movie, 
-      // simMovies, 
-      recMovies] = await Promise.all([
-      getMovieDetails({
+    const [movie, recMovies] = await Promise.all([
+      getMediaDetails({
         id,
         language: lang,
-      }),
-      // getSimilarMovies({ id: id, lang: lang }),
-      getRecommendationMovies({ id: id, lang: lang }),
+        type: MediaType.Movie,
+      }) as Promise<MovieFull>,
+      getMediaRecom({
+        id: id,
+        language: lang,
+        type: MediaType.Movie,
+        query: "recommendations",
+      }) as Promise<MovieShort[]>,
     ]);
     if (movie.belongs_to_collection) {
       const colMovies = await getCollectionMovies({
         id: movie.belongs_to_collection.id,
-        lang: lang,
+        language: lang,
       });
       return {
         movie,
-        // simMovies,
         recMovies,
         colMovies,
         lang,
       };
     }
-    return { movie, 
-      // simMovies, 
-      recMovies, lang };
+    const colMovies = [] as MovieShort[];
+    return { movie, recMovies, colMovies, lang };
   } catch (error) {
     event.redirect(302, "/404");
   }
+  const movie = {} as MovieFull;
+  const recMovies = [] as MovieShort[];
+  const colMovies = [] as MovieShort[];
+  return { movie, recMovies, colMovies, lang };
 });
 
 export default component$(() => {
@@ -53,11 +59,10 @@ export default component$(() => {
       <div class="absolute  pt-[100px] overflow-auto w-screen h-screen font-bold ">
         <div class="container mx-auto px-4">
           <MovieDetails
-            movie={resource.value!.movie}
-            // simMovies={resource.value!.simMovies}
-            recMovies={resource.value!.recMovies}
-            colMovies={resource.value!.colMovies}
-            lang={resource.value!.lang}
+            movie={resource.value.movie}
+            recMovies={resource.value.recMovies}
+            colMovies={resource.value.colMovies}
+            lang={resource.value.lang}
           />
         </div>
       </div>
@@ -66,14 +71,13 @@ export default component$(() => {
         class="bg-fixed w-screen h-screen bg-no-repeat bg-cover bg-center -z-20"
         style={
           "background-image: url(https://image.tmdb.org/t/p/original" +
-          resource.value?.movie.backdrop_path +
+          resource.value.movie.backdrop_path +
           ")"
         }
       />
     </>
   );
 });
-
 
 export const head: DocumentHead = {
   title: "Moviestracker",

@@ -3,11 +3,11 @@ import { formatRating } from "~/utils/fomat";
 import { ButtonPrimary, ButtonSize } from "./button-primary";
 import { addTorrent } from "~/services/torrserver";
 import { toastManagerContext } from "./toast/toastStack";
-import type { MovieDetails, Torrent } from "~/services/models";
+import type { MediaDetails, Torrent } from "~/services/models";
 
 interface TorrentListProps {
   torrent: Torrent;
-  movie: MovieDetails;
+  movie: MediaDetails;
 }
 
 export const TorrentBlock = component$(

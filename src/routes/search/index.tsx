@@ -8,6 +8,7 @@ import { routeLoader$ } from "@builder.io/qwik-city";
 import { DotPulseLoader } from "~/components/dot-pulse-loader/dot-pulse-loader";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
+import { MediaType } from "~/services/models";
 import { search } from "~/services/tmdb";
 import { paths } from "~/utils/paths";
 
@@ -32,7 +33,7 @@ export default component$(() => {
         language: resource.value.lang,
         page: 1,
       });
-      return s
+      return s;
     } catch (error) {
       throw new Error("Search failed");
     }
@@ -81,12 +82,14 @@ export default component$(() => {
                             >
                               <MediaCard
                                 title={
-                                  m.media_type === "movie" ? m.title! : m.name!
+                                  m.media_type === MediaType.Movie
+                                    ? m.title!
+                                    : m.name!
                                 }
                                 width={300}
-                                rating={m.vote_average}
+                                rating={m.vote_average ? m.vote_average : 0}
                                 year={
-                                  m.media_type === "movie"
+                                  m.media_type === MediaType.Movie
                                     ? parseInt(
                                         m.release_date!.substring(0, 4),
                                         10
@@ -99,14 +102,14 @@ export default component$(() => {
                                       )
                                 }
                                 picfile={
-                                  m.media_type != "movie" &&
-                                  m.media_type != "tv"
+                                  m.media_type != MediaType.Movie &&
+                                  m.media_type != MediaType.Tv
                                     ? m.profile_path!
                                     : m.poster_path!
                                 }
                                 isPerson={
-                                  m.media_type != "movie" &&
-                                  m.media_type != "tv"
+                                  m.media_type != MediaType.Movie &&
+                                  m.media_type != MediaType.Tv
                                     ? true
                                     : false
                                 }
@@ -130,4 +133,3 @@ export default component$(() => {
     </>
   );
 });
-

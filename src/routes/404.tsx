@@ -1,6 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
-import { ButtonPrimary } from "~/components/button-primary";
+import { ButtonPrimary, ButtonSize } from "~/components/button-primary";
 
 export default component$(() => {
   return (
@@ -16,7 +16,7 @@ export default component$(() => {
           </p>
 
           <a rel="noopener noreferrer" href="/">
-            <ButtonPrimary text="Back to home" size="lg" />
+            <ButtonPrimary text="Back to home" size={ButtonSize.lg} />
           </a>
         </div>
       </div>

@@ -33,6 +33,7 @@ export type TvShort = {
   name?: string;
   original_name?: string;
   first_air_date?: string;
+  release_date: string;
   origin_country?: string[];
 };
 
@@ -330,6 +331,8 @@ export type PersonShort = {
   gender?: number;
   known_for_department?: string;
   profile_path?: string;
+  release_date: string;
+  first_air_date: string;
 };
 
 export type PersonDetails = {
@@ -348,13 +351,14 @@ export type PersonDetails = {
   popularity?: number;
   profile_path?: string;
   media_type?: MediaType;
+  poster_path: string
 };
 
 export type MovieFull = MovieDetails & MediaAppended;
 export type TvFull = TvDetails & MediaAppended;
 export type PersonFull = PersonDetails & MediaAppended;
-export type MediaFull = MovieFull | TvFull | PersonFull;
-export type MediaShort = MovieShort | TvShort | PersonShort;
+export type MediaFull = MovieFull & TvFull & PersonFull;
+export type MediaShort = MovieShort & TvShort & PersonShort;
 export type MediaDetails = MovieDetails | TvDetails | PersonDetails;
 
 export type MediaShortStrict<
@@ -376,6 +380,7 @@ export type MovieFirestoreAttribs = {
   Year: string;
   LastTimeFound?: number | Timestamp;
   lastTimeFound?: number;
+  first_air_date?: string;
 };
 
 export type MovieFirestore = MovieShort & MovieFirestoreAttribs;
@@ -404,4 +409,16 @@ export type ImdbRating = {
   Id: string;
   Rating: string;
   Votes: string;
+};
+
+export type TSResult = {
+  stat_string: string;
+  data: string;
+  hash: string;
+  poster: string;
+  stat: string;
+  timestamp: number;
+  title: string;
+  torrent_size: number;
+  name: string;
 };

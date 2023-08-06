@@ -12,8 +12,8 @@ import { DotPulseLoader } from "~/components/dot-pulse-loader/dot-pulse-loader";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import { toastManagerContext } from "~/components/toast/toastStack";
+import { TSResult } from "~/services/models";
 import { listTorrent, torrServerEcho } from "~/services/torrserver";
-import type { TSResult } from "~/services/types";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
@@ -40,7 +40,7 @@ export default component$(() => {
   const isCheckingTorrServer = useSignal(false);
   const torrentsSig = useSignal([] as TSResult[]);
 
-  const handleSubmit = $(async (values: torrServerForm) => {
+  const handleSubmit = $(async (values: torrServerForm): Promise<any> => {
     isLoading.value = true;
     if (torrServerStore.list.includes(values.ipaddress)) {
       isLoading.value = false;

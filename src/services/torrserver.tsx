@@ -1,4 +1,4 @@
-import type { ProductionMediaDetails, TSResult, Torrent } from "./types";
+import type { MediaDetails, TSResult, Torrent } from "./models";
 
 const fetchWithTimeout = async (resource: string, options: any) => {
   const { timeout = 8000 } = options;
@@ -77,13 +77,13 @@ export const listTorrent = async (url: string) => {
 export const addTorrent = async (
   url: string,
   torrent: Torrent,
-  media: ProductionMediaDetails
+  media: MediaDetails
 ) => {
   const data = JSON.stringify({ moviestracker: true, movie: media }) || "";
   const body = {
     action: "add",
     link: torrent.Magnet,
-    poster: "http://image.tmdb.org/t/p/w300"+media.poster_path,
+    poster: "http://image.tmdb.org/t/p/w300" + media.poster_path,
     data: data,
     save_to_db: true,
     title: "[MT] " + torrent.Name,

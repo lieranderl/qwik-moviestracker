@@ -292,7 +292,6 @@ export const getCollectionMovies = async ({
   return result.parts;
 };
 
-
 type GetPerson = {
   id: number;
   language: string;

@@ -1,5 +1,5 @@
 import { component$, useComputed$ } from "@builder.io/qwik";
-import { Image } from '@unpic/qwik';
+import { Image } from "@unpic/qwik";
 
 interface MovieCardProps {
   title: string;
@@ -10,7 +10,6 @@ interface MovieCardProps {
   year: number;
   isPerson: boolean;
   isHorizontal: boolean;
-  
 }
 
 export const MediaCard = component$(

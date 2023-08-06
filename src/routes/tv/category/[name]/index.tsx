@@ -7,7 +7,7 @@ import {
 } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, server$ } from "@builder.io/qwik-city";
-import { ButtonPrimary } from "~/components/button-primary";
+import { ButtonPrimary, ButtonSize } from "~/components/button-primary";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import type { TvShort } from "~/services/models";
@@ -129,7 +129,7 @@ export default component$(() => {
           text="Load more"
           onClick={getNewMovies}
           isLoading={isloadingMovies.value}
-          size="lg"
+          size={ButtonSize.lg}
         />
       </div>
     </div>

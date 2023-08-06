@@ -1,9 +1,9 @@
 import { component$ } from "@builder.io/qwik";
-import type { Video } from "~/services/types";
 import { Image } from '@unpic/qwik';
+import type { VideoResult } from "~/services/models";
 
 export interface TorModalPros {
-  videos?: Video[];
+  videos?: VideoResult[];
 }
 
 export const TrailersModal = component$(({ videos }: TorModalPros) => {

@@ -1,6 +1,6 @@
 import { component$, useContext, $ } from "@builder.io/qwik";
 import { formatRating } from "~/utils/fomat";
-import { ButtonPrimary } from "./button-primary";
+import { ButtonPrimary, ButtonSize } from "./button-primary";
 import { addTorrent } from "~/services/torrserver";
 import { toastManagerContext } from "./toast/toastStack";
 import type { MovieDetails, Torrent } from "~/services/models";
@@ -59,11 +59,11 @@ export const TorrentBlock = component$(
               </span>
               <div class="flex space-x-1 my-2">
                 <a href={torrent.Magnet} target="_blank">
-                  <ButtonPrimary text="Открыть" size="sm" />
+                  <ButtonPrimary text="Открыть" size={ButtonSize.sm} />
                 </a>
                 <ButtonPrimary
                   text="Добавить в TorrServer"
-                  size="sm"
+                  size={ButtonSize.sm}
                   onClick={$(async () => {
                     const torrserv =
                       localStorage.getItem("selectedTorServer") || "";
@@ -94,6 +94,7 @@ export const TorrentBlock = component$(
                   })}
                 />
               </div>
+
             </div>
           </div>
 

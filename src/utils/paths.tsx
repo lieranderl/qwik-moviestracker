@@ -1,4 +1,4 @@
-import type { MediaType } from "~/services/types";
+import type { MediaType } from "~/services/models";
 
 export const categoryToDb = (category: string) => {
   if (category === "updated") return "latesttorrentsmovies";

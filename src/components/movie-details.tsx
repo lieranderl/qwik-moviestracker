@@ -16,7 +16,7 @@ import { langBudget, langRevenue, langMinutes } from "~/utils/languages";
 import { TorrentsModal } from "./torrents-list-modal";
 import { TrailersModal } from "./trailers-list-modal";
 import { ExternalIds } from "./external_ids";
-import type { MovieFull, MovieShort } from "~/services/models";
+import { MediaType, type MovieFull, type MovieShort } from "~/services/models";
 
 interface MovieDetailsProps {
   movie: MovieFull;
@@ -167,10 +167,10 @@ export const MovieDetails = component$(
           )}
         </section>
 
-        <MediaCarousel title="Actors" type="person" lang={lang}>
+        <MediaCarousel title="Actors" type={MediaType.Person} lang={lang}>
           {movie.credits?.cast.slice(0, 10).map((c) => (
             <>
-              <a href={paths.media("person", c.id, lang)}>
+              <a href={paths.media(MediaType.Person, c.id, lang)}>
                 <MediaCard
                   title={c.name ? c.name : ""}
                   width={300}
@@ -187,12 +187,12 @@ export const MovieDetails = component$(
         </MediaCarousel>
 
         {movie.credits && movie.credits.crew.length > 0 && (
-          <MediaCarousel title="Crew" type="person" lang={lang}>
+          <MediaCarousel title="Crew" type={MediaType.Person} lang={lang}>
             {formatCrew(movie.credits.crew!)
               .slice(0, 10)
               .map((c) => (
                 <>
-                  <a href={paths.media("person", c.id, lang)}>
+                  <a href={paths.media(MediaType.Person, c.id, lang)}>
                     <MediaCard
                       title={c.name!}
                       width={300}
@@ -212,15 +212,15 @@ export const MovieDetails = component$(
         {colMovies.length > 0 && (
           <MediaCarousel
             title="Collection Movies"
-            type="person"
+            type={MediaType.Person}
             category="updated"
             lang={lang}
           >
             {colMovies.map((m) => (
               <>
-                <a href={paths.media("movie", m.id, lang)}>
+                <a href={paths.media(MediaType.Movie, m.id, lang)}>
                   <MediaCard
-                    title={m.title!}
+                    title={m.title ? m.title : ""}
                     width={500}
                     rating={m.vote_average ? m.vote_average : 0}
                     year={(m.release_date && formatYear(m.release_date)) || 0}
@@ -237,13 +237,13 @@ export const MovieDetails = component$(
         {recMovies.length > 0 && (
           <MediaCarousel
             title="Recommended Movies"
-            type="person"
+            type={MediaType.Person}
             category="updated"
             lang={lang}
           >
             {recMovies.map((m) => (
               <>
-                <a href={paths.media("movie", m.id, lang)}>
+                <a href={paths.media(MediaType.Movie, m.id, lang)}>
                   <MediaCard
                     title={m.title ? m.title : ""}
                     width={500}
@@ -258,34 +258,6 @@ export const MovieDetails = component$(
             ))}
           </MediaCarousel>
         )}
-
-        {/* {simMovies.results && simMovies.results.length > 0 && (
-          <MediaCarousel
-            title="Similar Movies"
-            type="person"
-            category="updated"
-            lang={lang}
-          >
-            {simMovies.results.map((m) => (
-              <>
-                <a href={paths.media("movie", m.id, lang)}>
-                  <MediaCard
-                    title={m.title!}
-                    width={500}
-                    rating={m.vote_average!}
-                    year={
-                      (m.release_date && formatYear(m.release_date)) ||
-                      undefined
-                    }
-                    picfile={m.backdrop_path}
-                    isPerson={false}
-                    isHorizontal={true}
-                  />
-                </a>
-              </>
-            ))}
-          </MediaCarousel>
-        )} */}
       </div>
     );
   }

@@ -1,12 +1,25 @@
 import type { PropFunction } from "@builder.io/qwik";
 import { component$, useSignal, useTask$ } from "@builder.io/qwik";
 
+
+export enum ButtonSize { 
+  sm = "sm",
+  md = "md",
+  lg = "lg"
+}
+
+export enum ButtonType {
+  button = "button",
+  submit = "submit",
+  reset = "reset"
+}
+
 interface ButtonPrimaryProps {
   text: string;
   isLoading?: boolean;
-  size: "sm" | "md" | "lg";
+  size: ButtonSize;
   onClick?: PropFunction<() => void>;
-  type?: "button" | "submit" | "reset";
+  type?: ButtonType;
   disabled?: boolean;
 }
 
@@ -18,7 +31,7 @@ export const ButtonPrimary = component$(
 
     useTask$(() => {
       if (type == undefined) {
-        typeSig.value = "button";
+        typeSig.value = ButtonType.button;
       }
       if (disabled == undefined) {
         disabledSig.value = false;

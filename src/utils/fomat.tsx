@@ -1,4 +1,4 @@
-import type { PersonMedia } from "~/services/types";
+import type { CastCrew } from "~/services/models";
 import { languages } from "./languages";
 
 export function formatDate(date: string, lang: string) {
@@ -53,7 +53,7 @@ export function formatLanguage(iso?: string) {
 }
 
 
-export function formatCrew(crew: PersonMedia[]) {
+export function formatCrew(crew: CastCrew[]) {
     const mycrew = crew.filter(
       (crew) =>
         crew.job == 'Director' ||

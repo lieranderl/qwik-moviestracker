@@ -1,10 +1,11 @@
 import { Slot, component$ } from "@builder.io/qwik";
+import type { MediaType } from "~/services/models";
 import { paths } from "~/utils/paths";
 
 interface MediaCarouselProps {
   title: string;
   category?: string;
-  type: string;
+  type: MediaType;
   lang: string;
 }
 

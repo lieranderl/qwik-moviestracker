@@ -11,7 +11,7 @@
     "build.preview": "vite build --ssr src/entry.preview.tsx",
     "build.server": "vite build -c adapters/cloud-run/vite.config.ts",
     "build.types": "tsc --incremental --noEmit",
-    "deploy": "gcloud run deploy moviestracker-app --min-instances 1 --source .",
+    "deploy": "gcloud run deploy moviestracker-app --min-instances 1 --env-vars-file .env.local --source .",
     "dev": "vite --mode ssr",
     "dev.debug": "node --inspect-brk ./node_modules/vite/bin/vite.js --mode ssr --force",
     "fmt": "prettier --write .",

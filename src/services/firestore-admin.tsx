@@ -29,7 +29,7 @@ export const checkAuth = async (
       throw event.redirect(302, "/auth");
     }
   } catch (error) {
-    event.cookie.delete("uid", { path: "/" });
+    // event.cookie.delete("uid", { path: "/" });
     throw event.redirect(302, "/auth");
   }
 };

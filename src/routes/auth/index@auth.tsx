@@ -5,7 +5,6 @@ import {
   useContext,
   useSignal,
 } from "@builder.io/qwik";
-import { useNavigate } from "@builder.io/qwik-city";
 import { onAuthStateChanged, signInWithRedirect } from "firebase/auth";
 import {
   ButtonPrimary,
@@ -15,9 +14,9 @@ import {
 import { auth, googleProvider } from "~/services/firestore";
 import { useTokenCookies } from "~/routes/layout-auth";
 import { toastManagerContext } from "~/components/toast/toastStack";
+import { SiGoogle } from "@qwikest/icons/simpleicons";
 
 export default component$(() => {
-  const nav = useNavigate();
   const action = useTokenCookies();
   const toastManager = useContext(toastManagerContext);
   const isLoading = useSignal(true);
@@ -36,16 +35,16 @@ export default component$(() => {
   });
 
   useVisibleTask$(async () => {
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
-        user.getIdToken().then(async (uid) => {
-          const res = await action.submit({ uid });
-          if (res.value.success) {
-            nav("/");
-          }
-        });
+        const uid = await user.getIdToken();
+        const res = await action.submit({ uid });
+        if (res.value.success) {
+          console.log("signed in");
+          document.location.assign("/");
+        }
       } else {
         console.log("signed out");
         action.submit({ uid: "" });
@@ -55,14 +54,21 @@ export default component$(() => {
   });
 
   return (
-    <div class="flex items-center justify-center pt-[100px] mx-auto h-[calc(100vh-75px)]">
-      <ButtonPrimary
-        text="Sign in with Google"
-        type={ButtonType.button}
-        size={ButtonSize.lg}
-        onClick={authGoogle}
-        isLoading={isLoading.value}
-      />
+    <div class="flex items-center justify-center mx-auto h-[calc(100vh-400px)]">
+      <div class="text-center md:space-y-20 space-y-10">
+        <p class="md:text-4xl font-bold text-2xl">Welcome to Moviestracker</p>
+        <ButtonPrimary
+          text="Sign in with Google"
+          type={ButtonType.button}
+          size={ButtonSize.lg}
+          onClick={authGoogle}
+          isLoading={isLoading.value}
+        >
+          <div class="mr-4">
+            <SiGoogle />
+          </div>
+        </ButtonPrimary>
+      </div>
     </div>
   );
 });

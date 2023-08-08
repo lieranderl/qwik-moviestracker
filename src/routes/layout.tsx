@@ -15,16 +15,15 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 };
 
 export const useQueryParamsLoader = routeLoader$(async (event) => {
-  await checkAuth(event);
+  const decodedID = await checkAuth(event);
   const lang = event.query.get("lang") || "en-US";
-  return { lang };
+  return { lang, decodedID };
 });
 
 export default component$(() => {
-  const resource = useQueryParamsLoader();
   return (
     <>
-      <Toolbar lang={resource.value.lang} />
+      <Toolbar />
       <Slot />
     </>
   );

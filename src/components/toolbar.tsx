@@ -1,57 +1,55 @@
-import { component$, $, useContext } from "@builder.io/qwik";
+import {
+  component$,
+  $,
+  useContext,
+  useTask$,
+  useSignal,
+} from "@builder.io/qwik";
 import { ThemeButton } from "./theme-button";
 import { LangButton } from "./lang-button";
-import { ButtonPrimary, ButtonType, ButtonSize } from "./button-primary";
 import { auth } from "~/services/firestore";
 import { useNavigate } from "@builder.io/qwik-city";
 import { toastManagerContext } from "./toast/toastStack";
-// import { useTokenCookiesDelete } from "~/routes/layout";
-interface ToolbarProps {
-  lang: string;
-}
+import { Image } from "@unpic/qwik";
+import { useQueryParamsLoader } from "~/routes/layout";
+import { getAuth } from "firebase-admin/auth";
+import { admin_app } from "~/services/firestore-admin";
 
-
-export const Toolbar = component$(({ lang }: ToolbarProps) => {
+export const Toolbar = component$(() => {
   const nav = useNavigate();
-  const  toastManager = useContext(toastManagerContext)
-  // const action = useTokenCookiesDelete();
-  const logout = $(() => {
-    auth.signOut().then(() => {
-      console.log("signed out LOUT BUTTION");
-      nav("/auth");
-    }).catch((error) => {
-      toastManager.addToast({message: error.message, type: "error", autocloseTime: 5000})
-    });
+  const toastManager = useContext(toastManagerContext);
+  const resource = useQueryParamsLoader();
+  const username = useSignal("");
+
+  useTask$(async () => {
+    username.value =
+      (await getAuth(admin_app).getUser(resource.value.decodedID.uid))
+        .displayName ?? "";
   });
 
-  
-
-  // useVisibleTask$(async () => {
-  //   onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       // User is signed in, see docs for a list of available properties
-  //       // https://firebase.google.com/docs/reference/js/auth.user
-  //       user.getIdToken().then((idToken) => {
-  //         action.submit({ uid: idToken });
-  //       });
-  //       console.log("signed in");
-  //       console.log(user.uid);
-  //        nav("/");
-
-  //       // ...
-  //     } else {
-  //       // User is signed out
-  //       // ...
-  //       console.log("signed out!!!!!!!!");
-  //       action.submit({ uid: null });
-  //     }
-  //   });
-  // });
+  const logout = $(() => {
+    auth
+      .signOut()
+      .then(() => {
+        console.log("signed out LOUT BUTTION");
+        nav("/auth");
+      })
+      .catch((error) => {
+        toastManager.addToast({
+          message: error.message,
+          type: "error",
+          autocloseTime: 5000,
+        });
+      });
+  });
 
   return (
     <nav class="block bg-teal-50 bg-opacity-50 dark:bg-teal-950 dark:bg-opacity-50 backdrop-blur-sm fixed z-10">
       <div class="w-screen flex flex-wrap items-center justify-between mx-auto p-4 bg-opacity-100 ">
-        <a href={lang ? `/?lang=${lang}` : `/`} class="flex items-center">
+        <a
+          href={resource.value.lang ? `/?lang=${resource.value.lang}` : `/`}
+          class="flex items-center"
+        >
           <div class="text-[2.5rem] fill-teal-950 dark:fill-teal-50 me-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -81,12 +79,47 @@ export const Toolbar = component$(({ lang }: ToolbarProps) => {
           <div class="flex items-center md:order-2">
             <LangButton />
             <ThemeButton />
-            <ButtonPrimary
-              text="Logout"
-              type={ButtonType.button}
-              size={ButtonSize.sm}
-              onClick={logout}
-            />
+            <button
+              type="button"
+              class="flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+              id="user-menu-button"
+              aria-expanded="false"
+              data-dropdown-toggle="user-dropdown"
+              data-dropdown-placement="bottom"
+            >
+              <span class="sr-only">Open user menu</span>
+              <Image
+                class="rounded-full"
+                height={32}
+                width={32}
+                src={resource.value.decodedID.picture}
+                alt="user photo"
+              />
+            </button>
+            <div
+              class="z-50 hidden my-4 text-base list-none bg-teal-50 divide-y divide-teal-100 rounded-lg shadow dark:bg-teal-700 dark:divide-teal-600"
+              id="user-dropdown"
+            >
+              <div class="px-4 py-3">
+                <span class="block text-sm text-teal-900 dark:text-teal-50">
+                  {username.value}
+                </span>
+                <span class="block text-sm  text-teal-500 truncate dark:text-teal-400">
+                  {resource.value.decodedID.email}
+                </span>
+              </div>
+              <ul class="py-2" aria-labelledby="user-menu-button">
+                <li>
+                  <a
+                    // href="#"
+                    onClick$={logout}
+                    class="block px-4 py-2 text-sm text-teal-700 hover:bg-teal-100 dark:hover:bg-teal-600 dark:text-teal-200 dark:hover:text-white cursor-pointer"
+                  >
+                    Sign out
+                  </a>
+                </li>
+              </ul>
+            </div>
             <button
               id="dropdownDefaultButton"
               data-dropdown-toggle="dropdown"
@@ -119,7 +152,11 @@ export const Toolbar = component$(({ lang }: ToolbarProps) => {
               >
                 <li class="mx-4">
                   <a
-                    href={lang ? `/movie?lang=${lang}` : `/movie`}
+                    href={
+                      resource.value.lang
+                        ? `/movie?lang=${resource.value.lang}`
+                        : `/movie`
+                    }
                     class="group transition duration-300"
                   >
                     Movies
@@ -128,7 +165,11 @@ export const Toolbar = component$(({ lang }: ToolbarProps) => {
                 </li>
                 <li class="mx-4">
                   <a
-                    href={lang ? `/tv?lang=${lang}` : `/tv`}
+                    href={
+                      resource.value.lang
+                        ? `/tv?lang=${resource.value.lang}`
+                        : `/tv`
+                    }
                     class="group transition duration-300"
                   >
                     Series
@@ -137,7 +178,11 @@ export const Toolbar = component$(({ lang }: ToolbarProps) => {
                 </li>
                 <li class="mx-4">
                   <a
-                    href={lang ? `/search?lang=${lang}` : `/search`}
+                    href={
+                      resource.value.lang
+                        ? `/search?lang=${resource.value.lang}`
+                        : `/search`
+                    }
                     class="group transition duration-300"
                   >
                     Search
@@ -146,7 +191,11 @@ export const Toolbar = component$(({ lang }: ToolbarProps) => {
                 </li>
                 <li class="mx-4">
                   <a
-                    href={lang ? `/torrserver?lang=${lang}` : `/torrserver`}
+                    href={
+                      resource.value.lang
+                        ? `/torrserver?lang=${resource.value.lang}`
+                        : `/torrserver`
+                    }
                     class="group transition duration-300"
                   >
                     TorrServer
@@ -160,7 +209,11 @@ export const Toolbar = component$(({ lang }: ToolbarProps) => {
           <ul class="hidden md:flex flex-row me-4">
             <li class="mx-4">
               <a
-                href={lang ? `/movie?lang=${lang}` : `/movie`}
+                href={
+                  resource.value.lang
+                    ? `/movie?lang=${resource.value.lang}`
+                    : `/movie`
+                }
                 class="group transition duration-300"
               >
                 Movies
@@ -169,7 +222,11 @@ export const Toolbar = component$(({ lang }: ToolbarProps) => {
             </li>
             <li class="mx-4">
               <a
-                href={lang ? `/tv?lang=${lang}` : `/tv`}
+                href={
+                  resource.value.lang
+                    ? `/tv?lang=${resource.value.lang}`
+                    : `/tv`
+                }
                 class="group transition duration-300"
               >
                 Series
@@ -178,7 +235,11 @@ export const Toolbar = component$(({ lang }: ToolbarProps) => {
             </li>
             <li class="mx-4">
               <a
-                href={lang ? `/search?lang=${lang}` : `/search`}
+                href={
+                  resource.value.lang
+                    ? `/search?lang=${resource.value.lang}`
+                    : `/search`
+                }
                 class="group transition duration-300"
               >
                 Search
@@ -187,7 +248,11 @@ export const Toolbar = component$(({ lang }: ToolbarProps) => {
             </li>
             <li class="mx-4">
               <a
-                href={lang ? `/torrserver?lang=${lang}` : `/torrserver`}
+                href={
+                  resource.value.lang
+                    ? `/torrserver?lang=${resource.value.lang}`
+                    : `/torrserver`
+                }
                 class="group transition duration-300"
               >
                 TorrServer

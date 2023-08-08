@@ -4,7 +4,6 @@ import { Timestamp } from "firebase/firestore";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
 import { DbType } from "~/services/firestore";
-import { checkAuth } from "~/services/firestore-admin";
 import type { MovieFirestore, MovieShort, TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getFirebaseMovies, getTrendingMedia } from "~/services/tmdb";
@@ -12,7 +11,6 @@ import { formatYear } from "~/utils/fomat";
 import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
-  await checkAuth(event);
 
   const lang = event.query.get("lang") || "en-US";
   const needbackdrop = true;

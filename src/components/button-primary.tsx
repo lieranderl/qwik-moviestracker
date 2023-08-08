@@ -1,21 +1,20 @@
 import type { PropFunction } from "@builder.io/qwik";
-import { component$, useSignal, useTask$ } from "@builder.io/qwik";
+import { Slot, component$, useSignal, useTask$ } from "@builder.io/qwik";
 
-
-export enum ButtonSize { 
+export enum ButtonSize {
   sm = "sm",
   md = "md",
-  lg = "lg"
+  lg = "lg",
 }
 
 export enum ButtonType {
   button = "button",
   submit = "submit",
-  reset = "reset"
+  reset = "reset",
 }
 
 interface ButtonPrimaryProps {
-  text: string;
+  text?: string;
   isLoading?: boolean;
   size: ButtonSize;
   onClick?: PropFunction<() => void>;
@@ -70,7 +69,12 @@ export const ButtonPrimary = component$(
                 Loading...
               </>
             )}
-            {!isLoading && text}
+            {!isLoading && (
+              <div class="flex items-center">
+                <Slot />
+                {text && <span>{text}</span>}
+              </div>
+            )}
           </button>
         )}
         {size == "lg" && (
@@ -103,7 +107,12 @@ export const ButtonPrimary = component$(
                 Loading...
               </>
             )}
-            {!isLoading && text}
+            {!isLoading && (
+              <div class="flex items-center">
+                <Slot />
+                {text && <span>{text}</span>}
+              </div>
+            )}
           </button>
         )}
         {size == "md" && (
@@ -135,7 +144,12 @@ export const ButtonPrimary = component$(
                 Loading...
               </>
             )}
-            {!isLoading && text}
+            {!isLoading && (
+              <div class="flex items-center">
+                <Slot />
+                {text && <span>{text}</span>}
+              </div>
+            )}
           </button>
         )}
       </>

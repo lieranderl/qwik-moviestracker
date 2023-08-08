@@ -1,11 +1,53 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, $, useContext } from "@builder.io/qwik";
 import { ThemeButton } from "./theme-button";
 import { LangButton } from "./lang-button";
+import { ButtonPrimary, ButtonType, ButtonSize } from "./button-primary";
+import { auth } from "~/services/firestore";
+import { useNavigate } from "@builder.io/qwik-city";
+import { toastManagerContext } from "./toast/toastStack";
+// import { useTokenCookiesDelete } from "~/routes/layout";
 interface ToolbarProps {
   lang: string;
 }
 
+
 export const Toolbar = component$(({ lang }: ToolbarProps) => {
+  const nav = useNavigate();
+  const  toastManager = useContext(toastManagerContext)
+  // const action = useTokenCookiesDelete();
+  const logout = $(() => {
+    auth.signOut().then(() => {
+      console.log("signed out LOUT BUTTION");
+      nav("/auth");
+    }).catch((error) => {
+      toastManager.addToast({message: error.message, type: "error", autocloseTime: 5000})
+    });
+  });
+
+  
+
+  // useVisibleTask$(async () => {
+  //   onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //       // User is signed in, see docs for a list of available properties
+  //       // https://firebase.google.com/docs/reference/js/auth.user
+  //       user.getIdToken().then((idToken) => {
+  //         action.submit({ uid: idToken });
+  //       });
+  //       console.log("signed in");
+  //       console.log(user.uid);
+  //        nav("/");
+
+  //       // ...
+  //     } else {
+  //       // User is signed out
+  //       // ...
+  //       console.log("signed out!!!!!!!!");
+  //       action.submit({ uid: null });
+  //     }
+  //   });
+  // });
+
   return (
     <nav class="block bg-teal-50 bg-opacity-50 dark:bg-teal-950 dark:bg-opacity-50 backdrop-blur-sm fixed z-10">
       <div class="w-screen flex flex-wrap items-center justify-between mx-auto p-4 bg-opacity-100 ">
@@ -39,6 +81,12 @@ export const Toolbar = component$(({ lang }: ToolbarProps) => {
           <div class="flex items-center md:order-2">
             <LangButton />
             <ThemeButton />
+            <ButtonPrimary
+              text="Logout"
+              type={ButtonType.button}
+              size={ButtonSize.sm}
+              onClick={logout}
+            />
             <button
               id="dropdownDefaultButton"
               data-dropdown-toggle="dropdown"

@@ -45,7 +45,9 @@
     "@modular-forms/qwik": "^0.19.1",
     "@qwikest/icons": "^0.0.8",
     "@unpic/qwik": "^0.0.25",
+    "dotenv": "^16.3.1",
     "firebase": "10.1.0",
+    "firebase-admin": "^11.10.1",
     "flowbite": "^1.8.1",
     "uuid": "^9.0.0"
   }

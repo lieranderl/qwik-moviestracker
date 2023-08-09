@@ -250,7 +250,7 @@ export default component$(() => {
                         });
                       }
                     }}
-                    class="absolute cursor-pointer absolute top-3.5 -right-2.5 z-10 rounded-full transition-scale scale-75 duration-300 ease-in-out hover:scale-100"
+                    class="absolute cursor-pointer absolute top-3.5 -right-2.5 z-10 text-teal-50 rounded-full transition-scale scale-75 duration-300 ease-in-out hover:scale-100"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

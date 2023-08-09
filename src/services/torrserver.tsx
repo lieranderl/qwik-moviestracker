@@ -60,7 +60,7 @@ const fetchTorrServer = async <T = unknown,>(
   if (response.headers.get("Content-Type")?.includes("text")) {
     return response.text() as T;
   }
-  return response.json() as T;
+  return response.json(); 
 };
 
 export const torrServerEcho = async (url: string) =>
@@ -74,7 +74,7 @@ export const listTorrent = async (url: string) => {
   return fetchTorrServer<TSResult[]>(url, "POST", "torrents", body);
 };
 
-export const addTorrent = async (
+export const addTorrent = (
   url: string,
   torrent: Torrent,
   media: MediaDetails
@@ -89,4 +89,15 @@ export const addTorrent = async (
     title: "[MT] " + torrent.Name,
   };
   return fetchTorrServer<TSResult[]>(url, "POST", "torrents", body);
+};
+
+export const removeTorrent = (
+  url: string,
+  hash: string,
+) => {
+  const body = {
+    action: "rem",
+    hash: hash,
+  };
+  return fetchTorrServer(url, "POST", "torrents", body);
 };

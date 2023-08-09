@@ -1,11 +1,8 @@
 import { initializeApp, getApps } from "firebase-admin/app";
-
-import dotenv from "dotenv";
 import { cert } from "firebase-admin/app";
 import type { RequestEventLoader } from "@builder.io/qwik-city";
 import { getAuth } from "firebase-admin/auth";
-
-dotenv.config({ path: ".env.local" });
+import { auth } from "./firestore";
 
 const alreadyCreatedAps = getApps();
 
@@ -30,6 +27,8 @@ export const checkAuth = async (
     }
   } catch (error) {
     // event.cookie.delete("uid", { path: "/" });
+    await auth.signOut();
+    console.log("Error", error);
     throw event.redirect(302, "/auth");
   }
 };

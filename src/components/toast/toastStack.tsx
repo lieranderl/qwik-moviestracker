@@ -17,10 +17,10 @@ export const toastManagerContext = createContextId<{
 }>("toastManagerContext");
 
 export type ToastBody = {
-    message: string;
-    type: ToastType;
-    autocloseTime?: number;
-}
+  message: string;
+  type: ToastType;
+  autocloseTime?: number;
+};
 
 export const ToastStack = component$(() => {
   const toastsStore = useStore({ toasts: [] as ToastProps[] });
@@ -39,16 +39,9 @@ export const ToastStack = component$(() => {
 
   useContextProvider(toastManagerContext, toastManager);
 
-//   useVisibleTask$(async () => { 
-//     toastsFunc.addToast({ message: "TorrServer already exists", type: "error", autocloseTime: 5000 });
-//     toastsFunc.addToast({ message: "TorrServer already exists sdsfsdf", type: "success" });
-//     toastsFunc.addToast({ message: "TorrServer already exists", type: "warning" });
-//     toastsFunc.addToast({ message: "TorrServer ", type: "info" });
-//     });
-
   return (
     <>
-      <div class="z-50 absolute top-10 right-10 md:w-80 w-72">
+      <div class="z-[1000] fixed bottom-10 right-10 md:w-80 w-72">
         {toastsStore.toasts.map((toast) => (
           <Toast key={toast.id} {...toast} />
         ))}

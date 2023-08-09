@@ -12,8 +12,12 @@ import { DotPulseLoader } from "~/components/dot-pulse-loader/dot-pulse-loader";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import { toastManagerContext } from "~/components/toast/toastStack";
-import { TSResult } from "~/services/models";
-import { listTorrent, torrServerEcho } from "~/services/torrserver";
+import type { TSResult } from "~/services/models";
+import {
+  listTorrent,
+  removeTorrent,
+  torrServerEcho,
+} from "~/services/torrserver";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
@@ -103,7 +107,7 @@ export default component$(() => {
       });
       isCheckingTorrServer.value = false;
       if (torrServerStore.list.length === 1) {
-        torrServerStore.list = []
+        torrServerStore.list = [];
         localStorage.removeItem("torrServerList");
       }
     }
@@ -207,9 +211,62 @@ export default component$(() => {
           {torrentsSig.value.length > 0 &&
             torrentsSig.value.map((data) => {
               const m = JSON.parse(data.data);
-              //   if (m.lampa || m.moviestracker) {
               return (
-                <div key={data.hash}>
+                <div key={data.hash} class="relative">
+                  <div
+                    onClick$={async () => {
+                      const torrserv =
+                        localStorage.getItem("selectedTorServer") || "";
+                      if (torrserv === "") {
+                        toastManager.addToast({
+                          message: "TorrServer не добавлен!",
+                          type: "error",
+                          autocloseTime: 5000,
+                        });
+                        return;
+                      }
+                      try {
+                        try {
+                          await removeTorrent(torrserv, data.hash);
+                        } catch (error) {
+                          console.log("");
+                        }
+
+                        toastManager.addToast({
+                          message: "Торрент Удален!",
+                          type: "success",
+                          autocloseTime: 5000,
+                        });
+
+                        torrentsSig.value = await listTorrent(
+                          selectedTorServer.value
+                        );
+                      } catch (error) {
+                        const e = error as Error;
+                        toastManager.addToast({
+                          message: e.message || "Ошибка удаления торрента!",
+                          type: "error",
+                          autocloseTime: 5000,
+                        });
+                      }
+                    }}
+                    class="absolute cursor-pointer absolute top-3.5 -right-2.5 z-10 rounded-full transition-scale scale-75 duration-300 ease-in-out hover:scale-100"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-10 h-10 fill-red-500 "
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
                   <a href={`magnet:?xt=urn:btih:${data.hash}`}>
                     <MediaCard
                       title={data.title}
@@ -232,7 +289,6 @@ export default component$(() => {
                   </a>
                 </div>
               );
-              //   }
             })}
         </MediaGrid>
         {torrentsSig.value.length === 0 && !isCheckingTorrServer.value && (

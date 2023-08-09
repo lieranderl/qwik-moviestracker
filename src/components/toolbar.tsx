@@ -1,47 +1,47 @@
 import {
   component$,
-  $,
-  useContext,
-  useTask$,
-  useSignal,
+  // $,
+  // useContext,
+  // useTask$,
+  // useSignal,
 } from "@builder.io/qwik";
 import { ThemeButton } from "./theme-button";
 import { LangButton } from "./lang-button";
-import { auth } from "~/services/firestore";
-import { useNavigate } from "@builder.io/qwik-city";
-import { toastManagerContext } from "./toast/toastStack";
-import { Image } from "@unpic/qwik";
+// import { auth } from "~/services/firestore";
+// import { useNavigate } from "@builder.io/qwik-city";
+// import { toastManagerContext } from "./toast/toastStack";
+// import { Image } from "@unpic/qwik";
 import { useQueryParamsLoader } from "~/routes/layout";
-import { getAuth } from "firebase-admin/auth";
-import { admin_app } from "~/services/firestore-admin";
+// import { getAuth } from "firebase-admin/auth";
+// import { admin_app } from "~/services/firestore-admin";
 
 export const Toolbar = component$(() => {
-  const nav = useNavigate();
-  const toastManager = useContext(toastManagerContext);
+  // const nav = useNavigate();
+  // const toastManager = useContext(toastManagerContext);
   const resource = useQueryParamsLoader();
-  const username = useSignal("");
+  // const username = useSignal("");
 
-  useTask$(async () => {
-    username.value =
-      (await getAuth(admin_app).getUser(resource.value.decodedID.uid))
-        .displayName ?? "";
-  });
+  // useTask$(async () => {
+  //   username.value =
+  //     (await getAuth(admin_app).getUser(resource.value.decodedID.uid))
+  //       .displayName ?? "";
+  // });
 
-  const logout = $(() => {
-    auth
-      .signOut()
-      .then(() => {
-        console.log("signed out LOUT BUTTION");
-        nav("/auth");
-      })
-      .catch((error) => {
-        toastManager.addToast({
-          message: error.message,
-          type: "error",
-          autocloseTime: 5000,
-        });
-      });
-  });
+  // const logout = $(() => {
+  //   console.log("signed out LOUT BUTTION");
+  //   auth
+  //     .signOut()
+  //     .then(() => {
+  //       nav("/auth");
+  //     })
+  //     .catch((error) => {
+  //       toastManager.addToast({
+  //         message: error.message,
+  //         type: "error",
+  //         autocloseTime: 5000,
+  //       });
+  //     });
+  // });
 
   return (
     <nav class="block bg-teal-50 bg-opacity-50 dark:bg-teal-950 dark:bg-opacity-50 backdrop-blur-sm fixed z-10">
@@ -79,7 +79,7 @@ export const Toolbar = component$(() => {
           <div class="flex items-center md:order-2">
             <LangButton />
             <ThemeButton />
-            <button
+            {/* <button
               type="button"
               class="flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
               id="user-menu-button"
@@ -110,16 +110,15 @@ export const Toolbar = component$(() => {
               </div>
               <ul class="py-2" aria-labelledby="user-menu-button">
                 <li>
-                  <a
-                    // href="#"
+                  <div
                     onClick$={logout}
                     class="block px-4 py-2 text-sm text-teal-700 hover:bg-teal-100 dark:hover:bg-teal-600 dark:text-teal-200 dark:hover:text-white cursor-pointer"
                   >
                     Sign out
-                  </a>
+                  </div>
                 </li>
               </ul>
-            </div>
+            </div> */}
             <button
               id="dropdownDefaultButton"
               data-dropdown-toggle="dropdown"

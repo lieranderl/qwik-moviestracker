@@ -47,8 +47,12 @@ export const UserMenu = component$(() => {
                 </span>
               </div>
             )}
+
             <ul class="py-2" aria-labelledby="user-menu-button">
               <LangButton />
+            </ul>
+
+            <ul class="py-2" aria-labelledby="user-menu-button">
               <li
                 onClick$={() => signOut.submit({ callbackUrl: "/auth" })}
                 class="block px-4 py-2 text-sm text-teal-700 hover:bg-teal-100 dark:hover:bg-teal-600 dark:text-teal-200 dark:hover:text-teal-50 cursor-pointer"

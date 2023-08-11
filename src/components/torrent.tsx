@@ -69,7 +69,7 @@ export const TorrentBlock = component$(
                       localStorage.getItem("selectedTorServer") || "";
                     if (torrserv === "") {
                       toastManager.addToast({
-                        message: "TorrServer не добавлен!",
+                        message: "TorrServer hasn't been added!",
                         type: "error",
                         autocloseTime: 5000,
                       });
@@ -80,13 +80,13 @@ export const TorrentBlock = component$(
 
                       console.log(result);
                       toastManager.addToast({
-                        message: "Торрент добавлен!",
+                        message: "Torrent added!",
                         type: "success",
                         autocloseTime: 5000,
                       });
                     } catch (error) {
                       toastManager.addToast({
-                        message: "Torrent не добавлен!",
+                        message: "Torrent hasn't been added!",
                         type: "error",
                         autocloseTime: 5000,
                       });

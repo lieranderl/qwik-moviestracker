@@ -217,7 +217,7 @@ export default component$(() => {
                         localStorage.getItem("selectedTorServer") || "";
                       if (torrserv === "") {
                         toastManager.addToast({
-                          message: "TorrServer не добавлен!",
+                          message: "TorrServer has not been added!",
                           type: "error",
                           autocloseTime: 5000,
                         });
@@ -231,7 +231,7 @@ export default component$(() => {
                         }
 
                         toastManager.addToast({
-                          message: "Торрент Удален!",
+                          message: "Torrent has been deleted!",
                           type: "success",
                           autocloseTime: 5000,
                         });
@@ -242,7 +242,7 @@ export default component$(() => {
                       } catch (error) {
                         const e = error as Error;
                         toastManager.addToast({
-                          message: e.message || "Ошибка удаления торрента!",
+                          message: e.message || "Unable to delete torrent!",
                           type: "error",
                           autocloseTime: 5000,
                         });

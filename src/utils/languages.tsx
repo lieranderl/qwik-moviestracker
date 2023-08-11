@@ -524,3 +524,16 @@ export const langEnded = (lang: string) => {
       return "завершён";
   }
 };
+
+export const langCreatedby = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Created by";
+    case "ru-RU":
+      return "Создан";
+    default:
+      return "Создан";
+  }
+};
+
+

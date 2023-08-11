@@ -21,6 +21,7 @@ import {
   langTvShowEnded,
   langCurrentSeason,
   langEnded,
+  langCreatedby,
 } from "~/utils/languages";
 
 interface TvDetailsProps {
@@ -262,7 +263,11 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
       </section>
 
       {tv.created_by.length > 0 && (
-        <MediaCarousel title="Created by" type={MediaType.Person} lang={lang}>
+        <MediaCarousel
+          title={langCreatedby(lang)}
+          type={MediaType.Person}
+          lang={lang}
+        >
           {tv.created_by.slice(0, 10).map((c) => (
             <>
               <a href={paths.media(MediaType.Person, c.id, lang)}>

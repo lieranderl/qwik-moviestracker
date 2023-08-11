@@ -17,7 +17,7 @@ interface ButtonPrimaryProps {
   text?: string;
   isLoading?: boolean;
   size: ButtonSize;
-  onClick?: PropFunction<() => void>;
+  onClick?: PropFunction;
   type?: ButtonType;
   disabled?: boolean;
 }

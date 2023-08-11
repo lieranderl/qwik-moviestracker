@@ -1,5 +1,6 @@
 import { component$, Slot } from "@builder.io/qwik";
 import { routeLoader$, type RequestHandler } from "@builder.io/qwik-city";
+import type { Session } from "@auth/core/types";
 import { Toolbar } from "~/components/toolbar";
 // import { checkAuth } from "~/services/firestore-admin";
 
@@ -14,8 +15,15 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
   });
 };
 
+//auth guard
+export const onRequest: RequestHandler = (event) => {
+  const session: Session | null = event.sharedMap.get("session");
+  if (!session || new Date(session.expires) < new Date()) {
+    throw event.redirect(302, `/auth`);
+  }
+};
+
 export const useQueryParamsLoader = routeLoader$(async (event) => {
-  // const decodedID = await checkAuth(event);
   const lang = event.query.get("lang") || "en-US";
   return { lang };
 });

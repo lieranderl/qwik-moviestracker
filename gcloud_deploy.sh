@@ -1,1 +1,1 @@
-pnpm run build && pnpm run deploy && firebase deploy --only hosting --project moviestracker-f07e2
+pnpm run build && pnpm run deploy

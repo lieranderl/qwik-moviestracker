@@ -1,47 +1,15 @@
-import {
-  component$,
-  // $,
-  // useContext,
-  // useTask$,
-  // useSignal,
-} from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 import { ThemeButton } from "./theme-button";
 import { LangButton } from "./lang-button";
-// import { auth } from "~/services/firestore";
-// import { useNavigate } from "@builder.io/qwik-city";
-// import { toastManagerContext } from "./toast/toastStack";
-// import { Image } from "@unpic/qwik";
+
+import { Image } from "@unpic/qwik";
 import { useQueryParamsLoader } from "~/routes/layout";
-// import { getAuth } from "firebase-admin/auth";
-// import { admin_app } from "~/services/firestore-admin";
+import { useAuthSession, useAuthSignout } from "~/routes/plugin@auth";
 
 export const Toolbar = component$(() => {
-  // const nav = useNavigate();
-  // const toastManager = useContext(toastManagerContext);
   const resource = useQueryParamsLoader();
-  // const username = useSignal("");
-
-  // useTask$(async () => {
-  //   username.value =
-  //     (await getAuth(admin_app).getUser(resource.value.decodedID.uid))
-  //       .displayName ?? "";
-  // });
-
-  // const logout = $(() => {
-  //   console.log("signed out LOUT BUTTION");
-  //   auth
-  //     .signOut()
-  //     .then(() => {
-  //       nav("/auth");
-  //     })
-  //     .catch((error) => {
-  //       toastManager.addToast({
-  //         message: error.message,
-  //         type: "error",
-  //         autocloseTime: 5000,
-  //       });
-  //     });
-  // });
+  const signOut = useAuthSignout();
+  const session = useAuthSession();
 
   return (
     <nav class="block bg-teal-50 bg-opacity-50 dark:bg-teal-950 dark:bg-opacity-50 backdrop-blur-sm fixed z-10">
@@ -79,7 +47,8 @@ export const Toolbar = component$(() => {
           <div class="flex items-center md:order-2">
             <LangButton />
             <ThemeButton />
-            {/* <button
+
+            <button
               type="button"
               class="flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
               id="user-menu-button"
@@ -92,7 +61,7 @@ export const Toolbar = component$(() => {
                 class="rounded-full"
                 height={32}
                 width={32}
-                src={resource.value.decodedID.picture}
+                src={session.value?.user?.image}
                 alt="user photo"
               />
             </button>
@@ -102,23 +71,23 @@ export const Toolbar = component$(() => {
             >
               <div class="px-4 py-3">
                 <span class="block text-sm text-teal-900 dark:text-teal-50">
-                  {username.value}
+                  {session.value?.user?.name}
                 </span>
                 <span class="block text-sm  text-teal-500 truncate dark:text-teal-400">
-                  {resource.value.decodedID.email}
+                  {session.value?.user?.email}
                 </span>
               </div>
               <ul class="py-2" aria-labelledby="user-menu-button">
                 <li>
                   <div
-                    onClick$={logout}
+                    onClick$={() => signOut.submit({ callbackUrl: "/auth" })}
                     class="block px-4 py-2 text-sm text-teal-700 hover:bg-teal-100 dark:hover:bg-teal-600 dark:text-teal-200 dark:hover:text-white cursor-pointer"
                   >
                     Sign out
                   </div>
                 </li>
               </ul>
-            </div> */}
+            </div>
             <button
               id="dropdownDefaultButton"
               data-dropdown-toggle="dropdown"

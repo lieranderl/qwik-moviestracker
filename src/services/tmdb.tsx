@@ -309,7 +309,7 @@ export const getPersonMovies = async ({ id, language }: GetPerson) => {
   result.crew = result.crew.sort(
     (a, b) => formatYear(b.release_date) - formatYear(a.release_date)
   );
-  return result.cast;
+  return result;
 };
 
 export const getPersonTv = async ({ id, language }: GetPerson) => {
@@ -324,7 +324,7 @@ export const getPersonTv = async ({ id, language }: GetPerson) => {
   result.crew = result.crew.sort(
     (a, b) => formatYear(b.first_air_date) - formatYear(a.first_air_date)
   );
-  return result.cast;
+  return result;
 };
 
 type Search = {

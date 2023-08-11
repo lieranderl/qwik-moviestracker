@@ -10,12 +10,13 @@ import { PlaceSVG } from "~/utils/icons/placeSVG";
 import { PersonSVG } from "~/utils/icons/personSVG";
 import { Image } from "@unpic/qwik";
 import { ExternalIds } from "./external_ids";
-import { type PersonFull, type Cast, MediaType } from "~/services/models";
+import type { PersonMedia } from "~/services/models";
+import { type PersonFull, MediaType } from "~/services/models";
 
 interface MovieDetailsProps {
   person: PersonFull;
-  perMovies: Cast[];
-  perTv: Cast[];
+  perMovies: PersonMedia;
+  perTv: PersonMedia;
   lang: string;
 }
 
@@ -115,14 +116,14 @@ export const PersonDetails = component$(
           </div>
         </section>
         <section class="mt-8">
-          {perMovies.length > 0 && (
+          {perMovies.cast.length > 0 && (
             <MediaCarousel
               title="Actor in Movies"
               type={MediaType.Person}
               category="updated"
               lang={lang}
             >
-              {perMovies.map((m) => (
+              {perMovies.cast.map((m) => (
                 <>
                   <a href={paths.media(MediaType.Movie, m.id, lang)}>
                     <MediaCard
@@ -141,14 +142,14 @@ export const PersonDetails = component$(
             </MediaCarousel>
           )}
 
-          {perTv.length > 0 && (
+          {perTv.cast.length > 0 && (
             <MediaCarousel
               title="Actor in TV Shows"
               type={MediaType.Person}
               category="updated"
               lang={lang}
             >
-              {perTv.map((m) => (
+              {perTv.cast.map((m) => (
                 <>
                   <a href={paths.media(MediaType.Tv, m.id, lang)}>
                     <MediaCard
@@ -169,14 +170,14 @@ export const PersonDetails = component$(
             </MediaCarousel>
           )}
 
-          {perMovies.length > 0 && (
+          {perMovies.crew.length > 0 && (
             <MediaCarousel
               title="Production Movies"
               type={MediaType.Person}
               category="updated"
               lang={lang}
             >
-              {perMovies.map((m) => (
+              {perMovies.crew.map((m) => (
                 <>
                   <a href={paths.media(MediaType.Movie, m.id, lang)}>
                     <MediaCard
@@ -197,14 +198,14 @@ export const PersonDetails = component$(
             </MediaCarousel>
           )}
 
-          {perTv.length > 0 && (
+          {perTv.crew.length > 0 && (
             <MediaCarousel
               title="Production TV Shows"
               type={MediaType.Person}
               category="updated"
               lang={lang}
             >
-              {perTv.map((m) => (
+              {perTv.crew.map((m) => (
                 <>
                   <a href={paths.media(MediaType.Tv, m.id, lang)}>
                     <MediaCard

@@ -1,6 +1,4 @@
-import {
-  component$,
-} from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 import {
   QwikCityProvider,
   RouterOutlet,
@@ -11,8 +9,6 @@ import { RouterHead } from "./components/router-head/router-head";
 import "./global.css";
 import { DarkThemeLauncher } from "./utils/darkThemeLauncher";
 import { ToastStack } from "./components/toast/toastStack";
-
-
 
 export default component$(() => {
   /**

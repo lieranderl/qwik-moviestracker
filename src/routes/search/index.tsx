@@ -10,7 +10,11 @@ import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import { MediaType } from "~/services/models";
 import { search } from "~/services/tmdb";
-import { langNoResults, langSearch, langSearchResults } from "~/utils/languages";
+import {
+  langNoResults,
+  langSearch,
+  langSearchResults,
+} from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
@@ -123,10 +127,18 @@ export default component$(() => {
                   </div>
                 );
               } else {
-                return <div class="my-2 text-sm">{langNoResults(resource.value.lang)}</div>;
+                return (
+                  <div class="my-2 text-sm">
+                    {langNoResults(resource.value.lang)}
+                  </div>
+                );
               }
             } else {
-              return <div class="my-2 text-sm">{langNoResults(resource.value.lang)}</div>;
+              return (
+                <div class="my-2 text-sm">
+                  {langNoResults(resource.value.lang)}
+                </div>
+              );
             }
           }}
         />

@@ -8,7 +8,12 @@ import { DbType } from "~/services/firestore";
 import type { MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getFirebaseMovies, getTrendingMedia } from "~/services/tmdb";
-import { langLatestDolbyVisionMovies, langLatestHDR10Movies, langLatestMovies, langTrendingMovies } from "~/utils/languages";
+import {
+  langLatestDolbyVisionMovies,
+  langLatestHDR10Movies,
+  langLatestMovies,
+  langTrendingMovies,
+} from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {

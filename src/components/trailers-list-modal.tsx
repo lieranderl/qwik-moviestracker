@@ -1,5 +1,5 @@
 import { component$ } from "@builder.io/qwik";
-import { Image } from '@unpic/qwik';
+import { Image } from "@unpic/qwik";
 import { useQueryParamsLoader } from "~/routes/layout";
 import type { VideoResult } from "~/services/models";
 import { langTrailers } from "~/utils/languages";
@@ -11,7 +11,7 @@ export interface TorModalPros {
 export const TrailersModal = component$(({ videos }: TorModalPros) => {
   // const torrentsSignal = useSignal<Torrent[] | null>(null);
 
-  const resource = useQueryParamsLoader()
+  const resource = useQueryParamsLoader();
 
   return (
     <>
@@ -33,7 +33,9 @@ export const TrailersModal = component$(({ videos }: TorModalPros) => {
         <div class="relative w-full max-w-4xl max-h-full">
           <div class="relative bg-teal-50 rounded-lg shadow dark:bg-teal-950">
             <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-teal-800">
-              <h3 class="text-xl font-semibold ">{langTrailers(resource.value.lang)}</h3>
+              <h3 class="text-xl font-semibold ">
+                {langTrailers(resource.value.lang)}
+              </h3>
               <button
                 type="button"
                 class=" bg-transparent hover:bg-teal-100  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-teal-800 "

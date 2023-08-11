@@ -94,7 +94,6 @@ export const TorrentBlock = component$(
                   })}
                 />
               </div>
-
             </div>
           </div>
 

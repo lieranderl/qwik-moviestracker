@@ -6,7 +6,7 @@ import {
   useVisibleTask$,
   useContext,
 } from "@builder.io/qwik";
-import { routeLoader$, z } from "@builder.io/qwik-city";
+import { z } from "@builder.io/qwik-city";
 import { setValue, useForm, zodForm$ } from "@modular-forms/qwik";
 import { DotPulseLoader } from "~/components/dot-pulse-loader/dot-pulse-loader";
 import { MediaCard } from "~/components/media-card";
@@ -18,11 +18,8 @@ import {
   removeTorrent,
   torrServerEcho,
 } from "~/services/torrserver";
-
-export const useContentLoader = routeLoader$(async (event) => {
-  const lang = event.query.get("lang") || "en-US";
-  return { lang };
-});
+import { langAddNewTorrServerURL, langNoResults } from "~/utils/languages";
+import { useQueryParamsLoader } from "../layout";
 
 export const torrServerSchema = z.object({
   ipaddress: z.string().nonempty(" ").url(),
@@ -31,6 +28,7 @@ export const torrServerSchema = z.object({
 export type torrServerForm = z.infer<typeof torrServerSchema>;
 
 export default component$(() => {
+  const resource = useQueryParamsLoader();
   const toastManager = useContext(toastManagerContext);
   const selectedTorServer = useSignal("");
   const isLoading = useSignal(false);
@@ -125,7 +123,7 @@ export default component$(() => {
                     {...props}
                     type="text"
                     value={field.value}
-                    placeholder="Add New TorrServer URL..."
+                    placeholder={langAddNewTorrServerURL(resource.value.lang)}
                     class="w-64 mr-2 py-2 pl-2 text-sm border border-teal-300 rounded-lg bg-teal-50 focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500 placeholder-teal-900"
                   />
                   {field.error && (
@@ -292,7 +290,7 @@ export default component$(() => {
             })}
         </MediaGrid>
         {torrentsSig.value.length === 0 && !isCheckingTorrServer.value && (
-          <div>No Torrents</div>
+          <div>{langNoResults(resource.value.lang)}</div>
         )}
       </section>
     </div>

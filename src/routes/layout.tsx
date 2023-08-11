@@ -1,7 +1,7 @@
 import { component$, Slot } from "@builder.io/qwik";
 import { routeLoader$, type RequestHandler } from "@builder.io/qwik-city";
 import type { Session } from "@auth/core/types";
-import { Toolbar } from "~/components/toolbar";
+import { Toolbar } from "~/components/toolbar/toolbar";
 // import { checkAuth } from "~/services/firestore-admin";
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {

@@ -4,6 +4,7 @@ import { PersonDetails } from "~/components/person-details";
 import type { PersonFull } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getMediaDetails, getPersonMovies, getPersonTv } from "~/services/tmdb";
+import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
@@ -24,7 +25,7 @@ export const useContentLoader = routeLoader$(async (event) => {
     ]);
     return { person, perMovies, perTv, lang };
   } catch (error) {
-    event.redirect(302, "/404");
+    event.redirect(302, paths.notFound(lang));
   }
 });
 

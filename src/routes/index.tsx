@@ -8,10 +8,10 @@ import type { MovieFirestore, MovieShort, TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getFirebaseMovies, getTrendingMedia } from "~/services/tmdb";
 import { formatYear } from "~/utils/fomat";
+import { langLatestMovies, langTrengingTVShows } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
-
   const lang = event.query.get("lang") || "en-US";
   const needbackdrop = true;
   try {
@@ -47,7 +47,7 @@ export const useContentLoader = routeLoader$(async (event) => {
       lang,
     };
   } catch {
-    throw event.redirect(302, "/404");
+    throw event.redirect(302, paths.notFound(lang));
   }
 });
 
@@ -57,7 +57,7 @@ export default component$(() => {
     <>
       <div class="container mx-auto px-4 pt-[64px]">
         <MediaCarousel
-          title="Latest Movies"
+          title={langLatestMovies(resource.value.lang)}
           type={MediaType.Movie}
           category="updated"
           lang={resource.value.lang}
@@ -79,7 +79,7 @@ export default component$(() => {
           ))}
         </MediaCarousel>
         <MediaCarousel
-          title="Trending Movies"
+          title={langLatestMovies(resource.value.lang)}
           type={MediaType.Movie}
           category="trending"
           lang={resource.value.lang}
@@ -101,7 +101,7 @@ export default component$(() => {
           ))}
         </MediaCarousel>
         <MediaCarousel
-          title="Trenging TV Shows"
+          title={langTrengingTVShows(resource.value.lang)}
           type={MediaType.Tv}
           category="trending"
           lang={resource.value.lang}

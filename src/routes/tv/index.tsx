@@ -6,6 +6,7 @@ import { MediaCarousel } from "~/components/media-carousel";
 import type { TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getMedias, getTrendingMedia } from "~/services/tmdb";
+import { langTopRatedTvShows, langTrengingTVShows } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
@@ -34,7 +35,7 @@ export const useContentLoader = routeLoader$(async (event) => {
       lang,
     };
   } catch {
-    throw event.redirect(302, "/404");
+    throw event.redirect(302, paths.notFound(lang));
   }
 });
 
@@ -44,7 +45,7 @@ export default component$(() => {
     <>
       <div class="container mx-auto px-4 pt-[64px]">
         <MediaCarousel
-          title="Trending Tv Shows"
+          title={langTrengingTVShows(resource.value.lang)}
           type={MediaType.Tv}
           category="trending"
           lang={resource.value.lang}
@@ -69,7 +70,7 @@ export default component$(() => {
           ))}
         </MediaCarousel>
         <MediaCarousel
-          title="Top Rated Tv Shows"
+          title={langTopRatedTvShows(resource.value.lang)}
           type={MediaType.Tv}
           category="toprated"
           lang={resource.value.lang}

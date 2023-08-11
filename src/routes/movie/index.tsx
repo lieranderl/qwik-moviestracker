@@ -8,6 +8,7 @@ import { DbType } from "~/services/firestore";
 import type { MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getFirebaseMovies, getTrendingMedia } from "~/services/tmdb";
+import { langLatestDolbyVisionMovies, langLatestHDR10Movies, langLatestMovies, langTrendingMovies } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
@@ -54,7 +55,7 @@ export const useContentLoader = routeLoader$(async (event) => {
       lang,
     };
   } catch {
-    throw event.redirect(302, "/404");
+    throw event.redirect(302, paths.notFound(lang));
   }
 });
 
@@ -65,7 +66,7 @@ export default component$(() => {
     <>
       <div class="container mx-auto px-4 pt-[64px]">
         <MediaCarousel
-          title="Latest Movies"
+          title={langLatestMovies(resource.value.lang)}
           type={MediaType.Movie}
           category="updated"
           lang={resource.value.lang}
@@ -91,7 +92,7 @@ export default component$(() => {
         </MediaCarousel>
 
         <MediaCarousel
-          title="Latest HDR10 Movies"
+          title={langLatestHDR10Movies(resource.value.lang)}
           type={MediaType.Movie}
           category="hdr10"
           lang={resource.value.lang}
@@ -117,7 +118,7 @@ export default component$(() => {
         </MediaCarousel>
 
         <MediaCarousel
-          title="Latest Dolby Vision Movies"
+          title={langLatestDolbyVisionMovies(resource.value.lang)}
           type={MediaType.Movie}
           category="dolbyvision"
           lang={resource.value.lang}
@@ -143,7 +144,7 @@ export default component$(() => {
         </MediaCarousel>
 
         <MediaCarousel
-          title="Trending Movies"
+          title={langTrendingMovies(resource.value.lang)}
           type={MediaType.Movie}
           category="trending"
           lang={resource.value.lang}

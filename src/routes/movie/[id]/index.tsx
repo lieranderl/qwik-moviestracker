@@ -9,6 +9,7 @@ import {
   getMediaDetails,
   getMediaRecom,
 } from "~/services/tmdb";
+import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
@@ -42,7 +43,7 @@ export const useContentLoader = routeLoader$(async (event) => {
     const colMovies = [] as MovieShort[];
     return { movie, recMovies, colMovies, lang };
   } catch (error) {
-    event.redirect(302, "/404");
+    event.redirect(302, paths.notFound(lang));
   }
   const movie = {} as MovieFull;
   const recMovies = [] as MovieShort[];

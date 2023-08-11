@@ -1,5 +1,6 @@
 import { Slot, component$ } from "@builder.io/qwik";
 import type { MediaType } from "~/services/models";
+import { langExploreAll } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
 interface MediaCarouselProps {
@@ -20,7 +21,7 @@ export const MediaCarousel = component$(
               href={paths.category(type, category!, lang)}
               class="group text-sm transition duration-300"
             >
-              Explore All
+              {langExploreAll(lang)}
               <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5"></span>
             </a>
           )}

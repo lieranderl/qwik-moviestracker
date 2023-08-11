@@ -13,6 +13,15 @@ import { TorrentsModal } from "./torrents-list-modal";
 import { TrailersModal } from "./trailers-list-modal";
 import { ExternalIds } from "./external_ids";
 import { type TvShort, type TvFull, MediaType } from "~/services/models";
+import {
+  langActors,
+  langLastEpisode,
+  langNextEpisode,
+  langRecommendedTvShows,
+  langTvShowEnded,
+  langCurrentSeason,
+  langEnded,
+} from "~/utils/languages";
 
 interface TvDetailsProps {
   tv: TvFull;
@@ -128,7 +137,7 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
               {tv.last_episode_to_air && (
                 <tr>
                   <td>
-                    Последняя вышедшая серия
+                    {langLastEpisode(lang)}
                     <span class="ps-1">
                       {" "}
                       {tv.last_episode_to_air.season_number}.
@@ -141,15 +150,15 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
               {!tv.next_episode_to_air && tv.last_episode_to_air && (
                 <tr>
                   <td>
-                    Текущий сезон ({tv.last_episode_to_air.season_number})
-                    завершен.
+                    {langCurrentSeason(lang)} (
+                    {tv.last_episode_to_air.season_number}) {langEnded(lang)}.
                   </td>
                 </tr>
               )}
               {tv.next_episode_to_air && (
                 <tr>
                   <td>
-                    Следующая серия
+                    {langNextEpisode(lang)}
                     <span class="ps-1">
                       {tv.next_episode_to_air.season_number}.
                       {tv.next_episode_to_air.episode_number}:
@@ -168,7 +177,7 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
               {tv.last_episode_to_air && (
                 <tr>
                   <td>
-                    Последняя вышедшая серия
+                    {langLastEpisode(lang)}
                     <span class="ps-1">
                       {tv.last_episode_to_air.season_number}.
                       {tv.last_episode_to_air.episode_number}:
@@ -178,7 +187,7 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
                 </tr>
               )}
               <tr>
-                <td>Cериал завершен.</td>
+                <td>{langTvShowEnded(lang)}</td>
               </tr>
             </tbody>
           </table>
@@ -272,7 +281,11 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
         </MediaCarousel>
       )}
 
-      <MediaCarousel title="Actors" type={MediaType.Person} lang={lang}>
+      <MediaCarousel
+        title={langActors(lang)}
+        type={MediaType.Person}
+        lang={lang}
+      >
         {tv.credits!.cast.slice(0, 10).map((c) => (
           <>
             <a href={paths.media(MediaType.Person, c.id, lang)}>
@@ -293,7 +306,7 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
 
       {recTv.length > 0 && (
         <MediaCarousel
-          title="Recommended Tv Shows"
+          title={langRecommendedTvShows(lang)}
           type={MediaType.Person}
           category="updated"
           lang={lang}

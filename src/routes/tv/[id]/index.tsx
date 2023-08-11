@@ -5,6 +5,7 @@ import { TvDetails } from "~/components/tv-details";
 import type { TvFull, TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getMediaDetails, getMediaRecom } from "~/services/tmdb";
+import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
@@ -29,7 +30,7 @@ export const useContentLoader = routeLoader$(async (event) => {
     ]);
     return { tv, recTv, lang };
   } catch (error) {
-    event.redirect(302, "/404");
+    event.redirect(302, paths.notFound(lang));
   }
   const tv = {} as TvFull;
   const recTv = [] as TvShort[];

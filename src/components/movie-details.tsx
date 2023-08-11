@@ -12,7 +12,7 @@ import { MediaCarousel } from "./media-carousel";
 import { MediaCard } from "./media-card";
 import { paths } from "~/utils/paths";
 import { Imdb } from "./imdb";
-import { langBudget, langRevenue, langMinutes } from "~/utils/languages";
+import { langBudget, langRevenue, langMinutes, langActors, langCrew, langCollectionMovies, langRecommendedMovies } from "~/utils/languages";
 import { TorrentsModal } from "./torrents-list-modal";
 import { TrailersModal } from "./trailers-list-modal";
 import { ExternalIds } from "./external_ids";
@@ -167,7 +167,7 @@ export const MovieDetails = component$(
           )}
         </section>
 
-        <MediaCarousel title="Actors" type={MediaType.Person} lang={lang}>
+        <MediaCarousel title={langActors(lang)} type={MediaType.Person} lang={lang}>
           {movie.credits?.cast.slice(0, 10).map((c) => (
             <>
               <a href={paths.media(MediaType.Person, c.id, lang)}>
@@ -187,7 +187,7 @@ export const MovieDetails = component$(
         </MediaCarousel>
 
         {movie.credits && movie.credits.crew.length > 0 && (
-          <MediaCarousel title="Crew" type={MediaType.Person} lang={lang}>
+          <MediaCarousel title={langCrew(lang)} type={MediaType.Person} lang={lang}>
             {formatCrew(movie.credits.crew!)
               .slice(0, 10)
               .map((c) => (
@@ -211,7 +211,7 @@ export const MovieDetails = component$(
 
         {colMovies.length > 0 && (
           <MediaCarousel
-            title="Collection Movies"
+            title={langCollectionMovies(lang)}
             type={MediaType.Person}
             category="updated"
             lang={lang}
@@ -236,7 +236,7 @@ export const MovieDetails = component$(
 
         {recMovies.length > 0 && (
           <MediaCarousel
-            title="Recommended Movies"
+            title={langRecommendedMovies(lang)}
             type={MediaType.Person}
             category="updated"
             lang={lang}

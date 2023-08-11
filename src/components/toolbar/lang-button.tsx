@@ -21,14 +21,11 @@ export const LangButton = component$(() => {
   });
 
   return (
-    <a onClick$={toggleLang} >
-      <button
-        id="theme-toggle"
-        type="button"
-        class="hover:bg-teal-100 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg text-sm p-2.5"
-      >
-        {loc.url.searchParams.get("lang") || "en-US"}
-      </button>
-    </a>
+    <li
+      onClick$={toggleLang}
+      class="block px-4 py-2 text-sm text-teal-700 hover:bg-teal-100 dark:hover:bg-teal-600 dark:text-teal-200 dark:hover:text-teal-50 cursor-pointer"
+    >
+      {loc.url.searchParams.get("lang") || "en-US"}
+    </li>
   );
 });

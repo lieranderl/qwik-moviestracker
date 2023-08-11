@@ -10,6 +10,7 @@ import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import { MediaType } from "~/services/models";
 import { search } from "~/services/tmdb";
+import { langNoResults, langSearch, langSearchResults } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
@@ -45,7 +46,7 @@ export default component$(() => {
         <input
           type="text"
           class="w-[50%] mr-2 py-2 pl-2 text-sm border border-teal-300 rounded-lg bg-teal-50 focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500 placeholder-teal-900"
-          placeholder="Search here..."
+          placeholder={langSearch(resource.value.lang)}
           onKeyDown$={(e, elem) => {
             if (e.keyCode === 13) {
               if (elem.value.length > 2) {
@@ -68,7 +69,7 @@ export default component$(() => {
               if (movies.results!.length > 0) {
                 return (
                   <div class="my-2">
-                    <MediaGrid title="Search Results">
+                    <MediaGrid title={langSearchResults(resource.value.lang)}>
                       {movies.results!.length > 0 &&
                         movies.results!.map((m) => (
                           <>
@@ -122,10 +123,10 @@ export default component$(() => {
                   </div>
                 );
               } else {
-                return <div class="my-2 text-sm">no results</div>;
+                return <div class="my-2 text-sm">{langNoResults(resource.value.lang)}</div>;
               }
             } else {
-              return <div class="my-2 text-sm">no results</div>;
+              return <div class="my-2 text-sm">{langNoResults(resource.value.lang)}</div>;
             }
           }}
         />

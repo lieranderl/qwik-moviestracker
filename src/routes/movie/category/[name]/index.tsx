@@ -43,7 +43,7 @@ export const useContentLoader = routeLoader$(async (event) => {
         lang: lang,
       };
     } catch {
-      throw event.redirect(302, "/404");
+      throw event.redirect(302, paths.notFound(lang));
     }
   } else {
     try {
@@ -60,7 +60,7 @@ export const useContentLoader = routeLoader$(async (event) => {
         lang: lang,
       };
     } catch (error) {
-      throw event.redirect(302, "/404");
+      throw event.redirect(302, paths.notFound(lang));
     }
   }
 });
@@ -127,7 +127,7 @@ export default component$(() => {
   return (
     <div class="container mx-auto px-4 pt-[64px]">
       <MediaGrid
-        title={categoryToTitle(resource.value.category, MediaType.Movie)}
+        title={categoryToTitle(resource.value.category, MediaType.Movie, resource.value.lang)}
       >
         {moviesSig.length > 0 &&
           moviesSig.map((m) => (

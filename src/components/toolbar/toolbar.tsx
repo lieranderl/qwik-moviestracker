@@ -12,7 +12,7 @@ export const Toolbar = component$(() => {
 
   return (
     <nav class="block bg-teal-50 bg-opacity-50 dark:bg-teal-950 dark:bg-opacity-50 backdrop-blur-sm fixed z-10">
-      <div class="w-screen flex flex-wrap items-center justify-between mx-auto p-4 bg-opacity-100 ">
+      <div class="w-screen flex flex-wrap items-center justify-between p-4 bg-opacity-100">
         <a href={paths.index(resource.value.lang)} class="flex items-center">
           <svg
             class="w-10 h-10 fill-teal-950 dark:fill-teal-50 me-2"
@@ -37,7 +37,7 @@ export const Toolbar = component$(() => {
         </a>
 
         <div class="flex items-center">
-          <div class="flex items-center md:order-2">
+          <div class="flex items-center md:order-2 md:mx-4">
             <ThemeButton />
             <UserMenu />
             <BurgerButton>

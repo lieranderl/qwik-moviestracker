@@ -1,5 +1,5 @@
 FROM node:18-bullseye-slim AS build-server
-COPY scr /app/scr
+COPY src /app/src
 COPY package.json /app/package.json
 COPY public /app/public
 COPY tsconfig.json /app/tsconfig.json

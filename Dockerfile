@@ -4,7 +4,7 @@ COPY package.json /app/package.json
 COPY public /app/public
 COPY tsconfig.json /app/tsconfig.json
 COPY vite.config.ts /app/vite.config.ts
-COPY postcss.config.ts /app/postcss.config.ts
+COPY postcss.config.js /app/postcss.config.js
 COPY .eslintrc.js /app/.eslintrc.js
 COPY .eslintignore /app/.eslintignore
 COPY .env /app/.env

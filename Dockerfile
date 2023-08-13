@@ -5,7 +5,7 @@ COPY public /app/public
 COPY tsconfig.json /app/tsconfig.json
 COPY vite.config.ts /app/vite.config.ts
 COPY postcss.config.js /app/postcss.config.js
-COPY .eslintrc.js /app/.eslintrc.js
+COPY .eslintrc.cjs /app/.eslintrc.cjs
 COPY .eslintignore /app/.eslintignore
 COPY .env /app/.env
 RUN npm install -g pnpm

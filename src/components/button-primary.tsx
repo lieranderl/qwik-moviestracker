@@ -84,7 +84,9 @@ export const ButtonPrimary = component$(
             class="px-3 py-2 text-xs font-medium text-center text-teal-50 bg-teal-700 rounded-lg hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800"
             // class="px-3.5 py-2.5 text-base font-medium text-center text-teal-50 bg-teal-700 rounded-lg hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800"
           >
-            <ButtonInternal isLoading={isLoading} text={text} />
+            <ButtonInternal isLoading={isLoading} text={text}>
+              <Slot />
+            </ButtonInternal>
           </button>
         )}
         {size == "lg" && (
@@ -95,7 +97,9 @@ export const ButtonPrimary = component$(
             // class="px-3 py-2 text-xs font-medium text-center text-teal-50 bg-teal-700 rounded-lg hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800"
             class="px-3.5 py-2.5 text-base font-medium text-center text-teal-50 bg-teal-700 rounded-lg hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800"
           >
-            <ButtonInternal isLoading={isLoading} text={text} />
+            <ButtonInternal isLoading={isLoading} text={text}>
+              <Slot />
+            </ButtonInternal>
           </button>
         )}
         {size == "md" && (
@@ -105,7 +109,9 @@ export const ButtonPrimary = component$(
             disabled={isLoading || disabledSig.value}
             class="px-3 py-2 text-base font-medium text-center text-teal-50 bg-teal-700 rounded-lg hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800"
           >
-            <ButtonInternal isLoading={isLoading} text={text} />
+            <ButtonInternal isLoading={isLoading} text={text}>
+              <Slot />
+            </ButtonInternal>
           </button>
         )}
       </>

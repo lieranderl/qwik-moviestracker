@@ -8,7 +8,11 @@ import type { MovieFirestore, MovieShort, TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getFirebaseMovies, getTrendingMedia } from "~/services/tmdb";
 import { formatYear } from "~/utils/fomat";
-import { langLatestMovies, langTrengingTVShows } from "~/utils/languages";
+import {
+  langLatestMovies,
+  langTrendingMovies,
+  langTrengingTVShows,
+} from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
@@ -79,7 +83,7 @@ export default component$(() => {
           ))}
         </MediaCarousel>
         <MediaCarousel
-          title={langLatestMovies(resource.value.lang)}
+          title={langTrendingMovies(resource.value.lang)}
           type={MediaType.Movie}
           category="trending"
           lang={resource.value.lang}

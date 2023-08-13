@@ -1,24 +1,21 @@
-import { getAuth } from "firebase/auth";
 import { initializeApp } from "firebase/app";
-import { Timestamp } from "firebase/firestore";
-import { GoogleAuthProvider } from "firebase/auth";
-
+import { getAuth } from "firebase/auth";
+import { Timestamp } from "firebase/firestore/lite";
 import {
+  collection,
+  getDocs,
   getFirestore,
   limit,
   orderBy,
   query,
   startAfter,
-} from "firebase/firestore";
-import { collection, getDocs } from "firebase/firestore";
+} from "firebase/firestore/lite";
 import type { MovieFirestore } from "./models";
 
 const firebase_config = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG);
 const firebase_app = initializeApp(firebase_config);
 const db = getFirestore(firebase_app);
-
-export const auth = getAuth(firebase_app);
-export const googleProvider = new GoogleAuthProvider();
+export const auth = getAuth();
 
 export enum DbType {
   LastMovies = "latesttorrentsmovies",

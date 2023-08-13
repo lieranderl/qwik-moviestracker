@@ -1,8 +1,22 @@
-FROM node:18-bullseye-slim AS build-env
-COPY dist /app/dist
-COPY server /app/server
+FROM node:18-bullseye-slim AS build-server
+COPY scr /app/scr
 COPY package.json /app/package.json
 COPY public /app/public
+COPY tsconfig.json /app/tsconfig.json
+COPY vite.config.ts /app/vite.config.ts
+COPY postcss.config.ts /app/postcss.config.ts
+COPY .eslintrc.js /app/.eslintrc.js
+COPY .eslintignore /app/.eslintignore
+COPY .env /app/.env
+RUN npm install -g pnpm
+RUN pnpm i --force
+RUN pnpm run build
+
+FROM node:18-bullseye-slim AS build-env
+COPY --from=build-server dist /app/dist
+COPY --from=build-server server /app/server
+COPY --from=build-server package.json /app/package.json
+COPY --from=build-server public /app/public
 
 WORKDIR /app
 

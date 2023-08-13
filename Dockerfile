@@ -2,6 +2,7 @@ FROM node:18-bullseye-slim AS build-server
 COPY src /app/src
 COPY package.json /app/package.json
 COPY public /app/public
+COPY adapters /app/adapters
 COPY tsconfig.json /app/tsconfig.json
 COPY vite.config.ts /app/vite.config.ts
 COPY postcss.config.js /app/postcss.config.js

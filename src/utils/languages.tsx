@@ -536,4 +536,27 @@ export const langCreatedby = (lang: string) => {
   }
 };
 
+export const langWelcome = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Welcome to Moviestracker";
+    case "ru-RU":
+      return "Добро пожаловать на Moviestracker";
+    default:
+      return "Добро пожаловать на Moviestracker";
+  }
+};
+
+export const langSignWithGoogle = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Sign in with Google";
+    case "ru-RU":
+      return "Войти с помощью Google";
+    default:
+      return "Войти с помощью Google";
+  }
+};
+
+
 

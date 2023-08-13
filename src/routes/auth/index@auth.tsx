@@ -5,16 +5,21 @@ import {
   ButtonSize,
 } from "~/components/button-primary";
 import { useAuthSignin } from "~/routes/plugin@auth";
+import { useQueryParamsLoader } from "../layout-auth";
+import { langWelcome, langSignWithGoogle } from "~/utils/languages";
 
 export default component$(() => {
+  const resource = useQueryParamsLoader();
   const signIn = useAuthSignin();
   const isLoading = useSignal(false);
   return (
     <div class="flex items-center justify-center mx-auto h-[calc(100vh-400px)]">
       <div class="text-center md:space-y-20 space-y-10">
-        <p class="md:text-4xl font-bold text-2xl">Welcome to Moviestracker</p>
+        <p class="md:text-4xl font-bold text-2xl">
+          {langWelcome(resource.value.lang)}
+        </p>
         <ButtonPrimary
-          text="Sign in with Google"
+          text={langSignWithGoogle(resource.value.lang)}
           type={ButtonType.button}
           size={ButtonSize.lg}
           onClick={$(() => {

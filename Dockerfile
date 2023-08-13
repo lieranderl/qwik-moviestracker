@@ -10,6 +10,7 @@ COPY .eslintignore /app/.eslintignore
 ENV VITE_TMDB_API_KEY=$VITE_TMDB_API_KEY
 ENV VITE_GC_API_KEY=$VITE_GC_API_KEY
 ENV VITE_FIREBASE_CONFIG=$VITE_FIREBASE_CONFIG
+WORKDIR /app
 RUN npm install -g pnpm
 RUN pnpm i --force
 RUN pnpm run build

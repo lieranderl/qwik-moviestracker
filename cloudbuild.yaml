@@ -59,7 +59,7 @@ tags:
   - moviestracker-app
 availableSecrets:
   secretManager:
-  - versionName: projects/695761327713/secrets/VITE_FIREBASE_CONFIG/versions/1
+  - versionName: projects/695761327713/secrets/VITE_FIREBASE_CONFIG/versions/2
     env: 'VITE_FIREBASE_CONFIG'
   - versionName: projects/695761327713/secrets/GOOGLE_SECRET/versions/2
     env: 'GOOGLE_SECRET'

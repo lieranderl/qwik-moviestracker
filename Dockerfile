@@ -11,7 +11,6 @@ COPY .eslintignore /app/.eslintignore
 COPY .env /app/.env
 COPY .env.local /app/.env.local
 RUN cat /app/.env
-RUN cat /app/.env.local
 
 WORKDIR /app
 RUN npm install -g pnpm

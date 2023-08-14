@@ -6,6 +6,8 @@ COPY public /app/public
 
 WORKDIR /app
 
+RUN ls -la /app/server
+
 RUN npm i --force
 
 # A light-weight image for running the app

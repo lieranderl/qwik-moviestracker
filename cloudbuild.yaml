@@ -61,7 +61,7 @@ availableSecrets:
   secretManager:
   - versionName: projects/695761327713/secrets/VITE_FIREBASE_CONFIG/versions/1
     env: 'VITE_FIREBASE_CONFIG'
-  - versionName: projects/695761327713/secrets/GOOGLE_SECRET/versions/1
+  - versionName: projects/695761327713/secrets/GOOGLE_SECRET/versions/2
     env: 'GOOGLE_SECRET'
   - versionName: projects/695761327713/secrets/AUTH_SECRET/versions/1
     env: 'AUTH_SECRET'

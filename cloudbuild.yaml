@@ -5,6 +5,9 @@ steps:
     id: Install_npm
   - name: "node"
     entrypoint: "npm"
+    env:
+    - 'VITE_TMDB_API_KEY=$_VITE_TMDB_API_KEY'
+    - 'VITE_GC_API_KEY=$_VITE_GC_API_KEY'
     secretEnv: ["VITE_FIREBASE_CONFIG", "GOOGLE_SECRET", "AUTH_SECRET"]
     args: ["run", "build"]
     id: BuildNode

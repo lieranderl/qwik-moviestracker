@@ -1,7 +1,7 @@
 steps:
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: "bash"
-    args: ["-c", "echo $$MT_ENV > /app/.env"]
+    args: ["-c", "echo $$MT_ENV > /workspace/.env"]
     secretEnv: ["MT_ENV"]
     id: Env
   - name: gcr.io/cloud-builders/docker

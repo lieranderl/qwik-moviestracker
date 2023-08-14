@@ -6,9 +6,7 @@ COPY public /app/public
 
 WORKDIR /app
 
-RUN npm install -g pnpm
-RUN pnpm i --force
-
+RUN npm i --force
 
 # A light-weight image for running the app
 FROM gcr.io/distroless/nodejs18-debian11

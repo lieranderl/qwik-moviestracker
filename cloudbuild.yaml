@@ -1,20 +1,19 @@
 steps:
-  - name: 'node'
-    entrypoint: 'npm'
+  - name: "node"
+    entrypoint: "npm"
+    args: ["i", "--force"]
+    id: Install_npm
+  - name: "node"
+    entrypoint: "npm"
     secretEnv: ["VITE_FIREBASE_CONFIG", "GOOGLE_SECRET", "AUTH_SECRET"]
-    args:
-      [
-        'run',
-        'build',
-      ]
+    args: ["run", "build"]
     id: BuildNode
   - name: gcr.io/cloud-builders/docker
-    secretEnv: ["VITE_FIREBASE_CONFIG", "GOOGLE_SECRET", "AUTH_SECRET"]
     args:
-      [
-        'run',
-        'build',
-      ]
+      - build
+      - "--tag=$_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA"
+      - "--file=Dockerfile"
+      - "."
     id: BuildDocker
   - name: gcr.io/cloud-builders/docker
     args:

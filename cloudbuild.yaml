@@ -65,3 +65,4 @@ availableSecrets:
     env: 'GOOGLE_SECRET'
   - versionName: projects/695761327713/secrets/AUTH_SECRET/versions/1
     env: 'AUTH_SECRET'
+

@@ -8,9 +8,7 @@ COPY vite.config.ts /app/vite.config.ts
 COPY postcss.config.js /app/postcss.config.js
 COPY .eslintrc.cjs /app/.eslintrc.cjs
 COPY .eslintignore /app/.eslintignore
-ENV VITE_TMDB_API_KEY=$VITE_TMDB_API_KEY
-ENV VITE_GC_API_KEY=$VITE_GC_API_KEY
-ENV VITE_FIREBASE_CONFIG=$VITE_FIREBASE_CONFIG
+
 WORKDIR /app
 RUN npm install -g pnpm
 RUN pnpm i --force

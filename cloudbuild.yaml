@@ -2,8 +2,13 @@ steps:
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: "bash"
     args: ["-c", "echo $$MT_ENV > /workspace/.env"]
-    secretEnv: ["MT_ENV"]
+    secretEnv: ["MT_ENV", "MT_ENV_LOCAL"]
     id: Env
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: "bash"
+    args: ["-c", "echo $$MT_ENV_LOCAL > /workspace/.env.local"]
+    secretEnv: ["MT_ENV", "MT_ENV_LOCAL"]
+    id: EnvLocal
   - name: gcr.io/cloud-builders/docker
     args:
       - build
@@ -55,3 +60,5 @@ availableSecrets:
   secretManager:
   - versionName: projects/695761327713/secrets/MT_ENV/versions/1
     env: 'MT_ENV'
+  - versionName: projects/695761327713/secrets/MT_ENV_LOCAL/versions/1
+    env: 'MT_ENV_LOCAL'

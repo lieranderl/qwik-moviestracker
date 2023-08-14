@@ -69,70 +69,62 @@ export default component$(() => {
           )}
           onRejected={(error) => <div>Error: {error.message}</div>}
           onResolved={(movies) => {
-            if ("results" in movies) {
-              if (movies.results!.length > 0) {
-                return (
-                  <div class="my-2">
-                    <MediaGrid title={langSearchResults(resource.value.lang)}>
-                      {movies.results!.length > 0 &&
-                        movies.results!.map((m) => (
-                          <>
-                            <a
-                              class="text-left"
-                              href={paths.media(
-                                m.media_type!,
-                                m.id,
-                                resource.value.lang
-                              )}
-                            >
-                              <MediaCard
-                                title={
-                                  m.media_type === MediaType.Movie
-                                    ? m.title!
-                                    : m.name!
-                                }
-                                width={300}
-                                rating={m.vote_average ? m.vote_average : 0}
-                                year={
-                                  m.media_type === MediaType.Movie
-                                    ? parseInt(
-                                        m.release_date!.substring(0, 4),
-                                        10
-                                      )
-                                    : parseInt(
-                                        "first_air_date" in m
-                                          ? m.first_air_date!.substring(0, 4)
-                                          : "",
-                                        10
-                                      )
-                                }
-                                picfile={
-                                  m.media_type != MediaType.Movie &&
-                                  m.media_type != MediaType.Tv
-                                    ? m.profile_path!
-                                    : m.poster_path!
-                                }
-                                isPerson={
-                                  m.media_type != MediaType.Movie &&
-                                  m.media_type != MediaType.Tv
-                                    ? true
-                                    : false
-                                }
-                                isHorizontal={false}
-                              />
-                            </a>
-                          </>
-                        ))}
-                    </MediaGrid>
-                  </div>
-                );
-              } else {
-                return (
-                  <div class="my-2 text-sm">
-                    {langNoResults(resource.value.lang)}
-                  </div>
-                );
-              }
+            if (movies.results.length > 0) {
+              return (
+                <div class="my-2">
+                  <MediaGrid title={langSearchResults(resource.value.lang)}>
+                    {movies.results!.length > 0 &&
+                      movies.results!.map((m) => (
+                        <>
+                          <a
+                            class="text-left"
+                            href={paths.media(
+                              m.media_type!,
+                              m.id,
+                              resource.value.lang
+                            )}
+                          >
+                            <MediaCard
+                              title={
+                                m.media_type === MediaType.Movie
+                                  ? m.title!
+                                  : m.name!
+                              }
+                              width={300}
+                              rating={m.vote_average ? m.vote_average : 0}
+                              year={
+                                m.media_type === MediaType.Movie
+                                  ? parseInt(
+                                      m.release_date!.substring(0, 4),
+                                      10
+                                    )
+                                  : parseInt(
+                                      "first_air_date" in m
+                                        ? m.first_air_date!.substring(0, 4)
+                                        : "",
+                                      10
+                                    )
+                              }
+                              picfile={
+                                m.media_type != MediaType.Movie &&
+                                m.media_type != MediaType.Tv
+                                  ? m.profile_path!
+                                  : m.poster_path!
+                              }
+                              isPerson={
+                                m.media_type != MediaType.Movie &&
+                                m.media_type != MediaType.Tv
+                                  ? true
+                                  : false
+                              }
+                              isHorizontal={false}
+                            />
+                          </a>
+                        </>
+                      ))}
+                  </MediaGrid>
+                </div>
+              );
             } else {
               return (
                 <div class="my-2 text-sm">

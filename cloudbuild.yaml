@@ -2,7 +2,7 @@ steps:
   - name: "node"
     entrypoint: "npm"
     args: ["i", "--force"]
-    id: Install_npm
+    id: InstallNPM
   - name: "node"
     entrypoint: "npm"
     env:
@@ -10,7 +10,7 @@ steps:
     - 'VITE_GC_API_KEY=$_VITE_GC_API_KEY'
     secretEnv: ["VITE_FIREBASE_CONFIG", "GOOGLE_SECRET", "AUTH_SECRET"]
     args: ["run", "build"]
-    id: BuildNode
+    id: BuildQwik
   - name: gcr.io/cloud-builders/docker
     args:
       - build

@@ -3,16 +3,16 @@ steps:
     args:
       - build
       - '--no-cache'
-      # - '--build-arg'
-      # - 'VITE_TMDB_API_KEY=$_VITE_TMDB_API_KEY'
-      # - '--build-arg'
-      # - 'VITE_GC_API_KEY=$_VITE_GC_API_KEY'
-      # - '--build-arg'
-      # - 'VITE_FIREBASE_CONFIG=$$VITE_FIREBASE_CONFIG'
-      # - '--build-arg'
-      # - 'AUTH_SECRET=$$AUTH_SECRET'
-      # - '--build-arg'
-      # - 'GOOGLE_SECRET=$$GOOGLE_SECRET'
+      - '--build-arg'
+      - 'VITE_TMDB_API_KEY=$_VITE_TMDB_API_KEY'
+      - '--build-arg'
+      - 'VITE_GC_API_KEY=$_VITE_GC_API_KEY'
+      - '--build-arg'
+      - 'VITE_FIREBASE_CONFIG=$$VITE_FIREBASE_CONFIG'
+      - '--build-arg'
+      - 'AUTH_SECRET=$$AUTH_SECRET'
+      - '--build-arg'
+      - 'GOOGLE_SECRET=$$GOOGLE_SECRET'
       - '-t'
       - >-
         $_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA

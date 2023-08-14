@@ -1,24 +1,25 @@
 steps:
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: "bash"
-    args: ["-c", "echo $$MT_ENV > /workspace/.env"]
-    secretEnv: ["MT_ENV", "MT_ENV_LOCAL"]
-    id: Env
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: "bash"
-    args: ["-c", "echo $$MT_ENV_LOCAL > /workspace/.env.local"]
-    secretEnv: ["MT_ENV", "MT_ENV_LOCAL"]
-    id: EnvLocal
   - name: gcr.io/cloud-builders/docker
     args:
       - build
       - '--no-cache'
+      - '--build-arg'
+      - 'VITE_TMDB_API_KEY=$_VITE_TMDB_API_KEY'
+      - '--build-arg'
+      - 'VITE_GC_API_KEY=$_VITE_GC_API_KEY'
+      - '--build-arg'
+      - 'VITE_FIREBASE_CONFIG=$$VITE_FIREBASE_CONFIG'
+      - '--build-arg'
+      - 'AUTH_SECRET=$$AUTH_SECRET'
+      - '--build-arg'
+      - 'GOOGLE_SECRET=$$GOOGLE_SECRET'
       - '-t'
       - >-
         $_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
       - .
       - '-f'
       - Dockerfile
+    secretEnv: ["VITE_FIREBASE_CONFIG","GOOGLE_SECRET","AUTH_SECRET"]
     id: Build
   - name: gcr.io/cloud-builders/docker
     args:
@@ -58,7 +59,9 @@ tags:
   - moviestracker-app
 availableSecrets:
   secretManager:
-  - versionName: projects/695761327713/secrets/MT_ENV/versions/2
-    env: 'MT_ENV'
-  - versionName: projects/695761327713/secrets/MT_ENV_LOCAL/versions/1
-    env: 'MT_ENV_LOCAL'
+  - versionName: projects/695761327713/secrets/VITE_FIREBASE_CONFIG/versions/1
+    env: 'VITE_FIREBASE_CONFIG'
+  - versionName: projects/695761327713/secrets/GOOGLE_SECRET/versions/1
+    env: 'GOOGLE_SECRET'
+  - versionName: projects/695761327713/secrets/AUTH_SECRET/versions/1
+    env: 'AUTH_SECRET'

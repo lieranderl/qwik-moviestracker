@@ -51,3 +51,7 @@ tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
   - moviestracker-app
+availableSecrets:
+  secretManager:
+  - versionName: projects/695761327713/secrets/MT_ENV/versions/1
+    env: 'MT_ENV'

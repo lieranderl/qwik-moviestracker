@@ -58,7 +58,7 @@ tags:
   - moviestracker-app
 availableSecrets:
   secretManager:
-  - versionName: projects/695761327713/secrets/MT_ENV/versions/1
+  - versionName: projects/695761327713/secrets/MT_ENV/versions/2
     env: 'MT_ENV'
   - versionName: projects/695761327713/secrets/MT_ENV_LOCAL/versions/1
     env: 'MT_ENV_LOCAL'

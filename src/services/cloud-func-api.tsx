@@ -13,8 +13,8 @@ const fetchAPI = async <T = unknown,>(
   console.log(url);
   const response = await fetch(url, {
     headers: {
-      Origin: "https://moviestracker.web.app",
-      Referer: "https://moviestracker.web.app",
+      Origin: "https://moviestracker.net",
+      Referer: "https://moviestracker.net",
     },
   });
   console.log(response.status);

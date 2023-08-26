@@ -8,9 +8,11 @@ export const LangButton = component$(() => {
     switch (loc.url.searchParams.get("lang")) {
       case "en-US":
         loc.url.searchParams.set("lang", "ru-RU");
+        localStorage.setItem("lang", "ru-RU");
         break;
       case "ru-RU":
         loc.url.searchParams.set("lang", "en-US");
+        localStorage.setItem("lang", "en-US");
         break;
       default:
         loc.url.searchParams.set("lang", "ru-RU");

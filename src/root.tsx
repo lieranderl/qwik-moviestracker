@@ -9,6 +9,7 @@ import { RouterHead } from "./components/router-head/router-head";
 import "./global.css";
 import { DarkThemeLauncher } from "./utils/darkThemeLauncher";
 import { ToastStack } from "./components/toast/toastStack";
+import { LangLauncher } from "./utils/langLauncher";
 
 export default component$(() => {
   /**
@@ -29,6 +30,7 @@ export default component$(() => {
         ></script>
         <RouterHead />
         <DarkThemeLauncher />
+        <LangLauncher />
       </head>
       <body
         class="bg-teal-50 dark:bg-teal-950 text-teal-950 dark:text-teal-50 font-poppins tracking-tight antialiased"

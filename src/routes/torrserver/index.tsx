@@ -42,7 +42,7 @@ export default component$(() => {
   const isCheckingTorrServer = useSignal(false);
   const torrentsSig = useSignal([] as TSResult[]);
 
-  const handleSubmit = $(async (values: torrServerForm): Promise<any> => {
+  const addTorrserver = $(async (values: torrServerForm): Promise<any> => {
     isLoading.value = true;
     if (torrServerStore.list.includes(values.ipaddress)) {
       isLoading.value = false;
@@ -72,11 +72,29 @@ export default component$(() => {
   });
 
   useVisibleTask$(async () => {
-    const tors = localStorage.getItem("torrServerList");
-    if (tors) {
-      torrServerStore.list = JSON.parse(tors) || [];
+    const tlist = localStorage.getItem("torrServerList");
+    if (tlist) {
+      torrServerStore.list = JSON.parse(tlist) || [];
+    } else {
+      torrServerStore.list = [];
     }
     selectedTorServer.value = localStorage.getItem("selectedTorServer") || "";
+    if (selectedTorServer.value === "") {
+      localStorage.setItem("selectedTorServer", torrServerStore.list[0] || "");
+      localStorage.setItem("torrServerList", JSON.stringify([]));
+    } else {
+      if (torrServerStore.list.length === 0) {
+        localStorage.setItem(
+          "torrServerList",
+          JSON.stringify([selectedTorServer.value])
+        );
+      } else {
+        localStorage.setItem(
+          "torrServerList",
+          JSON.stringify(torrServerStore.list)
+        );
+      }
+    }
   });
 
   useVisibleTask$(async (ctx) => {
@@ -104,10 +122,6 @@ export default component$(() => {
         autocloseTime: 5000,
       });
       isCheckingTorrServer.value = false;
-      if (torrServerStore.list.length === 1) {
-        torrServerStore.list = [];
-        localStorage.removeItem("torrServerList");
-      }
     }
   });
 
@@ -115,7 +129,7 @@ export default component$(() => {
     <div class="container mx-auto px-4 pt-[64px]">
       <div class="grid md:grid-cols-6 my-4 sm:grid-cols-3 grid-cols-2">
         <div class="md:col-start-3 col-span-2 col-start-1">
-          <Form onSubmit$={handleSubmit} class="flex items-start justify-end">
+          <Form onSubmit$={addTorrserver} class="flex items-start justify-end">
             <Field name="ipaddress">
               {(field, props) => (
                 <div>

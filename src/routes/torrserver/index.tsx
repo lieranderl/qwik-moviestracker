@@ -207,10 +207,13 @@ export default component$(() => {
         {isCheckingTorrServer.value && <DotPulseLoader />}
         <MediaGrid title={""}>
           {torrentsSig.value.length > 0 &&
-            torrentsSig.value.map((data) => {
-              const m = JSON.parse(data.data);
+            torrentsSig.value.map((t) => {
+              if (!t.data) {
+                return;
+              }
+              const m = JSON.parse(t.data);
               return (
-                <div key={data.hash} class="relative">
+                <div key={t.hash} class="relative">
                   <div
                     onClick$={async () => {
                       const torrserv =
@@ -225,7 +228,7 @@ export default component$(() => {
                       }
                       try {
                         try {
-                          await removeTorrent(torrserv, data.hash);
+                          await removeTorrent(torrserv, t.hash);
                         } catch (error) {
                           console.log("");
                         }
@@ -265,9 +268,9 @@ export default component$(() => {
                       />
                     </svg>
                   </div>
-                  <a href={`magnet:?xt=urn:btih:${data.hash}`}>
+                  <a href={`magnet:?xt=urn:btih:${t.hash}`}>
                     <MediaCard
-                      title={data.title}
+                      title={t.title}
                       width={300}
                       rating={m.movie ? m.movie.vote_average : null}
                       year={
@@ -280,7 +283,7 @@ export default component$(() => {
                             )
                           : 0
                       }
-                      picfile={data.poster}
+                      picfile={t.poster}
                       isPerson={false}
                       isHorizontal={false}
                     />

@@ -351,7 +351,7 @@ export type PersonDetails = {
   popularity?: number;
   profile_path?: string;
   media_type?: MediaType;
-  poster_path: string
+  poster_path: string;
 };
 
 export type MovieFull = MovieDetails & MediaAppended;
@@ -412,13 +412,34 @@ export type ImdbRating = {
 };
 
 export type TSResult = {
-  stat_string: string;
-  data: string;
-  hash: string;
-  poster: string;
-  stat: string;
-  timestamp: number;
   title: string;
-  torrent_size: number;
+  poster: string;
+  data?: string;
+  timestamp: number;
   name: string;
+  hash: string;
+  stat: number;
+  stat_string: string;
+  loaded_size?: number;
+  torrent_size: number;
+  preloaded_bytes?: number;
+  total_peers?: number;
+  pending_peers?: number;
+  active_peers?: number;
+  connected_seeders?: number;
+  bytes_written?: number;
+  bytes_read?: number;
+  bytes_read_data?: number;
+  bytes_read_useful_data?: number;
+  chunks_read?: number;
+  chunks_read_useful?: number;
+  chunks_read_wasted?: number;
+  pieces_dirtied_good?: number;
+  file_stats?: FileStat[];
+};
+
+export type FileStat = {
+  id: number;
+  path: string;
+  length: number;
 };

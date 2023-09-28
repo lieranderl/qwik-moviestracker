@@ -49,21 +49,5 @@ export const ThemeButton = component$(() => {
         </div>
       )}
     </ButtonPrimary>
-    // <button
-    //   type="button"
-    //   class=" hover:bg-primary-100 dark:hover:bg-primary-900 focus:outline-none focus:ring-0 focus:ring-primary-100 dark:focus:ring-primary-900 rounded-lg p-2.5"
-    //   aria-label="Toggle between Dark and Light mode"
-    //   onClick$={updateTheme}
-    // >
-    //   {themeSig.value === "dark" ? (
-    //     <div class="text-xl fill-primary-dark dark:fill-primary">
-    //       <HiMoonOutline />
-    //     </div>
-    //   ) : (
-    //     <div class="text-xl fill-primary-dark dark:fill-primary">
-    //       <HiSunOutline />
-    //     </div>
-    //   )}
-    // </button>
   );
 });

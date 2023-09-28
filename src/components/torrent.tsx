@@ -13,48 +13,49 @@ interface TorrentListProps {
 export const TorrentBlock = component$(
   ({ torrent, movie }: TorrentListProps) => {
     const toastManager = useContext(toastManagerContext);
+    const labelClass = "bg-primary-100 text-primary-800 text-sm mr-2 px-2.5 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300"
     return (
       <>
         <div class="rounded my-2 p-2 border border-1 border-primary-700 dark:border-primary-100">
           <div class="flex flex-wrap items-center justify-between">
             <div class="text-start mb-2 font-bold">
               {torrent.K4 && (
-                <span class="bg-primary-100 text-primary-800 text-sm mr-2 px-2.5 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
+                <span class={labelClass}>
                   4K
                 </span>
               )}
               {torrent.DV && (
-                <span class="bg-primary-100 text-primary-800 text-sm mr-2 px-2.5 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
+                <span class={labelClass}>
                   Dolby Vision
                 </span>
               )}
               {torrent.HDR && !torrent.HDR10 && !torrent.HDR10plus && (
-                <span class="bg-primary-100 text-primary-800 text-sm mr-2 px-2.5 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
+                <span class={labelClass}>
                   HDR
                 </span>
               )}
               {torrent.HDR10 && !torrent.HDR10plus && (
-                <span class="bg-primary-100 text-primary-800 text-sm  mr-2 px-2.5 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
+                <span class={labelClass}>
                   HDR10
                 </span>
               )}
               {torrent.HDR10plus && (
-                <span class="bg-primary-100 text-primary-800 text-sm  mr-2 px-2.5 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
+                <span class={labelClass}>
                   HDR10+
                 </span>
               )}
             </div>
 
             <div class="flex flex-wrap items-center">
-              <span class="bg-primary-100 text-primary-800 text-sm mr-2 px-2.5 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
+              <span class={labelClass}>
                 {formatRating(torrent.Size)} Gb
               </span>
 
-              <span class="bg-green-100 text-green-800 text-sm  mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+              <span class="bg-green-100 text-green-800 text-sm mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
                 {torrent.Seeds}
               </span>
 
-              <span class="bg-red-100 text-red-800 text-sm  mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
+              <span class="bg-red-100 text-red-800 text-sm mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
                 {torrent.Leeches}
               </span>
               <div class="flex space-x-1 my-2">

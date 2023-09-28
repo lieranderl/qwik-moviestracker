@@ -26,22 +26,32 @@ interface ButtonPrimaryProps {
   dataModalToggle?: string;
   dataDropdownToggle?: string;
   dataDropdownPlacement?: string;
+  additionalClass?: string;
 }
 
 export const ButtonPrimary = component$(
-  ({ text, onClick, isLoading, size, type, disabled, dataModalTarget, dataModalToggle, dataDropdownToggle, dataDropdownPlacement }: ButtonPrimaryProps) => {
+  ({
+    text,
+    onClick,
+    isLoading,
+    size,
+    type,
+    disabled,
+    dataModalTarget,
+    dataModalToggle,
+    dataDropdownToggle,
+    dataDropdownPlacement,
+    additionalClass,
+  }: ButtonPrimaryProps) => {
     const typeSig = useSignal(type);
     const disabledSig = useSignal(disabled);
-    const colorCls = "text-center text-primary bg-primary-600 rounded-lg hover:bg-primary-700 focus:ring-opacity-75 focus:ring-4 focus:outline-none focus:ring-primary-700 "
-    const smClass =
-      "px-3 py-2 text-xs font-medium " + colorCls
-    const lgClass =
-      "px-3.5 py-2.5 text-base font-medium " + colorCls;
-    const mdClass =
-      "px-3 py-2 text-base font-medium " + colorCls;
+    const colorCls =
+      "text-center text-primary bg-primary-600 rounded-lg hover:bg-primary-700 focus:ring-opacity-75 focus:ring-4 focus:outline-none focus:ring-primary-700 ";
+    const smClass = "px-3 py-2 text-xs font-medium " + colorCls;
+    const lgClass = "px-3.5 py-2.5 text-base font-medium " + colorCls;
+    const mdClass = "px-3 py-2 text-base font-medium " + colorCls;
     const iconClass =
       "px-2 py-2 text-base font-small text-center text-primary-dark rounded-lg hover:bg-primary-100 hover:bg-opacity-50 focus:ring-opacity-50 focus:ring-2 focus:outline-none focus:ring-primary-100 dark:text-primary dark:hover:bg-primary-800 dark:focus:ring-primary-800";
-
 
     let selectedClass = smClass;
     if (size == "md") {
@@ -50,6 +60,9 @@ export const ButtonPrimary = component$(
       selectedClass = lgClass;
     } else if (size == "icon") {
       selectedClass = iconClass;
+    }
+    if (additionalClass) {
+      selectedClass += " " + additionalClass;
     }
 
     useTask$(() => {

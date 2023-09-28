@@ -27,7 +27,7 @@ export const BurgerButton = component$(() => {
       </button>
       <div
         id="dropdownBurger"
-        class="z-10 hidden bg-primary-50 divide-y divide-primary-100 rounded-lg shadow w-44 dark:bg-primary-950 border border-primary-100 dark:border-primary-900"
+        class="z-10 hidden bg-primary divide-y divide-primary-100 rounded-lg shadow w-44 dark:bg-primary-dark border border-primary-100 dark:border-primary-900"
       >
         <ul
           class="py-2 text-md space-y-2"

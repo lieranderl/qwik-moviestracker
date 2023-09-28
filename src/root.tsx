@@ -33,7 +33,7 @@ export default component$(() => {
         <LangLauncher />
       </head>
       <body
-        class="bg-teal-50 dark:bg-teal-950 text-teal-950 dark:text-teal-50 font-poppins tracking-tight antialiased"
+        class="bg-primary dark:bg-primary-dark text-primary-dark dark:text-primary font-inter tracking-tight antialiased"
         lang="en"
       >
         <ToastStack>

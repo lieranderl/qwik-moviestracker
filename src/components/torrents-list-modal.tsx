@@ -7,6 +7,7 @@ import { getTorrents } from "~/services/cloud-func-api";
 import type { MediaDetails, Season, Torrent } from "~/services/models";
 import { formatYear } from "~/utils/fomat";
 import { langTorrents } from "~/utils/languages";
+import { ButtonPrimary, ButtonSize, ButtonType } from "./button-primary";
 
 export interface TorModalPros {
   title: string;
@@ -22,7 +23,7 @@ export const TorrentsModal = component$(
     const resource = useQueryParamsLoader();
     const selectedYear = useSignal(year);
     const torrentsStore = useStore({ torrents: null as Torrent[] | null });
-    const getTorrentsToggle = $(async (seyear: number) => {
+    const getTorrentsToggle = $(async () => {
       torrentsStore.torrents = null;
       try {
         const torrents = await server$(
@@ -31,7 +32,7 @@ export const TorrentsModal = component$(
           }
         )({
           name: title,
-          year: seyear,
+          year: selectedYear.value,
           isMovie: isMovie,
         });
         // const torrents = await getTorrents({name: "Аватар: Путь воды", year: "2022", isMovie: true})
@@ -44,26 +45,26 @@ export const TorrentsModal = component$(
     return (
       <>
         {seasons.length == 0 && (
-          <button
-            data-modal-target="torrentsModal"
-            data-modal-toggle="torrentsModal"
-            class="px-3 py-2 text-base font-medium text-center text-teal-50 bg-teal-700 rounded-lg hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800"
-            type="button"
-            onClick$={() => getTorrentsToggle(year)}
-          >
-            {langTorrents(resource.value.lang)}
-          </button>
+                <ButtonPrimary
+                dataModalTarget="torrentsModal"
+                dataModalToggle="torrentsModal"
+                size={ButtonSize.md}
+                type={ButtonType.button}
+                onClick={getTorrentsToggle}
+                
+              >
+                {langTorrents(resource.value.lang)}
+              </ButtonPrimary>
         )}
 
         {seasons.length > 0 && (
           <>
-            <button
-              id="dropdownBottomButton"
-              data-dropdown-toggle="dropdownBottom"
-              data-dropdown-placement="bottom"
-              class="mr-3 mb-3 md:mb-0 text-teal-50 bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800"
-              type="button"
-            >
+          <ButtonPrimary
+          type={ButtonType.button}
+          size={ButtonSize.md}
+          dataDropdownToggle="dropdownBottom"
+          dataDropdownPlacement="bottom"
+          >
               {langTorrents(resource.value.lang)}{" "}
               <svg
                 class="w-2.5 h-2.5 ml-2.5"
@@ -80,14 +81,15 @@ export const TorrentsModal = component$(
                   d="m1 1 4 4 4-4"
                 />
               </svg>
-            </button>
+          </ButtonPrimary>
+
 
             <div
               id="dropdownBottom"
-              class="z-10 hidden bg-teal-50 divide-y divide-teal-100 rounded-lg shadow w-44 dark:bg-teal-700"
+              class="z-10 hidden bg-primary divide-y divide-primary-100 rounded-lg shadow w-44 dark:bg-primary-700"
             >
               <ul
-                class="py-2 text-sm text-teal-700 dark:text-teal-200"
+                class="py-2 text-sm text-primary-700 dark:text-primary-200"
                 aria-labelledby="dropdownBottomButton"
               >
                 {seasons!.map((s) => {
@@ -103,12 +105,10 @@ export const TorrentsModal = component$(
                                 selectedYear.value = formatYear(
                                   s.air_date ? s.air_date : ""
                                 );
-                                getTorrentsToggle(
-                                  formatYear(s.air_date ? s.air_date : "")
-                                );
+                                getTorrentsToggle();
                               }}
                               href="#"
-                              class="block px-4 py-2 hover:bg-teal-100 dark:hover:bg-teal-600 dark:hover:text-teal-50"
+                              class="block px-4 py-2 hover:bg-primary-100 dark:hover:bg-primary-600 dark:hover:text-primary"
                             >
                               Сезон
                               <span class="ml-1">
@@ -135,14 +135,14 @@ export const TorrentsModal = component$(
           class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
         >
           <div class="relative w-full max-w-4xl max-h-full">
-            <div class="relative bg-teal-50 rounded-lg shadow dark:bg-teal-950">
-              <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-teal-800">
+            <div class="relative bg-primary rounded-lg shadow dark:bg-primary-dark">
+              <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-primary-800">
                 <h3 class="text-xl font-semibold ">
                   {langTorrents(resource.value.lang)}
                 </h3>
                 <button
                   type="button"
-                  class=" bg-transparent hover:bg-teal-100  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-teal-800 "
+                  class=" bg-transparent hover:bg-primary-100  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-primary-800 "
                   data-modal-hide="torrentsModal"
                 >
                   <svg

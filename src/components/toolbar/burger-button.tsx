@@ -6,7 +6,7 @@ export const BurgerButton = component$(() => {
       <button
         id="dropdownDefaultButton"
         data-dropdown-toggle="dropdownBurger"
-        class="md:hidden hover:bg-teal-100 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg text-sm p-2.5"
+        class="md:hidden hover:bg-primary-100 dark:hover:bg-primary-900 focus:outline-none focus:ring-0 focus:ring-primary-100 dark:focus:ring-primary-900 rounded-lg text-sm p-2.5"
         type="button"
       >
         <svg
@@ -27,7 +27,7 @@ export const BurgerButton = component$(() => {
       </button>
       <div
         id="dropdownBurger"
-        class="z-10 hidden bg-teal-50 divide-y divide-teal-100 rounded-lg shadow w-44 dark:bg-teal-950 border border-teal-100 dark:border-teal-900"
+        class="z-10 hidden bg-primary-50 divide-y divide-primary-100 rounded-lg shadow w-44 dark:bg-primary-950 border border-primary-100 dark:border-primary-900"
       >
         <ul
           class="py-2 text-md space-y-2"

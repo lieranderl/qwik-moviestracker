@@ -69,7 +69,7 @@ pnpm build # or `yarn build`
 This app has a minimal [Cloud Run server](https://cloud.google.com/run) implementation. After running a full build, deploy your app with:
 
 ```
-npm run deploy
+bun deploy
 ```
 
 ## Google Cloud Run Server
@@ -77,5 +77,35 @@ npm run deploy
 This app has a minimal [Cloud Run server](https://cloud.google.com/run) implementation. After running a full build, deploy your app with:
 
 ```
-npm run deploy
+bun deploy
 ```
+
+## Bun Server
+
+This app has a minimal [Bun server](https://bun.sh/docs/api/http) implementation. After running a full build, you can preview the build using the command:
+
+```
+bun run serve
+```
+
+Then visit [http://localhost:3000/](http://localhost:3000/)
+
+## Bun Server
+
+This app has a minimal [Bun server](https://bun.sh/docs/api/http) implementation. After running a full build, you can preview the build using the command:
+
+```
+bun run serve
+```
+
+Then visit [http://localhost:3000/](http://localhost:3000/)
+
+## Bun Server
+
+This app has a minimal [Bun server](https://bun.sh/docs/api/http) implementation. After running a full build, you can preview the build using the command:
+
+```
+bun run serve
+```
+
+Then visit [http://localhost:3000/](http://localhost:3000/)

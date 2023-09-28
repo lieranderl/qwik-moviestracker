@@ -18,7 +18,7 @@ const Alink = component$(({ text, path }: AlinkProps) => {
     <li class="mx-4">
       <a href={`${path}`} class="group transition duration-300">
         {text}
-        <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-teal-950 dark:bg-teal-50"></span>
+        <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-primary-dark dark:bg-primary"></span>
       </a>
     </li>
   );

@@ -49,7 +49,7 @@ export default component$(() => {
       <div class="container text-center mx-auto px-4 pt-[80px]">
         <input
           type="text"
-          class="w-[50%] mr-2 py-2 pl-2 text-sm border border-teal-300 rounded-lg bg-teal-50 focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500 placeholder-teal-900"
+          class="w-[50%] mr-2 py-2 pl-2 text-sm border border-primary-300 rounded-lg bg-primary focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600 placeholder-primary-900"
           placeholder={langSearch(resource.value.lang)}
           onKeyDown$={(e, elem) => {
             if (e.keyCode === 13) {

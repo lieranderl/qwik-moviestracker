@@ -1,1 +1,1 @@
-pnpm run build && pnpm run deploy
+npm run build && npm run deploy

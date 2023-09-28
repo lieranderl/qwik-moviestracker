@@ -1,5 +1,6 @@
 import { component$, $, useVisibleTask$, useSignal } from "@builder.io/qwik";
 import { HiMoonOutline, HiSunOutline } from "@qwikest/icons/heroicons";
+import { ButtonPrimary, ButtonSize, ButtonType } from "../button-primary";
 
 export const ThemeButton = component$(() => {
   const themeSig = useSignal(
@@ -33,21 +34,36 @@ export const ThemeButton = component$(() => {
   });
 
   return (
-    <button
-      type="button"
-      class=" hover:bg-teal-100 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg p-2.5"
-      aria-label="Toggle between Dark and Light mode"
-      onClick$={updateTheme}
+    <ButtonPrimary
+      size={ButtonSize.icon}
+      type={ButtonType.button}
+      onClick={updateTheme}
     >
       {themeSig.value === "dark" ? (
-        <div class="text-xl fill-teal-950 dark:fill-teal-50">
+        <div class="text-xl fill-primary-dark dark:fill-primary">
           <HiMoonOutline />
         </div>
       ) : (
-        <div class="text-xl fill-teal-950 dark:fill-teal-50">
+        <div class="text-xl fill-primary-dark dark:fill-primary">
           <HiSunOutline />
         </div>
       )}
-    </button>
+    </ButtonPrimary>
+    // <button
+    //   type="button"
+    //   class=" hover:bg-primary-100 dark:hover:bg-primary-900 focus:outline-none focus:ring-0 focus:ring-primary-100 dark:focus:ring-primary-900 rounded-lg p-2.5"
+    //   aria-label="Toggle between Dark and Light mode"
+    //   onClick$={updateTheme}
+    // >
+    //   {themeSig.value === "dark" ? (
+    //     <div class="text-xl fill-primary-dark dark:fill-primary">
+    //       <HiMoonOutline />
+    //     </div>
+    //   ) : (
+    //     <div class="text-xl fill-primary-dark dark:fill-primary">
+    //       <HiSunOutline />
+    //     </div>
+    //   )}
+    // </button>
   );
 });

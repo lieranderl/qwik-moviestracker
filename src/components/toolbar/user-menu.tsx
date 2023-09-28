@@ -34,15 +34,15 @@ export const UserMenu = component$(() => {
             )}
           </button>
           <div
-            class="z-50 hidden my-4 text-base list-none bg-teal-50 divide-y divide-teal-100 rounded-lg shadow dark:bg-teal-700 dark:divide-teal-600"
+            class="z-50 hidden my-4 text-base list-none bg-primary divide-y divide-primary-100 rounded-lg shadow dark:bg-primary-700 dark:divide-primary-600"
             id="user-dropdown"
           >
             {session.value.user && (
               <div class="px-4 py-3">
-                <span class="block text-sm text-teal-900 dark:text-teal-50">
+                <span class="block text-sm text-primary-900 dark:text-primary">
                   {session.value.user.name}
                 </span>
-                <span class="block text-sm  text-teal-500 truncate dark:text-teal-400">
+                <span class="block text-sm  text-primary-600 truncate dark:text-primary-300">
                   {session.value.user.email}
                 </span>
               </div>
@@ -55,7 +55,7 @@ export const UserMenu = component$(() => {
             <ul class="py-2" aria-labelledby="user-menu-button">
               <li
                 onClick$={() => signOut.submit({ callbackUrl: "/auth" })}
-                class="block px-4 py-2 text-sm text-teal-700 hover:bg-teal-100 dark:hover:bg-teal-600 dark:text-teal-200 dark:hover:text-teal-50 cursor-pointer"
+                class="block px-4 py-2 text-sm text-primary-700 hover:bg-primary-100 dark:hover:bg-primary-600 dark:text-primary-200 dark:hover:text-primary cursor-pointer"
               >
                 {langSingOut(resource.value.lang)}
               </li>

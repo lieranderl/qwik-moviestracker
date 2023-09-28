@@ -8,15 +8,31 @@ module.exports = {
     "./node_modules/flowbite/**/*.js",
   ],
   theme: {
+    colors: {
+      transparent: 'transparent',
+      primary: {
+        DEFAULT: "#f0fdfa",
+        light: "#f0fdfa",
+        100: "#ccfbf1",
+        200: "#99f6e4",
+        300: "#5eead4",
+        400: "#2dd4bf",
+        500: "#14b8a6",
+        600: "#0d9488",
+        700: "#0f766e",
+        800: "#115e59",
+        900: "#134e4a",
+        dark: "#042f2e",
+      },
+    },
     extend: {
       fontFamily: {
-        poppins: ["Poppins", "sans-serif"],
+        inter: ["Inter", "sans-serif"],
       },
-
       animation: {
         "slide-in-right": "slide_in_right 0.5s",
         "slide-out-right": "slide_out_right 0.5s",
-        "progress-slide": 'progress_slide var(--bar-duration) linear',
+        "progress-slide": "progress_slide var(--bar-duration) linear",
       },
       keyframes: {
         slide_in_right: {
@@ -34,9 +50,9 @@ module.exports = {
           },
         },
         progress_slide: {
-          "from": { width: "0%" },
-          "to": { width: "100%" },
-        }
+          from: { width: "0%" },
+          to: { width: "100%" },
+        },
       },
     },
   },

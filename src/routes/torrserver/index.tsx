@@ -138,7 +138,7 @@ export default component$(() => {
                     type="text"
                     value={field.value}
                     placeholder={langAddNewTorrServerURL(resource.value.lang)}
-                    class="w-64 mr-2 py-2 pl-2 text-sm border border-teal-300 rounded-lg bg-teal-50 focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500 placeholder-teal-900"
+                    class="w-64 mr-2 py-2 pl-2 text-sm border border-primary-300 rounded-lg bg-primary focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600 placeholder-primary-900"
                   />
                   {field.error && (
                     <div class="text-xs text-red-400">{field.error}</div>
@@ -150,11 +150,11 @@ export default component$(() => {
               <button
                 type="submit"
                 disabled={newTorrServerForm.invalid}
-                class="hover:bg-teal-100 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg text-sm p-2.5"
+                class="hover:bg-primary-100 dark:hover:bg-primary-900 focus:outline-none focus:ring-0 focus:ring-primary-100 dark:focus:ring-primary-900 rounded-lg text-sm p-2.5"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="fill-teal-500 w-5 h-5"
+                  class="fill-primary-600 w-5 h-5"
                   viewBox="0 0 448 512"
                 >
                   <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" />
@@ -170,7 +170,7 @@ export default component$(() => {
               name=""
               id="attrib"
               value={selectedTorServer.value}
-              class=" mr-2 bg-teal-50 border border-teal-300 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500"
+              class=" mr-2 bg-primary border border-primary-300 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600"
               onChange$={(_, e) => {
                 selectedTorServer.value = e.value;
               }}
@@ -184,7 +184,7 @@ export default component$(() => {
             <div class="my-1">
               <button
                 type="button"
-                class="hover:bg-teal-100 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg text-sm p-2.5"
+                class="hover:bg-primary-100 dark:hover:bg-primary-900 focus:outline-none focus:ring-0 focus:ring-primary-100 dark:focus:ring-primary-900 rounded-lg text-sm p-2.5"
                 onClick$={$(() => {
                   const index = torrServerStore.list.indexOf(
                     selectedTorServer.value
@@ -207,7 +207,7 @@ export default component$(() => {
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="fill-teal-500 w-5 h-5"
+                  class="fill-primary-600 w-5 h-5"
                   viewBox="0 0 448 512"
                 >
                   <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
@@ -265,7 +265,7 @@ export default component$(() => {
                         });
                       }
                     }}
-                    class="absolute cursor-pointer absolute top-3.5 -right-2.5 z-10 text-teal-50 rounded-full transition-scale scale-75 duration-300 ease-in-out hover:scale-100"
+                    class="absolute cursor-pointer absolute top-3.5 -right-2.5 z-10 text-primary rounded-full transition-scale scale-75 duration-300 ease-in-out hover:scale-100"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

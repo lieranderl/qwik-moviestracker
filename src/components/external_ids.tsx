@@ -86,7 +86,7 @@ export const ExternalIds = component$(
                 <svg
                   role="img"
                   viewBox="0 0 24 24"
-                  class="w-6 h-6 dark:fill-teal-50 fill-teal-950"
+                  class="w-6 h-6 dark:fill-primary fill-primary-dark"
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <title>TikTok</title>
@@ -102,7 +102,7 @@ export const ExternalIds = component$(
               >
                 <svg
                   role="img"
-                  class="w-6 h-6 dark:fill-teal-50 fill-teal-950"
+                  class="w-6 h-6 dark:fill-primary fill-primary-dark"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                 >

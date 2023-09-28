@@ -33,7 +33,7 @@ export default component$(() => {
         >
           <div class="mr-4">
             <svg
-              class="w-5 h-5 fill-teal-50"
+              class="w-5 h-5 fill-primary"
               role="img"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"

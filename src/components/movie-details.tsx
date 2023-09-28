@@ -55,7 +55,7 @@ export const MovieDetails = component$(
           <div class="flex flex-wrap items-center">
             {movie.vote_average! > 0 && (
               <div class="flex items-center me-4">
-                <div class="text-[2.5rem] fill-teal-950 dark:fill-teal-50 me-2">
+                <div class="text-[2.5rem] fill-primary-dark dark:fill-primary me-2">
                   <svg
                     role="img"
                     viewBox="0 0 24 24"

@@ -146,7 +146,7 @@ export const TorrentList = component$(
               }}
               // bind:value={sortFilterStore.selectedSort}
               id="attrib"
-              class="mr-2 bg-teal-50 border border-teal-300 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500"
+              class="mr-2 bg-primary border border-primary-300 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600"
             >
               {sortAttrib.map((attrib) => (
                 <option value={attrib.value} key={attrib.value}>
@@ -165,7 +165,7 @@ export const TorrentList = component$(
                     type="text"
                     value={field.value}
                     placeholder="название"
-                    class="py-2 pl-2 w-48 text-sm border border-teal-300 rounded-l-lg bg-teal-50 focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500"
+                    class="py-2 pl-2 w-48 text-sm border border-primary-300 rounded-l-lg bg-primary focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600"
                   />
                   {field.error && (
                     <div class="text-xs text-red-400">{field.error}</div>
@@ -180,7 +180,7 @@ export const TorrentList = component$(
                     {...props}
                     type="number"
                     value={field.value}
-                    class="mr-2 py-2 pl-2 w-20 text-sm border border-teal-300 rounded-r-lg bg-teal-50 focus:ring-teal-500 focus:border-teal-500 dark:bg-teal-950 dark:border-teal-600 dark:placeholder-teal-100 dark:focus:ring-teal-500 dark:focus:border-teal-500"
+                    class="mr-2 py-2 pl-2 w-20 text-sm border border-primary-300 rounded-r-lg bg-primary focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600"
                     placeholder="год"
                   />
                   {field.error && (
@@ -193,7 +193,7 @@ export const TorrentList = component$(
             <button
               type="submit"
               disabled={searchTorrForm.invalid || sortedTorrents.value == null}
-              class="fill-teal-950 dark:fill-teal-50 hover:bg-teal-100 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg text-lg p-2.5"
+              class="fill-primary-dark dark:fill-primary hover:bg-primary-100 dark:hover:bg-primary-900 focus:outline-none focus:ring-0 focus:ring-primary-100 dark:focus:ring-primary-900 rounded-lg text-lg p-2.5"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -221,7 +221,7 @@ export const TorrentList = component$(
           <div class="mr-2">
             <input
               type="checkbox"
-              class="mr-2 w-4 h-4 text-teal-600 bg-teal-100 border-teal-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-teal-800 focus:ring-2 dark:bg-teal-700 dark:border-teal-600"
+              class="mr-2 w-4 h-4 text-primary-600 bg-primary-100 border-primary-300 rounded focus:ring-primary-600 dark:focus:ring-primary-600 dark:ring-offset-primary-800 focus:ring-2 dark:bg-primary-700 dark:border-primary-600"
               onChange$={(e) => {
                 sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
                 sortFilterStore.k4 = e.target.checked;
@@ -232,7 +232,7 @@ export const TorrentList = component$(
           <div class="mr-2">
             <input
               type="checkbox"
-              class="mr-2 w-4 h-4 text-teal-600 bg-teal-100 border-teal-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-teal-800 focus:ring-2 dark:bg-teal-700 dark:border-teal-600"
+              class="mr-2 w-4 h-4 text-primary-600 bg-primary-100 border-primary-300 rounded focus:ring-primary-600 dark:focus:ring-primary-600 dark:ring-offset-primary-800 focus:ring-2 dark:bg-primary-700 dark:border-primary-600"
               onChange$={(e) => {
                 sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
                 sortFilterStore.hdr = e.target.checked;
@@ -243,7 +243,7 @@ export const TorrentList = component$(
           <div class="mr-2">
             <input
               type="checkbox"
-              class="mr-2 w-4 h-4 text-teal-600 bg-teal-100 border-teal-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-teal-800 focus:ring-2 dark:bg-teal-700 dark:border-teal-600"
+              class="mr-2 w-4 h-4 text-primary-600 bg-primary-100 border-primary-300 rounded focus:ring-primary-600 dark:focus:ring-primary-600 dark:ring-offset-primary-800 focus:ring-2 dark:bg-primary-700 dark:border-primary-600"
               onChange$={(e) => {
                 sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
                 sortFilterStore.hdr10 = e.target.checked;
@@ -254,7 +254,7 @@ export const TorrentList = component$(
           <div class="mr-2">
             <input
               type="checkbox"
-              class="mr-2 w-4 h-4 text-teal-600 bg-teal-100 border-teal-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-teal-800 focus:ring-2 dark:bg-teal-700 dark:border-teal-600"
+              class="mr-2 w-4 h-4 text-primary-600 bg-primary-100 border-primary-300 rounded focus:ring-primary-600 dark:focus:ring-primary-600 dark:ring-offset-primary-800 focus:ring-2 dark:bg-primary-700 dark:border-primary-600"
               onChange$={(e) => {
                 sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
                 sortFilterStore.hdr10plus = e.target.checked;
@@ -265,7 +265,7 @@ export const TorrentList = component$(
           <div class="mr-2">
             <input
               type="checkbox"
-              class="mr-2 w-4 h-4 text-teal-600 bg-teal-100 border-teal-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-teal-800 focus:ring-2 dark:bg-teal-700 dark:border-teal-600"
+              class="mr-2 w-4 h-4 text-primary-600 bg-primary-100 border-primary-300 rounded focus:ring-primary-600 dark:focus:ring-primary-600 dark:ring-offset-primary-800 focus:ring-2 dark:bg-primary-700 dark:border-primary-600"
               onChange$={(e) => {
                 sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
                 sortFilterStore.dv = e.target.checked;

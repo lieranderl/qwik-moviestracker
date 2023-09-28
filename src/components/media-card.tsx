@@ -52,7 +52,7 @@ export const MediaCard = component$(
       }
     });
 
-    const colorClass = "bg-teal-50 dark:bg-teal-950";
+    const colorClass = "bg-primary dark:bg-primary-dark";
 
     return (
       <div class={cardWidthClass} style={cardWidthStyle}>
@@ -66,7 +66,7 @@ export const MediaCard = component$(
           <div class="drop-shadow transition-scale scale-95 duration-300 ease-in-out group-hover:scale-100 group-hover:drop-shadow-md">
             <picture>
               <Image
-                class="rounded-md border-2 border-base-300 border-white dark:border-teal-800"
+                class="rounded-md border-2 border-base-300 border-white dark:border-primary-800"
                 src={
                   picfile
                     ? "https://image.tmdb.org/t/p/w" + width + "/" + picfile

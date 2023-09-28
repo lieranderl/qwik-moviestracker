@@ -57,7 +57,7 @@ export const PersonDetails = component$(
           <div class="mt-4 md:mt-0">
             <div class="text-2xl font-bold flex items-center">
               {person.name}
-              <div class="font-extralight ml-2 fill-teal-950 dark:fill-teal-50">
+              <div class="font-extralight ml-2 fill-primary-dark dark:fill-primary">
                 {person.gender === 1 && <FemaleSVG />}
                 {person.gender === 2 && <MaleSVG />}
                 {person.gender === 0 && <NonbiSVG />}
@@ -101,7 +101,7 @@ export const PersonDetails = component$(
                 )}
                 {isShowBio.value && <div class="">{person.biography}</div>}
                 <a
-                  class="text-sm float-right text-teal-600 underline dark:text-teal-500 hover:cursor-pointer"
+                  class="text-sm float-right text-primary-600 underline dark:text-primary-600 hover:cursor-pointer"
                   onClick$={() => (isShowBio.value = !isShowBio.value)}
                 >
                   {!isShowBio.value && <span>Read more...</span>}

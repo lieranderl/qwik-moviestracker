@@ -11,11 +11,11 @@ export const Toolbar = component$(() => {
   const resource = useQueryParamsLoader();
 
   return (
-    <nav class="block bg-teal-50 bg-opacity-50 dark:bg-teal-950 dark:bg-opacity-50 backdrop-blur-sm fixed z-10">
+    <nav class="block bg-opacity-50 dark:bg-opacity-50 backdrop-blur-sm fixed z-10">
       <div class="w-screen flex flex-wrap items-center justify-between p-4 bg-opacity-100">
         <a href={paths.index(resource.value.lang)} class="flex items-center">
           <svg
-            class="w-10 h-10 fill-teal-950 dark:fill-teal-50 me-2"
+            class="w-10 h-10 fill-primary-dark dark:fill-primary me-2"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"

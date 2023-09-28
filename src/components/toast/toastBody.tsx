@@ -14,8 +14,8 @@ export type ToastBodyComponentProps = {
           id="toast"
           class={[
             autocloseTime
-              ? "flex items-center justify-between p-4 bg-teal-100 shadow  dark:bg-teal-800 rounded-t-lg"
-              : "flex items-center justify-between p-4 bg-teal-100 shadow  dark:bg-teal-800 rounded-lg",
+              ? "flex items-center justify-between p-4 bg-primary-100 shadow  dark:bg-primary-800 rounded-t-lg"
+              : "flex items-center justify-between p-4 bg-primary-100 shadow  dark:bg-primary-800 rounded-lg",
           ]}
           role="alert"
         >
@@ -29,7 +29,7 @@ export type ToastBodyComponentProps = {
   
           <button
             type="button"
-            class="hover:bg-teal-200 dark:hover:bg-teal-900 focus:outline-none focus:ring-0 focus:ring-teal-100 dark:focus:ring-teal-900 rounded-lg text-sm p-2.5"
+            class="hover:bg-primary-200 dark:hover:bg-primary-900 focus:outline-none focus:ring-0 focus:ring-primary-100 dark:focus:ring-primary-900 rounded-lg text-sm p-2.5"
             aria-label="Close"
             onClick$={closeToast}
           >

@@ -33,7 +33,7 @@ export default component$(() => {
         <LangLauncher />
       </head>
       <body
-        class="bg-primary dark:bg-primary-dark text-primary-dark dark:text-primary font-inter tracking-tight antialiased"
+        class="bg-primary dark:bg-primary-dark bg-[url('https://flowbite.s3.amazonaws.com/docs/jumbotron/hero-pattern.svg')] dark:bg-[url('https://flowbite.s3.amazonaws.com/docs/jumbotron/hero-pattern-dark.svg')] text-primary-dark dark:text-primary font-inter tracking-tight antialiased"
         lang="en"
       >
         <ToastStack>

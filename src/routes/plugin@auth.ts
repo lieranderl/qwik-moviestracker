@@ -4,13 +4,13 @@ import Google from "@auth/core/providers/google";
 import type { Provider } from "@auth/core/providers";
 
 export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
-  serverAuth$(() => ({
-    secret: import.meta.env.AUTH_SECRET,
+  serverAuth$(({env}) => ({
+    secret: env.get("AUTH_SECRET"),
     trustHost: true,
     providers: [
       Google({
-        clientId: import.meta.env.GOOGLE_ID!,
-        clientSecret: import.meta.env.GOOGLE_SECRET!,
+        clientId: env.get("GOOGLE_ID")!,
+        clientSecret: env.get("GOOGLE_SECRET")!,
       }),
     ] as Provider[],
     callbacks: {

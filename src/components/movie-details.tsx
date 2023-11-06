@@ -37,21 +37,23 @@ export const MovieDetails = component$(
   ({ movie, recMovies, colMovies, lang }: MovieDetailsProps) => {
     return (
       <div class="pt-[20vh] lg:mx-20 xl:mx-40 font-normal">
-        <section class="my-4">
-          <h2 class="text-5xl font-extrabold my-1">
-            {movie.title}{" "}
-            {movie.release_date && (
-              <span class="text-3xl font-bold italic">
-                ({formatYear(movie.release_date)})
-              </span>
-            )}
+        <section class="mb-4">
+          <h2 class="text-5xl font-extrabold me-1">
+            <div class="flex items-end">
+              {movie.title}
+              {movie.release_date && (
+                <span class="text-2xl font-bold italic my-1 ms-2">
+                  ({formatYear(movie.release_date)})
+                </span>
+              )}
+            </div>
           </h2>
           {movie.original_title && (
             <div class="text-xl">{movie.original_title}</div>
           )}
         </section>
 
-        <section class="my-4 text-lg">
+        <section class="mb-4 text-lg">
           <div class="flex flex-wrap items-center">
             {movie.vote_average! > 0 && (
               <div class="flex items-center me-4">
@@ -83,7 +85,7 @@ export const MovieDetails = component$(
           </div>
         </section>
 
-        <section class="my-4 flex">
+        <section class="mb-4 flex">
           {movie.videos!.results!.length > 0 && (
             <div class="mr-2">
               <TrailersModal videos={movie.videos!.results} />
@@ -139,7 +141,7 @@ export const MovieDetails = component$(
           </ul>
         </section>
 
-        <section class="my-1 text-md">
+        <section class="text-md">
           {movie.production_companies && (
             <div>
               {movie.production_companies.map((c) => c.name).join(", ")}
@@ -147,7 +149,7 @@ export const MovieDetails = component$(
           )}
         </section>
 
-        <section class="my-1 flex flex-wrap text-md">
+        <section class="flex flex-wrap text-md">
           {movie.budget! > 0 && (
             <div class="me-4 ">
               <span class="me-2">{langBudget(lang)}:</span>
@@ -164,7 +166,7 @@ export const MovieDetails = component$(
 
         <ExternalIds external_ids={movie.external_ids} type={"tv"} />
 
-        <section class="my-8">
+        <section class="mb-6">
           <div>{movie.overview}</div>
           {movie.tagline && (
             <blockquote class="text-sm italic font-semibold text-right">

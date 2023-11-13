@@ -265,7 +265,7 @@ export default component$(() => {
                         });
                       }
                     }}
-                    class="absolute cursor-pointer absolute top-3.5 -right-2.5 z-10 text-primary rounded-full transition-scale scale-75 duration-300 ease-in-out hover:scale-100"
+                    class="absolute cursor-pointer top-4 -right-1 z-10 text-primary rounded-full transition-scale scale-[90%] duration-300 ease-in-out hover:scale-[110%]"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -282,9 +282,35 @@ export default component$(() => {
                       />
                     </svg>
                   </div>
-                  <a href={`magnet:?xt=urn:btih:${t.hash}`}>
+
+                  <a
+                    href={`magnet:?xt=urn:btih:${t.hash}`}
+                    target="_blank"
+                    class="absolute cursor-pointer bg-primary dark:bg-primary-dark top-[1.2rem] left-0 z-10 rounded-full border-2 transition-scale  scale-[85%] duration-300 ease-in-out hover:scale-[105%]"
+                  >
+                    <svg
+                      class="w-8 fill-primary-dark dark:fill-primary"
+                      viewBox="0 0 1024 1024"
+                      version="1.1"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M871.6288 549.96992a20.45952 20.45952 0 0 0 0-28.95872l-95.9488-95.96928a20.48 20.48 0 0 0-28.95872 0l-204.36992 204.36992c-16.36352 15.872-37.33504 24.61696-59.04384 24.61696-19.18976 0-36.88448-7.12704-49.80736-20.04992-28.40576-28.40576-26.23488-77.33248 4.73088-109.01504l126.976-126.99648 77.18912-77.18912a20.45952 20.45952 0 0 0 0-28.95872l-95.9488-95.96928a20.48 20.48 0 0 0-14.49984-6.00064h-0.02048a20.56192 20.56192 0 0 0-14.49984 6.0416l-77.14816 77.16864-2.31424 2.31424-134.94272 134.9632c-102.62528 104.98048-107.64288 268.86144-11.18208 365.32224 44.8512 44.8512 105.71776 69.55008 171.37664 69.55008 71.35232 0 139.93984-28.40576 193.024-79.89248 1.24928-1.18784 213.23776-213.1968 215.38816-215.3472zM531.98848 239.3088l66.99008 66.99008-48.25088 48.2304-66.99008-66.99008 48.25088-48.2304z m95.80544 496.5376c-45.48608 44.11392-103.936 68.42368-164.57728 68.42368-54.72256 0-105.30816-20.43904-142.41792-57.56928-80.65024-80.65024-75.48928-218.70592 11.4688-307.63008l122.53184-122.55232 66.99008 66.99008-112.7424 112.76288c-46.67392 47.7184-48.68096 122.49088-4.5056 166.7072 20.66432 20.66432 48.64 32.03072 78.76608 32.03072 32.39936 0 63.50848-12.84096 87.77728-36.39296l112.7424-112.7424 66.99008 66.99008-123.02336 122.9824z m151.98208-151.94112l-66.99008-66.99008 48.41472-48.41472 66.99008 66.99008-48.41472 48.41472z"
+                        fill=""
+                      />
+                    </svg>
+                  </a>
+
+                  <a
+                    href={
+                      m.movie.seasons
+                        ? "/tv/" + m.movie.id
+                        : "/movie/" + m.movie.id
+                    }
+                    target="_blank"
+                  >
                     <MediaCard
-                      title={t.title}
+                      title={m.movie.title || m.movie.name || t.title}
                       width={300}
                       rating={m.movie ? m.movie.vote_average : null}
                       year={

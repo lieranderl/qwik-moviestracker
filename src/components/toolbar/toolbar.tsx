@@ -15,7 +15,10 @@ export const Toolbar = component$(() => {
     <nav class="block bg-opacity-50 dark:bg-opacity-50 backdrop-blur-sm fixed z-10">
       <div class="w-screen flex flex-wrap items-center justify-between p-4 bg-opacity-100">
         <a href={paths.index(resource.value.lang)} class="flex items-center">
-          <MovieIcon />
+          <div class="me-2">
+            <MovieIcon />
+          </div>
+
           <span class="self-center text-2xl font-semibold whitespace-nowrap">
             Moviestracker
           </span>

@@ -3,7 +3,7 @@ import { component$ } from "@builder.io/qwik";
 export const MovieIcon = component$(() => {
   return (
     <svg
-      class="w-10 h-10 fill-primary-dark dark:fill-primary me-2"
+      class="w-10 h-10 fill-primary-dark dark:fill-primary"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"

@@ -2,6 +2,8 @@ import { component$, Slot } from "@builder.io/qwik";
 import { routeLoader$, type RequestHandler } from "@builder.io/qwik-city";
 import type { Session } from "@auth/core/types";
 import { Toolbar } from "~/components/toolbar/toolbar";
+import mongoClientPromise from "./auth/mongodbinit";
+import { ObjectId } from 'bson';
 // import { checkAuth } from "~/services/firestore-admin";
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
@@ -17,8 +19,9 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 
 //auth guard
 export const onRequest: RequestHandler = (event) => {
-  const session: Session | null = event.sharedMap.get("session");
-  if (!session || new Date(session.expires) < new Date()) {
+  const session: Session | null = event.sharedMap.get("session"); 
+  console.log(session)
+  if (!session || new Date(session.expires) < new Date() || session.error) {
     throw event.redirect(302, `/auth`);
   }
 };
@@ -29,10 +32,11 @@ export const useQueryParamsLoader = routeLoader$(async (event) => {
 });
 
 export default component$(() => {
+  
   return (
     <>
-      <Toolbar />
+            <Toolbar />
       <Slot />
-    </>
+          </>
   );
 });

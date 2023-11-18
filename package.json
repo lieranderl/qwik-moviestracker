@@ -46,12 +46,15 @@
     "vite-tsconfig-paths": "4.2.1"
   },
   "dependencies": {
+    "@auth/mongodb-adapter": "^2.0.4",
     "@modular-forms/qwik": "^0.21.0",
     "@qwikest/icons": "^0.0.13",
     "@unpic/qwik": "^0.0.33",
+    "bson": "^6.2.0",
     "dotenv": "^16.3.1",
     "firebase": "^10.6.0",
     "flowbite": "^2.1.1",
+    "mongodb": "^6.3.0",
     "sharp": "^0.32.6",
     "uuid": "^9.0.1"
   }

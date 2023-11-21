@@ -1,4 +1,4 @@
-import mongoClientPromise from "~/routes/auth/mongodbinit";
+import mongoClientPromise from "~/utils/mongodbinit";
 import type { MovieMongo } from "./models";
 
 

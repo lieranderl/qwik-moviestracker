@@ -7,7 +7,7 @@ import {
 import { RouterHead } from "./components/router-head/router-head";
 
 import "./global.css";
-import { DarkThemeLauncher } from "./utils/darkThemeLauncher";
+// import { DarkThemeLauncher } from "./utils/darkThemeLauncher";
 import { ToastStack } from "./components/toast/toastStack";
 import { LangLauncher } from "./utils/langLauncher";
 
@@ -31,7 +31,7 @@ export default component$(() => {
           nonce=""
         ></script>
         <RouterHead />
-        <DarkThemeLauncher />
+        {/* <DarkThemeLauncher /> */}
         <LangLauncher />
       </head>
       <body

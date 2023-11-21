@@ -56,6 +56,7 @@
     "flowbite": "^2.1.1",
     "mongodb": "^6.3.0",
     "sharp": "^0.32.6",
+    "typescript-cookie": "^1.0.6",
     "uuid": "^9.0.1",
     "valibot": "^0.21.0"
   }

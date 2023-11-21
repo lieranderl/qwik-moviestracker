@@ -30,11 +30,16 @@ module.exports = {
         inter: ["Inter", "sans-serif"],
       },
       animation: {
+        rotate45: "rotate45 0.5s ease-out",
         "slide-in-right": "slide_in_right 0.5s",
         "slide-out-right": "slide_out_right 0.5s",
         "progress-slide": "progress_slide var(--bar-duration) linear",
       },
       keyframes: {
+        rotate45: {
+          "0%": { opacity: 0.1, transform: "rotate(45deg)" },
+          "100%": { opacity: 1, transform: "rotate(0deg)" },
+        },
         slide_in_right: {
           "0%": {
             transform: "translate3d(110%, 0, 0);",

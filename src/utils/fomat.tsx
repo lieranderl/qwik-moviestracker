@@ -2,7 +2,7 @@ import type { CastCrew } from "~/services/models";
 import { languages } from "./languages";
 
 export function formatDate(date: string, lang: string) {
-  return new Date(date).toLocaleDateString(lang, {
+    return new Date(date).toLocaleDateString(lang, {
     day: "numeric",
     month: "long",
     year: "numeric",

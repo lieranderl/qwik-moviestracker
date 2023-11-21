@@ -4,7 +4,7 @@ import type { GoogleProfile } from "@auth/core/providers/google";
 import Google from "@auth/core/providers/google";
 import GitHub from "@auth/core/providers/github";
 import type { Provider } from "@auth/core/providers";
-import mongoClientPromise from "./auth/mongodbinit";
+import mongoClientPromise from "../utils/mongodbinit";
 
 
 export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
@@ -25,7 +25,7 @@ export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
           return {
             id: profile.sub,
             theme: "auto", // custom attribute
-            language: profile.language,
+            language: "en-US",
             image: profile.picture,
             emailVerified: profile.email_verified,
             ...profile,
@@ -44,25 +44,31 @@ export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
             email: profile.email,
             image: profile.avatar_url,
             theme: "auto", // custom attribute
-            language: profile.language,
+            language: "en-US",
           };
         }
       })
     ] as Provider[],
     callbacks: {
-
       async session({ session, user }) {
+        // console.log("session:", session, user)
         session.id = user.id
+        if (user.theme) {
+          session.theme = user.theme
+        }
+        if (user.language) {
+          session.language = user.language
+        }
+        
         return session
       },
- 
       async signIn({ account, profile }) {
         if (account && profile) {
           if (account.provider === "google") {
             const p = profile as GoogleProfile;
             return p.email_verified && p.email.endsWith("@gmail.com")
           }
-          if (account.provider === "github") {            
+          if (account.provider === "github") {
             return true
           }
         }
@@ -75,5 +81,15 @@ declare module "@auth/core/types" {
   interface Session {
     error?: "RefreshAccessTokenError"
     id?: string
+    theme?: string
+    language?: string
+  }
+  
+}
+
+declare module "@auth/core/adapters" {
+  interface AdapterUser {
+    theme?: string
+    language?: string
   }
 }

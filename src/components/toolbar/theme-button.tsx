@@ -1,53 +1,111 @@
-import { component$, $, useVisibleTask$, useSignal } from "@builder.io/qwik";
-import { HiMoonOutline, HiSunOutline } from "@qwikest/icons/heroicons";
-import { ButtonPrimary, ButtonSize, ButtonType } from "../button-primary";
+import {
+  component$,
+  $,
+  useVisibleTask$,
+  useSignal,
+  useTask$,
+} from "@builder.io/qwik";
 
-export const ThemeButton = component$(() => {
-  const themeSig = useSignal(
-    (typeof window !== "undefined" && window.localStorage.theme) || undefined
-  );
+import { server$ } from "@builder.io/qwik-city";
+import { ObjectId } from "bson";
+import { useAuthSession } from "~/routes/plugin@auth";
+import { usersCol } from "~/utils/mongodbinit";
+import { useThemeLoader } from "~/routes/layout";
+import { ThemeIconTooltip } from "./toggle-theme-icons";
+import { setCookie } from "typescript-cookie";
 
-  useVisibleTask$(() => {
-    themeSig.value = document.documentElement.classList.contains("dark")
-      ? "dark"
-      : "light";
+interface ThemeToggleBtnProps {
+  size?: "xs" | "sm" | "md" | "lg";
+}
+
+export const ThemeButton = component$(({ size }: ThemeToggleBtnProps) => {
+  const themeLoader = useThemeLoader();
+  const THEME_MODES = { LIGHT: "light", DARK: "dark", AUTO: "auto" };
+  const selectedIcon = useSignal(THEME_MODES.AUTO);
+  const selectedTheme = useSignal(themeLoader.value.theme);
+  const session = useAuthSession();
+
+  const updateThemeDb = server$(async () => {
+    await usersCol.updateOne(
+      { _id: new ObjectId(session.value?.id) },
+      { $set: { theme: selectedIcon.value } }
+    );
+  });
+
+  // get theme from themeLoader
+  useTask$(async () => {
+    if (themeLoader.value.theme === THEME_MODES.DARK) {
+      selectedTheme.value = THEME_MODES.DARK;
+      selectedIcon.value = THEME_MODES.DARK;
+    } else if (themeLoader.value.theme === THEME_MODES.LIGHT) {
+      selectedTheme.value = THEME_MODES.LIGHT;
+      selectedIcon.value = THEME_MODES.LIGHT;
+    } else if (themeLoader.value.theme === THEME_MODES.AUTO) {
+      selectedIcon.value = THEME_MODES.AUTO;
+    }
+  });
+
+  useVisibleTask$(async () => {
     window
       .matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", (e) => {
-        const theme = e.matches ? "dark" : "light";
-        localStorage.setItem("theme", theme);
-        updateTheme();
+        if (selectedIcon.value === THEME_MODES.AUTO) {
+          if (e.matches) {
+            selectedTheme.value = THEME_MODES.DARK;
+          } else {
+            selectedTheme.value = THEME_MODES.LIGHT;
+          }
+        }
       });
   });
 
-  const updateTheme = $(() => {
-    switch (themeSig.value) {
-      case "dark":
-        document.documentElement.classList.remove("dark");
-        themeSig.value = window.localStorage.theme = "light";
-        break;
-      default:
-        document.documentElement.classList.add("dark");
-        themeSig.value = window.localStorage.theme = "dark";
-        break;
+  // track selectedTheme changes
+  useVisibleTask$(async ({ track }) => {
+    track(() => {
+      selectedTheme.value;
+    });
+    if (selectedTheme.value === THEME_MODES.DARK) {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+      document.documentElement.classList.remove("auto");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    
+  });
+
+  // track selectedIcon changes
+  useVisibleTask$(async ({ track }) => {
+    track(() => {
+      selectedIcon.value;
+    });
+    setCookie("theme", selectedIcon.value);
+    updateThemeDb();
+  });
+
+  const toggleTheme = $(async () => {
+    if (selectedIcon.value === THEME_MODES.AUTO) {
+      selectedTheme.value = THEME_MODES.DARK;
+      selectedIcon.value = THEME_MODES.DARK;
+    } else if (selectedIcon.value === THEME_MODES.DARK) {
+      selectedTheme.value = THEME_MODES.LIGHT;
+      selectedIcon.value = THEME_MODES.LIGHT;
+    } else if (selectedIcon.value === THEME_MODES.LIGHT) {
+      selectedIcon.value = THEME_MODES.AUTO;
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        selectedTheme.value = THEME_MODES.DARK;
+      } else {
+        selectedTheme.value = THEME_MODES.LIGHT;
+      }
     }
   });
 
   return (
-    <ButtonPrimary
-      size={ButtonSize.icon}
-      type={ButtonType.button}
-      onClick={updateTheme}
-    >
-      {themeSig.value === "dark" ? (
-        <div class="text-xl fill-primary-dark dark:fill-primary">
-          <HiMoonOutline />
-        </div>
-      ) : (
-        <div class="text-xl fill-primary-dark dark:fill-primary">
-          <HiSunOutline />
-        </div>
-      )}
-    </ButtonPrimary>
+    <div onClick$={() => toggleTheme()}>
+      <ThemeIconTooltip
+        selector={selectedIcon.value}
+        size={size}
+      ></ThemeIconTooltip>
+    </div>
   );
 });

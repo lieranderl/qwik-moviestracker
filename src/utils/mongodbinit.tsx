@@ -8,6 +8,7 @@ if (!process.env.MONGO_URI) {
 
 const mongoclient = new MongoClient(process.env.MONGO_URI)
 const mongoClientPromise = mongoclient.connect()
+export const usersCol = (await mongoClientPromise).db("movies").collection("users");
 
 // Export a module-scoped MongoClient promise. By doing this in a
 // separate module, the client can be shared across functions.

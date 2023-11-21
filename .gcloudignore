@@ -7,3 +7,5 @@
 !/server/**
 !/Dockerfile
 !/public/**
+!/cloudbuild.yaml
+```

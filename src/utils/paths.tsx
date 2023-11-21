@@ -32,7 +32,7 @@ export const categoryToTitle = (
     if (category === "trending")
       return `${langAll(lang)} ${langTrendingMovies(lang)}`;
     return `${langAll(lang)} ${langLatestMovies(lang)}`;
-  } else if (type === "tv") {
+  } else {
     if (category === "trending")
       return `${langAll(lang)}  ${langTrengingTVShows(lang)}`;
     if (category === "toprated")

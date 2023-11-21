@@ -9,7 +9,7 @@ import {
 import { server$ } from "@builder.io/qwik-city";
 import { ObjectId } from "bson";
 import { useAuthSession } from "~/routes/plugin@auth";
-import { usersCol } from "~/utils/mongodbinit";
+import mongoClientPromise from "~/utils/mongodbinit";
 import { useThemeLoader } from "~/routes/layout";
 import { ThemeIconTooltip } from "./toggle-theme-icons";
 import { setCookie } from "typescript-cookie";
@@ -23,8 +23,10 @@ export const ThemeButton = component$(({ size }: ThemeToggleBtnProps) => {
   const THEME_MODES = { LIGHT: "light", DARK: "dark" };
   const selectedIcon = useSignal(themeLoader.value.theme);
   const session = useAuthSession();
-
+  
+  
   const updateThemeDb = server$(async () => {
+    const usersCol = (await mongoClientPromise).db("movies").collection("users");  
     await usersCol.updateOne(
       { _id: new ObjectId(session.value?.id) },
       { $set: { theme: selectedIcon.value } }

@@ -36,6 +36,7 @@ export const getMoviesMongo = async ({
   const movies: MovieMongo[] = [];
   for await (const m of cursor) {
     const { _id, ...mymovie } = m;
+    _id
     if (language) {
       if (language == "en-US") {
         mymovie.title = mymovie.original_title;

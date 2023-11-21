@@ -17,15 +17,32 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 
 //auth guard
 export const onRequest: RequestHandler = (event) => {
+  event.cacheControl({
+    staleWhileRevalidate: 60 * 60 * 24 * 7,
+    // Max once every 5 seconds, revalidate on the server to get a fresh version of this page
+    maxAge: 5,
+  }); // disable caching
+
   const session: Session | null = event.sharedMap.get("session");
-  if (!session || new Date(session.expires) < new Date()) {
+  if (!session || new Date(session.expires) < new Date() || session.error) {
     throw event.redirect(302, `/auth`);
   }
 };
 
 export const useQueryParamsLoader = routeLoader$(async (event) => {
-  const lang = event.query.get("lang") || "en-US";
-  return { lang };
+    const lang = event.query.get("lang") || "en-US";
+    return { lang };
+});
+
+export const useThemeLoader = routeLoader$(async (event) => {
+  const session = event.sharedMap.get("session");
+  const theme = event.query.get("theme");
+  if (theme) {
+    return { theme: theme };
+  } else if (session && session.theme) {
+    return { theme: session.theme };
+  }
+  return { theme: "auto" };
 });
 
 export default component$(() => {

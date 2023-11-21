@@ -1,12 +1,16 @@
 import { component$ } from "@builder.io/qwik";
 import { routeLoader$, type DocumentHead } from "@builder.io/qwik-city";
-import { Timestamp } from "firebase/firestore";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
-import { DbType } from "~/services/firestore";
-import type { MovieFirestore, MovieShort, TvShort } from "~/services/models";
+import type {
+  MediaShort,
+  MovieMongo,
+  MovieShort,
+  TvShort,
+} from "~/services/models";
 import { MediaType } from "~/services/models";
-import { getFirebaseMovies, getTrendingMedia } from "~/services/tmdb";
+import { DbType, getMoviesMongo } from "~/services/mongoatlas";
+import { getTrendingMedia, withBackdrop } from "~/services/tmdb";
 import { formatYear } from "~/utils/fomat";
 import {
   langLatestMovies,
@@ -32,18 +36,18 @@ export const useContentLoader = routeLoader$(async (event) => {
         type: MediaType.Tv,
         needbackdrop: needbackdrop,
       }),
-      getFirebaseMovies({
-        entries: 20,
-        language: lang,
-        startTime: Timestamp.now().toMillis(),
-        db_name: DbType.LastMovies,
-        sortDirection: "desc",
-        need_backdrop: needbackdrop,
-      }),
+      withBackdrop(
+        (await getMoviesMongo({
+          entries_on_page: 20,
+          language: lang,
+          dbName: DbType.LastMovies,
+          page: 1,
+        })) as MediaShort[]
+      ),
     ]);
     const movies = m as MovieShort[];
     const tv = t as TvShort[];
-    const torMovies = tm as MovieFirestore[];
+    const torMovies = tm as MovieMongo[];
     return {
       movies,
       tv,

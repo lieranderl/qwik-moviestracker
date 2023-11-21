@@ -1,51 +1,19 @@
-/* eslint-disable qwik/valid-lexical-scope */
-import {
-  component$,
-  $,
-  useSignal,
-  useStore,
-  useVisibleTask$,
-} from "@builder.io/qwik";
+import { component$, $, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, server$ } from "@builder.io/qwik-city";
-import { Timestamp } from "firebase/firestore";
 import { ButtonPrimary, ButtonSize } from "~/components/button-primary";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
-import type { MovieFirestore, MovieShort } from "~/services/models";
+import type { MediaShort, MovieMongo, MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
-import { getFirebaseMovies, getTrendingMedia } from "~/services/tmdb";
+import { getMoviesMongo } from "~/services/mongoatlas";
+import { getTrendingMedia } from "~/services/tmdb";
 import { categoryToDb, categoryToTitle, paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
 
-  if (
-    event.params.name === "updated" ||
-    event.params.name === "hdr10" ||
-    event.params.name === "dolbyvision"
-  ) {
-    try {
-      const [movies] = await Promise.all([
-        getFirebaseMovies({
-          entries: 20,
-          language: lang,
-          startTime: Timestamp.now().toMillis(),
-          db_name: categoryToDb(event.params.name),
-          sortDirection: "desc",
-          need_backdrop: false,
-        }),
-      ]);
-      return {
-        movies: movies as MovieFirestore[],
-        db: categoryToDb(event.params.name),
-        category: event.params.name,
-        lang: lang,
-      };
-    } catch {
-      throw event.redirect(302, paths.notFound(lang));
-    }
-  } else {
+  if (event.params.name === "trending") {
     try {
       const res = await getTrendingMedia({
         page: 1,
@@ -62,85 +30,101 @@ export const useContentLoader = routeLoader$(async (event) => {
     } catch (error) {
       throw event.redirect(302, paths.notFound(lang));
     }
+  } else {
+    try {
+      console.log("get mongo movies");
+      const [movies] = await Promise.all([
+        getMoviesMongo({
+          entries_on_page: 20,
+          dbName: categoryToDb(event.params.name),
+          page: 1,
+          language: lang,
+        }),
+      ]);
+      return {
+        movies: movies as MovieMongo[],
+        db: categoryToDb(event.params.name),
+        category: event.params.name,
+        lang: lang,
+      };
+    } catch (error) {
+      console.log(error);
+      throw event.redirect(302, paths.notFound(lang));
+    }
   }
 });
 
 export default component$(() => {
   const resource = useContentLoader();
-  const firebaseStore = useStore({
-    moviesLastTimeFound: Timestamp.now().toMillis(),
-  });
-  const moviesSig = useStore(resource.value.movies as MovieFirestore[]);
+  const moviesSig = useSignal(resource.value.movies as MediaShort[]);
   const isloadingMovies = useSignal(false);
   const pageSig = useSignal(1);
-
-  useVisibleTask$((ctx) => {
-    ctx.track(() => {
-      moviesSig.length;
-    });
-    if (
-      resource.value.category === "updated" ||
-      resource.value.category === "hdr10" ||
-      resource.value.category === "dolbyvision"
-    ) {
-      if (moviesSig.length === 0) return;
-      firebaseStore.moviesLastTimeFound =
-        moviesSig[moviesSig.length - 1].lastTimeFound!;
-    } else {
-      pageSig.value = pageSig.value + 1;
-    }
-  });
+  const showLoadingButton = useSignal(true);
 
   const getNewMovies = $(async () => {
     isloadingMovies.value = true;
-
-    const moviesFunc = server$(function () {
-      if (
-        resource.value.category === "updated" ||
-        resource.value.category === "hdr10" ||
-        resource.value.category === "dolbyvision"
-      ) {
-        return getFirebaseMovies({
-          entries: 20,
-          language: resource.value.lang,
-          startTime: firebaseStore.moviesLastTimeFound,
-          db_name: resource.value.db,
-          sortDirection: "desc",
-          need_backdrop: false,
-        });
-      } else {
-        return getTrendingMedia({
+    moviesSig.value = (await server$(async () => {
+      if (resource.value.category === "trending") {
+        const m = (await getTrendingMedia({
           page: pageSig.value,
           language: resource.value.lang,
           type: MediaType.Movie,
           needbackdrop: false,
-        });
+        })) as MediaShort[];
+        moviesSig.value.push(...m);
+        return moviesSig.value;
+      } else {
+        const m = (await getMoviesMongo({
+          entries_on_page: 20,
+          dbName: categoryToDb(resource.value.category),
+          page: pageSig.value,
+          language: resource.value.lang,
+        })) as MediaShort[];
+        moviesSig.value.push(...m);
+        return moviesSig.value;
       }
-    });
-
-    const movies = (await moviesFunc()) as MovieFirestore[];
-    moviesSig.push(...movies);
-    console.log(moviesSig.length);
+    })()) as MediaShort[];
+    if (moviesSig.value.length % 20 !== 0) {
+      showLoadingButton.value = false;
+    }
     isloadingMovies.value = false;
+  });
+
+  useVisibleTask$(async ({ track }) => {
+    track(() => {
+      pageSig.value;
+    });
+    console.log("pageSig.value", pageSig.value);
+    if (pageSig.value > 1) {
+      getNewMovies();
+    }
   });
 
   return (
     <div class="container mx-auto px-4 pt-[64px]">
       <MediaGrid
-        title={categoryToTitle(resource.value.category, MediaType.Movie, resource.value.lang)}
+        title={categoryToTitle(
+          resource.value.category,
+          MediaType.Movie,
+          resource.value.lang
+        )}
       >
-        {moviesSig.length > 0 &&
-          moviesSig.map((m) => (
+        {moviesSig.value.length > 0 &&
+          moviesSig.value.map((m) => (
             <>
               <a href={paths.media(MediaType.Movie, m.id, resource.value.lang)}>
                 <MediaCard
                   title={m.title ? m.title : ""}
                   width={300}
                   rating={m.vote_average ? m.vote_average : 0}
-                  year={parseInt(
-                    m.release_date ? m.release_date.substring(0, 4) : "0",
-                    10
-                  )}
+                  year={
+                    m.year
+                      ? parseInt(m.year)
+                      : parseInt(
+                          m.release_date ? m.release_date.substring(0, 4) : "0",
+                          10
+                        )
+                  }
                   picfile={m.poster_path}
                   isPerson={false}
                   isHorizontal={false}
@@ -150,12 +134,16 @@ export default component$(() => {
           ))}
       </MediaGrid>
       <div class="flex justify-center my-4">
-        <ButtonPrimary
-          text="Load more"
-          onClick={getNewMovies}
-          isLoading={isloadingMovies.value}
-          size={ButtonSize.lg}
-        />
+        {showLoadingButton.value && (
+          <ButtonPrimary
+            text="Load more"
+            onClick={$(() => {
+              pageSig.value = pageSig.value + 1;
+            })}
+            isLoading={isloadingMovies.value}
+            size={ButtonSize.lg}
+          />
+        )}
       </div>
     </div>
   );

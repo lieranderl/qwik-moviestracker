@@ -26,7 +26,7 @@ export const Toolbar = component$(() => {
 
         <div class="flex items-center">
           <div class="flex items-center md:order-2 md:mx-4">
-            <ThemeButton />
+            <ThemeButton size="sm"/>
             <UserMenu />
             <BurgerButton>
               <ToolbarLinks />

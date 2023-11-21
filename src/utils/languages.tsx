@@ -558,5 +558,17 @@ export const langSignWithGoogle = (lang: string) => {
   }
 };
 
+export const langSignWithGithub = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Sign in with Github";
+    case "ru-RU":
+      return "Войти с помощью Github";
+    default:
+      return "Войти с помощью Github";
+  }
+};
+
+
 
 

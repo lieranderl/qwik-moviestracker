@@ -1,13 +1,12 @@
 import { component$ } from "@builder.io/qwik";
 
 import { routeLoader$, type DocumentHead } from "@builder.io/qwik-city";
-import { Timestamp } from "firebase/firestore";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
-import { DbType } from "~/services/firestore";
-import type { MovieShort } from "~/services/models";
+import type { MediaShort, MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
-import { getFirebaseMovies, getTrendingMedia } from "~/services/tmdb";
+import { DbType, getMoviesMongo } from "~/services/mongoatlas";
+import { getTrendingMedia, withBackdrop } from "~/services/tmdb";
 import {
   langLatestDolbyVisionMovies,
   langLatestHDR10Movies,
@@ -26,30 +25,24 @@ export const useContentLoader = routeLoader$(async (event) => {
         type: MediaType.Movie,
         needbackdrop: true,
       }),
-      getFirebaseMovies({
-        entries: 20,
+      withBackdrop(await getMoviesMongo({
+        page: 1,
+        entries_on_page: 20,
         language: lang,
-        startTime: Timestamp.now().toMillis(),
-        db_name: DbType.LastMovies,
-        sortDirection: "desc",
-        need_backdrop: true,
-      }),
-      getFirebaseMovies({
-        entries: 20,
+        dbName: DbType.LastMovies,
+      }) as MediaShort[]),
+      withBackdrop(await getMoviesMongo({
+        page: 1,
+        entries_on_page: 20,
         language: lang,
-        startTime: Timestamp.now().toMillis(),
-        db_name: DbType.HDR10,
-        sortDirection: "desc",
-        need_backdrop: true,
-      }),
-      getFirebaseMovies({
-        entries: 20,
+        dbName: DbType.HDR10,
+      }) as MediaShort[]),
+      withBackdrop(await getMoviesMongo({
+        page: 1,
+        entries_on_page: 20,
         language: lang,
-        startTime: Timestamp.now().toMillis(),
-        db_name: DbType.DV,
-        sortDirection: "desc",
-        need_backdrop: true,
-      }),
+        dbName: DbType.DV,
+      }) as MediaShort[]),
     ]);
     const movies = m as MovieShort[];
     return {

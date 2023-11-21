@@ -2,10 +2,6 @@ import mongoClientPromise from "~/utils/mongodbinit";
 import type { MovieMongo } from "./models";
 
 
-if (!process.env.MONGO_URI) {
-  throw new Error('Invalid/Missing environment variable: "MONGO_URI"');
-}
-
 const moviesDB = (await mongoClientPromise).db("movies");
 
 export enum DbType {

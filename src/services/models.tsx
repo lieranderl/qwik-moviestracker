@@ -1,4 +1,3 @@
-import type { Timestamp } from "firebase/firestore";
 
 export type MovieShort = {
   adult?: boolean;
@@ -358,13 +357,13 @@ export type MovieFull = MovieDetails & MediaAppended;
 export type TvFull = TvDetails & MediaAppended;
 export type PersonFull = PersonDetails & MediaAppended;
 export type MediaFull = MovieFull & TvFull & PersonFull;
-export type MediaShort = MovieShort & TvShort & PersonShort;
+export type MediaShort = MovieShort & TvShort & PersonShort & MovieMongoAttribs;
 export type MediaDetails = MovieDetails | TvDetails | PersonDetails;
 
 export type MediaShortStrict<
   T extends MediaType.Movie | MediaType.Tv | MediaType.Person
 > = T extends MediaType.Movie
-  ? MovieFirestore
+  ? MovieMongo
   : T extends MediaType.Tv
   ? TvShort
   : PersonShort;
@@ -376,14 +375,13 @@ export type MediaCollection<T> = {
   total_results: number;
 };
 
-export type MovieFirestoreAttribs = {
-  Year: string;
-  LastTimeFound?: number | Timestamp;
-  lastTimeFound?: number;
+export type MovieMongoAttribs = {
+  year: string;
+  lasttimefound?: Date
   first_air_date?: string;
 };
 
-export type MovieFirestore = MovieShort & MovieFirestoreAttribs;
+export type MovieMongo = MovieShort & MovieMongoAttribs;
 
 export type Torrent = {
   Name: string;

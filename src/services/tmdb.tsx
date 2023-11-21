@@ -1,11 +1,10 @@
-import { getMoviesFirebase } from "./firestore";
 import { formatYear } from "~/utils/fomat";
-import type { Timestamp } from "firebase/firestore";
 import type {
   Collection,
   Images,
   MediaCollection,
   MediaFull,
+  MediaShort,
   MediaShortStrict,
   PersonMedia,
 } from "./models";
@@ -99,58 +98,20 @@ export const getMediaBackdrop = async ({
   return "";
 };
 
-type getFirebaseMoviesType = {
-  language: string;
-  entries: number;
-  startTime: number;
-  db_name: string;
-  sortDirection?: "asc" | "desc";
-  need_backdrop: boolean;
-};
-
-export const getFirebaseMovies = async ({
-  entries,
-  startTime,
-  language,
-  db_name,
-  sortDirection,
-  need_backdrop,
-}: getFirebaseMoviesType) => {
-  let movies = await getMoviesFirebase({
-    page: entries,
-    dbName: db_name,
-    startTime: startTime,
-  });
-  if (movies.length == 0) return movies;
+export const withBackdrop = async (movies: MediaShort[]) => {
   movies = await Promise.all(
     movies.map(async (item) => {
-      if (need_backdrop) {
+      if (item.backdrop_path == "") {
         item.backdrop_path = await getMediaBackdrop({
           id: item.id,
           media_type: MediaType.Movie,
           langString: "en",
         });
       }
-      if (language == "en-US") {
-        item.title = item.original_title;
-      }
-      item.lastTimeFound = (item.LastTimeFound! as Timestamp).toMillis();
-      item.LastTimeFound = (item.LastTimeFound! as Timestamp).toMillis();
       return item;
     })
   );
-
-  if (sortDirection === "asc") {
-    movies = movies.sort(
-      (a, b) => (a.lastTimeFound! as number) - (b.lastTimeFound! as number)
-    );
-    return movies;
-  } else {
-    movies = movies.sort(
-      (a, b) => (b.lastTimeFound! as number) - (a.lastTimeFound! as number)
-    );
-    return movies;
-  }
+  return movies;
 };
 
 type GetMedias = {

@@ -87,7 +87,7 @@ export const MediaCard = component$(
                     colorClass,
                   ]}
                 >
-                  {rating.toFixed(1)}
+                  {typeof rating === "string" ? rating : rating.toFixed(1)}
                 </span>
               )}
               {year > 0 && (

@@ -59,6 +59,7 @@ export default component$(() => {
   const moviesSig = useSignal(resource.value.movies as MediaShort[]);
   const isloadingMovies = useSignal(false);
   const pageSig = useSignal(1);
+  const showLoadingButton = useSignal(true);
 
   const getNewMovies = $(async () => {
     isloadingMovies.value = true;
@@ -73,14 +74,19 @@ export default component$(() => {
         moviesSig.value.push(...m);
         return moviesSig.value;
       } else {
-        return getMoviesMongo({
+        const m = (await getMoviesMongo({
           entries_on_page: 20,
           dbName: categoryToDb(resource.value.category),
           page: pageSig.value,
           language: resource.value.lang,
-        });
+        })) as MediaShort[];
+        moviesSig.value.push(...m);
+        return moviesSig.value;
       }
     })()) as MediaShort[];
+    if (moviesSig.value.length % 20 !== 0) {
+      showLoadingButton.value = false;
+    }
     isloadingMovies.value = false;
   });
 
@@ -128,14 +134,16 @@ export default component$(() => {
           ))}
       </MediaGrid>
       <div class="flex justify-center my-4">
-        <ButtonPrimary
-          text="Load more"
-          onClick={$(() => {
-            pageSig.value = pageSig.value + 1;
-          })}
-          isLoading={isloadingMovies.value}
-          size={ButtonSize.lg}
-        />
+        {showLoadingButton.value && (
+          <ButtonPrimary
+            text="Load more"
+            onClick={$(() => {
+              pageSig.value = pageSig.value + 1;
+            })}
+            isLoading={isloadingMovies.value}
+            size={ButtonSize.lg}
+          />
+        )}
       </div>
     </div>
   );

@@ -31,7 +31,8 @@ export const getMoviesMongo = async ({
   const cursor = col
     .find()
     .sort({ lasttimefound: -1, id: -1 })
-    .limit(entries_on_page * page);
+    .skip(entries_on_page * (page - 1))
+    .limit(entries_on_page);
   const movies: MovieMongo[] = [];
   for await (const m of cursor) {
     const { _id, ...mymovie } = m;

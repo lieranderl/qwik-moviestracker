@@ -27,11 +27,10 @@ export default component$(() => {
         <meta charSet="utf-8" />
         <link rel="manifest" href="/manifest.json" />
         <script
-          src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.1.1/flowbite.min.js"
+          src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"
           nonce=""
         ></script>
         <RouterHead />
-        {/* <DarkThemeLauncher /> */}
         <LangLauncher />
       </head>
       <body

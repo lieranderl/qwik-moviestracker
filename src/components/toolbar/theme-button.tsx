@@ -20,9 +20,8 @@ interface ThemeToggleBtnProps {
 
 export const ThemeButton = component$(({ size }: ThemeToggleBtnProps) => {
   const themeLoader = useThemeLoader();
-  const THEME_MODES = { LIGHT: "light", DARK: "dark", AUTO: "auto" };
-  const selectedIcon = useSignal(THEME_MODES.AUTO);
-  const selectedTheme = useSignal(themeLoader.value.theme);
+  const THEME_MODES = { LIGHT: "light", DARK: "dark" };
+  const selectedIcon = useSignal(themeLoader.value.theme);
   const session = useAuthSession();
 
   const updateThemeDb = server$(async () => {
@@ -35,43 +34,10 @@ export const ThemeButton = component$(({ size }: ThemeToggleBtnProps) => {
   // get theme from themeLoader
   useTask$(async () => {
     if (themeLoader.value.theme === THEME_MODES.DARK) {
-      selectedTheme.value = THEME_MODES.DARK;
       selectedIcon.value = THEME_MODES.DARK;
     } else if (themeLoader.value.theme === THEME_MODES.LIGHT) {
-      selectedTheme.value = THEME_MODES.LIGHT;
       selectedIcon.value = THEME_MODES.LIGHT;
-    } else if (themeLoader.value.theme === THEME_MODES.AUTO) {
-      selectedIcon.value = THEME_MODES.AUTO;
     }
-  });
-
-  useVisibleTask$(async () => {
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", (e) => {
-        if (selectedIcon.value === THEME_MODES.AUTO) {
-          if (e.matches) {
-            selectedTheme.value = THEME_MODES.DARK;
-          } else {
-            selectedTheme.value = THEME_MODES.LIGHT;
-          }
-        }
-      });
-  });
-
-  // track selectedTheme changes
-  useVisibleTask$(async ({ track }) => {
-    track(() => {
-      selectedTheme.value;
-    });
-    if (selectedTheme.value === THEME_MODES.DARK) {
-      document.documentElement.classList.add("dark");
-      document.documentElement.classList.remove("light");
-      document.documentElement.classList.remove("auto");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    
   });
 
   // track selectedIcon changes
@@ -81,22 +47,20 @@ export const ThemeButton = component$(({ size }: ThemeToggleBtnProps) => {
     });
     setCookie("theme", selectedIcon.value);
     updateThemeDb();
+    if (selectedIcon.value === THEME_MODES.DARK) {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+    } else {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.classList.add("light");
+    }
   });
 
   const toggleTheme = $(async () => {
-    if (selectedIcon.value === THEME_MODES.AUTO) {
-      selectedTheme.value = THEME_MODES.DARK;
-      selectedIcon.value = THEME_MODES.DARK;
-    } else if (selectedIcon.value === THEME_MODES.DARK) {
-      selectedTheme.value = THEME_MODES.LIGHT;
+    if (selectedIcon.value === THEME_MODES.DARK) {
       selectedIcon.value = THEME_MODES.LIGHT;
     } else if (selectedIcon.value === THEME_MODES.LIGHT) {
-      selectedIcon.value = THEME_MODES.AUTO;
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        selectedTheme.value = THEME_MODES.DARK;
-      } else {
-        selectedTheme.value = THEME_MODES.LIGHT;
-      }
+      selectedIcon.value = THEME_MODES.DARK;
     }
   });
 

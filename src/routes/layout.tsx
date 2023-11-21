@@ -24,7 +24,6 @@ export const onRequest: RequestHandler = (event) => {
   }); // disable caching
 
   const session: Session | null = event.sharedMap.get("session");
-  console.log(session);
   if (!session || new Date(session.expires) < new Date() || session.error) {
     throw event.redirect(302, `/auth`);
   }

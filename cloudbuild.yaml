@@ -8,7 +8,7 @@ steps:
     env:
     - 'VITE_TMDB_API_KEY=$_VITE_TMDB_API_KEY'
     - 'VITE_GC_API_KEY=$_VITE_GC_API_KEY'
-    secretEnv: ["VITE_FIREBASE_CONFIG", "GOOGLE_SECRET", "AUTH_SECRET"]
+    secretEnv: ["VITE_FIREBASE_CONFIG", "GOOGLE_SECRET", "AUTH_SECRET", "MONGO_URI"]
     args: ["run", "build"]
     id: BuildQwik
   - name: gcr.io/cloud-builders/docker
@@ -62,3 +62,5 @@ availableSecrets:
       env: "GOOGLE_SECRET"
     - versionName: projects/695761327713/secrets/AUTH_SECRET/versions/1
       env: "AUTH_SECRET"
+    - versionName: projects/695761327713/secrets/MONGO_URI/versions/1
+      env: "MONGO_URI"

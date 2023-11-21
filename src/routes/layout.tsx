@@ -34,6 +34,7 @@ export const useQueryParamsLoader = routeLoader$(async (event) => {
     return { lang };
 });
 
+
 export const useThemeLoader = routeLoader$(async (event) => {
   const session = event.sharedMap.get("session");
   const theme = event.query.get("theme");

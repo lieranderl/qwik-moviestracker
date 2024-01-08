@@ -1,4 +1,4 @@
-import type { PropFunction, QRL } from "@builder.io/qwik";
+import type { QRL } from "@builder.io/qwik";
 import { Slot, component$, useSignal, useTask$ } from "@builder.io/qwik";
 import { SpinLoadIcon } from "~/utils/icons/spinload";
 

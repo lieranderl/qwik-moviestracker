@@ -19,9 +19,7 @@ interface ButtonPrimaryProps {
   text?: string;
   isLoading?: boolean;
   size: ButtonSize;
-  onClick?: QRL<
-    PropFunction<(event: PointerEvent, element: HTMLButtonElement) => void>
-  >;
+  onClick?: QRL<() => void>;
   type?: ButtonType;
   disabled?: boolean;
   dataModalTarget?: string;
@@ -82,7 +80,8 @@ export const ButtonPrimary = component$(
         data-modal-toggle={dataModalToggle}
         data-dropdown-toggle={dataDropdownToggle}
         data-dropdown-placement={dataDropdownPlacement}
-        onClick$={() => onClick}
+        // eslint-disable-next-line qwik/valid-lexical-scope
+        onClick$={onClick}
         type={typeSig.value}
         disabled={isLoading || disabledSig.value}
         class={selectedClass}

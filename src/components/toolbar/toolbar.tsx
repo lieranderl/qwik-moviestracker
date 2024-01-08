@@ -1,5 +1,4 @@
 import { component$ } from "@builder.io/qwik";
-import { ThemeButton } from "./theme-button";
 
 import { useQueryParamsLoader } from "~/routes/layout";
 import { UserMenu } from "./user-menu";
@@ -7,6 +6,7 @@ import { ToolbarLinks } from "./links";
 import { BurgerButton } from "./burger-button";
 import { paths } from "~/utils/paths";
 import { MovieIcon } from "~/utils/icons/movieIcon";
+import { ThemeToggle } from "qwik-theme-toggle";
 
 export const Toolbar = component$(() => {
   const resource = useQueryParamsLoader();
@@ -26,7 +26,7 @@ export const Toolbar = component$(() => {
 
         <div class="flex items-center">
           <div class="flex items-center md:order-2 md:mx-4">
-            <ThemeButton size="sm"/>
+            <ThemeToggle themeStorageKey="theme" textSize="text-2xl" />
             <UserMenu />
             <BurgerButton>
               <ToolbarLinks />

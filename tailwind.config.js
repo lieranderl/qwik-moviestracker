@@ -6,6 +6,7 @@ module.exports = {
   content: [
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/flowbite/**/*.js",
+    "./node_modules/qwik-theme-toggle/**/*.{cjs,mjs}"
   ],
   theme: {
     colors: {

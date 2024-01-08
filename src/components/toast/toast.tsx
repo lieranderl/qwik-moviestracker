@@ -28,6 +28,7 @@ export const Toast = component$(
       }, 400);
     });
 
+    // eslint-disable-next-line qwik/no-use-visible-task
     useVisibleTask$(() => {
       if (autocloseTime) {
         if (autocloseTime > 0) {
@@ -52,5 +53,5 @@ export const Toast = component$(
         {autocloseTime && <ToastProgressBar progress={autocloseTime} />}
       </div>
     );
-  }
+  },
 );

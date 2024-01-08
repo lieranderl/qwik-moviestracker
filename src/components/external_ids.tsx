@@ -163,5 +163,5 @@ export const ExternalIds = component$(
         )}
       </>
     );
-  }
+  },
 );

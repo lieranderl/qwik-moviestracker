@@ -32,7 +32,7 @@ export const ToastStack = component$(() => {
     }),
     removeToast: $((id: string) => {
       toastsStore.toasts = toastsStore.toasts.filter(
-        (toast) => toast.id !== id
+        (toast) => toast.id !== id,
       );
     }),
   });

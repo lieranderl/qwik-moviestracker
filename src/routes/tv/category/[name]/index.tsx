@@ -107,7 +107,7 @@ export default component$(() => {
         title={categoryToTitle(
           resource.value.category,
           MediaType.Tv,
-          resource.value.lang
+          resource.value.lang,
         )}
       >
         {moviesSig.length > 0 &&
@@ -120,7 +120,7 @@ export default component$(() => {
                   rating={m.vote_average ? m.vote_average : 0}
                   year={parseInt(
                     m.first_air_date ? m.first_air_date.substring(0, 4) : "0",
-                    10
+                    10,
                   )}
                   picfile={m.poster_path}
                   isPerson={false}

@@ -6,11 +6,11 @@ module.exports = {
   content: [
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/flowbite/**/*.js",
-    "./node_modules/qwik-theme-toggle/**/*.{cjs,mjs}"
+    "./node_modules/qwik-theme-toggle/**/*.{cjs,mjs}",
   ],
   theme: {
     colors: {
-      transparent: 'transparent',
+      transparent: "transparent",
       primary: {
         DEFAULT: "#f0fdfa",
         light: "#f0fdfa",
@@ -57,7 +57,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require("flowbite/plugin"),
-  ],
+  plugins: [require("flowbite/plugin")],
 };

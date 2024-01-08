@@ -1,4 +1,3 @@
-
 export type MovieShort = {
   adult?: boolean;
   backdrop_path?: string;
@@ -361,12 +360,12 @@ export type MediaShort = MovieShort & TvShort & PersonShort & MovieMongoAttribs;
 export type MediaDetails = MovieDetails | TvDetails | PersonDetails;
 
 export type MediaShortStrict<
-  T extends MediaType.Movie | MediaType.Tv | MediaType.Person
+  T extends MediaType.Movie | MediaType.Tv | MediaType.Person,
 > = T extends MediaType.Movie
   ? MovieMongo
   : T extends MediaType.Tv
-  ? TvShort
-  : PersonShort;
+    ? TvShort
+    : PersonShort;
 
 export type MediaCollection<T> = {
   page: number;
@@ -377,7 +376,7 @@ export type MediaCollection<T> = {
 
 export type MovieMongoAttribs = {
   year: string;
-  lasttimefound?: Date
+  lasttimefound?: Date;
   first_air_date?: string;
 };
 

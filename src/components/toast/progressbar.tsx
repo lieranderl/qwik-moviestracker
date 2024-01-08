@@ -14,5 +14,5 @@ export const ToastProgressBar = component$(
         ></div>
       </div>
     );
-  }
+  },
 );

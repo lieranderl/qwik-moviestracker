@@ -29,7 +29,7 @@ export const TorrentsModal = component$(
         const torrents = await server$(
           ({ name, year, isMovie }: getTorrentsType) => {
             return getTorrents({ name: name, year: year, isMovie: isMovie });
-          }
+          },
         )({
           name: title,
           year: selectedYear.value,
@@ -45,26 +45,25 @@ export const TorrentsModal = component$(
     return (
       <>
         {seasons.length == 0 && (
-                <ButtonPrimary
-                dataModalTarget="torrentsModal"
-                dataModalToggle="torrentsModal"
-                size={ButtonSize.md}
-                type={ButtonType.button}
-                onClick={getTorrentsToggle}
-                
-              >
-                {langTorrents(resource.value.lang)}
-              </ButtonPrimary>
+          <ButtonPrimary
+            dataModalTarget="torrentsModal"
+            dataModalToggle="torrentsModal"
+            size={ButtonSize.md}
+            type={ButtonType.button}
+            onClick={getTorrentsToggle}
+          >
+            {langTorrents(resource.value.lang)}
+          </ButtonPrimary>
         )}
 
         {seasons.length > 0 && (
           <>
-          <ButtonPrimary
-          type={ButtonType.button}
-          size={ButtonSize.md}
-          dataDropdownToggle="dropdownBottom"
-          dataDropdownPlacement="bottom"
-          >
+            <ButtonPrimary
+              type={ButtonType.button}
+              size={ButtonSize.md}
+              dataDropdownToggle="dropdownBottom"
+              dataDropdownPlacement="bottom"
+            >
               {langTorrents(resource.value.lang)}{" "}
               <svg
                 class="w-2.5 h-2.5 ml-2.5"
@@ -81,8 +80,7 @@ export const TorrentsModal = component$(
                   d="m1 1 4 4 4-4"
                 />
               </svg>
-          </ButtonPrimary>
-
+            </ButtonPrimary>
 
             <div
               id="dropdownBottom"
@@ -103,7 +101,7 @@ export const TorrentsModal = component$(
                               data-modal-toggle="torrentsModal"
                               onClick$={() => {
                                 selectedYear.value = formatYear(
-                                  s.air_date ? s.air_date : ""
+                                  s.air_date ? s.air_date : "",
                                 );
                                 getTorrentsToggle();
                               }}
@@ -177,5 +175,5 @@ export const TorrentsModal = component$(
         </div>
       </>
     );
-  }
+  },
 );

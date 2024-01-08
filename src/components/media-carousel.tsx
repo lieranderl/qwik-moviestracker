@@ -36,5 +36,5 @@ export const MediaCarousel = component$(
         </div>
       </section>
     );
-  }
+  },
 );

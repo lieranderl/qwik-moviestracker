@@ -25,24 +25,30 @@ export const useContentLoader = routeLoader$(async (event) => {
         type: MediaType.Movie,
         needbackdrop: true,
       }),
-      withBackdrop(await getMoviesMongo({
-        page: 1,
-        entries_on_page: 20,
-        language: lang,
-        dbName: DbType.LastMovies,
-      }) as MediaShort[]),
-      withBackdrop(await getMoviesMongo({
-        page: 1,
-        entries_on_page: 20,
-        language: lang,
-        dbName: DbType.HDR10,
-      }) as MediaShort[]),
-      withBackdrop(await getMoviesMongo({
-        page: 1,
-        entries_on_page: 20,
-        language: lang,
-        dbName: DbType.DV,
-      }) as MediaShort[]),
+      withBackdrop(
+        (await getMoviesMongo({
+          page: 1,
+          entries_on_page: 20,
+          language: lang,
+          dbName: DbType.LastMovies,
+        })) as MediaShort[],
+      ),
+      withBackdrop(
+        (await getMoviesMongo({
+          page: 1,
+          entries_on_page: 20,
+          language: lang,
+          dbName: DbType.HDR10,
+        })) as MediaShort[],
+      ),
+      withBackdrop(
+        (await getMoviesMongo({
+          page: 1,
+          entries_on_page: 20,
+          language: lang,
+          dbName: DbType.DV,
+        })) as MediaShort[],
+      ),
     ]);
     const movies = m as MovieShort[];
     return {
@@ -78,7 +84,7 @@ export default component$(() => {
                   rating={m.vote_average ? m.vote_average : 0}
                   year={parseInt(
                     m.release_date ? m.release_date.substring(0, 4) : "0",
-                    10
+                    10,
                   )}
                   picfile={m.backdrop_path}
                   isPerson={false}
@@ -104,7 +110,7 @@ export default component$(() => {
                   rating={m.vote_average ? m.vote_average : 0}
                   year={parseInt(
                     m.release_date ? m.release_date.substring(0, 4) : "0",
-                    10
+                    10,
                   )}
                   picfile={m.backdrop_path}
                   isPerson={false}
@@ -130,7 +136,7 @@ export default component$(() => {
                   rating={m.vote_average ? m.vote_average : 0}
                   year={parseInt(
                     m.release_date ? m.release_date.substring(0, 4) : "0",
-                    10
+                    10,
                   )}
                   picfile={m.backdrop_path}
                   isPerson={false}
@@ -156,7 +162,7 @@ export default component$(() => {
                   rating={m.vote_average ? m.vote_average : 0}
                   year={parseInt(
                     m.release_date ? m.release_date.substring(0, 4) : "0",
-                    10
+                    10,
                   )}
                   picfile={m.backdrop_path}
                   isPerson={false}

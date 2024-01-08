@@ -568,7 +568,3 @@ export const langSignWithGithub = (lang: string) => {
       return "Войти с помощью Github";
   }
 };
-
-
-
-

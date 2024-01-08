@@ -60,7 +60,7 @@ export default component$(() => {
     }
     localStorage.setItem(
       "torrServerList",
-      JSON.stringify(torrServerStore.list)
+      JSON.stringify(torrServerStore.list),
     );
     toastManager.addToast({
       message: `Torrserver ${values.ipaddress} has been added.`,
@@ -86,12 +86,12 @@ export default component$(() => {
       if (torrServerStore.list.length === 0) {
         localStorage.setItem(
           "torrServerList",
-          JSON.stringify([selectedTorServer.value])
+          JSON.stringify([selectedTorServer.value]),
         );
       } else {
         localStorage.setItem(
           "torrServerList",
-          JSON.stringify(torrServerStore.list)
+          JSON.stringify(torrServerStore.list),
         );
       }
     }
@@ -187,13 +187,13 @@ export default component$(() => {
                 class="hover:bg-primary-100 dark:hover:bg-primary-900 focus:outline-none focus:ring-0 focus:ring-primary-100 dark:focus:ring-primary-900 rounded-lg text-sm p-2.5"
                 onClick$={$(() => {
                   const index = torrServerStore.list.indexOf(
-                    selectedTorServer.value
+                    selectedTorServer.value,
                   );
                   if (index > -1) {
                     torrServerStore.list.splice(index, 1);
                     localStorage.setItem(
                       "torrServerList",
-                      JSON.stringify(torrServerStore.list)
+                      JSON.stringify(torrServerStore.list),
                     );
                     toastManager.addToast({
                       message: `Torrserver ${selectedTorServer.value} has been deleted.`,
@@ -254,7 +254,7 @@ export default component$(() => {
                         });
 
                         torrentsSig.value = await listTorrent(
-                          selectedTorServer.value
+                          selectedTorServer.value,
                         );
                       } catch (error) {
                         const e = error as Error;
@@ -319,7 +319,7 @@ export default component$(() => {
                               m.movie.release_date
                                 ? m.movie.release_date!.substring(0, 4)
                                 : m.movie.first_air_date!.substring(0, 4),
-                              10
+                              10,
                             )
                           : 0
                       }

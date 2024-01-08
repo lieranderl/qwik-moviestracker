@@ -1,11 +1,10 @@
 import { serverAuth$ } from "@builder.io/qwik-auth";
-import { MongoDBAdapter } from "@auth/mongodb-adapter"
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import type { GoogleProfile } from "@auth/core/providers/google";
 import Google from "@auth/core/providers/google";
 import GitHub from "@auth/core/providers/github";
 import type { Provider } from "@auth/core/providers";
 import mongoClientPromise from "../utils/mongodbinit";
-
 
 export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
   serverAuth$(({ env }) => ({
@@ -31,8 +30,7 @@ export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
             ...profile,
           };
         },
-      }
-      ),
+      }),
       GitHub({
         clientId: env.get("GITHUB_OAUTH_CLIENT_ID")!,
         clientSecret: env.get("GITHUB_OAUTH_CLIENT_SECRET")!,
@@ -46,50 +44,49 @@ export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
             theme: "auto", // custom attribute
             language: "en-US",
           };
-        }
-      })
+        },
+      }),
     ] as Provider[],
     callbacks: {
       async session({ session, user }) {
         // console.log("session:", session, user)
-        session.id = user.id
+        session.id = user.id;
         if (user.theme) {
-          session.theme = user.theme
+          session.theme = user.theme;
         }
         if (user.language) {
-          session.language = user.language
+          session.language = user.language;
         }
-        
-        return session
+
+        return session;
       },
       async signIn({ account, profile }) {
         if (account && profile) {
           if (account.provider === "google") {
             const p = profile as GoogleProfile;
-            return p.email_verified && p.email.endsWith("@gmail.com")
+            return p.email_verified && p.email.endsWith("@gmail.com");
           }
           if (account.provider === "github") {
-            return true
+            return true;
           }
         }
-        return false
+        return false;
       },
     },
   }));
 
 declare module "@auth/core/types" {
   interface Session {
-    error?: "RefreshAccessTokenError"
-    id?: string
-    theme?: string
-    language?: string
+    error?: "RefreshAccessTokenError";
+    id?: string;
+    theme?: string;
+    language?: string;
   }
-  
 }
 
 declare module "@auth/core/adapters" {
   interface AdapterUser {
-    theme?: string
-    language?: string
+    theme?: string;
+    language?: string;
   }
 }

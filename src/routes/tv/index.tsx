@@ -59,7 +59,7 @@ export default component$(() => {
                   rating={m.vote_average ? m.vote_average : 0}
                   year={parseInt(
                     m.first_air_date ? m.first_air_date.substring(0, 4) : "0",
-                    10
+                    10,
                   )}
                   picfile={m.backdrop_path}
                   isPerson={false}
@@ -84,7 +84,7 @@ export default component$(() => {
                   rating={m.vote_average ? m.vote_average : 0}
                   year={parseInt(
                     m.first_air_date ? m.first_air_date.substring(0, 4) : "0",
-                    10
+                    10,
                   )}
                   picfile={m.backdrop_path}
                   isPerson={false}

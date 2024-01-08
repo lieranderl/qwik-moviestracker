@@ -108,5 +108,5 @@ export const MediaCard = component$(
         </div>
       </div>
     );
-  }
+  },
 );

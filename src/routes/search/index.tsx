@@ -81,7 +81,7 @@ export default component$(() => {
                             href={paths.media(
                               m.media_type!,
                               m.id,
-                              resource.value.lang
+                              resource.value.lang,
                             )}
                           >
                             <MediaCard
@@ -96,13 +96,13 @@ export default component$(() => {
                                 m.media_type === MediaType.Movie
                                   ? parseInt(
                                       m.release_date!.substring(0, 4),
-                                      10
+                                      10,
                                     )
                                   : parseInt(
                                       "first_air_date" in m
                                         ? m.first_air_date!.substring(0, 4)
                                         : "",
-                                      10
+                                      10,
                                     )
                               }
                               picfile={

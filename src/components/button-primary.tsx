@@ -1,4 +1,4 @@
-import type { PropFunction } from "@builder.io/qwik";
+import type { PropFunction, QRL } from "@builder.io/qwik";
 import { Slot, component$, useSignal, useTask$ } from "@builder.io/qwik";
 import { SpinLoadIcon } from "~/utils/icons/spinload";
 
@@ -19,7 +19,9 @@ interface ButtonPrimaryProps {
   text?: string;
   isLoading?: boolean;
   size: ButtonSize;
-  onClick?: PropFunction;
+  onClick?: QRL<
+    PropFunction<(event: PointerEvent, element: HTMLButtonElement) => void>
+  >;
   type?: ButtonType;
   disabled?: boolean;
   dataModalTarget?: string;
@@ -80,7 +82,7 @@ export const ButtonPrimary = component$(
         data-modal-toggle={dataModalToggle}
         data-dropdown-toggle={dataDropdownToggle}
         data-dropdown-placement={dataDropdownPlacement}
-        onClick$={onClick}
+        onClick$={() => onClick}
         type={typeSig.value}
         disabled={isLoading || disabledSig.value}
         class={selectedClass}
@@ -99,5 +101,5 @@ export const ButtonPrimary = component$(
         )}
       </button>
     );
-  }
+  },
 );

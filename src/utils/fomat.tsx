@@ -2,7 +2,7 @@ import type { CastCrew } from "~/services/models";
 import { languages } from "./languages";
 
 export function formatDate(date: string, lang: string) {
-    return new Date(date).toLocaleDateString(lang, {
+  return new Date(date).toLocaleDateString(lang, {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -52,26 +52,26 @@ export function formatLanguage(iso?: string) {
   return iso;
 }
 
-
 export function formatCrew(crew: CastCrew[]) {
-    const mycrew = crew.filter(
-      (crew) =>
-        crew.job == 'Director' ||
-        crew.job == 'Screenplay' ||
-        crew.job == 'Producer'
-    );
-    if (mycrew.length == 0) { return [] }
-    return mycrew
+  const mycrew = crew.filter(
+    (crew) =>
+      crew.job == "Director" ||
+      crew.job == "Screenplay" ||
+      crew.job == "Producer",
+  );
+  if (mycrew.length == 0) {
+    return [];
   }
+  return mycrew;
+}
 
+export function showYearOld(birth: string): string {
+  const bdate = new Date(birth);
+  return (new Date().getFullYear() - bdate.getFullYear()).toString();
+}
 
-  export function showYearOld(birth: string): string {
-    const bdate = new Date(birth);
-    return (new Date().getFullYear() - bdate.getFullYear()).toString();
-  }
-
-  export function showDeathYear(birth: string, death: string): string {
-    const bdate = new Date(birth);
-    const ddate = new Date(death);
-    return (ddate.getFullYear() - bdate.getFullYear()).toString();
-  }
+export function showDeathYear(birth: string, death: string): string {
+  const bdate = new Date(birth);
+  const ddate = new Date(death);
+  return (ddate.getFullYear() - bdate.getFullYear()).toString();
+}

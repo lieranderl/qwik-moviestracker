@@ -106,7 +106,7 @@ export default component$(() => {
         title={categoryToTitle(
           resource.value.category,
           MediaType.Movie,
-          resource.value.lang
+          resource.value.lang,
         )}
       >
         {moviesSig.value.length > 0 &&
@@ -122,7 +122,7 @@ export default component$(() => {
                       ? parseInt(m.year)
                       : parseInt(
                           m.release_date ? m.release_date.substring(0, 4) : "0",
-                          10
+                          10,
                         )
                   }
                   picfile={m.poster_path}

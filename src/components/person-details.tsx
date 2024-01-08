@@ -228,5 +228,5 @@ export const PersonDetails = component$(
         </section>
       </div>
     );
-  }
+  },
 );

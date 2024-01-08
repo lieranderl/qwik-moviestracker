@@ -1,7 +1,6 @@
 import mongoClientPromise from "~/utils/mongodbinit";
 import type { MovieMongo } from "./models";
 
-
 const moviesDB = (await mongoClientPromise).db("movies");
 
 export enum DbType {
@@ -32,7 +31,7 @@ export const getMoviesMongo = async ({
   const movies: MovieMongo[] = [];
   for await (const m of cursor) {
     const { _id, ...mymovie } = m;
-    _id
+    _id;
     if (language) {
       if (language == "en-US") {
         mymovie.title = mymovie.original_title;
@@ -42,4 +41,3 @@ export const getMoviesMongo = async ({
   }
   return movies;
 };
-

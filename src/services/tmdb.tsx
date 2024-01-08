@@ -13,7 +13,7 @@ import { MediaType } from "./models";
 const baseURL = "https://api.themoviedb.org/3";
 const fetchTMDB = async <T = unknown,>(
   path: string,
-  search: Record<string, string> = {}
+  search: Record<string, string> = {},
 ): Promise<T> => {
   const params = new URLSearchParams({
     ...search,
@@ -63,7 +63,7 @@ export const getTrendingMedia = async ({
           langString: "en",
         });
         return movie;
-      })
+      }),
     );
   }
   return media;
@@ -109,7 +109,7 @@ export const withBackdrop = async (movies: MediaShort[]) => {
         });
       }
       return item;
-    })
+    }),
   );
   return movies;
 };
@@ -151,7 +151,7 @@ export const getMedias = async ({
         });
         movie.media_type = type;
         return movie;
-      })
+      }),
     );
   }
   return media;
@@ -206,16 +206,16 @@ export const getMediaRecom = async ({
         });
         movie.media_type = type;
         return movie;
-      })
+      }),
     );
     if (type === MediaType.Movie) {
       media = media.sort(
-        (a, b) => formatYear(b.release_date!) - formatYear(a.release_date!)
+        (a, b) => formatYear(b.release_date!) - formatYear(a.release_date!),
       );
     }
     if (type === MediaType.Tv) {
       media = media.sort(
-        (a, b) => formatYear(b.first_air_date!) - formatYear(a.first_air_date!)
+        (a, b) => formatYear(b.first_air_date!) - formatYear(a.first_air_date!),
       );
     }
   }
@@ -245,7 +245,7 @@ export const getCollectionMovies = async ({
   try {
     result.parts = await Promise.all(newMovieMedia);
     result.parts = result.parts.sort(
-      (a, b) => formatYear(b.release_date!) - formatYear(a.release_date!)
+      (a, b) => formatYear(b.release_date!) - formatYear(a.release_date!),
     );
   } catch (error) {
     console.log("skip movie backdrop");
@@ -265,10 +265,10 @@ export const getPersonMovies = async ({ id, language }: GetPerson) => {
   });
 
   result.cast = result.cast.sort(
-    (a, b) => formatYear(b.release_date) - formatYear(a.release_date)
+    (a, b) => formatYear(b.release_date) - formatYear(a.release_date),
   );
   result.crew = result.crew.sort(
-    (a, b) => formatYear(b.release_date) - formatYear(a.release_date)
+    (a, b) => formatYear(b.release_date) - formatYear(a.release_date),
   );
   return result;
 };
@@ -280,10 +280,10 @@ export const getPersonTv = async ({ id, language }: GetPerson) => {
   });
 
   result.cast = result.cast.sort(
-    (a, b) => formatYear(b.first_air_date) - formatYear(a.first_air_date)
+    (a, b) => formatYear(b.first_air_date) - formatYear(a.first_air_date),
   );
   result.crew = result.crew.sort(
-    (a, b) => formatYear(b.first_air_date) - formatYear(a.first_air_date)
+    (a, b) => formatYear(b.first_air_date) - formatYear(a.first_air_date),
   );
   return result;
 };

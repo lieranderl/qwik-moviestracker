@@ -3,7 +3,7 @@ import type { ImdbRating, Torrent } from "./models";
 const baseCGURL = "https://moviestracker-gw-eu-w1-8vmmbwbl.ew.gateway.dev";
 const fetchAPI = async <T = unknown,>(
   path: string,
-  search: Record<string, string> = {}
+  search: Record<string, string> = {},
 ): Promise<T> => {
   const params = new URLSearchParams({
     ...search,

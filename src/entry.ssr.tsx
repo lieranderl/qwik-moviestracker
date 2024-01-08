@@ -26,7 +26,7 @@ if (isDev) {
     if (
       !SUPPRESSED_WARNINGS.some(
         (entry) =>
-          msg.includes(entry) || args.some((arg) => arg.includes(entry))
+          msg.includes(entry) || args.some((arg) => arg.includes(entry)),
       )
     )
       consoleWarn(msg, ...args);

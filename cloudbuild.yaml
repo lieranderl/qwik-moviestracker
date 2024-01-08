@@ -9,7 +9,14 @@ steps:
       - "VITE_TMDB_API_KEY=$_VITE_TMDB_API_KEY"
       - "VITE_GC_API_KEY=$_VITE_GC_API_KEY"
     secretEnv:
-      ["VITE_FIREBASE_CONFIG", "GOOGLE_SECRET", "AUTH_SECRET", "MONGO_URI", "GITHUB_OAUTH_CLIENT_ID", "GITHUB_OAUTH_CLIENT_SECRET"]
+      [
+        "VITE_FIREBASE_CONFIG",
+        "GOOGLE_SECRET",
+        "AUTH_SECRET",
+        "MONGO_URI",
+        "GITHUB_OAUTH_CLIENT_ID",
+        "GITHUB_OAUTH_CLIENT_SECRET",
+      ]
     args: ["run", "build"]
     id: BuildQwik
   - name: gcr.io/cloud-builders/docker

@@ -53,29 +53,29 @@ export const TorrentList = component$(
         sortedTorrents.value = initTorrents.value;
         if (sortFilterStore.k4) {
           sortedTorrents.value = initTorrents.value.filter(
-            (torrents) => torrents.K4 == true
+            (torrents) => torrents.K4 == true,
           );
         }
         if (sortFilterStore.hdr) {
           sortedTorrents.value = initTorrents.value.filter(
-            (torrents) => torrents.HDR == true
+            (torrents) => torrents.HDR == true,
           );
         }
         if (sortFilterStore.hdr10) {
           sortedTorrents.value = initTorrents.value.filter(
-            (torrents) => torrents.HDR10 == true
+            (torrents) => torrents.HDR10 == true,
           );
         }
 
         if (sortFilterStore.hdr10plus) {
           sortedTorrents.value = initTorrents.value.filter(
-            (torrents) => torrents.HDR10plus == true
+            (torrents) => torrents.HDR10plus == true,
           );
         }
 
         if (sortFilterStore.dv) {
           sortedTorrents.value = initTorrents.value.filter(
-            (torrents) => torrents.DV == true
+            (torrents) => torrents.DV == true,
           );
         }
 
@@ -83,7 +83,7 @@ export const TorrentList = component$(
           a[sortFilterStore.selectedSort as keyof typeof a] >
           b[sortFilterStore.selectedSort as keyof typeof b]
             ? -1
-            : 1
+            : 1,
         );
       }
     });
@@ -100,7 +100,7 @@ export const TorrentList = component$(
         const torrents = await server$(
           ({ name, year, isMovie }: getTorrentsType) => {
             return getTorrents({ name: name, year: year, isMovie: isMovie });
-          }
+          },
         )({
           name: values.name,
           year: values.year,
@@ -294,5 +294,5 @@ export const TorrentList = component$(
         </section>
       </>
     );
-  }
+  },
 );

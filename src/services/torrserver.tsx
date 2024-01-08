@@ -30,7 +30,7 @@ const fetchTorrServer = async <T = unknown,>(
   resource: string,
   method: MethodType = "GET",
   path: string,
-  body?: any
+  body?: any,
 ): Promise<T> => {
   const requestOptions: {
     timeout: number;
@@ -60,7 +60,7 @@ const fetchTorrServer = async <T = unknown,>(
   if (response.headers.get("Content-Type")?.includes("text")) {
     return response.text() as T;
   }
-  return response.json(); 
+  return response.json();
 };
 
 export const torrServerEcho = async (url: string) =>
@@ -77,7 +77,7 @@ export const listTorrent = async (url: string) => {
 export const addTorrent = (
   url: string,
   torrent: Torrent,
-  media: MediaDetails
+  media: MediaDetails,
 ) => {
   const data = JSON.stringify({ moviestracker: true, movie: media }) || "";
   const body = {
@@ -91,10 +91,7 @@ export const addTorrent = (
   return fetchTorrServer<TSResult[]>(url, "POST", "torrents", body);
 };
 
-export const removeTorrent = (
-  url: string,
-  hash: string,
-) => {
+export const removeTorrent = (url: string, hash: string) => {
   const body = {
     action: "rem",
     hash: hash,

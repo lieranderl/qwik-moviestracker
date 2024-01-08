@@ -30,10 +30,9 @@ export const onRequest: RequestHandler = (event) => {
 };
 
 export const useQueryParamsLoader = routeLoader$(async (event) => {
-    const lang = event.query.get("lang") || "en-US";
-    return { lang };
+  const lang = event.query.get("lang") || "en-US";
+  return { lang };
 });
-
 
 export const useThemeLoader = routeLoader$(async (event) => {
   const session = event.sharedMap.get("session");

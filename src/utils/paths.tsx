@@ -20,7 +20,7 @@ export const categoryToDb = (category: string) => {
 export const categoryToTitle = (
   category: string,
   type: "movie" | "tv",
-  lang: string
+  lang: string,
 ) => {
   if (type === "movie") {
     if (category === "updated")
@@ -49,7 +49,8 @@ export const paths = {
     `/${mediaType}/${id}/?lang=${lang}`,
   category: (type: string, category: string, lang: string) =>
     `/${type}/category/${category}/?lang=${lang}`,
-  moviePhotos: (id: number, lang: string) => `/movie/${id}/photos/?lang=${lang}`,
+  moviePhotos: (id: number, lang: string) =>
+    `/movie/${id}/photos/?lang=${lang}`,
   movieVideo: (id: number, lang: string) => `/movie/${id}/videos/?lang=${lang}`,
   notFound: (lang: string) => `/404/?lang=${lang}`,
   person: (id: number, lang: string) => `/person/${id}/?lang=${lang}`,

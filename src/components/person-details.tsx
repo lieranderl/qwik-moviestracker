@@ -25,6 +25,7 @@ export const PersonDetails = component$(
     const isShowBio = useSignal(false);
     const bioSize = useSignal(300);
 
+    // eslint-disable-next-line qwik/no-use-visible-task
     useVisibleTask$(async () => {
       window.addEventListener("resize", function (event) {
         const t = event.target ? (event.target as Window) : null;
@@ -100,13 +101,13 @@ export const PersonDetails = component$(
                   </div>
                 )}
                 {isShowBio.value && <div class="">{person.biography}</div>}
-                <a
+                <div
                   class="text-sm float-right text-primary-600 underline dark:text-primary-600 hover:cursor-pointer"
                   onClick$={() => (isShowBio.value = !isShowBio.value)}
                 >
                   {!isShowBio.value && <span>Read more...</span>}
                   {isShowBio.value && <span>Read less...</span>}
-                </a>
+                </div>
               </>
             )}
 

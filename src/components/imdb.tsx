@@ -26,6 +26,7 @@ export const Imdb = component$(({ id }: { id: string }) => {
     return null;
   });
 
+  // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(async (ctx) => {
     ctx.track(() => isBrowser);
     isBrowserSig.value = isBrowser;

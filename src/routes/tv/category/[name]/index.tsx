@@ -67,6 +67,7 @@ export default component$(() => {
   const isloadingMovies = useSignal(false);
   const pageSig = useSignal(1);
 
+  // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$((ctx) => {
     ctx.track(() => {
       moviesSig.length;

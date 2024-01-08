@@ -1,5 +1,5 @@
 /* eslint-disable qwik/no-use-visible-task */
-import type { QwikChangeEvent, Signal } from "@builder.io/qwik";
+import type { Signal } from "@builder.io/qwik";
 import { component$, $, useVisibleTask$, useStore } from "@builder.io/qwik";
 import { setValue, useForm, zodForm$ } from "@modular-forms/qwik";
 import { server$, z } from "@builder.io/qwik-city";
@@ -206,7 +206,6 @@ export const TorrentList = component$(
                 width="1em"
                 height="1em"
                 data-qwikest-icon=""
-                q:key="A5_0"
               >
                 <path
                   stroke-linecap="round"
@@ -226,7 +225,7 @@ export const TorrentList = component$(
               onChange$={(e) => {
                 sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
                 if (e.target) {
-                  sortFilterStore.k4 = e.target.checked;
+                  sortFilterStore.k4 = (e.target as HTMLInputElement).checked;
                 }
               }}
             />
@@ -239,7 +238,7 @@ export const TorrentList = component$(
               onChange$={(e) => {
                 sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
                 if (e.target) {
-                  sortFilterStore.hdr = e.target.checked;
+                  sortFilterStore.hdr = (e.target as HTMLInputElement).checked;
                 }
               }}
             />
@@ -251,7 +250,7 @@ export const TorrentList = component$(
               class="mr-2 w-4 h-4 text-primary-600 bg-primary-100 border-primary-300 rounded focus:ring-primary-600 dark:focus:ring-primary-600 dark:ring-offset-primary-800 focus:ring-2 dark:bg-primary-700 dark:border-primary-600"
               onChange$={(e) => {
                 sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
-                sortFilterStore.hdr10 = e.target.checked;
+                sortFilterStore.hdr10 = (e.target as HTMLInputElement).checked;
               }}
             />
             <label>HDR10</label>
@@ -262,7 +261,9 @@ export const TorrentList = component$(
               class="mr-2 w-4 h-4 text-primary-600 bg-primary-100 border-primary-300 rounded focus:ring-primary-600 dark:focus:ring-primary-600 dark:ring-offset-primary-800 focus:ring-2 dark:bg-primary-700 dark:border-primary-600"
               onChange$={(e) => {
                 sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
-                sortFilterStore.hdr10plus = e.target.checked;
+                sortFilterStore.hdr10plus = (
+                  e.target as HTMLInputElement
+                ).checked;
               }}
             />
             <label>HDR10+</label>
@@ -273,7 +274,7 @@ export const TorrentList = component$(
               class="mr-2 w-4 h-4 text-primary-600 bg-primary-100 border-primary-300 rounded focus:ring-primary-600 dark:focus:ring-primary-600 dark:ring-offset-primary-800 focus:ring-2 dark:bg-primary-700 dark:border-primary-600"
               onChange$={(e) => {
                 sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
-                sortFilterStore.dv = e.target.checked;
+                sortFilterStore.dv = (e.target as HTMLInputElement).checked;
               }}
             />
             <label>DV</label>

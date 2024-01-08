@@ -90,6 +90,7 @@ export default component$(() => {
     isloadingMovies.value = false;
   });
 
+  // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(async ({ track }) => {
     track(() => {
       pageSig.value;

@@ -1,4 +1,5 @@
-import type { Signal } from "@builder.io/qwik";
+/* eslint-disable qwik/no-use-visible-task */
+import type { QwikChangeEvent, Signal } from "@builder.io/qwik";
 import { component$, $, useVisibleTask$, useStore } from "@builder.io/qwik";
 import { setValue, useForm, zodForm$ } from "@modular-forms/qwik";
 import { server$, z } from "@builder.io/qwik-city";
@@ -224,7 +225,9 @@ export const TorrentList = component$(
               class="mr-2 w-4 h-4 text-primary-600 bg-primary-100 border-primary-300 rounded focus:ring-primary-600 dark:focus:ring-primary-600 dark:ring-offset-primary-800 focus:ring-2 dark:bg-primary-700 dark:border-primary-600"
               onChange$={(e) => {
                 sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
-                sortFilterStore.k4 = e.target.checked;
+                if (e.target) {
+                  sortFilterStore.k4 = e.target.checked;
+                }
               }}
             />
             <label>4K</label>
@@ -235,7 +238,9 @@ export const TorrentList = component$(
               class="mr-2 w-4 h-4 text-primary-600 bg-primary-100 border-primary-300 rounded focus:ring-primary-600 dark:focus:ring-primary-600 dark:ring-offset-primary-800 focus:ring-2 dark:bg-primary-700 dark:border-primary-600"
               onChange$={(e) => {
                 sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
-                sortFilterStore.hdr = e.target.checked;
+                if (e.target) {
+                  sortFilterStore.hdr = e.target.checked;
+                }
               }}
             />
             <label>HDR</label>

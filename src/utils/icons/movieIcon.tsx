@@ -11,7 +11,6 @@ export const MovieIcon = component$(() => {
       stroke="currentColor"
       aria-hidden="true"
       data-qwikest-icon=""
-      q:key="lC_0"
     >
       <path
         stroke-linecap="round"

@@ -51,7 +51,7 @@ export default component$(() => {
           lang={resource.value.lang}
         >
           {resource.value.tvtrend.map((m) => (
-            <>
+            <div class="carousel-item " key={m.id}>
               <a href={paths.media(MediaType.Tv, m.id, resource.value.lang)}>
                 <MediaCard
                   title={m.name ? m.name : ""}
@@ -66,7 +66,7 @@ export default component$(() => {
                   isHorizontal={true}
                 />
               </a>
-            </>
+            </div>
           ))}
         </MediaCarousel>
         <MediaCarousel
@@ -76,7 +76,7 @@ export default component$(() => {
           lang={resource.value.lang}
         >
           {resource.value.tvtoprated.map((m) => (
-            <>
+            <div class="carousel-item " key={m.id}>
               <a href={paths.media(MediaType.Tv, m.id, resource.value.lang)}>
                 <MediaCard
                   title={m.name ? m.name : ""}
@@ -91,7 +91,7 @@ export default component$(() => {
                   isHorizontal={true}
                 />
               </a>
-            </>
+            </div>
           ))}
         </MediaCarousel>
       </div>

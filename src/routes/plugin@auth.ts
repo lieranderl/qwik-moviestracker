@@ -23,7 +23,6 @@ export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
         profile(profile: GoogleProfile) {
           return {
             id: profile.sub,
-            theme: "auto", // custom attribute
             language: "en-US",
             image: profile.picture,
             emailVerified: profile.email_verified,
@@ -41,7 +40,6 @@ export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
             name: profile.name || profile.login,
             email: profile.email,
             image: profile.avatar_url,
-            theme: "auto", // custom attribute
             language: "en-US",
           };
         },
@@ -51,9 +49,6 @@ export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
       async session({ session, user }) {
         // console.log("session:", session, user)
         session.id = user.id;
-        if (user.theme) {
-          session.theme = user.theme;
-        }
         if (user.language) {
           session.language = user.language;
         }
@@ -79,14 +74,12 @@ declare module "@auth/core/types" {
   interface Session {
     error?: "RefreshAccessTokenError";
     id?: string;
-    theme?: string;
     language?: string;
   }
 }
 
 declare module "@auth/core/adapters" {
   interface AdapterUser {
-    theme?: string;
     language?: string;
   }
 }

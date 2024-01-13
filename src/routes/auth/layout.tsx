@@ -1,5 +1,5 @@
 import { component$, Slot } from "@builder.io/qwik";
-import { routeLoader$, type RequestHandler } from "@builder.io/qwik-city";
+import { type RequestHandler } from "@builder.io/qwik-city";
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
   // Control caching for this request for best performance and to reduce hosting costs:
@@ -12,15 +12,6 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
   });
 };
 
-export const useQueryParamsLoader = routeLoader$(async (event) => {
-  const lang = event.query.get("lang") || "en-US";
-  return { lang };
-});
-
 export default component$(() => {
-  return (
-    <>
-      <Slot />
-    </>
-  );
+  return <Slot />;
 });

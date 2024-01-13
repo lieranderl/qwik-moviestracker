@@ -7,7 +7,6 @@ import {
 import { RouterHead } from "./components/router-head/router-head";
 
 import "./global.css";
-// import { DarkThemeLauncher } from "./utils/darkThemeLauncher";
 import { ToastStack } from "./components/toast/toastStack";
 import { LangLauncher } from "./utils/langLauncher";
 import { ThemeScript } from "qwik-theme-toggle";
@@ -31,12 +30,9 @@ export default component$(() => {
         ></script>
         <RouterHead />
         <LangLauncher />
-        <ThemeScript themeStorageKey="theme" />
+        <ThemeScript themeStorageKey="themePref" />
       </head>
-      <body
-        class="bg-primary dark:bg-primary-dark bg-[url('https://flowbite.s3.amazonaws.com/docs/jumbotron/hero-pattern.svg')] dark:bg-[url('https://flowbite.s3.amazonaws.com/docs/jumbotron/hero-pattern-dark.svg')] text-primary-dark dark:text-primary font-inter tracking-tight antialiased"
-        lang="en"
-      >
+      <body class="font-inter tracking-tight antialiased" lang="en">
         <ToastStack>
           <RouterOutlet />
           <ServiceWorkerRegister />

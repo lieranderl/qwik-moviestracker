@@ -182,7 +182,7 @@ export const MovieDetails = component$(
           lang={lang}
         >
           {movie.credits?.cast.slice(0, 10).map((c) => (
-            <>
+            <div class="carousel-item " key={c.id}>
               <a href={paths.media(MediaType.Person, c.id, lang)}>
                 <MediaCard
                   title={c.name ? c.name : ""}
@@ -195,7 +195,7 @@ export const MovieDetails = component$(
                   charName={c.character!}
                 />
               </a>
-            </>
+            </div>
           ))}
         </MediaCarousel>
 
@@ -208,7 +208,7 @@ export const MovieDetails = component$(
             {formatCrew(movie.credits.crew!)
               .slice(0, 10)
               .map((c) => (
-                <>
+                <div class="carousel-item " key={c.id}>
                   <a href={paths.media(MediaType.Person, c.id, lang)}>
                     <MediaCard
                       title={c.name!}
@@ -221,7 +221,7 @@ export const MovieDetails = component$(
                       charName={c.job!}
                     />
                   </a>
-                </>
+                </div>
               ))}
           </MediaCarousel>
         )}
@@ -234,7 +234,7 @@ export const MovieDetails = component$(
             lang={lang}
           >
             {colMovies.map((m) => (
-              <>
+              <div class="carousel-item " key={m.id}>
                 <a href={paths.media(MediaType.Movie, m.id, lang)}>
                   <MediaCard
                     title={m.title ? m.title : ""}
@@ -246,7 +246,7 @@ export const MovieDetails = component$(
                     isHorizontal={true}
                   />
                 </a>
-              </>
+              </div>
             ))}
           </MediaCarousel>
         )}
@@ -259,7 +259,7 @@ export const MovieDetails = component$(
             lang={lang}
           >
             {recMovies.map((m) => (
-              <>
+              <div class="carousel-item " key={m.id}>
                 <a href={paths.media(MediaType.Movie, m.id, lang)}>
                   <MediaCard
                     title={m.title ? m.title : ""}
@@ -271,11 +271,11 @@ export const MovieDetails = component$(
                     isHorizontal={true}
                   />
                 </a>
-              </>
+              </div>
             ))}
           </MediaCarousel>
         )}
       </div>
     );
-  },
+  }
 );

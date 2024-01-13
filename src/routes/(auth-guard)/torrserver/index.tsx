@@ -19,8 +19,10 @@ import {
   removeTorrent,
   torrServerEcho,
 } from "~/services/torrserver";
+import { useQueryParamsLoader } from "~/shared/loaders";
 import { langAddNewTorrServerURL, langNoResults } from "~/utils/languages";
-import { useQueryParamsLoader } from "../layout";
+
+export { useQueryParamsLoader } from "~/shared/loaders";
 
 export const torrServerSchema = z.object({
   ipaddress: z.string().nonempty(" ").url(),

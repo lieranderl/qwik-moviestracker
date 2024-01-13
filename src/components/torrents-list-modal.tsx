@@ -1,7 +1,7 @@
 import { component$, $, useStore, useSignal } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
 import { TorrentList } from "~/components/torrent-list";
-import { useQueryParamsLoader } from "~/routes/layout";
+import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
 import type { getTorrentsType } from "~/services/cloud-func-api";
 import { getTorrents } from "~/services/cloud-func-api";
 import type { MediaDetails, Season, Torrent } from "~/services/models";

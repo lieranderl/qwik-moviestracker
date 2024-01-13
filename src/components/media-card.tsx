@@ -52,8 +52,6 @@ export const MediaCard = component$(
       }
     });
 
-    const colorClass = "bg-primary dark:bg-primary-dark";
-
     return (
       <div class={cardWidthClass} style={cardWidthStyle}>
         {charName && (
@@ -66,7 +64,7 @@ export const MediaCard = component$(
           <div class="drop-shadow transition-scale scale-95 duration-300 ease-in-out group-hover:scale-100 group-hover:drop-shadow-md">
             <picture>
               <Image
-                class="rounded-md border-2 border-base-300 border-white dark:border-primary-800"
+                class="rounded-md border-2 border-base-200"
                 src={
                   picfile
                     ? "https://image.tmdb.org/t/p/w" + width + "/" + picfile
@@ -81,22 +79,12 @@ export const MediaCard = component$(
                 alt=""
               />
               {rating > 0 && (
-                <span
-                  class={[
-                    "absolute text-sm font-bold px-2.5 py-0.5 bottom-2 left-2 rounded-full",
-                    colorClass,
-                  ]}
-                >
+                <span class="absolute bottom-2 left-2 badge badge-lg font-bold">
                   {typeof rating === "string" ? rating : rating.toFixed(1)}
                 </span>
               )}
               {year > 0 && (
-                <span
-                  class={[
-                    "absolute text-sm font-bold px-2.5 py-0.5 bottom-2 right-2 rounded-full",
-                    colorClass,
-                  ]}
-                >
+                <span class="absolute bottom-2 right-2 badge badge-lg font-bold">
                   {year}
                 </span>
               )}

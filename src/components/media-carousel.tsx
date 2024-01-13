@@ -26,15 +26,10 @@ export const MediaCarousel = component$(
             </a>
           )}
         </div>
-
-        <div class="relative">
-          <div class="overflow-y-auto px-8 py-4">
-            <div class="carousel flex w-max flex-row gap-4">
-              <Slot />
-            </div>
-          </div>
+        <div class="carousel carousel-start w-full rounded-box p-4">
+          <Slot />
         </div>
       </section>
     );
-  },
+  }
 );

@@ -125,7 +125,7 @@ export const PersonDetails = component$(
               lang={lang}
             >
               {perMovies.cast.map((m) => (
-                <>
+                <div class="carousel-item " key={m.id}>
                   <a href={paths.media(MediaType.Movie, m.id, lang)}>
                     <MediaCard
                       title={m.title ? m.title : ""}
@@ -138,7 +138,7 @@ export const PersonDetails = component$(
                       charName={m.character}
                     />
                   </a>
-                </>
+                </div>
               ))}
             </MediaCarousel>
           )}
@@ -151,7 +151,7 @@ export const PersonDetails = component$(
               lang={lang}
             >
               {perTv.cast.map((m) => (
-                <>
+                <div class="carousel-item " key={m.id}>
                   <a href={paths.media(MediaType.Tv, m.id, lang)}>
                     <MediaCard
                       title={m.title ? m.title : ""}
@@ -166,7 +166,7 @@ export const PersonDetails = component$(
                       charName={m.character}
                     />
                   </a>
-                </>
+                </div>
               ))}
             </MediaCarousel>
           )}
@@ -179,7 +179,7 @@ export const PersonDetails = component$(
               lang={lang}
             >
               {perMovies.crew.map((m) => (
-                <>
+                <div class="carousel-item " key={m.id}>
                   <a href={paths.media(MediaType.Movie, m.id, lang)}>
                     <MediaCard
                       title={m.title ? m.title : ""}
@@ -194,7 +194,7 @@ export const PersonDetails = component$(
                       charName={m.job}
                     />
                   </a>
-                </>
+                </div>
               ))}
             </MediaCarousel>
           )}
@@ -207,7 +207,7 @@ export const PersonDetails = component$(
               lang={lang}
             >
               {perTv.crew.map((m) => (
-                <>
+                <div class="carousel-item " key={m.id}>
                   <a href={paths.media(MediaType.Tv, m.id, lang)}>
                     <MediaCard
                       title={m.title ? m.title : ""}
@@ -222,7 +222,7 @@ export const PersonDetails = component$(
                       charName={m.job}
                     />
                   </a>
-                </>
+                </div>
               ))}
             </MediaCarousel>
           )}

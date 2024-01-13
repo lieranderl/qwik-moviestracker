@@ -1,6 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 import { Image } from "@unpic/qwik";
-import { useQueryParamsLoader } from "~/routes/layout";
+import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
 import type { VideoResult } from "~/services/models";
 import { langTrailers } from "~/utils/languages";
 import { ButtonPrimary, ButtonSize, ButtonType } from "./button-primary";

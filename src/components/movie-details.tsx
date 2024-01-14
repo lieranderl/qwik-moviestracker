@@ -64,7 +64,7 @@ export const MovieDetails = component$(
           </div>
         </section>
 
-        <section class="mb-4 flex">
+        <section class="mb-4 flex items-center">
           {movie.videos!.results!.length > 0 && (
             <div class="mr-2">
               <TrailersModal videos={movie.videos!.results} />

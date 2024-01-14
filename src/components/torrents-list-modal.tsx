@@ -6,8 +6,8 @@ import { getTorrents } from "~/services/cloud-func-api";
 import type { MediaDetails, Season, Torrent } from "~/services/models";
 import { formatYear } from "~/utils/fomat";
 import { langTorrents } from "~/utils/languages";
-import { ButtonPrimary, ButtonSize, ButtonType } from "./button-primary";
 import { useQueryParamsLoader } from "~/shared/loaders";
+import { HiChevronDownSolid } from "@qwikest/icons/heroicons";
 
 export interface TorModalPros {
   title: string;
@@ -29,7 +29,7 @@ export const TorrentsModal = component$(
         const torrents = await server$(
           ({ name, year, isMovie }: getTorrentsType) => {
             return getTorrents({ name: name, year: year, isMovie: isMovie });
-          },
+          }
         )({
           name: title,
           year: selectedYear.value,
@@ -45,43 +45,95 @@ export const TorrentsModal = component$(
     return (
       <>
         {seasons.length == 0 && (
-          <ButtonPrimary
-           
-            size={ButtonSize.md}
-            type={ButtonType.button}
-            onClick={getTorrentsToggle}
+          <button
+            class="btn btn-accent btn-sm"
+            onClick$={() => {
+              const torrModal = document.getElementById("torrentsModal")
+                ? (document.getElementById(
+                    "torrentsModal"
+                  ) as HTMLDialogElement)
+                : null;
+              if (torrModal) {
+                torrModal.showModal();
+                getTorrentsToggle();
+              }
+            }}
           >
             {langTorrents(resource.value.lang)}
-          </ButtonPrimary>
+          </button>
         )}
 
         {seasons.length > 0 && (
           <>
-            <ButtonPrimary
-              type={ButtonType.button}
-              size={ButtonSize.md}
-              dataDropdownToggle="dropdownBottom"
-              dataDropdownPlacement="bottom"
-            >
-              {langTorrents(resource.value.lang)}{" "}
-              <svg
-                class="w-2.5 h-2.5 ml-2.5"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 10 6"
+            <div class="dropdown">
+              <div tabIndex={0} role="button" class="btn btn-accent btn-sm m-1">
+                {langTorrents(resource.value.lang)}
+                <HiChevronDownSolid />
+              </div>
+              <ul
+                tabIndex={0}
+                class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
               >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="m1 1 4 4 4-4"
-                />
-              </svg>
-            </ButtonPrimary>
+                {seasons!.map((s) => {
+                  if (s.season_number !== 0) {
+                    return (
+                      <>
+                        {s.air_date && (
+                          <li>
+                            <a
+                              onClick$={() => {
+                                const torrModal = document.getElementById(
+                                  "torrentsModal"
+                                )
+                                  ? (document.getElementById(
+                                      "torrentsModal"
+                                    ) as HTMLDialogElement)
+                                  : null;
+                                if (torrModal) {
+                                  torrModal.showModal();
+                                  selectedYear.value = formatYear(
+                                    s.air_date ? s.air_date : ""
+                                  );
+                                  getTorrentsToggle();
+                                }
+                              }}
+                              href="#"
+                              class="block px-4 py-2 hover:bg-primary-100 dark:hover:bg-primary-600 dark:hover:text-primary"
+                            >
+                              Сезон
+                              <span class="ml-1">
+                                {" "}
+                                {s.season_number}(
+                                {formatYear(s.air_date ? s.air_date : "")})
+                              </span>
+                            </a>
+                          </li>
+                        )}
+                      </>
+                    );
+                  }
+                })}
+              </ul>
+            </div>
 
-            <div
+            {/* <button
+              class="btn btn-accent btn-sm"
+              onClick$={() => {
+                const trailersModal = document.getElementById("torrentsModal")
+                  ? (document.getElementById(
+                      "torrentsModal"
+                    ) as HTMLDialogElement)
+                  : null;
+                if (trailersModal) {
+                  trailersModal.showModal();
+                }
+              }}
+            >
+              {langTorrents(resource.value.lang)}
+              <HiChevronDownSolid />
+            </button> */}
+
+            {/* <div
               id="dropdownBottom"
               class="z-10 hidden bg-primary divide-y divide-primary-100 rounded-lg shadow w-44 dark:bg-primary-700"
             >
@@ -100,7 +152,7 @@ export const TorrentsModal = component$(
                               data-modal-toggle="torrentsModal"
                               onClick$={() => {
                                 selectedYear.value = formatYear(
-                                  s.air_date ? s.air_date : "",
+                                  s.air_date ? s.air_date : ""
                                 );
                                 getTorrentsToggle();
                               }}
@@ -121,11 +173,36 @@ export const TorrentsModal = component$(
                   }
                 })}
               </ul>
-            </div>
+            </div> */}
           </>
         )}
 
-        <div
+        <dialog id="torrentsModal" class="modal">
+          <div class="modal-box">
+            {/* <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form> */}
+            <h3 class="text-xl font-semibold ">
+              {langTorrents(resource.value.lang)}
+            </h3>
+            <div class="p-6 ">
+              <div class="p-6">
+                {/* <TorrentList
+                  torrents={torrentsStore.torrents}
+                  title={title}
+                  year={selectedYear}
+                  isMovie={isMovie}
+                  movie={media}
+                /> */}
+              </div>
+            </div>
+          </div>
+          <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+          </form>
+        </dialog>
+
+        {/* <div
           id="torrentsModal"
           tabIndex={0}
           aria-hidden="true"
@@ -171,8 +248,8 @@ export const TorrentsModal = component$(
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </>
     );
-  },
+  }
 );

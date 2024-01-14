@@ -1,6 +1,6 @@
 import { Resource, component$, useResource$ } from "@builder.io/qwik";
 
-import { Link, type DocumentHead } from "@builder.io/qwik-city";
+import { type DocumentHead } from "@builder.io/qwik-city";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
 import type { MediaShort, MovieShort } from "~/services/models";
@@ -16,56 +16,6 @@ import {
 import { paths } from "~/utils/paths";
 import { HiXCircleSolid } from "@qwikest/icons/heroicons";
 import { useQueryParamsLoader } from "~/shared/loaders";
-
-
-// export const useContentLoader = routeLoader$(async (event) => {
-//   console.log("Movie useContentLoader");
-//   const lang = event.query.get("lang") || "en-US";
-//   try {
-//     const [m, torMovies, hdrMovies, dolbyMovies] = await Promise.all([
-//       getTrendingMedia({
-//         page: 1,
-//         language: lang,
-//         type: MediaType.Movie,
-//         needbackdrop: true,
-//       }),
-//       withBackdrop(
-//         (await getMoviesMongo({
-//           page: 1,
-//           entries_on_page: 20,
-//           language: lang,
-//           dbName: DbType.LastMovies,
-//         })) as MediaShort[],
-//       ),
-//       withBackdrop(
-//         (await getMoviesMongo({
-//           page: 1,
-//           entries_on_page: 20,
-//           language: lang,
-//           dbName: DbType.HDR10,
-//         })) as MediaShort[],
-//       ),
-//       withBackdrop(
-//         (await getMoviesMongo({
-//           page: 1,
-//           entries_on_page: 20,
-//           language: lang,
-//           dbName: DbType.DV,
-//         })) as MediaShort[],
-//       ),
-//     ]);
-//     const movies = m as MovieShort[];
-//     return {
-//       movies,
-//       torMovies,
-//       hdrMovies,
-//       dolbyMovies,
-//       lang,
-//     };
-//   } catch {
-//     throw event.redirect(302, paths.notFound(lang));
-//   }
-// });
 
 export default component$(() => {
   // const resource = useContentLoader();
@@ -166,7 +116,7 @@ export default component$(() => {
                 lang={lang}
               >
                 {value.hdrMovies.map((m) => (
-                  <div class="carousel-item " key={m.id}>
+                  <div class="carousel-item" key={m.id}>
                     <a href={paths.media(MediaType.Movie, m.id, lang)}>
                       <MediaCard
                         title={m.title ? m.title : ""}

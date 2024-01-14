@@ -8,7 +8,7 @@ import { RouterHead } from "./components/router-head/router-head";
 
 import "./global.css";
 import { ToastStack } from "./components/toast/toastStack";
-import { LangLauncher } from "./utils/langLauncher";
+import { ParamsLauncher } from "./utils/param-launcher";
 import { ThemeScript } from "qwik-theme-toggle";
 
 export default component$(() => {
@@ -29,7 +29,7 @@ export default component$(() => {
           nonce=""
         ></script>
         <RouterHead />
-        <LangLauncher />
+        <ParamsLauncher />
         <ThemeScript themeStorageKey="themePref" />
       </head>
       <body class="font-inter tracking-tight antialiased" lang="en">

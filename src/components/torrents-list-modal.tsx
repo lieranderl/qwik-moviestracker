@@ -1,13 +1,13 @@
 import { component$, $, useStore, useSignal } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
 import { TorrentList } from "~/components/torrent-list";
-import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
 import type { getTorrentsType } from "~/services/cloud-func-api";
 import { getTorrents } from "~/services/cloud-func-api";
 import type { MediaDetails, Season, Torrent } from "~/services/models";
 import { formatYear } from "~/utils/fomat";
 import { langTorrents } from "~/utils/languages";
 import { ButtonPrimary, ButtonSize, ButtonType } from "./button-primary";
+import { useQueryParamsLoader } from "~/shared/loaders";
 
 export interface TorModalPros {
   title: string;
@@ -46,8 +46,7 @@ export const TorrentsModal = component$(
       <>
         {seasons.length == 0 && (
           <ButtonPrimary
-            dataModalTarget="torrentsModal"
-            dataModalToggle="torrentsModal"
+           
             size={ButtonSize.md}
             type={ButtonType.button}
             onClick={getTorrentsToggle}

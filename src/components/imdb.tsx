@@ -30,32 +30,32 @@ export const Imdb = component$(({ id }: { id: string }) => {
     "DOMContentLoaded",
     $(() => {
       isBrowserSig.value = isBrowser;
-    })
+    }),
   );
 
   return (
-      <Resource
-        value={imdbResource}
-        onPending={() => <span class="loading loading-spinner"></span>}
-        onRejected={() => <div></div>}
-        onResolved={(imdb) => (
-          <>
-            {imdb && (
-              <div class="flex items-center">
-                <div class="text-[2.5rem] me-2">
-                  <SiImdb />
-                </div>
-
-                <div class="text-md font-bold">
-                  {imdb.Rating}{" "}
-                  {imdb.Votes && (
-                    <span class="text-sm font-bold italic">({imdb.Votes})</span>
-                  )}
-                </div>
+    <Resource
+      value={imdbResource}
+      onPending={() => <span class="loading loading-spinner"></span>}
+      onRejected={() => <div></div>}
+      onResolved={(imdb) => (
+        <>
+          {imdb && (
+            <div class="flex items-center">
+              <div class="text-[2.5rem] me-2">
+                <SiImdb />
               </div>
-            )}
-          </>
-        )}
-      />
+
+              <div class="text-md font-bold">
+                {imdb.Rating}{" "}
+                {imdb.Votes && (
+                  <span class="text-sm font-bold italic">({imdb.Votes})</span>
+                )}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    />
   );
 });

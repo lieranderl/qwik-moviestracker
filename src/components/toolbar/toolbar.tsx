@@ -10,9 +10,7 @@ import { ThemeToggle } from "qwik-theme-toggle";
 export type ToolbarProps = {
   lang: string;
 };
-export const Toolbar = component$(({lang}) => {
- 
-
+export const Toolbar = component$(({ lang }) => {
   return (
     <nav class="block bg-opacity-50 dark:bg-opacity-50 backdrop-blur-sm fixed z-10">
       <div class="w-screen flex flex-wrap items-center justify-between p-4 bg-opacity-100">
@@ -28,13 +26,13 @@ export const Toolbar = component$(({lang}) => {
         <div class="flex items-center">
           <div class="flex items-center md:order-2 md:mx-4 gap-2">
             <ThemeToggle themeStorageKey="themePref" textSize="text-3xl" />
-            <UserMenu lang={lang}  />
+            <UserMenu lang={lang} />
             <BurgerButton>
               <ToolbarLinks lang={lang} />
             </BurgerButton>
           </div>
           <ul class="hidden md:flex flex-row me-4">
-            <ToolbarLinks lang={lang}  />
+            <ToolbarLinks lang={lang} />
           </ul>
         </div>
       </div>

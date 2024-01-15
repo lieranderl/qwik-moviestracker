@@ -1,4 +1,4 @@
-import type {  QRL } from "@builder.io/qwik";
+import type { QRL } from "@builder.io/qwik";
 import { component$ } from "@builder.io/qwik";
 import type { ToastBody } from "./toastStack";
 import { getIconByType } from "./utils";

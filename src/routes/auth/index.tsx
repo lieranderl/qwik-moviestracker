@@ -6,7 +6,6 @@ import { useQueryParamsLoader } from "~/shared/loaders";
 
 export { useQueryParamsLoader } from "~/shared/loaders";
 
-
 export default component$(() => {
   const qparams = useQueryParamsLoader();
 

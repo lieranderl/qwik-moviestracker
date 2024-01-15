@@ -35,7 +35,6 @@ export const ParamsLauncher = () => (
       params.set("theme", localStorage.themePref);
       window.location.replace(window.location.pathname+"?"+ params.toString());
     }
-    `
-  }
+    `}
   />
 );

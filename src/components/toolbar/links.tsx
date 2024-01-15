@@ -23,27 +23,13 @@ const Alink = component$(({ text, path }: AlinkProps) => {
   );
 });
 
-export const ToolbarLinks = component$(({lang}:ToolbarProps) => {
-
-
+export const ToolbarLinks = component$(({ lang }: ToolbarProps) => {
   return (
     <>
-      <Alink
-        text={langMovies(lang)}
-        path={paths.movie(lang)}
-      />
-      <Alink
-        text={langSeries(lang)}
-        path={paths.tv(lang)}
-      />
-      <Alink
-        text={langSearch(lang)}
-        path={paths.search(lang)}
-      />
-      <Alink
-        text={langTorrServer(lang)}
-        path={paths.torrserver(lang)}
-      />
+      <Alink text={langMovies(lang)} path={paths.movie(lang)} />
+      <Alink text={langSeries(lang)} path={paths.tv(lang)} />
+      <Alink text={langSearch(lang)} path={paths.search(lang)} />
+      <Alink text={langTorrServer(lang)} path={paths.torrserver(lang)} />
     </>
   );
 });

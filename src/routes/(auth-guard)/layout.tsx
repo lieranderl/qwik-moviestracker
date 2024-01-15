@@ -32,14 +32,11 @@ export const onRequest: RequestHandler = (event) => {
   }
 };
 
-
-
-
 export default component$(() => {
-  const  useQparam = useQueryParamsLoader();
+  const useQparam = useQueryParamsLoader();
   return (
     <>
-      <Toolbar lang={useQparam.value.lang}/>
+      <Toolbar lang={useQparam.value.lang} />
       <Slot />
     </>
   );

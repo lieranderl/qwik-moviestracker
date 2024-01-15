@@ -5,7 +5,7 @@ import { useAuthSession, useAuthSignout } from "~/routes/plugin@auth";
 import { langSingOut } from "~/utils/languages";
 import type { ToolbarProps } from "./toolbar";
 
-export const UserMenu = component$(({lang}: ToolbarProps) => {
+export const UserMenu = component$(({ lang }: ToolbarProps) => {
   const session = useAuthSession();
   const signOut = useAuthSignout();
 

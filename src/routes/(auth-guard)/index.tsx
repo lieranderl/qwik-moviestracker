@@ -45,7 +45,7 @@ export default component$(() => {
             language: lang,
             dbName: DbType.LastMovies,
             page: 1,
-          })) as MediaShort[]
+          })) as MediaShort[],
         ),
       ]);
       const movies = m as MovieShort[];

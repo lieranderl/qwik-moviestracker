@@ -111,7 +111,7 @@ export const TorrentsModal = component$(
         )}
 
         <dialog id="torrentsModal" class="modal">
-          <div class="modal-box">
+          <div class="modal-box w-11/12 max-w-5xl">
             {/* <form method="dialog">
           <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
         </form> */}

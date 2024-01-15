@@ -1,8 +1,8 @@
-import { component$, useContext, $ } from "@builder.io/qwik";
+import { component$, $ } from "@builder.io/qwik";
 import { formatRating } from "~/utils/fomat";
 import { ButtonPrimary, ButtonSize } from "./button-primary";
 import { addTorrent } from "~/services/torrserver";
-import { toastManagerContext } from "./toast/toastStack";
+// import { toastManagerContext } from "./toast/toastStack";
 import type { MediaDetails, Torrent } from "~/services/models";
 
 interface TorrentListProps {
@@ -12,7 +12,7 @@ interface TorrentListProps {
 
 export const TorrentBlock = component$(
   ({ torrent, movie }: TorrentListProps) => {
-    const toastManager = useContext(toastManagerContext);
+    // const toastManager = useContext(toastManagerContext);
     const labelClass =
       "bg-primary-100 text-primary-800 text-sm mr-2 px-2.5 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300";
     return (
@@ -52,28 +52,28 @@ export const TorrentBlock = component$(
                     const torrserv =
                       localStorage.getItem("selectedTorServer") || "";
                     if (torrserv === "") {
-                      toastManager.addToast({
-                        message: "TorrServer hasn't been added!",
-                        type: "error",
-                        autocloseTime: 5000,
-                      });
+                      // toastManager.addToast({
+                      //   message: "TorrServer hasn't been added!",
+                      //   type: "error",
+                      //   autocloseTime: 5000,
+                      // });
                       return;
                     }
                     try {
                       const result = await addTorrent(torrserv, torrent, movie);
 
                       console.log(result);
-                      toastManager.addToast({
-                        message: "Torrent added!",
-                        type: "success",
-                        autocloseTime: 5000,
-                      });
+                      // toastManager.addToast({
+                      //   message: "Torrent added!",
+                      //   type: "success",
+                      //   autocloseTime: 5000,
+                      // });
                     } catch (error) {
-                      toastManager.addToast({
-                        message: "Torrent hasn't been added!",
-                        type: "error",
-                        autocloseTime: 5000,
-                      });
+                      // toastManager.addToast({
+                      //   message: "Torrent hasn't been added!",
+                      //   type: "error",
+                      //   autocloseTime: 5000,
+                      // });
                     }
                   })}
                 />

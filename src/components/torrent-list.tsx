@@ -1,6 +1,6 @@
 /* eslint-disable qwik/no-use-visible-task */
 import type { Signal } from "@builder.io/qwik";
-import { component$, $, useStore } from "@builder.io/qwik";
+import { component$, $, useStore, useVisibleTask$ } from "@builder.io/qwik";
 import { setValue, useForm, valiForm$ } from "@modular-forms/qwik";
 import { server$ } from "@builder.io/qwik-city";
 import { DotPulseLoader } from "./dot-pulse-loader/dot-pulse-loader";
@@ -129,16 +129,16 @@ export const TorrentList = component$(
     //   setValue(searchTorrForm, "year", year.value);
     // });
 
-    // useVisibleTask$((ctx) => {
-    //   ctx.track(() => torrents);
-    //   initTorrents.value = torrents;
-    // });
+    useVisibleTask$((ctx) => {
+      ctx.track(() => torrents);
+      initTorrents.value = torrents;
+    });
 
-    // useVisibleTask$((ctx) => {
-    //   ctx.track(() => initTorrents.value);
-    //   ctx.track(() => sortFilterStore.filterChecked);
-    //   filterTorrents();
-    // });
+    useVisibleTask$((ctx) => {
+      ctx.track(() => initTorrents.value);
+      ctx.track(() => sortFilterStore.filterChecked);
+      filterTorrents();
+    });
 
     return (
       <>
@@ -283,7 +283,7 @@ export const TorrentList = component$(
             />
             <label>DV</label>
           </div>
-        </div>
+        </div> */}
 
         <section class="my-4">
           {sortedTorrents.value === null && <DotPulseLoader />}
@@ -296,12 +296,12 @@ export const TorrentList = component$(
 
         <section class="my-4">
           {sortedTorrents.value !== null &&
-            sortedTorrents.value.map((torrent, key) => (
-              <>
-                <TorrentBlock torrent={torrent} movie={movie} key={key} />
-              </>
+            sortedTorrents.value.map((torrent) => (
+             
+                <TorrentBlock torrent={torrent} movie={movie} key={torrent.Magnet} />
+          
             ))}
-        </section> */}
+        </section>
       </>
     );
   }

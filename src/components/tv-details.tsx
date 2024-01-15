@@ -25,6 +25,8 @@ import {
 } from "~/utils/languages";
 import { SiThemoviedatabase } from "@qwikest/icons/simpleicons";
 import { LuDisc3, LuLayers3 } from "@qwikest/icons/lucide";
+import { MediaTitle } from "./media-details/media-title";
+import { MediaRating } from "./media-details/media-rating";
 
 interface TvDetailsProps {
   tv: TvFull;
@@ -34,35 +36,8 @@ interface TvDetailsProps {
 export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
   return (
     <div class="pt-[20vh] lg:mx-20 xl:mx-40 font-normal">
-      <section class="my-4">
-        <h2 class="text-5xl font-extrabold my-1">
-          {tv.name}{" "}
-          {tv.first_air_date && (
-            <span class="text-3xl font-bold italic">
-              ({formatYear(tv.first_air_date)})
-            </span>
-          )}
-        </h2>
-        {tv.original_name && <div class="text-xl">{tv.original_name}</div>}
-      </section>
-
-      <section class="my-4 text-lg">
-        <div class="flex flex-wrap items-center">
-          {tv.vote_average! > 0 && (
-            <div class="flex items-center me-4">
-              <div class="text-[2.5rem] me-2">
-                <SiThemoviedatabase />
-              </div>
-              <div class="font-bold">
-                {tv.vote_average && formatRating(tv.vote_average)}{" "}
-                {tv.vote_count && tv.vote_count > 0 && (
-                  <span class="text-sm italic">({tv.vote_count})</span>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
+      <MediaTitle name={tv.name!} original_name={tv.original_name} />
+      <MediaRating vote_average={tv.vote_average} vote_count={tv.vote_count} />
 
       <section class="mb-4 flex items-center">
         {tv.videos!.results.length > 0 && (

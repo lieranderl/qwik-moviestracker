@@ -2,7 +2,6 @@ import { component$ } from "@builder.io/qwik";
 
 import {
   formatYear,
-  formatRating,
   formatCurrency,
   formatLanguage,
   formatDate,
@@ -11,7 +10,6 @@ import {
 import { MediaCarousel } from "./media-carousel";
 import { MediaCard } from "./media-card";
 import { paths } from "~/utils/paths";
-import { Imdb } from "./imdb";
 import {
   langBudget,
   langRevenue,
@@ -25,7 +23,8 @@ import { TorrentsModal } from "./torrents-list-modal";
 import { TrailersModal } from "./trailers-list-modal";
 import { ExternalIds } from "./external_ids";
 import { MediaType, type MovieFull, type MovieShort } from "~/services/models";
-import { SiThemoviedatabase } from "@qwikest/icons/simpleicons";
+import { MediaTitle } from "./media-details/media-title";
+import { MediaRating } from "./media-details/media-rating";
 
 interface MovieDetailsProps {
   movie: MovieFull;
@@ -37,32 +36,13 @@ interface MovieDetailsProps {
 export const MovieDetails = component$(
   ({ movie, recMovies, colMovies, lang }: MovieDetailsProps) => {
     return (
-      <div class="pt-[20vh] lg:mx-20 xl:mx-40 font-normal">
-        <section class="mb-4">
-          <h2 class="text-5xl font-extrabold me-1">{movie.title}</h2>
-          {movie.original_title && (
-            <div class="text-xl">{movie.original_title}</div>
-          )}
-        </section>
-
-        <section class="mb-4 text-lg">
-          <div class="flex flex-wrap items-center">
-            {movie.vote_average! > 0 && (
-              <div class="flex items-center me-4">
-                <div class="text-[2.5rem] me-2">
-                  <SiThemoviedatabase />
-                </div>
-                <div class="font-bold">
-                  {formatRating(movie.vote_average!)}{" "}
-                  {movie.vote_count && movie.vote_count > 0 && (
-                    <span class="text-sm italic">({movie.vote_count})</span>
-                  )}
-                </div>
-              </div>
-            )}
-            {movie.imdb_id && <Imdb id={movie.imdb_id} />}
-          </div>
-        </section>
+      <div class="pt-[20vh] lg:mx-20 xl:mx-40">
+        <MediaTitle name={movie.title!} original_name={movie.original_title} />
+        <MediaRating
+          vote_average={movie.vote_average}
+          vote_count={movie.vote_count}
+          imdb_id={movie.imdb_id}
+        />
 
         <section class="mb-4 flex items-center">
           {movie.videos!.results!.length > 0 && (
@@ -257,5 +237,5 @@ export const MovieDetails = component$(
         )}
       </div>
     );
-  },
+  }
 );

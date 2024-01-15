@@ -36,7 +36,7 @@ export const Imdb = component$(({ id }: { id: string }) => {
   return (
     <Resource
       value={imdbResource}
-      onPending={() => <span class="loading loading-spinner"></span>}
+      onPending={() => <span class="loading loading-ring loading-lg"></span>}
       onRejected={() => <div></div>}
       onResolved={(imdb) => (
         <>

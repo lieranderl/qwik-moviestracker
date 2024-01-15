@@ -1,4 +1,11 @@
-import { component$, $, useStore } from "@builder.io/qwik";
+import {
+  component$,
+  $,
+  useStore,
+  createContextId,
+  useContextProvider,
+  useTask$,
+} from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
 import { TorrentList } from "~/components/torrent-list";
 import { getTorrents } from "~/services/cloud-func-api";
@@ -19,15 +26,22 @@ export interface TorModalPros {
 export const TorrentsModal = component$(
   ({ title, year, isMovie, seasons, media }: TorModalPros) => {
     const resource = useQueryParamsLoader();
-    const torrentsStore = useStore({ torrents: null as Torrent[] | null });
+    const torrentsStore = useStore({
+      torrents: null as Torrent[] | null,
+      year: 0,
+    });
+    useTask$(async () => {
+      torrentsStore.year = year;
+    });
     const getTorrentsToggle = $(
       async (name: string, year: number, isMovie: boolean) => {
+        torrentsStore.torrents = null;
+        torrentsStore.year = year;
         const torrModal = document.getElementById("torrentsModal")
           ? (document.getElementById("torrentsModal") as HTMLDialogElement)
           : null;
         if (torrModal) {
           torrModal.showModal();
-          torrentsStore.torrents = null;
           try {
             torrentsStore.torrents = await server$(() => {
               return getTorrents({ name: name, year: year, isMovie: isMovie });
@@ -37,7 +51,7 @@ export const TorrentsModal = component$(
             console.log(error);
           }
         }
-      }
+      },
     );
 
     return (
@@ -71,21 +85,21 @@ export const TorrentsModal = component$(
                             <a
                               onClick$={() => {
                                 const torrModal = document.getElementById(
-                                  "torrentsModal"
+                                  "torrentsModal",
                                 )
                                   ? (document.getElementById(
-                                      "torrentsModal"
+                                      "torrentsModal",
                                     ) as HTMLDialogElement)
                                   : null;
                                 if (torrModal) {
                                   torrModal.showModal();
                                   const updatedYear = formatYear(
-                                    s.air_date ? s.air_date : ""
+                                    s.air_date ? s.air_date : "",
                                   );
                                   getTorrentsToggle(
                                     title,
                                     updatedYear,
-                                    isMovie
+                                    isMovie,
                                   );
                                 }
                               }}
@@ -122,7 +136,7 @@ export const TorrentsModal = component$(
               <TorrentList
                 torrents={torrentsStore.torrents}
                 title={title}
-                year={year}
+                year={torrentsStore.year}
                 isMovie={isMovie}
                 movie={media}
               />
@@ -182,5 +196,5 @@ export const TorrentsModal = component$(
         </div> */}
       </>
     );
-  }
+  },
 );

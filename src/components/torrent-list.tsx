@@ -171,7 +171,7 @@ export const TorrentList = component$(
                         class="input join-item input-bordered  input-sm   w-48 py-2  pl-2"
                       />
                       {field.error && (
-                        <div class="text-xs text-error">{field.error}</div>
+                        <div class="text-error text-xs">{field.error}</div>
                       )}
                     </div>
                   )}
@@ -187,7 +187,7 @@ export const TorrentList = component$(
                         placeholder="год"
                       />
                       {field.error && (
-                        <div class="text-xs text-error">{field.error}</div>
+                        <div class="text-error text-xs">{field.error}</div>
                       )}
                     </div>
                   )}

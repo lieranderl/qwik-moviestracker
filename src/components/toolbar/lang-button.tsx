@@ -34,7 +34,7 @@ export const LangButton = component$(() => {
   return (
     <li
       onClick$={toggleLang}
-      class="text-primary-700 hover:bg-primary-100 dark:hover:bg-primary-600 dark:text-primary-200 block cursor-pointer px-4 py-2 text-sm dark:hover:text-primary"
+      class="text-primary-700 hover:bg-primary-100 dark:hover:bg-primary-600 dark:text-primary-200 dark:hover:text-primary block cursor-pointer px-4 py-2 text-sm"
     >
       {loc.url.searchParams.get("lang") || "en-US"}
     </li>

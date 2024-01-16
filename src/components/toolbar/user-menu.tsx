@@ -22,7 +22,7 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
           </div>
           <ul
             tabIndex={0}
-            class="menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow"
+            class="menu dropdown-content rounded-box bg-base-100 z-[1] w-52 p-2 shadow"
           >
             {session.value.user && (
               <div class="px-4 py-3">
@@ -39,7 +39,7 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
 
             <li
               onClick$={$(() => signOut.submit({ callbackUrl: "/auth" }))}
-              class="block cursor-pointer px-4 py-2 text-sm hover:text-primary"
+              class="hover:text-primary block cursor-pointer px-4 py-2 text-sm"
             >
               {langSingOut(lang)}
             </li>

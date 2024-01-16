@@ -64,7 +64,7 @@ export const MediaCard = component$(
           <div class="transition-scale scale-95 drop-shadow duration-300 ease-in-out group-hover:scale-100 group-hover:drop-shadow-md">
             <picture>
               <Image
-                class="rounded-md border-2 border-base-200"
+                class="border-base-200 rounded-md border-2"
                 src={
                   picfile
                     ? "https://image.tmdb.org/t/p/w" + width + "/" + picfile

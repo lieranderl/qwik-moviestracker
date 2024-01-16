@@ -9,7 +9,7 @@ export const BurgerButton = component$(() => {
       </div>
       <ul
         tabIndex={0}
-        class="menu dropdown-content z-[1] w-44 rounded-box bg-base-100 p-2 shadow"
+        class="menu dropdown-content rounded-box bg-base-100 z-[1] w-44 p-2 shadow"
       >
         <Slot />
       </ul>

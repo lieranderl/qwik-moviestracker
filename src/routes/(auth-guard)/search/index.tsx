@@ -5,7 +5,6 @@ import {
   useSignal,
 } from "@builder.io/qwik";
 import { routeLoader$ } from "@builder.io/qwik-city";
-import { DotPulseLoader } from "~/components/dot-pulse-loader/dot-pulse-loader";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import { MediaType } from "~/services/models";
@@ -49,7 +48,7 @@ export default component$(() => {
       <div class="container mx-auto px-4 pt-[80px] text-center">
         <input
           type="text"
-          class="border-primary-300 focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600 placeholder-primary-900 mr-2 w-[50%] rounded-lg border bg-primary py-2 pl-2 text-sm"
+          class="border-primary-300 focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600 placeholder-primary-900 bg-primary mr-2 w-[50%] rounded-lg border py-2 pl-2 text-sm"
           placeholder={langSearch(resource.value.lang)}
           onKeyDown$={(e, elem) => {
             if (e.keyCode === 13) {
@@ -64,7 +63,7 @@ export default component$(() => {
           value={searchResource}
           onPending={() => (
             <div class="my-2">
-              <DotPulseLoader />
+             <span class="loading loading-spinner loading-lg"></span>
             </div>
           )}
           onRejected={(error) => <div>Error: {error.message}</div>}

@@ -9,9 +9,8 @@ import {
 } from "@builder.io/qwik";
 import { setValue, useForm, valiForm$ } from "@modular-forms/qwik";
 import { ToastManagerContext } from "qwik-toasts";
-import type { Input} from "valibot";
+import type { Input } from "valibot";
 import { object, string, url } from "valibot";
-import { DotPulseLoader } from "~/components/dot-pulse-loader/dot-pulse-loader";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import type { TSResult } from "~/services/models";
@@ -28,7 +27,6 @@ export const torrServerSchema = object({
 });
 
 export type torrServerForm = Input<typeof torrServerSchema>;
-
 
 export default component$(() => {
   const resource = useQueryParamsLoader();
@@ -130,8 +128,8 @@ export default component$(() => {
 
   return (
     <div class="container mx-auto px-4 pt-[64px]">
-      <div class="grid md:grid-cols-6 my-4 sm:grid-cols-3 grid-cols-2">
-        <div class="md:col-start-3 col-span-2 col-start-1">
+      <div class="my-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6">
+        <div class="col-span-2 col-start-1 md:col-start-3">
           <Form onSubmit$={addTorrserver} class="flex items-start justify-end">
             <Field name="ipaddress">
               {(field, props) => (
@@ -141,7 +139,7 @@ export default component$(() => {
                     type="text"
                     value={field.value}
                     placeholder={langAddNewTorrServerURL(resource.value.lang)}
-                    class="w-64 mr-2 py-2 pl-2 text-sm border border-primary-300 rounded-lg bg-primary focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600 placeholder-primary-900"
+                    class="border-primary-300 bg-primary focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600 placeholder-primary-900 mr-2 w-64 rounded-lg border py-2 pl-2 text-sm"
                   />
                   {field.error && (
                     <div class="text-xs text-red-400">{field.error}</div>
@@ -153,11 +151,11 @@ export default component$(() => {
               <button
                 type="submit"
                 disabled={newTorrServerForm.invalid}
-                class="hover:bg-primary-100 dark:hover:bg-primary-900 focus:outline-none focus:ring-0 focus:ring-primary-100 dark:focus:ring-primary-900 rounded-lg text-sm p-2.5"
+                class="hover:bg-primary-100 dark:hover:bg-primary-900 focus:ring-primary-100 dark:focus:ring-primary-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-0"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="fill-primary-600 w-5 h-5"
+                  class="fill-primary-600 h-5 w-5"
                   viewBox="0 0 448 512"
                 >
                   <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" />
@@ -167,13 +165,13 @@ export default component$(() => {
           </Form>
         </div>
 
-        <div class="md:col-start-3 col-span-2 col-start-1">
-          <section class="flex my-2 justify-end items-center">
+        <div class="col-span-2 col-start-1 md:col-start-3">
+          <section class="my-2 flex items-center justify-end">
             <select
               name=""
               id="attrib"
               value={selectedTorServer.value}
-              class=" mr-2 bg-primary border border-primary-300 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600"
+              class=" bg-primary border-primary-300 focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600 mr-2 rounded-lg border text-sm"
               onChange$={(_, e) => {
                 selectedTorServer.value = e.value;
               }}
@@ -187,7 +185,7 @@ export default component$(() => {
             <div class="my-1">
               <button
                 type="button"
-                class="hover:bg-primary-100 dark:hover:bg-primary-900 focus:outline-none focus:ring-0 focus:ring-primary-100 dark:focus:ring-primary-900 rounded-lg text-sm p-2.5"
+                class="hover:bg-primary-100 dark:hover:bg-primary-900 focus:ring-primary-100 dark:focus:ring-primary-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-0"
                 onClick$={() => {
                   const index = torrServerStore.list.indexOf(
                     selectedTorServer.value,
@@ -210,7 +208,7 @@ export default component$(() => {
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="fill-primary-600 w-5 h-5"
+                  class="fill-primary-600 h-5 w-5"
                   viewBox="0 0 448 512"
                 >
                   <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
@@ -221,7 +219,7 @@ export default component$(() => {
         </div>
       </div>
       <section>
-        {isCheckingTorrServer.value && <DotPulseLoader />}
+        {isCheckingTorrServer.value && <span class="loading loading-spinner loading-lg"></span>}
         <MediaGrid title={""}>
           {torrentsSig.value.length > 0 &&
             torrentsSig.value.map((t) => {
@@ -268,7 +266,7 @@ export default component$(() => {
                         });
                       }
                     }}
-                    class="absolute cursor-pointer top-4 -right-1 z-10 text-primary rounded-full transition-scale scale-[90%] duration-300 ease-in-out hover:scale-[110%]"
+                    class="text-primary transition-scale absolute -right-1 top-4 z-10 scale-[90%] cursor-pointer rounded-full duration-300 ease-in-out hover:scale-[110%]"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -276,7 +274,7 @@ export default component$(() => {
                       viewBox="0 0 24 24"
                       stroke-width="1.5"
                       stroke="currentColor"
-                      class="w-10 h-10 fill-red-500 "
+                      class="h-10 w-10 fill-red-500 "
                     >
                       <path
                         stroke-linecap="round"
@@ -289,10 +287,10 @@ export default component$(() => {
                   <a
                     href={`magnet:?xt=urn:btih:${t.hash}`}
                     target="_blank"
-                    class="absolute cursor-pointer bg-primary dark:bg-primary-dark top-[1.2rem] left-0 z-10 rounded-full border-2 transition-scale  scale-[85%] duration-300 ease-in-out hover:scale-[105%]"
+                    class="bg-primary dark:bg-primary-dark transition-scale absolute left-0 top-[1.2rem] z-10 scale-[85%] cursor-pointer rounded-full  border-2 duration-300 ease-in-out hover:scale-[105%]"
                   >
                     <svg
-                      class="w-8 fill-primary-dark dark:fill-primary"
+                      class="fill-primary-dark dark:fill-primary w-8"
                       viewBox="0 0 1024 1024"
                       version="1.1"
                       xmlns="http://www.w3.org/2000/svg"

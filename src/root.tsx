@@ -24,10 +24,6 @@ export default component$(() => {
       <head>
         <meta charSet="utf-8" />
         <link rel="manifest" href="/manifest.json" />
-        <script
-          src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"
-          nonce=""
-        ></script>
         <RouterHead />
         <ParamsLauncher />
         <ThemeScript themeStorageKey="themePref" />

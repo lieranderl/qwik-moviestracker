@@ -1,5 +1,5 @@
 import type { QwikIntrinsicElements } from "@builder.io/qwik";
-import { Slot, component$, useSignal } from "@builder.io/qwik";
+import { Slot, component$, $, useSignal } from "@builder.io/qwik";
 import { useAuthSignin } from "~/routes/plugin@auth";
 
 export type LoginButtonProps = QwikIntrinsicElements["button"] & {
@@ -14,13 +14,13 @@ export const LoginButton = component$<LoginButtonProps>((props) => {
     <button
       class="btn btn-outline"
       disabled={isloading.value}
-      onClick$={() => {
+      onClick$={$(() => {
         isloading.value = true;
         signIn.submit({
           providerId: providerName,
           options: { callbackUrl: "/" },
         });
-      }}
+      })}
     >
       {isloading.value && (
         <div class="flex items-center gap-2 ">

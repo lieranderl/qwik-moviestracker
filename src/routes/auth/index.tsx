@@ -2,12 +2,8 @@ import { component$ } from "@builder.io/qwik";
 import { SiGoogle, SiGithub } from "@qwikest/icons/simpleicons";
 import { LoginButton } from "~/components/login-button";
 import { HiFilmOutline } from "@qwikest/icons/heroicons";
-import { useQueryParamsLoader } from "~/shared/loaders";
-
-export { useQueryParamsLoader } from "~/shared/loaders";
 
 export default component$(() => {
-  const qparams = useQueryParamsLoader();
 
   return (
     <div
@@ -20,11 +16,6 @@ export default component$(() => {
           <HiFilmOutline class="text-6xl "></HiFilmOutline>
           <article class="prose mb-20">
             <h1>Moviestracker</h1>
-            <p>
-              {qparams.value.lang === "en-US"
-                ? "Track your movies and series"
-                : "Фильмы"}
-            </p>
           </article>
 
           <div class="flex w-fit flex-col gap-y-1">

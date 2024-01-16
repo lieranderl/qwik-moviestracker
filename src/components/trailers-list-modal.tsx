@@ -47,7 +47,7 @@ export const TrailersModal = component$(({ videos }: TorModalPros) => {
                     >
                       <Image
                         alt={video.name}
-                        class="h-full max-h-full w-[300px] rounded-md border-2 border-base-300 object-cover md:w-full "
+                        class="border-base-300 h-full max-h-full w-[300px] rounded-md border-2 object-cover md:w-full "
                         height={300}
                         src={`https://i.ytimg.com/vi/${video.key}/hqdefault.jpg`}
                         width={200}

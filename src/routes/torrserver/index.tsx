@@ -302,7 +302,7 @@ export default component$(() => {
                     </svg>
                   </a>
 
-                  <a
+                  {m.movie && <a
                     href={
                       m.movie.seasons
                         ? "/tv/" + m.movie.id
@@ -328,7 +328,7 @@ export default component$(() => {
                       isPerson={false}
                       isHorizontal={false}
                     />
-                  </a>
+                  </a>}
                 </div>
               );
             })}

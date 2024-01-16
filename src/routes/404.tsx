@@ -12,7 +12,7 @@ export default component$(() => {
             <h1 class="ps-2">404</h1>
           </div>
           <p class="py-8 text-4xl"> Sorry, we couldn't find this page.</p>
-          <Link class="btn btn-lg btn-primary" href="/">
+          <Link class="btn btn-primary btn-lg" href="/">
             Back to home
           </Link>
         </div>

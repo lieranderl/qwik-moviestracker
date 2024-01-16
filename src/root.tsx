@@ -7,9 +7,9 @@ import {
 import { RouterHead } from "./components/router-head/router-head";
 
 import "./global.css";
-import { ToastStack } from "./components/toast/toastStack";
 import { ParamsLauncher } from "./utils/param-launcher";
 import { ThemeScript } from "qwik-theme-toggle";
+import { ToastStack } from "qwik-toasts";
 
 export default component$(() => {
   /**

@@ -61,7 +61,7 @@ export const MediaCard = component$(
         )}
         {!charName && <span class="block text-sm">&nbsp;</span>}
         <div class="group">
-          <div class="drop-shadow transition-scale scale-95 duration-300 ease-in-out group-hover:scale-100 group-hover:drop-shadow-md">
+          <div class="transition-scale scale-95 drop-shadow duration-300 ease-in-out group-hover:scale-100 group-hover:drop-shadow-md">
             <picture>
               <Image
                 class="rounded-md border-2 border-base-200"
@@ -79,18 +79,18 @@ export const MediaCard = component$(
                 alt=""
               />
               {rating > 0 && (
-                <span class="absolute bottom-2 left-2 badge badge-lg font-bold">
+                <span class="badge badge-lg absolute bottom-2 left-2 font-bold">
                   {typeof rating === "string" ? rating : rating.toFixed(1)}
                 </span>
               )}
               {year > 0 && (
-                <span class="absolute bottom-2 right-2 badge badge-lg font-bold">
+                <span class="badge badge-lg absolute bottom-2 right-2 font-bold">
                   {year}
                 </span>
               )}
             </picture>
           </div>
-          <span class="block truncate text-sm text-ellipsis overflow-hidden transition-scale font-normal duration-300 ease-in-out group-hover:font-extrabold">
+          <span class="transition-scale block overflow-hidden truncate text-ellipsis text-sm font-normal duration-300 ease-in-out group-hover:font-extrabold">
             {title}
           </span>
         </div>

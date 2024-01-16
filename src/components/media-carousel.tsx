@@ -14,7 +14,7 @@ export const MediaCarousel = component$(
   ({ title, type, category, lang }: MediaCarouselProps) => {
     return (
       <section class="my-4">
-        <div class="flex flex-row justify-between items-center">
+        <div class="flex flex-row items-center justify-between">
           <div class="text-xl font-bold ">{title}</div>
           {type !== "person" && (
             <a
@@ -22,11 +22,11 @@ export const MediaCarousel = component$(
               class="group text-sm transition duration-300"
             >
               {langExploreAll(lang)}
-              <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5"></span>
+              <span class="block h-0.5 max-w-0 transition-all duration-500 group-hover:max-w-full"></span>
             </a>
           )}
         </div>
-        <div class="carousel carousel-start w-full rounded-box p-4">
+        <div class="carousel-start carousel w-full rounded-box p-4">
           <Slot />
         </div>
       </section>

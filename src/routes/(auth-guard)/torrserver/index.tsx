@@ -7,12 +7,13 @@ import {
   useVisibleTask$,
   useContext,
 } from "@builder.io/qwik";
-import { z } from "@builder.io/qwik-city";
-import { setValue, useForm, zodForm$ } from "@modular-forms/qwik";
+import { setValue, useForm, valiForm$ } from "@modular-forms/qwik";
+import { ToastManagerContext } from "qwik-toasts";
+import type { Input} from "valibot";
+import { object, string, url } from "valibot";
 import { DotPulseLoader } from "~/components/dot-pulse-loader/dot-pulse-loader";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
-import { toastManagerContext } from "~/components/toast/toastStack";
 import type { TSResult } from "~/services/models";
 import {
   listTorrent,
@@ -22,24 +23,23 @@ import {
 import { useQueryParamsLoader } from "~/shared/loaders";
 import { langAddNewTorrServerURL, langNoResults } from "~/utils/languages";
 
-export { useQueryParamsLoader } from "~/shared/loaders";
-
-export const torrServerSchema = z.object({
-  ipaddress: z.string().nonempty(" ").url(),
+export const torrServerSchema = object({
+  ipaddress: string([url("Please valid url!")]),
 });
 
-export type torrServerForm = z.infer<typeof torrServerSchema>;
+export type torrServerForm = Input<typeof torrServerSchema>;
+
 
 export default component$(() => {
   const resource = useQueryParamsLoader();
-  const toastManager = useContext(toastManagerContext);
+  const toastManager = useContext(ToastManagerContext);
   const selectedTorServer = useSignal("");
   const isLoading = useSignal(false);
   const torrServerStore = useStore({ list: [] as string[] });
   const [newTorrServerForm, { Form, Field }] = useForm<torrServerForm>({
     loader: { value: { ipaddress: "" } },
     // action: useTorrSearchAction(),
-    validate: zodForm$(torrServerSchema),
+    validate: valiForm$(torrServerSchema),
   });
 
   const isCheckingTorrServer = useSignal(false);
@@ -188,7 +188,7 @@ export default component$(() => {
               <button
                 type="button"
                 class="hover:bg-primary-100 dark:hover:bg-primary-900 focus:outline-none focus:ring-0 focus:ring-primary-100 dark:focus:ring-primary-900 rounded-lg text-sm p-2.5"
-                onClick$={$(() => {
+                onClick$={() => {
                   const index = torrServerStore.list.indexOf(
                     selectedTorServer.value,
                   );
@@ -206,7 +206,7 @@ export default component$(() => {
                     selectedTorServer.value = "";
                     localStorage.setItem("selectedTorServer", "");
                   }
-                })}
+                }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

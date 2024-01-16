@@ -134,7 +134,7 @@ export default component$(() => {
             </>
           ))}
       </MediaGrid>
-      <div class="flex justify-center my-4">
+      <div class="my-4 flex justify-center">
         {showLoadingButton.value && (
           <ButtonPrimary
             text="Load more"

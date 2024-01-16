@@ -3,7 +3,7 @@ import { component$ } from "@builder.io/qwik";
 export const BurgerIcon = component$(() => {
   return (
     <svg
-      class="w-5 h-5"
+      class="h-5 w-5"
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"

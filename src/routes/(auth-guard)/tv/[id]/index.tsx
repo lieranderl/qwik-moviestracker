@@ -1,7 +1,7 @@
 import { Resource, component$, useResource$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
-import { TvDetails } from "~/components/tv-details";
+import { TvDetails } from "~/components/media-details/tv-details";
 import type { TvFull, TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getMediaDetails, getMediaRecom } from "~/services/tmdb";
@@ -61,7 +61,7 @@ export default component$(() => {
             ");"
           }
         >
-          <div class="hero-overlay bg-opacity-80 bg-base-100"></div>
+          <div class="hero-overlay bg-base-100 bg-opacity-80"></div>
           <div class="hero-content text-left">
             <div class="container mx-auto px-4">
               <TvDetails tv={value.tv} recTv={value.recTv} lang={value.lang} />

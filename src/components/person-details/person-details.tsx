@@ -1,17 +1,17 @@
-import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
-import { formatYear, showYearOld, showDeathYear } from "~/utils/fomat";
+import { component$ } from "@builder.io/qwik";
+import { formatYear } from "~/utils/fomat";
 import { paths } from "~/utils/paths";
-import { MediaCard } from "./media-card";
-import { MediaCarousel } from "./media-carousel";
-import { FemaleSVG } from "~/utils/icons/femaleSVG";
-import { MaleSVG } from "~/utils/icons/maleSVG";
-import { NonbiSVG } from "~/utils/icons/nonbiSVG";
-import { PlaceSVG } from "~/utils/icons/placeSVG";
-import { PersonSVG } from "~/utils/icons/personSVG";
+import { MediaCard } from "../media-card";
+import { MediaCarousel } from "../media-carousel";
 import { Image } from "@unpic/qwik";
-import { ExternalIds } from "./external_ids";
+import { ExternalIds } from "../external_ids";
 import type { PersonMedia } from "~/services/models";
 import { type PersonFull, MediaType } from "~/services/models";
+import { BsGenderFemale } from "@qwikest/icons/bootstrap";
+import { BsGenderMale } from "@qwikest/icons/bootstrap";
+import { BsGenderTrans } from "@qwikest/icons/bootstrap";
+import { PersonBio } from "./person-bio";
+import { PersonDate } from "./person-date";
 
 interface MovieDetailsProps {
   person: PersonFull;
@@ -22,28 +22,9 @@ interface MovieDetailsProps {
 
 export const PersonDetails = component$(
   ({ person, perMovies, perTv, lang }: MovieDetailsProps) => {
-    const isShowBio = useSignal(false);
-    const bioSize = useSignal(300);
-
-    // eslint-disable-next-line qwik/no-use-visible-task
-    useVisibleTask$(async () => {
-      window.addEventListener("resize", function (event) {
-        const t = event.target ? (event.target as Window) : null;
-        if (t && t.innerWidth) {
-          if (t.innerWidth > 1200) {
-            bioSize.value = 700;
-          } else if (t.innerWidth > 900 && t.innerWidth < 1200) {
-            bioSize.value = 500;
-          } else {
-            bioSize.value = 300;
-          }
-        }
-      });
-    });
-
     return (
-      <div class="pt-[64px] lg:mx-20 xl:mx-40 font-normal">
-        <section class="md:grid md:grid-rows-1 md:grid-flow-col flex-wrap md:gap-8 ">
+      <div class="pt-[64px] lg:mx-20 xl:mx-40">
+        <section class="flex-wrap md:grid md:grid-flow-col md:grid-rows-1 md:gap-8 ">
           {person.profile_path && (
             <div class="flex w-full justify-center md:block">
               <Image
@@ -56,64 +37,22 @@ export const PersonDetails = component$(
             </div>
           )}
           <div class="mt-4 md:mt-0">
-            <div class="text-2xl font-bold flex items-center">
+            <section class="flex items-center text-2xl font-bold">
               {person.name}
-              <div class="font-extralight ml-2 fill-primary-dark dark:fill-primary">
-                {person.gender === 1 && <FemaleSVG />}
-                {person.gender === 2 && <MaleSVG />}
-                {person.gender === 0 && <NonbiSVG />}
+              <div class="ml-2 font-extralight">
+                {person.gender === 1 && <BsGenderFemale />}
+                {person.gender === 2 && <BsGenderMale />}
+                {person.gender === 3 && <BsGenderTrans />}
               </div>
-            </div>
-            <section class="my-2">
-              {person.place_of_birth && (
-                <div class="text-md flex items-center">
-                  <PlaceSVG />
-                  <span>{person.place_of_birth}</span>
-                </div>
-              )}
-              {!person.deathday && (
-                <div class="text-md flex items-center">
-                  <PersonSVG />
-                  <span>
-                    {person.birthday} ({showYearOld(person.birthday!)})
-                  </span>
-                </div>
-              )}
-
-              {person.deathday && (
-                <div class="text-md flex items-center">
-                  <PersonSVG />
-                  <span>
-                    {person.birthday} &ndash; {person.deathday}(
-                    {showDeathYear(person.birthday!, person.deathday)})
-                  </span>
-                </div>
-              )}
             </section>
 
+            <PersonDate
+              place_of_birth={person.place_of_birth}
+              birthday={person.birthday}
+              deathday={person.deathday}
+            />
             <ExternalIds external_ids={person.external_ids} type={"person"} />
-
-            {person.biography && person.biography.length > bioSize.value && (
-              <>
-                {!isShowBio.value && (
-                  <div class="">
-                    {person.biography.substring(0, bioSize.value)}...
-                  </div>
-                )}
-                {isShowBio.value && <div class="">{person.biography}</div>}
-                <div
-                  class="text-sm float-right text-primary-600 underline dark:text-primary-600 hover:cursor-pointer"
-                  onClick$={() => (isShowBio.value = !isShowBio.value)}
-                >
-                  {!isShowBio.value && <span>Read more...</span>}
-                  {isShowBio.value && <span>Read less...</span>}
-                </div>
-              </>
-            )}
-
-            {person.biography && person.biography.length < 300 && (
-              <div>{person.biography}</div>
-            )}
+            <PersonBio biography={person.biography} />
           </div>
         </section>
         <section class="mt-8">

@@ -9,7 +9,7 @@ export const MediaGrid = component$(({ title }: MediaGridProps) => {
     <>
       <section class="my-4">
         <div class="text-xl font-bold">{title}</div>
-        <div class="flex flex-wrap gap-3 px-2 justify-center">
+        <div class="flex flex-wrap justify-center gap-3 px-2">
           <Slot />
         </div>
       </section>

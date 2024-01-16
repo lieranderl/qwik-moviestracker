@@ -1,11 +1,4 @@
-import {
-  component$,
-  $,
-  useStore,
-  createContextId,
-  useContextProvider,
-  useTask$,
-} from "@builder.io/qwik";
+import { component$, $, useStore, useTask$ } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
 import { TorrentList } from "~/components/torrent-list";
 import { getTorrents } from "~/services/cloud-func-api";
@@ -74,7 +67,7 @@ export const TorrentsModal = component$(
               </div>
               <ul
                 tabIndex={0}
-                class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+                class="menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow"
               >
                 {seasons!.map((s) => {
                   if (s.season_number !== 0) {

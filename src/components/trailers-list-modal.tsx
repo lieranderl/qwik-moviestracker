@@ -33,7 +33,7 @@ export const TrailersModal = component$(({ videos }: TorModalPros) => {
           {/* <form method="dialog">
       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
     </form> */}
-          <h3 class="font-bold text-lg">{langTrailers(resource.value.lang)}</h3>
+          <h3 class="text-lg font-bold">{langTrailers(resource.value.lang)}</h3>
           {videos && (
             <div class="p-6 ">
               {videos.length ? (
@@ -47,7 +47,7 @@ export const TrailersModal = component$(({ videos }: TorModalPros) => {
                     >
                       <Image
                         alt={video.name}
-                        class="h-full max-h-full md:w-full w-[300px] object-cover rounded-md border-2 border-base-300 "
+                        class="h-full max-h-full w-[300px] rounded-md border-2 border-base-300 object-cover md:w-full "
                         height={300}
                         src={`https://i.ytimg.com/vi/${video.key}/hqdefault.jpg`}
                         width={200}

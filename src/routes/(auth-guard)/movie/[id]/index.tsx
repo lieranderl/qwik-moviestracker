@@ -2,7 +2,7 @@ import { Resource, component$, useResource$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import { HiXCircleSolid } from "@qwikest/icons/heroicons";
-import { MovieDetails } from "~/components/movie-details";
+import { MovieDetails } from "~/components/media-details/movie-details";
 import type { MovieFull, MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import {
@@ -73,7 +73,7 @@ export default component$(() => {
             ");"
           }
         >
-          <div class="hero-overlay bg-opacity-80 bg-base-100"></div>
+          <div class="hero-overlay bg-base-100 bg-opacity-80"></div>
           <div class="hero-content text-left">
             <div class="container mx-auto px-4">
               <MovieDetails

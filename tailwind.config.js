@@ -3,8 +3,8 @@ module.exports = {
   darkMode: "class",
   content: [
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
-    "./node_modules/flowbite/**/*.js",
     "./node_modules/qwik-theme-toggle/**/*.{cjs,mjs}",
+    "./node_modules/qwik-toast/**/*.{cjs,mjs}",
   ],
   daisyui: {
     themes: [

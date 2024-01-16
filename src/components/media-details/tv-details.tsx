@@ -1,17 +1,12 @@
 import { component$ } from "@builder.io/qwik";
 
-import {
-  formatYear,
-  formatRating,
-  formatDate,
-  formatLanguage,
-} from "~/utils/fomat";
+import { formatYear } from "~/utils/fomat";
 import { paths } from "~/utils/paths";
-import { MediaCard } from "./media-card";
-import { MediaCarousel } from "./media-carousel";
-import { TorrentsModal } from "./torrents-list-modal";
-import { TrailersModal } from "./trailers-list-modal";
-import { ExternalIds } from "./external_ids";
+import { MediaCard } from "../media-card";
+import { MediaCarousel } from "../media-carousel";
+import { TorrentsModal } from "../torrents-list-modal";
+import { TrailersModal } from "../trailers-list-modal";
+import { ExternalIds } from "../external_ids";
 import { type TvShort, type TvFull, MediaType } from "~/services/models";
 import {
   langActors,
@@ -23,10 +18,11 @@ import {
   langEnded,
   langCreatedby,
 } from "~/utils/languages";
-import { SiThemoviedatabase } from "@qwikest/icons/simpleicons";
 import { LuDisc3, LuLayers3 } from "@qwikest/icons/lucide";
-import { MediaTitle } from "./media-details/media-title";
-import { MediaRating } from "./media-details/media-rating";
+import { MediaTitle } from "./media-title";
+import { MediaRating } from "./media-rating";
+import { MediaInfo } from "./media-info";
+import { MediaPlot } from "./media-plot";
 
 interface TvDetailsProps {
   tv: TvFull;
@@ -35,7 +31,7 @@ interface TvDetailsProps {
 }
 export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
   return (
-    <div class="pt-[20vh] lg:mx-20 xl:mx-40 font-normal">
+    <div class="pt-[20vh] font-normal lg:mx-20 xl:mx-40">
       <MediaTitle name={tv.name!} original_name={tv.original_name} />
       <MediaRating vote_average={tv.vote_average} vote_count={tv.vote_count} />
 
@@ -54,7 +50,7 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
         />
       </section>
 
-      <section class="flex my-4 text-md items-center">
+      <section class="text-md my-4 flex items-center">
         <div class="me-2 font-bold">{tv.networks[0].name}</div>
         <div class="me-2 text-xl">
           <LuLayers3 />
@@ -130,72 +126,18 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
         )}
       </section>
 
-      <section class="text-md">
-        <ul class="flex flex-wrap items-center justify-start">
-          <li>
-            {tv.first_air_date && (
-              <div class="after:content-['\3164\2022\3164']">
-                {formatDate(tv.first_air_date, lang)}{" "}
-              </div>
-            )}
-          </li>
-          <li>
-            {tv.genres && tv.genres.length > 0 && (
-              <div class="after:content-['\3164\2022\3164'] ">
-                {tv.genres.map((g) => g.name).join(", ")}
-              </div>
-            )}
-          </li>
-
-          <li>
-            {tv.production_countries && (
-              <div class="after:content-['\3164\2022\3164']">
-                {tv.production_countries.map((c) => c.name).join(", ")}
-              </div>
-            )}
-          </li>
-
-          <li>
-            {tv.original_language && (
-              <div>{formatLanguage(tv.original_language)}</div>
-            )}
-          </li>
-        </ul>
-      </section>
-
-      <section class="my-1 text-md">
-        {tv.production_companies && (
-          <div>{tv.production_companies.map((c) => c.name).join(", ")}</div>
-        )}
-      </section>
-
-      {/* <section class="my-1 flex flex-wrap text-md">
-          {tv.budget! > 0 && (
-            <div class="me-4 ">
-              <span class="me-2">{langBudget(lang)}:</span>
-              {formatCurrency(tv.budget!, lang)}
-            </div>
-          )}
-          {tv.revenue! > 0 && (
-            <div class="me-2">
-              <span class="me-2">{langRevenue(lang)}:</span>
-              {formatCurrency(tv.revenue!, lang)}
-            </div>
-          )}
-        </section> */}
+      <MediaInfo
+        release_date={tv.first_air_date}
+        geners={tv.genres}
+        production_countries={tv.production_countries}
+        production_companies={tv.production_companies}
+        original_language={tv.original_language}
+        lang={lang}
+      />
 
       <ExternalIds external_ids={tv.external_ids} type={"tv"} />
 
-      <section class="my-8">
-        <div>{tv.overview}</div>
-        {tv.tagline && (
-          <blockquote class="text-sm italic font-semibold text-right">
-            <p class="text-sm italic font-medium leading-relaxed">
-              {tv.tagline}
-            </p>
-          </blockquote>
-        )}
-      </section>
+      <MediaPlot overview={tv.overview} tagline={tv.tagline} />
 
       {tv.created_by.length > 0 && (
         <MediaCarousel

@@ -1,30 +1,25 @@
 import { component$ } from "@builder.io/qwik";
 
-import {
-  formatYear,
-  formatCurrency,
-  formatLanguage,
-  formatDate,
-  formatCrew,
-} from "~/utils/fomat";
-import { MediaCarousel } from "./media-carousel";
-import { MediaCard } from "./media-card";
+import { formatYear, formatCurrency, formatCrew } from "~/utils/fomat";
+import { MediaCarousel } from "../media-carousel";
+import { MediaCard } from "../media-card";
 import { paths } from "~/utils/paths";
 import {
   langBudget,
   langRevenue,
-  langMinutes,
   langActors,
   langCrew,
   langCollectionMovies,
   langRecommendedMovies,
 } from "~/utils/languages";
-import { TorrentsModal } from "./torrents-list-modal";
-import { TrailersModal } from "./trailers-list-modal";
-import { ExternalIds } from "./external_ids";
+import { TorrentsModal } from "../torrents-list-modal";
+import { TrailersModal } from "../trailers-list-modal";
+import { ExternalIds } from "../external_ids";
 import { MediaType, type MovieFull, type MovieShort } from "~/services/models";
-import { MediaTitle } from "./media-details/media-title";
-import { MediaRating } from "./media-details/media-rating";
+import { MediaTitle } from "./media-title";
+import { MediaRating } from "./media-rating";
+import { MediaInfo } from "./media-info";
+import { MediaPlot } from "./media-plot";
 
 interface MovieDetailsProps {
   movie: MovieFull;
@@ -60,55 +55,17 @@ export const MovieDetails = component$(
           />
         </section>
 
-        <section class="text-md">
-          <ul class="flex flex-wrap items-center justify-start">
-            <li>
-              {movie.release_date && (
-                <div class="after:content-['\3164\2022\3164']">
-                  {formatDate(movie.release_date, lang)}{" "}
-                </div>
-              )}
-            </li>
-            <li>
-              {movie.genres && movie.genres.length > 0 && (
-                <div class="after:content-['\3164\2022\3164'] ">
-                  {movie.genres.map((g) => g.name).join(", ")}
-                </div>
-              )}
-            </li>
-            <li>
-              {movie.runtime! > 0 && (
-                <div class="after:content-['\3164\2022\3164']">
-                  {movie.runtime} {langMinutes(lang)}
-                </div>
-              )}
-            </li>
+        <MediaInfo
+          release_date={movie.release_date}
+          geners={movie.genres}
+          runtime={movie.runtime}
+          production_countries={movie.production_countries}
+          production_companies={movie.production_companies}
+          original_language={movie.original_language}
+          lang={lang}
+        />
 
-            <li>
-              {movie.production_countries && (
-                <div class="after:content-['\3164\2022\3164']">
-                  {movie.production_countries.map((c) => c.name).join(", ")}
-                </div>
-              )}
-            </li>
-
-            <li>
-              {movie.original_language && (
-                <div>{formatLanguage(movie.original_language)}</div>
-              )}
-            </li>
-          </ul>
-        </section>
-
-        <section class="text-md">
-          {movie.production_companies && (
-            <div>
-              {movie.production_companies.map((c) => c.name).join(", ")}
-            </div>
-          )}
-        </section>
-
-        <section class="flex flex-wrap text-md">
+        <section class="text-md flex flex-wrap">
           {movie.budget! > 0 && (
             <div class="me-4 ">
               <span class="me-2">{langBudget(lang)}:</span>
@@ -125,16 +82,7 @@ export const MovieDetails = component$(
 
         <ExternalIds external_ids={movie.external_ids} type={"tv"} />
 
-        <section class="mb-6">
-          <div>{movie.overview}</div>
-          {movie.tagline && (
-            <blockquote class="text-sm italic font-semibold text-right">
-              <p class="text-sm italic font-medium leading-relaxed">
-                {movie.tagline}
-              </p>
-            </blockquote>
-          )}
-        </section>
+        <MediaPlot overview={movie.overview} tagline={movie.tagline} />
 
         <MediaCarousel
           title={langActors(lang)}
@@ -237,5 +185,5 @@ export const MovieDetails = component$(
         )}
       </div>
     );
-  }
+  },
 );

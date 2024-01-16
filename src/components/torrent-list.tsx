@@ -2,7 +2,6 @@
 import { component$, $, useStore, useVisibleTask$ } from "@builder.io/qwik";
 import { setValue, useForm, valiForm$ } from "@modular-forms/qwik";
 import { server$ } from "@builder.io/qwik-city";
-import { DotPulseLoader } from "./dot-pulse-loader/dot-pulse-loader";
 import { TorrentBlock } from "./torrent";
 import type { getTorrentsType } from "~/services/cloud-func-api";
 import { getTorrents } from "~/services/cloud-func-api";
@@ -140,7 +139,7 @@ export const TorrentList = component$(
       <>
         {sortedTorrents.value !== null && (
           <div class="flex flex-wrap">
-            <div class="flex flex-wrap  items-center justify-start me-4">
+            <div class="me-4 flex  flex-wrap items-center justify-start">
               <div class="mr-2">Сортировать по:</div>
               <select
                 onChange$={(_, e) => {
@@ -149,7 +148,7 @@ export const TorrentList = component$(
                   sortFilterStore.selectedSort = e.value;
                 }}
                 id="attrib"
-                class="mr-2 select select-sm select-bordered"
+                class="select select-bordered select-sm mr-2"
               >
                 {sortAttrib.map((attrib) => (
                   <option value={attrib.value} key={attrib.value}>
@@ -159,7 +158,7 @@ export const TorrentList = component$(
               </select>
             </div>
 
-            <Form onSubmit$={handleSubmit} class="flex items-center my-4">
+            <Form onSubmit$={handleSubmit} class="my-4 flex items-center">
               <div class="join">
                 <Field name="name">
                   {(field, props) => (
@@ -169,7 +168,7 @@ export const TorrentList = component$(
                         type="text"
                         value={field.value}
                         placeholder="название"
-                        class="py-2 pl-2 w-48  input   input-sm input-bordered  join-item"
+                        class="input join-item input-bordered  input-sm   w-48 py-2  pl-2"
                       />
                       {field.error && (
                         <div class="text-xs text-error">{field.error}</div>
@@ -184,7 +183,7 @@ export const TorrentList = component$(
                         {...props}
                         type="number"
                         value={field.value}
-                        class="mr-2 py-2 pl-2 w-20 input input-sm input-bordered join-item"
+                        class="input join-item input-bordered input-sm mr-2 w-20 py-2 pl-2"
                         placeholder="год"
                       />
                       {field.error && (
@@ -293,7 +292,9 @@ export const TorrentList = component$(
         )}
 
         <section class="my-4">
-          {sortedTorrents.value === null && <span class="loading loading-spinner loading-md"></span>}
+          {sortedTorrents.value === null && (
+            <span class="loading loading-spinner loading-md"></span>
+          )}
           {sortedTorrents.value !== null &&
             sortedTorrents.value.length === 0 && <div>Ничего не найдено</div>}
           {sortedTorrents.value !== null && sortedTorrents.value.length > 0 && (

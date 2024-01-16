@@ -15,8 +15,8 @@ export const MediaRating = component$<MediaRatingProps>(
       <section class="mb-4 text-lg">
         <div class="flex flex-wrap items-center">
           {vote_average && vote_average > 0 && (
-            <div class="flex items-center me-4">
-              <div class="text-[2.5rem] me-2">
+            <div class="me-4 flex items-center">
+              <div class="me-2 text-[2.5rem]">
                 <SiThemoviedatabase />
               </div>
               <div class="font-bold">
@@ -31,5 +31,5 @@ export const MediaRating = component$<MediaRatingProps>(
         </div>
       </section>
     );
-  }
+  },
 );

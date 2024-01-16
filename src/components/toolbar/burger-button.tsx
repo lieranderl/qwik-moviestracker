@@ -3,13 +3,13 @@ import { BurgerIcon } from "~/utils/icons/burgerIcon";
 
 export const BurgerButton = component$(() => {
   return (
-    <div class="dropdown dropdown-bottom dropdown-end md:hidden">
+    <div class="dropdown dropdown-end dropdown-bottom md:hidden">
       <div tabIndex={0} role="button">
         <BurgerIcon />
       </div>
       <ul
         tabIndex={0}
-        class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-44"
+        class="menu dropdown-content z-[1] w-44 rounded-box bg-base-100 p-2 shadow"
       >
         <Slot />
       </ul>

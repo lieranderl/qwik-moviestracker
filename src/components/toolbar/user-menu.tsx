@@ -1,4 +1,4 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, $ } from "@builder.io/qwik";
 import { LangButton } from "./lang-button";
 import { Image } from "@unpic/qwik";
 import { useAuthSession, useAuthSignout } from "~/routes/plugin@auth";
@@ -12,7 +12,7 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
   return (
     <>
       {session.value && (
-        <div class="dropdown dropdown-bottom dropdown-end">
+        <div class="dropdown dropdown-end dropdown-bottom">
           <div tabIndex={0} role="button" class="avatar flex items-center">
             <div class="w-10 rounded-full">
               {session.value.user && (
@@ -22,14 +22,12 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
           </div>
           <ul
             tabIndex={0}
-            class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+            class="menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow"
           >
             {session.value.user && (
               <div class="px-4 py-3">
-                <span class="block text-sm text-primary-900 dark:text-primary">
-                  {session.value.user.name}
-                </span>
-                <span class="block text-sm  text-primary-600 truncate dark:text-primary-300">
+                <span class="block text-sm ">{session.value.user.name}</span>
+                <span class="block truncate text-sm">
                   {session.value.user.email}
                 </span>
               </div>
@@ -40,8 +38,8 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
             </li>
 
             <li
-              onClick$={() => signOut.submit({ callbackUrl: "/auth" })}
-              class="block px-4 py-2 text-sm text-primary-700 hover:bg-primary-100 dark:hover:bg-primary-600 dark:text-primary-200 dark:hover:text-primary cursor-pointer"
+              onClick$={$(() => signOut.submit({ callbackUrl: "/auth" }))}
+              class="block cursor-pointer px-4 py-2 text-sm hover:text-primary"
             >
               {langSingOut(lang)}
             </li>

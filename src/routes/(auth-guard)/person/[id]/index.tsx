@@ -1,6 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 import { routeLoader$ } from "@builder.io/qwik-city";
-import { PersonDetails } from "~/components/person-details";
+import { PersonDetails } from "~/components/person-details/person-details";
 import type { PersonFull } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getMediaDetails, getPersonMovies, getPersonTv } from "~/services/tmdb";
@@ -33,15 +33,13 @@ export default component$(() => {
   const resource = useContentLoader();
 
   return (
-    <>
-      <div class="container pt-[100px] mx-auto px-4">
-        <PersonDetails
-          person={resource.value!.person}
-          perMovies={resource.value!.perMovies}
-          perTv={resource.value!.perTv}
-          lang={resource.value!.lang}
-        />
-      </div>
-    </>
+    <div class="container mx-auto px-4 pt-[100px]">
+      <PersonDetails
+        person={resource.value!.person}
+        perMovies={resource.value!.perMovies}
+        perTv={resource.value!.perTv}
+        lang={resource.value!.lang}
+      />
+    </div>
   );
 });

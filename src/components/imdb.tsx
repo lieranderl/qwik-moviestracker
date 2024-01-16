@@ -42,7 +42,7 @@ export const Imdb = component$(({ id }: { id: string }) => {
         <>
           {imdb && (
             <div class="flex items-center">
-              <div class="text-[2.5rem] me-2">
+              <div class="me-2 text-[2.5rem]">
                 <SiImdb />
               </div>
 

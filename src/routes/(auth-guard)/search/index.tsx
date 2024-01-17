@@ -15,15 +15,13 @@ import {
   langSearchResults,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
+import { useQueryParamsLoader } from "~/shared/loaders";
 
-export const useContentLoader = routeLoader$(async (event) => {
-  const lang = event.query.get("lang") || "en-US";
 
-  return { lang };
-});
+
 
 export default component$(() => {
-  const resource = useContentLoader();
+  const resource = useQueryParamsLoader();
 
   //   const moviesSig = [{title: "pp", id: 1, vote_average: 1, release_date: "2021-01-01", poster_path: "https://image.tmdb.org/t/p/original/6KErczPBROQty7QoIsaa6wJYXZi.jpg", media_type: "movie"}]
   const phrase = useSignal("");
@@ -48,7 +46,7 @@ export default component$(() => {
       <div class="container mx-auto px-4 pt-[80px] text-center">
         <input
           type="text"
-          class="border-primary-300 focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600 placeholder-primary-900 mr-2 w-[50%] rounded-lg border bg-primary py-2 pl-2 text-sm"
+          class="input w-[60%] mb-4 input-bordered"
           placeholder={langSearch(resource.value.lang)}
           onKeyDown$={(e, elem) => {
             if (e.keyCode === 13) {
@@ -66,7 +64,7 @@ export default component$(() => {
               <span class="loading loading-spinner loading-lg"></span>
             </div>
           )}
-          onRejected={(error) => <div>Error: {error.message}</div>}
+          onRejected={(error) => <div class="alert alert-error">Error: {error.message}</div>}
           onResolved={(movies) => {
             if (movies.results.length > 0) {
               return (
@@ -74,8 +72,9 @@ export default component$(() => {
                   <MediaGrid title={langSearchResults(resource.value.lang)}>
                     {movies.results!.length > 0 &&
                       movies.results!.map((m) => (
-                        <>
+                   
                           <a
+                           key={m.id}
                             class="text-left"
                             href={paths.media(
                               m.media_type!,
@@ -119,7 +118,7 @@ export default component$(() => {
                               isHorizontal={false}
                             />
                           </a>
-                        </>
+                     
                       ))}
                   </MediaGrid>
                 </div>

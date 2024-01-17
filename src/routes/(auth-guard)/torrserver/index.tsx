@@ -6,8 +6,10 @@ import {
   useStore,
   useVisibleTask$,
   useContext,
+  useOnWindow,
 } from "@builder.io/qwik";
 import { setValue, useForm, valiForm$ } from "@modular-forms/qwik";
+import { HiPlusSolid, HiMinusSolid } from "@qwikest/icons/heroicons";
 import { ToastManagerContext } from "qwik-toasts";
 import type { Input } from "valibot";
 import { object, string, url } from "valibot";
@@ -72,7 +74,7 @@ export default component$(() => {
     isLoading.value = false;
   });
 
-  useVisibleTask$(async () => {
+  useOnWindow("DOMContentLoaded", $(() => {
     const tlist = localStorage.getItem("torrServerList");
     if (tlist) {
       torrServerStore.list = JSON.parse(tlist) || [];
@@ -96,7 +98,7 @@ export default component$(() => {
         );
       }
     }
-  });
+  }));
 
   useVisibleTask$(async (ctx) => {
     ctx.track(() => selectedTorServer.value);
@@ -139,27 +141,21 @@ export default component$(() => {
                     type="text"
                     value={field.value}
                     placeholder={langAddNewTorrServerURL(resource.value.lang)}
-                    class="border-primary-300 focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600 placeholder-primary-900 mr-2 w-64 rounded-lg border bg-primary py-2 pl-2 text-sm"
+                    class="input input-sm input-bordered w-72"
                   />
                   {field.error && (
-                    <div class="text-xs text-red-400">{field.error}</div>
+                    <div class="text-xs text-error">{field.error}</div>
                   )}
                 </div>
               )}
             </Field>
-            <div class="mb-3">
+            <div class="ms-2 mb-3">
               <button
                 type="submit"
                 disabled={newTorrServerForm.invalid}
-                class="hover:bg-primary-100 dark:hover:bg-primary-900 focus:ring-primary-100 dark:focus:ring-primary-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-0"
+                class="btn btn-sm btn-success"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="fill-primary-600 h-5 w-5"
-                  viewBox="0 0 448 512"
-                >
-                  <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" />
-                </svg>
+                <HiPlusSolid class="text-lg" />
               </button>
             </div>
           </Form>
@@ -171,7 +167,7 @@ export default component$(() => {
               name=""
               id="attrib"
               value={selectedTorServer.value}
-              class=" border-primary-300 focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600 mr-2 rounded-lg border bg-primary text-sm"
+              class="select select-bordered select-sm w-72"
               onChange$={(_, e) => {
                 selectedTorServer.value = e.value;
               }}
@@ -182,10 +178,11 @@ export default component$(() => {
                 </option>
               ))}
             </select>
-            <div class="my-1">
+            <div class="ms-2">
               <button
-                type="button"
-                class="hover:bg-primary-100 dark:hover:bg-primary-900 focus:ring-primary-100 dark:focus:ring-primary-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-0"
+                type="submit"
+                disabled={newTorrServerForm.invalid}
+                class="btn btn-sm btn-error"
                 onClick$={() => {
                   const index = torrServerStore.list.indexOf(
                     selectedTorServer.value,
@@ -206,13 +203,7 @@ export default component$(() => {
                   }
                 }}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="fill-primary-600 h-5 w-5"
-                  viewBox="0 0 448 512"
-                >
-                  <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
-                </svg>
+                <HiMinusSolid class="text-lg" />
               </button>
             </div>
           </section>
@@ -304,7 +295,7 @@ export default component$(() => {
                     </svg>
                   </a>
 
-                  <a
+                  {m.movie && m.movie.seasons && <a
                     href={
                       m.movie.seasons
                         ? "/tv/" + m.movie.id
@@ -330,7 +321,7 @@ export default component$(() => {
                       isPerson={false}
                       isHorizontal={false}
                     />
-                  </a>
+                  </a>}
                 </div>
               );
             })}

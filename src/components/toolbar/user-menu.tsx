@@ -1,4 +1,4 @@
-import { component$, $ } from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 import { LangButton } from "./lang-button";
 import { Image } from "@unpic/qwik";
 import { useAuthSession, useAuthSignout } from "~/routes/plugin@auth";
@@ -22,7 +22,7 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
           </div>
           <ul
             tabIndex={0}
-            class="menu dropdown-content rounded-box bg-base-100 z-[1] w-52 p-2 shadow"
+            class="menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow"
           >
             {session.value.user && (
               <div class="px-4 py-3">
@@ -32,14 +32,10 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
                 </span>
               </div>
             )}
-
-            <li>
-              <LangButton />
-            </li>
-
+            <LangButton />
             <li
-              onClick$={$(() => signOut.submit({ callbackUrl: "/auth" }))}
-              class="hover:text-primary block cursor-pointer px-4 py-2 text-sm"
+              onClick$={() => signOut.submit({ callbackUrl: "/auth" })}
+              class="block cursor-pointer px-4 py-2 text-sm hover:text-primary"
             >
               {langSingOut(lang)}
             </li>

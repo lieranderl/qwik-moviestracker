@@ -270,7 +270,7 @@ export const TorrentList = component$(
                 }}
               >
                 <input type="checkbox" class="checkbox" />
-                <span class="label-text ms-2">hdr10plus</span>
+                <span class="label-text ms-2">HDR10+</span>
               </label>
             </div>
             <div class="mr-2">

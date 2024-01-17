@@ -4,8 +4,8 @@ import { UserMenu } from "./user-menu";
 import { ToolbarLinks } from "./links";
 import { BurgerButton } from "./burger-button";
 import { paths } from "~/utils/paths";
-import { MovieIcon } from "~/utils/icons/movieIcon";
 import { ThemeToggle } from "qwik-theme-toggle";
+import { HiFilmOutline } from "@qwikest/icons/heroicons";
 
 export type ToolbarProps = {
   lang: string;
@@ -16,7 +16,7 @@ export const Toolbar = component$(({ lang }) => {
       <div class="flex w-screen flex-wrap items-center justify-between bg-opacity-100 p-4">
         <a href={paths.index(lang)} class="flex items-center">
           <div class="me-2">
-            <MovieIcon />
+            <HiFilmOutline class="text-4xl"/>
           </div>
           <span class="self-center whitespace-nowrap text-2xl font-semibold">
             Moviestracker

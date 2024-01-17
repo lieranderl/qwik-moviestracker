@@ -4,7 +4,7 @@ module.exports = {
   content: [
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/qwik-theme-toggle/**/*.{cjs,mjs}",
-    "./node_modules/qwik-toast/**/*.{cjs,mjs}",
+    "./node_modules/qwik-toasts/**/*.{cjs,mjs}",
   ],
   daisyui: {
     themes: [
@@ -93,31 +93,6 @@ module.exports = {
       fontFamily: {
         inter: ["Inter", "sans-serif"],
       },
-      // animation: {
-      //   "slide-in-right": "slide_in_right 0.5s",
-      //   "slide-out-right": "slide_out_right 0.5s",
-      //   "progress-slide": "progress_slide var(--bar-duration) linear",
-      // },
-      // keyframes: {
-      //   slide_in_right: {
-      //     "0%": {
-      //       transform: "translate3d(110%, 0, 0);",
-      //       visibility: "visible",
-      //     },
-      //     "100%": { transform: "translate3d(0, 0, 0)" },
-      //   },
-      //   slide_out_right: {
-      //     "0%": { transform: "translate3d(0, 0, 0)" },
-      //     "100%": {
-      //       transform: "translate3d(110%, 0, 0);",
-      //       visibility: "hidden",
-      //     },
-      //   },
-      //   progress_slide: {
-      //     from: { width: "0%" },
-      //     to: { width: "100%" },
-      //   },
-      // },
     },
   },
   plugins: [require("@tailwindcss/typography"), require("daisyui")],

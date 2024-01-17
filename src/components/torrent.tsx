@@ -38,11 +38,11 @@ export const TorrentBlock = component$(
                 {formatRating(torrent.Size)} Gb
               </span>
 
-              <span class="bg-success mr-2 rounded px-2.5 py-0.5 text-sm">
+              <span class="mr-2 rounded bg-success px-2.5 py-0.5 text-sm">
                 {torrent.Seeds}
               </span>
 
-              <span class="bg-error mr-2 rounded px-2.5 py-0.5 text-sm">
+              <span class="mr-2 rounded bg-error px-2.5 py-0.5 text-sm">
                 {torrent.Leeches}
               </span>
               <div class="my-2 flex space-x-1">

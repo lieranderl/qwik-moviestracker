@@ -1,7 +1,6 @@
 import { component$, $, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, server$ } from "@builder.io/qwik-city";
-import { ButtonPrimary, ButtonSize } from "~/components/button-primary";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import type { MediaShort, MovieMongo, MovieShort } from "~/services/models";
@@ -112,38 +111,43 @@ export default component$(() => {
       >
         {moviesSig.value.length > 0 &&
           moviesSig.value.map((m) => (
-            <>
-              <a href={paths.media(MediaType.Movie, m.id, resource.value.lang)}>
-                <MediaCard
-                  title={m.title ? m.title : ""}
-                  width={300}
-                  rating={m.vote_average ? m.vote_average : 0}
-                  year={
-                    m.year
-                      ? parseInt(m.year)
-                      : parseInt(
-                          m.release_date ? m.release_date.substring(0, 4) : "0",
-                          10,
-                        )
-                  }
-                  picfile={m.poster_path}
-                  isPerson={false}
-                  isHorizontal={false}
-                />
-              </a>
-            </>
+            <a
+              href={paths.media(MediaType.Movie, m.id, resource.value.lang)}
+              key={m.id}
+            >
+              <MediaCard
+                title={m.title ? m.title : ""}
+                width={300}
+                rating={m.vote_average ? m.vote_average : 0}
+                year={
+                  m.year
+                    ? parseInt(m.year)
+                    : parseInt(
+                        m.release_date ? m.release_date.substring(0, 4) : "0",
+                        10,
+                      )
+                }
+                picfile={m.poster_path}
+                isPerson={false}
+                isHorizontal={false}
+              />
+            </a>
           ))}
       </MediaGrid>
       <div class="my-4 flex justify-center">
         {showLoadingButton.value && (
-          <ButtonPrimary
-            text="Load more"
-            onClick={$(() => {
+          <button
+            class="btn"
+            onClick$={() => {
               pageSig.value = pageSig.value + 1;
-            })}
-            isLoading={isloadingMovies.value}
-            size={ButtonSize.lg}
-          />
+            }}
+          >
+            {isloadingMovies.value ? (
+              <span class="loading loading-ring loading-lg"></span>
+            ) : (
+              <span>Load more</span>
+            )}
+          </button>
         )}
       </div>
     </div>

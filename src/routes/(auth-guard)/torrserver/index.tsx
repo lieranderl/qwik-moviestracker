@@ -139,7 +139,7 @@ export default component$(() => {
                     type="text"
                     value={field.value}
                     placeholder={langAddNewTorrServerURL(resource.value.lang)}
-                    class="border-primary-300 bg-primary focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600 placeholder-primary-900 mr-2 w-64 rounded-lg border py-2 pl-2 text-sm"
+                    class="border-primary-300 focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600 placeholder-primary-900 mr-2 w-64 rounded-lg border bg-primary py-2 pl-2 text-sm"
                   />
                   {field.error && (
                     <div class="text-xs text-red-400">{field.error}</div>
@@ -171,7 +171,7 @@ export default component$(() => {
               name=""
               id="attrib"
               value={selectedTorServer.value}
-              class=" bg-primary border-primary-300 focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600 mr-2 rounded-lg border text-sm"
+              class=" border-primary-300 focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600 mr-2 rounded-lg border bg-primary text-sm"
               onChange$={(_, e) => {
                 selectedTorServer.value = e.value;
               }}
@@ -219,7 +219,9 @@ export default component$(() => {
         </div>
       </div>
       <section>
-        {isCheckingTorrServer.value && <span class="loading loading-spinner loading-lg"></span>}
+        {isCheckingTorrServer.value && (
+          <span class="loading loading-spinner loading-lg"></span>
+        )}
         <MediaGrid title={""}>
           {torrentsSig.value.length > 0 &&
             torrentsSig.value.map((t) => {
@@ -266,7 +268,7 @@ export default component$(() => {
                         });
                       }
                     }}
-                    class="text-primary transition-scale absolute -right-1 top-4 z-10 scale-[90%] cursor-pointer rounded-full duration-300 ease-in-out hover:scale-[110%]"
+                    class="transition-scale absolute -right-1 top-4 z-10 scale-[90%] cursor-pointer rounded-full text-primary duration-300 ease-in-out hover:scale-[110%]"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -287,10 +289,10 @@ export default component$(() => {
                   <a
                     href={`magnet:?xt=urn:btih:${t.hash}`}
                     target="_blank"
-                    class="bg-primary dark:bg-primary-dark transition-scale absolute left-0 top-[1.2rem] z-10 scale-[85%] cursor-pointer rounded-full  border-2 duration-300 ease-in-out hover:scale-[105%]"
+                    class="dark:bg-primary-dark transition-scale absolute left-0 top-[1.2rem] z-10 scale-[85%] cursor-pointer rounded-full border-2  bg-primary duration-300 ease-in-out hover:scale-[105%]"
                   >
                     <svg
-                      class="fill-primary-dark dark:fill-primary w-8"
+                      class="fill-primary-dark w-8 dark:fill-primary"
                       viewBox="0 0 1024 1024"
                       version="1.1"
                       xmlns="http://www.w3.org/2000/svg"

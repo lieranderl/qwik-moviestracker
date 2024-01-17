@@ -4,7 +4,6 @@ import { LoginButton } from "~/components/login-button";
 import { HiFilmOutline } from "@qwikest/icons/heroicons";
 
 export default component$(() => {
-
   return (
     <div
       class="hero min-h-screen"

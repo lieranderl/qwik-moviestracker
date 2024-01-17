@@ -20,7 +20,6 @@ export const Imdb = component$(({ id }: { id: string }) => {
       const serverImdb = server$((id) => {
         return getImdbRating(id);
       });
-
       return serverImdb(id);
     }
     return null;

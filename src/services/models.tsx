@@ -317,6 +317,7 @@ export enum MediaType {
   Movie = "movie",
   Tv = "tv",
   Person = "person",
+  Seasons = "seasons",
 }
 
 export type PersonShort = {

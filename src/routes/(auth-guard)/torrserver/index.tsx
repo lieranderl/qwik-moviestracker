@@ -75,31 +75,37 @@ export default component$(() => {
     isLoading.value = false;
   });
 
-  useOnWindow("DOMContentLoaded", $(() => {
-    const tlist = localStorage.getItem("torrServerList");
-    if (tlist) {
-      torrServerStore.list = JSON.parse(tlist) || [];
-    } else {
-      torrServerStore.list = [];
-    }
-    selectedTorServer.value = localStorage.getItem("selectedTorServer") || "";
-    if (selectedTorServer.value === "") {
-      localStorage.setItem("selectedTorServer", torrServerStore.list[0] || "");
-      localStorage.setItem("torrServerList", JSON.stringify([]));
-    } else {
-      if (torrServerStore.list.length === 0) {
-        localStorage.setItem(
-          "torrServerList",
-          JSON.stringify([selectedTorServer.value]),
-        );
+  useOnWindow(
+    "DOMContentLoaded",
+    $(() => {
+      const tlist = localStorage.getItem("torrServerList");
+      if (tlist) {
+        torrServerStore.list = JSON.parse(tlist) || [];
       } else {
-        localStorage.setItem(
-          "torrServerList",
-          JSON.stringify(torrServerStore.list),
-        );
+        torrServerStore.list = [];
       }
-    }
-  }));
+      selectedTorServer.value = localStorage.getItem("selectedTorServer") || "";
+      if (selectedTorServer.value === "") {
+        localStorage.setItem(
+          "selectedTorServer",
+          torrServerStore.list[0] || "",
+        );
+        localStorage.setItem("torrServerList", JSON.stringify([]));
+      } else {
+        if (torrServerStore.list.length === 0) {
+          localStorage.setItem(
+            "torrServerList",
+            JSON.stringify([selectedTorServer.value]),
+          );
+        } else {
+          localStorage.setItem(
+            "torrServerList",
+            JSON.stringify(torrServerStore.list),
+          );
+        }
+      }
+    }),
+  );
 
   useVisibleTask$(async (ctx) => {
     ctx.track(() => selectedTorServer.value);
@@ -142,7 +148,7 @@ export default component$(() => {
                     type="text"
                     value={field.value}
                     placeholder={langAddNewTorrServerURL(resource.value.lang)}
-                    class="input input-sm input-bordered w-72"
+                    class="input input-bordered input-sm w-72"
                   />
                   {field.error && (
                     <div class="text-xs text-error">{field.error}</div>
@@ -150,11 +156,11 @@ export default component$(() => {
                 </div>
               )}
             </Field>
-            <div class="ms-2 mb-3">
+            <div class="mb-3 ms-2">
               <button
                 type="submit"
                 disabled={newTorrServerForm.invalid}
-                class="btn btn-sm btn-success"
+                class="btn btn-success btn-sm"
               >
                 <HiPlusSolid class="text-lg" />
               </button>
@@ -183,7 +189,7 @@ export default component$(() => {
               <button
                 type="submit"
                 disabled={newTorrServerForm.invalid}
-                class="btn btn-sm btn-error"
+                class="btn btn-error btn-sm"
                 onClick$={() => {
                   const index = torrServerStore.list.indexOf(
                     selectedTorServer.value,
@@ -222,13 +228,11 @@ export default component$(() => {
               }
               const m = JSON.parse(t.data);
               return (
-                <div key={t.hash} class="relative indicator">
-                
-
+                <div key={t.hash} class="indicator relative">
                   <a
                     href={`magnet:?xt=urn:btih:${t.hash}`}
                     target="_blank"
-                    class="transition-scale absolute -left-1 top-[0.85rem] z-10 scale-[85%] cursor-pointer rounded-full border-1 bg-info p-1 duration-300 ease-in-out hover:scale-[105%]"
+                    class="transition-scale border-1 absolute -left-1 top-[0.85rem] z-10 scale-[85%] cursor-pointer rounded-full bg-info p-1 duration-300 ease-in-out hover:scale-[105%]"
                   >
                     <LuMagnet class="text-3xl" />
                   </a>
@@ -269,13 +273,12 @@ export default component$(() => {
                         });
                       }
                     }}
-                    class="btn btn-circle btn-sm btn-error transition-scale absolute -right-1 top-4 z-10 scale-[90%]  duration-300 ease-in-out hover:scale-[110%]"
+                    class="transition-scale btn btn-circle btn-error btn-sm absolute -right-1 top-4 z-10 scale-[90%]  duration-300 ease-in-out hover:scale-[110%]"
                   >
-                    
                     <HiMinusSolid class="text-sm" />
                   </button>
 
-                 <a
+                  <a
                     href={
                       m.movie.seasons
                         ? "/tv/" + m.movie.id
@@ -283,7 +286,6 @@ export default component$(() => {
                     }
                     target="_blank"
                   >
-                    
                     <MediaCard
                       title={m.movie.title || m.movie.name || t.title}
                       width={300}

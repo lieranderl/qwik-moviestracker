@@ -1,5 +1,5 @@
 import { Slot, component$ } from "@builder.io/qwik";
-import type { MediaType } from "~/services/models";
+import { MediaType } from "~/services/models";
 import { langExploreAll } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
@@ -16,7 +16,7 @@ export const MediaCarousel = component$(
       <section class="my-4">
         <div class="flex flex-row items-center justify-between">
           <div class="text-xl font-bold ">{title}</div>
-          {type !== "person" && (
+          {type !== MediaType.Person && type !== MediaType.Seasons && (
             <a
               href={paths.category(type, category!, lang)}
               class="group text-sm transition duration-300"

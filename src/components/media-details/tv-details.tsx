@@ -10,12 +10,7 @@ import { ExternalIds } from "../external_ids";
 import { type TvShort, type TvFull, MediaType } from "~/services/models";
 import {
   langActors,
-  langLastEpisode,
-  langNextEpisode,
   langRecommendedTvShows,
-  langTvShowEnded,
-  langCurrentSeason,
-  langEnded,
   langCreatedby,
 } from "~/utils/languages";
 import { LuDisc3, LuLayers3 } from "@qwikest/icons/lucide";
@@ -23,6 +18,8 @@ import { MediaTitle } from "./media-title";
 import { MediaRating } from "./media-rating";
 import { MediaInfo } from "./media-info";
 import { MediaPlot } from "./media-plot";
+import { TvSeasons } from "./tv-seasons";
+import { TvEpisodeStatus } from "./tv-episode-status";
 
 interface TvDetailsProps {
   tv: TvFull;
@@ -62,69 +59,14 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
         <div class="me-2">{tv.number_of_episodes}</div>
       </section>
 
-      <section class="my-4">
-        {tv.in_production && (
-          <table class="table-fixed" style="max-width: 400px;">
-            <tbody>
-              {tv.last_episode_to_air && (
-                <tr>
-                  <td>
-                    {langLastEpisode(lang)}
-                    <span class="ps-1">
-                      {" "}
-                      {tv.last_episode_to_air.season_number}.
-                      {tv.last_episode_to_air.episode_number}:
-                    </span>
-                  </td>
-                  <td class="ps-4">{tv.last_episode_to_air.air_date}</td>
-                </tr>
-              )}
-              {!tv.next_episode_to_air && tv.last_episode_to_air && (
-                <tr>
-                  <td>
-                    {langCurrentSeason(lang)} (
-                    {tv.last_episode_to_air.season_number}) {langEnded(lang)}.
-                  </td>
-                </tr>
-              )}
-              {tv.next_episode_to_air && (
-                <tr>
-                  <td>
-                    {langNextEpisode(lang)}
-                    <span class="ps-1">
-                      {tv.next_episode_to_air.season_number}.
-                      {tv.next_episode_to_air.episode_number}:
-                    </span>
-                  </td>
-                  <td class="ps-4">{tv.next_episode_to_air.air_date}</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+      <TvSeasons lang={lang} seasons={tv.seasons} />
 
-        {!tv.in_production && (
-          <table class="table-fixed" style="max-width: 400px;">
-            <tbody>
-              {tv.last_episode_to_air && (
-                <tr>
-                  <td>
-                    {langLastEpisode(lang)}
-                    <span class="ps-1">
-                      {tv.last_episode_to_air.season_number}.
-                      {tv.last_episode_to_air.episode_number}:
-                    </span>
-                  </td>
-                  <td class="ps-4">{tv.last_episode_to_air.air_date}</td>
-                </tr>
-              )}
-              <tr>
-                <td>{langTvShowEnded(lang)}</td>
-              </tr>
-            </tbody>
-          </table>
-        )}
-      </section>
+      <TvEpisodeStatus
+        lang={lang}
+        last_episode_to_air={tv.last_episode_to_air}
+        next_episode_to_air={tv.next_episode_to_air}
+        in_production={tv.in_production}
+      />
 
       <MediaInfo
         release_date={tv.first_air_date}

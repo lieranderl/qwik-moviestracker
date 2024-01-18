@@ -19,5 +19,8 @@ export default defineConfig((): UserConfig => {
         "Cache-Control": "public, max-age=600",
       },
     },
+    build: {
+      target: 'esnext',
+    },
   };
 });

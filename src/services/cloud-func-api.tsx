@@ -29,6 +29,7 @@ const fetchAPI = async <T = unknown,>(
 };
 
 export const getImdbRating = (imdb_id: string) => {
+  console.log("getImdbRating");
   return fetchAPI<ImdbRating>(`getimdb`, { imdb_id });
 };
 

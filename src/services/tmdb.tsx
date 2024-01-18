@@ -32,7 +32,7 @@ const fetchTMDB = async <T = unknown,>(
 type GetTrendingMedia = {
   page: number;
   language: string;
-  type: MediaType;
+  type: Exclude<MediaType, MediaType.Seasons>;
   needbackdrop: boolean;
 };
 export const getTrendingMedia = async ({
@@ -118,7 +118,7 @@ type GetMedias = {
   query: string;
   page: number;
   language: string;
-  type: MediaType;
+  type: Exclude<MediaType, MediaType.Seasons>;
   needbackdrop: boolean;
 };
 export const getMedias = async ({
@@ -179,7 +179,7 @@ type GetMediaRecomType = {
   id: number;
   query: string;
   language: string;
-  type: MediaType;
+  type: Exclude<MediaType, MediaType.Seasons>;
 };
 export const getMediaRecom = async ({
   id,

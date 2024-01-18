@@ -536,17 +536,6 @@ export const langCreatedby = (lang: string) => {
   }
 };
 
-export const langWelcome = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Welcome to Moviestracker";
-    case "ru-RU":
-      return "Добро пожаловать на Moviestracker";
-    default:
-      return "Добро пожаловать на Moviestracker";
-  }
-};
-
 export const langSignWithGoogle = (lang: string) => {
   switch (lang) {
     case "en-US":
@@ -566,5 +555,37 @@ export const langSignWithGithub = (lang: string) => {
       return "Войти с помощью Github";
     default:
       return "Войти с помощью Github";
+  }
+};
+
+export const langSeasons = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Seasons";
+    case "ru-RU":
+      return "Сезоны";
+    default:
+      return "Сезоны";
+  }
+};
+
+export const langEpisodesCount = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Episodes count:";
+    case "ru-RU":
+      return "Кол-во серий:";
+    default:
+      return "Кол-во серий:";
+  }
+};
+export const langOverview = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Overview";
+    case "ru-RU":
+      return "Описание";
+    default:
+      return "Описание";
   }
 };

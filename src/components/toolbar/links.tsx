@@ -1,5 +1,4 @@
 import { component$ } from "@builder.io/qwik";
-import { useQueryParamsLoader } from "~/routes/layout";
 import {
   langMovies,
   langSearch,
@@ -7,6 +6,7 @@ import {
   langTorrServer,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
+import type { ToolbarProps } from "./toolbar";
 
 type AlinkProps = {
   text: string;
@@ -16,35 +16,20 @@ type AlinkProps = {
 const Alink = component$(({ text, path }: AlinkProps) => {
   return (
     <li class="mx-4">
-      <a href={`${path}`} class="group transition duration-300">
+      <a href={`${path}`} class=" flex flex-col hover:text-accent">
         {text}
-        <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-primary-dark dark:bg-primary"></span>
       </a>
     </li>
   );
 });
 
-export const ToolbarLinks = component$(() => {
-  const resource = useQueryParamsLoader();
-
+export const ToolbarLinks = component$(({ lang }: ToolbarProps) => {
   return (
     <>
-      <Alink
-        text={langMovies(resource.value.lang)}
-        path={paths.movie(resource.value.lang)}
-      />
-      <Alink
-        text={langSeries(resource.value.lang)}
-        path={paths.tv(resource.value.lang)}
-      />
-      <Alink
-        text={langSearch(resource.value.lang)}
-        path={paths.search(resource.value.lang)}
-      />
-      <Alink
-        text={langTorrServer(resource.value.lang)}
-        path={paths.torrserver(resource.value.lang)}
-      />
+      <Alink text={langMovies(lang)} path={paths.movie(lang)} />
+      <Alink text={langSeries(lang)} path={paths.tv(lang)} />
+      <Alink text={langSearch(lang)} path={paths.search(lang)} />
+      <Alink text={langTorrServer(lang)} path={paths.torrserver(lang)} />
     </>
   );
 });

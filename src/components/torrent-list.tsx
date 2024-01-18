@@ -1,32 +1,32 @@
 /* eslint-disable qwik/no-use-visible-task */
-import type { Signal } from "@builder.io/qwik";
-import { component$, $, useVisibleTask$, useStore } from "@builder.io/qwik";
-import { setValue, useForm, zodForm$ } from "@modular-forms/qwik";
-import { server$, z } from "@builder.io/qwik-city";
-import { DotPulseLoader } from "./dot-pulse-loader/dot-pulse-loader";
+import { component$, $, useStore, useVisibleTask$ } from "@builder.io/qwik";
+import { setValue, useForm, valiForm$ } from "@modular-forms/qwik";
+import { server$ } from "@builder.io/qwik-city";
 import { TorrentBlock } from "./torrent";
 import type { getTorrentsType } from "~/services/cloud-func-api";
 import { getTorrents } from "~/services/cloud-func-api";
 import type { MovieDetails, Torrent } from "~/services/models";
+import type { Input } from "valibot";
+import { maxValue, minLength, minValue, number, object, string } from "valibot";
+import { HiMagnifyingGlassCircleSolid } from "@qwikest/icons/heroicons";
 
-const searchTorrSchema = z.object({
-  name: z.string().min(3, "Please enter movie name."),
-  year: z
-    .number()
-    .int()
-    .nonnegative()
-    .max(new Date().getFullYear(), "Please enter a valid year."),
+const searchTorrSchema = object({
+  name: string([minLength(3, "Please enter movie name.")]),
+  year: number([
+    minValue(1930, "Please enter a valid year."),
+    maxValue(new Date().getFullYear(), "Please enter a valid year."),
+  ]),
 });
 
-type SearchTorrForm = z.infer<typeof searchTorrSchema>;
+type SearchTorrForm = Input<typeof searchTorrSchema>;
 
-interface TorrentListProps {
+export type TorrentListProps = {
   torrents: Torrent[] | null;
   title: string;
-  year: Signal<number>;
+  year: number;
   isMovie: boolean;
   movie: MovieDetails;
-}
+};
 
 export const TorrentList = component$(
   ({ torrents, isMovie, title, year, movie }: TorrentListProps) => {
@@ -90,9 +90,9 @@ export const TorrentList = component$(
     });
 
     const [searchTorrForm, { Form, Field }] = useForm<SearchTorrForm>({
-      loader: { value: { name: title, year: 0 } },
+      loader: { value: { name: title, year: year } },
       // action: useTorrSearchAction(),
-      validate: zodForm$(searchTorrSchema),
+      validate: valiForm$(searchTorrSchema),
     });
 
     const handleSubmit = $(async (values: SearchTorrForm) => {
@@ -119,9 +119,9 @@ export const TorrentList = component$(
     });
 
     useVisibleTask$((ctx) => {
-      ctx.track(() => year.value);
+      ctx.track(() => year);
       sortedTorrents.value = null;
-      setValue(searchTorrForm, "year", year.value);
+      setValue(searchTorrForm, "year", year);
     });
 
     useVisibleTask$((ctx) => {
@@ -137,152 +137,164 @@ export const TorrentList = component$(
 
     return (
       <>
-        <div class="flex flex-wrap">
-          <div class="flex flex-wrap  items-center justify-start me-4">
-            <div class="mr-2">Сортировать по:</div>
-            <select
-              onChange$={(_, e) => {
-                sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
-                sortFilterStore.selectedSort = e.value;
-              }}
-              // bind:value={sortFilterStore.selectedSort}
-              id="attrib"
-              class="mr-2 bg-primary border border-primary-300 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600"
-            >
-              {sortAttrib.map((attrib) => (
-                <option value={attrib.value} key={attrib.value}>
-                  {attrib.text}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <Form onSubmit$={handleSubmit} class="flex items-center !my-4">
-            <Field name="name">
-              {(field, props) => (
-                <div>
-                  <input
-                    {...props}
-                    type="text"
-                    value={field.value}
-                    placeholder="название"
-                    class="py-2 pl-2 w-48 text-sm border border-primary-300 rounded-l-lg bg-primary focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600"
-                  />
-                  {field.error && (
-                    <div class="text-xs text-red-400">{field.error}</div>
-                  )}
-                </div>
-              )}
-            </Field>
-            <Field name="year" type="number">
-              {(field, props) => (
-                <div>
-                  <input
-                    {...props}
-                    type="number"
-                    value={field.value}
-                    class="mr-2 py-2 pl-2 w-20 text-sm border border-primary-300 rounded-r-lg bg-primary focus:ring-primary-600 focus:border-primary-600 dark:bg-primary-dark dark:border-primary-600 dark:placeholder-primary-100 dark:focus:ring-primary-600 dark:focus:border-primary-600"
-                    placeholder="год"
-                  />
-                  {field.error && (
-                    <div class="text-xs text-red-400">{field.error}</div>
-                  )}
-                </div>
-              )}
-            </Field>
-
-            <button
-              type="submit"
-              disabled={searchTorrForm.invalid || sortedTorrents.value == null}
-              class="fill-primary-dark dark:fill-primary hover:bg-primary-100 dark:hover:bg-primary-900 focus:outline-none focus:ring-0 focus:ring-primary-100 dark:focus:ring-primary-900 rounded-lg text-lg p-2.5"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                aria-hidden="true"
-                width="1em"
-                height="1em"
-                data-qwikest-icon=""
+        {sortedTorrents.value !== null && (
+          <div class="flex flex-wrap">
+            <div class="me-4 flex  flex-wrap items-center justify-start">
+              <div class="mr-2">Сортировать по:</div>
+              <select
+                onChange$={(_, e) => {
+                  sortFilterStore.filterChecked =
+                    !sortFilterStore.filterChecked;
+                  sortFilterStore.selectedSort = e.value;
+                }}
+                id="attrib"
+                class="select select-bordered select-sm mr-2"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                ></path>
-              </svg>
-            </button>
-          </Form>
-        </div>
+                {sortAttrib.map((attrib) => (
+                  <option value={attrib.value} key={attrib.value}>
+                    {attrib.text}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div class="flex items-center">
-          <div class="mr-2">
-            <input
-              type="checkbox"
-              class="mr-2 w-4 h-4 text-primary-600 bg-primary-100 border-primary-300 rounded focus:ring-primary-600 dark:focus:ring-primary-600 dark:ring-offset-primary-800 focus:ring-2 dark:bg-primary-700 dark:border-primary-600"
-              onChange$={(e) => {
-                sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
-                if (e.target) {
-                  sortFilterStore.k4 = (e.target as HTMLInputElement).checked;
-                }
-              }}
-            />
-            <label>4K</label>
+            <Form onSubmit$={handleSubmit} class="my-4 flex items-center">
+              <div class="join">
+                <Field name="name">
+                  {(field, props) => (
+                    <div>
+                      <input
+                        {...props}
+                        type="text"
+                        value={field.value}
+                        placeholder="название"
+                        class="input join-item input-bordered  input-sm   w-48 py-2  pl-2"
+                      />
+                      {field.error && (
+                        <div class="text-xs text-error">{field.error}</div>
+                      )}
+                    </div>
+                  )}
+                </Field>
+                <Field name="year" type="number">
+                  {(field, props) => (
+                    <div>
+                      <input
+                        {...props}
+                        type="number"
+                        value={field.value}
+                        class="input join-item input-bordered input-sm mr-2 w-20 py-2 pl-2"
+                        placeholder="год"
+                      />
+                      {field.error && (
+                        <div class="text-xs text-error">{field.error}</div>
+                      )}
+                    </div>
+                  )}
+                </Field>
+              </div>
+
+              <button
+                type="submit"
+                disabled={searchTorrForm.invalid}
+                class="btn btn-circle btn-ghost text-4xl"
+              >
+                <HiMagnifyingGlassCircleSolid />
+              </button>
+            </Form>
           </div>
-          <div class="mr-2">
-            <input
-              type="checkbox"
-              class="mr-2 w-4 h-4 text-primary-600 bg-primary-100 border-primary-300 rounded focus:ring-primary-600 dark:focus:ring-primary-600 dark:ring-offset-primary-800 focus:ring-2 dark:bg-primary-700 dark:border-primary-600"
-              onChange$={(e) => {
-                sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
-                if (e.target) {
-                  sortFilterStore.hdr = (e.target as HTMLInputElement).checked;
-                }
-              }}
-            />
-            <label>HDR</label>
+        )}
+
+        {sortedTorrents.value !== null && (
+          <div class="flex items-center">
+            <div class="mr-2">
+              <label
+                class="label cursor-pointer"
+                onChange$={(e) => {
+                  sortFilterStore.filterChecked =
+                    !sortFilterStore.filterChecked;
+                  if (e.target) {
+                    sortFilterStore.k4 = (e.target as HTMLInputElement).checked;
+                  }
+                }}
+              >
+                <input type="checkbox" class="checkbox" />
+                <span class="label-text ms-2">4K</span>
+              </label>
+            </div>
+            <div class="mr-2">
+              <label
+                class="label cursor-pointer"
+                onChange$={(e) => {
+                  sortFilterStore.filterChecked =
+                    !sortFilterStore.filterChecked;
+                  if (e.target) {
+                    sortFilterStore.hdr = (
+                      e.target as HTMLInputElement
+                    ).checked;
+                  }
+                }}
+              >
+                <input type="checkbox" class="checkbox" />
+                <span class="label-text ms-2">HDR</span>
+              </label>
+            </div>
+            <div class="mr-2">
+              <label
+                class="label cursor-pointer"
+                onChange$={(e) => {
+                  sortFilterStore.filterChecked =
+                    !sortFilterStore.filterChecked;
+                  if (e.target) {
+                    sortFilterStore.hdr10 = (
+                      e.target as HTMLInputElement
+                    ).checked;
+                  }
+                }}
+              >
+                <input type="checkbox" class="checkbox" />
+                <span class="label-text ms-2">HDR10</span>
+              </label>
+            </div>
+            <div class="mr-2">
+              <label
+                class="label cursor-pointer"
+                onChange$={(e) => {
+                  sortFilterStore.filterChecked =
+                    !sortFilterStore.filterChecked;
+                  if (e.target) {
+                    sortFilterStore.hdr10plus = (
+                      e.target as HTMLInputElement
+                    ).checked;
+                  }
+                }}
+              >
+                <input type="checkbox" class="checkbox" />
+                <span class="label-text ms-2">HDR10+</span>
+              </label>
+            </div>
+            <div class="mr-2">
+              <label
+                class="label cursor-pointer"
+                onChange$={(e) => {
+                  sortFilterStore.filterChecked =
+                    !sortFilterStore.filterChecked;
+                  if (e.target) {
+                    sortFilterStore.dv = (e.target as HTMLInputElement).checked;
+                  }
+                }}
+              >
+                <input type="checkbox" class="checkbox" />
+                <span class="label-text ms-2">DV</span>
+              </label>
+            </div>
           </div>
-          <div class="mr-2">
-            <input
-              type="checkbox"
-              class="mr-2 w-4 h-4 text-primary-600 bg-primary-100 border-primary-300 rounded focus:ring-primary-600 dark:focus:ring-primary-600 dark:ring-offset-primary-800 focus:ring-2 dark:bg-primary-700 dark:border-primary-600"
-              onChange$={(e) => {
-                sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
-                sortFilterStore.hdr10 = (e.target as HTMLInputElement).checked;
-              }}
-            />
-            <label>HDR10</label>
-          </div>
-          <div class="mr-2">
-            <input
-              type="checkbox"
-              class="mr-2 w-4 h-4 text-primary-600 bg-primary-100 border-primary-300 rounded focus:ring-primary-600 dark:focus:ring-primary-600 dark:ring-offset-primary-800 focus:ring-2 dark:bg-primary-700 dark:border-primary-600"
-              onChange$={(e) => {
-                sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
-                sortFilterStore.hdr10plus = (
-                  e.target as HTMLInputElement
-                ).checked;
-              }}
-            />
-            <label>HDR10+</label>
-          </div>
-          <div class="mr-2">
-            <input
-              type="checkbox"
-              class="mr-2 w-4 h-4 text-primary-600 bg-primary-100 border-primary-300 rounded focus:ring-primary-600 dark:focus:ring-primary-600 dark:ring-offset-primary-800 focus:ring-2 dark:bg-primary-700 dark:border-primary-600"
-              onChange$={(e) => {
-                sortFilterStore.filterChecked = !sortFilterStore.filterChecked;
-                sortFilterStore.dv = (e.target as HTMLInputElement).checked;
-              }}
-            />
-            <label>DV</label>
-          </div>
-        </div>
+        )}
 
         <section class="my-4">
-          {sortedTorrents.value === null && <DotPulseLoader />}
+          {sortedTorrents.value === null && (
+            <span class="loading loading-spinner loading-md"></span>
+          )}
           {sortedTorrents.value !== null &&
             sortedTorrents.value.length === 0 && <div>Ничего не найдено</div>}
           {sortedTorrents.value !== null && sortedTorrents.value.length > 0 && (
@@ -292,10 +304,12 @@ export const TorrentList = component$(
 
         <section class="my-4">
           {sortedTorrents.value !== null &&
-            sortedTorrents.value.map((torrent, key) => (
-              <>
-                <TorrentBlock torrent={torrent} movie={movie} key={key} />
-              </>
+            sortedTorrents.value.map((torrent) => (
+              <TorrentBlock
+                torrent={torrent}
+                movie={movie}
+                key={torrent.Magnet}
+              />
             ))}
         </section>
       </>

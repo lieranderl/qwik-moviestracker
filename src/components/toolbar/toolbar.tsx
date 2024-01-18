@@ -16,7 +16,7 @@ export const Toolbar = component$(({ lang }) => {
       <div class="flex w-screen flex-wrap items-center justify-between bg-opacity-100 p-4">
         <a href={paths.index(lang)} class="flex items-center">
           <div class="me-2 text-4xl">
-            <HiFilmOutline  />
+            <HiFilmOutline />
           </div>
           <span class="self-center whitespace-nowrap text-2xl font-semibold">
             Moviestracker

@@ -10,7 +10,7 @@ import { HiFilmOutline } from "@qwikest/icons/heroicons";
 export type ToolbarProps = {
   lang: string;
 };
-export const Toolbar = component$(({ lang }) => {
+export const Toolbar = component$<ToolbarProps>(({ lang }) => {
   return (
     <nav class="fixed z-10 block bg-opacity-50 backdrop-blur-sm dark:bg-opacity-50">
       <div class="flex w-screen flex-wrap items-center justify-between bg-opacity-100 p-4">

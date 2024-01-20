@@ -54,16 +54,15 @@ export default component$(() => {
       )}
       onResolved={(value) => (
         <div
-        class="mx-auto px-4 shadow-custom dark:shadow-custom-dark"
-        style={
-          "background: url(https://image.tmdb.org/t/p/original" +
-          value.tv.backdrop_path +
-          ");background-size: cover;background-attachment: fixed;background-position: center; background-repeat: no-repeat;"
-        }
-      >
-         <TvDetails tv={value.tv} recTv={value.recTv} lang={value.lang} />
-      </div>
-
+          class="mx-auto px-4 shadow-custom dark:shadow-custom-dark"
+          style={
+            "background: url(https://image.tmdb.org/t/p/original" +
+            value.tv.backdrop_path +
+            ");background-size: cover;background-attachment: fixed;background-position: center; background-repeat: no-repeat;"
+          }
+        >
+          <TvDetails tv={value.tv} recTv={value.recTv} lang={value.lang} />
+        </div>
       )}
     />
   );

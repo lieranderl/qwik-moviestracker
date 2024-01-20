@@ -66,24 +66,19 @@ export default component$(() => {
       )}
       onResolved={(value) => (
         <div
-          class="hero min-h-screen bg-fixed "
+          class="mx-auto px-4 shadow-custom dark:shadow-custom-dark"
           style={
-            "background-image: url(https://image.tmdb.org/t/p/original" +
+            "background: url(https://image.tmdb.org/t/p/original" +
             value.movie.backdrop_path +
-            ");"
+            ");background-size: cover;background-attachment: fixed;background-position: center; background-repeat: no-repeat;"
           }
         >
-          <div class="hero-overlay bg-base-100 bg-opacity-80"></div>
-          <div class="hero-content text-left">
-            <div class="container mx-auto px-4">
-              <MovieDetails
-                movie={value.movie}
-                recMovies={value.recMovies}
-                colMovies={value.colMovies}
-                lang={value.lang}
-              />
-            </div>
-          </div>
+          <MovieDetails
+            movie={value.movie}
+            recMovies={value.recMovies}
+            colMovies={value.colMovies}
+            lang={value.lang}
+          />
         </div>
       )}
     />

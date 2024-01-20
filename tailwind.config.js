@@ -90,10 +90,17 @@ module.exports = {
   },
   theme: {
     extend: {
+      boxShadow: {
+        'custom': 'inset 0 0 0 2000px #e5fcffc1',
+        'custom-dark': 'inset 0 0 0 2000px #012638c1',
+      },
       fontFamily: {
         inter: ["Inter", "sans-serif"],
       },
     },
+  },
+  extend: {
+    boxShadow: ['dark']
   },
   plugins: [require("@tailwindcss/typography"), require("daisyui")],
 };

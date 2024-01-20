@@ -42,60 +42,58 @@ export const useContentLoader = routeLoader$(async (event) => {
 export default component$(() => {
   const resource = useContentLoader();
   return (
-    <>
-      <div class="container mx-auto px-4 pt-[64px]">
-        <MediaCarousel
-          title={langTrengingTVShows(resource.value.lang)}
-          type={MediaType.Tv}
-          category="trending"
-          lang={resource.value.lang}
-        >
-          {resource.value.tvtrend.map((m) => (
-            <div class="carousel-item " key={m.id}>
-              <a href={paths.media(MediaType.Tv, m.id, resource.value.lang)}>
-                <MediaCard
-                  title={m.name ? m.name : ""}
-                  width={500}
-                  rating={m.vote_average ? m.vote_average : 0}
-                  year={parseInt(
-                    m.first_air_date ? m.first_air_date.substring(0, 4) : "0",
-                    10,
-                  )}
-                  picfile={m.backdrop_path}
-                  isPerson={false}
-                  isHorizontal={true}
-                />
-              </a>
-            </div>
-          ))}
-        </MediaCarousel>
-        <MediaCarousel
-          title={langTopRatedTvShows(resource.value.lang)}
-          type={MediaType.Tv}
-          category="toprated"
-          lang={resource.value.lang}
-        >
-          {resource.value.tvtoprated.map((m) => (
-            <div class="carousel-item " key={m.id}>
-              <a href={paths.media(MediaType.Tv, m.id, resource.value.lang)}>
-                <MediaCard
-                  title={m.name ? m.name : ""}
-                  width={500}
-                  rating={m.vote_average ? m.vote_average : 0}
-                  year={parseInt(
-                    m.first_air_date ? m.first_air_date.substring(0, 4) : "0",
-                    10,
-                  )}
-                  picfile={m.backdrop_path}
-                  isPerson={false}
-                  isHorizontal={true}
-                />
-              </a>
-            </div>
-          ))}
-        </MediaCarousel>
-      </div>
-    </>
+    <div class=" mx-auto px-4 pt-[64px]">
+      <MediaCarousel
+        title={langTrengingTVShows(resource.value.lang)}
+        type={MediaType.Tv}
+        category="trending"
+        lang={resource.value.lang}
+      >
+        {resource.value.tvtrend.map((m) => (
+          <div class="carousel-item" key={m.id}>
+            <a href={paths.media(MediaType.Tv, m.id, resource.value.lang)}>
+              <MediaCard
+                title={m.name ? m.name : ""}
+                width={500}
+                rating={m.vote_average ? m.vote_average : 0}
+                year={parseInt(
+                  m.first_air_date ? m.first_air_date.substring(0, 4) : "0",
+                  10,
+                )}
+                picfile={m.backdrop_path}
+                isPerson={false}
+                isHorizontal={true}
+              />
+            </a>
+          </div>
+        ))}
+      </MediaCarousel>
+      <MediaCarousel
+        title={langTopRatedTvShows(resource.value.lang)}
+        type={MediaType.Tv}
+        category="toprated"
+        lang={resource.value.lang}
+      >
+        {resource.value.tvtoprated.map((m) => (
+          <div class="carousel-item " key={m.id}>
+            <a href={paths.media(MediaType.Tv, m.id, resource.value.lang)}>
+              <MediaCard
+                title={m.name ? m.name : ""}
+                width={500}
+                rating={m.vote_average ? m.vote_average : 0}
+                year={parseInt(
+                  m.first_air_date ? m.first_air_date.substring(0, 4) : "0",
+                  10,
+                )}
+                picfile={m.backdrop_path}
+                isPerson={false}
+                isHorizontal={true}
+              />
+            </a>
+          </div>
+        ))}
+      </MediaCarousel>
+    </div>
   );
 });
 

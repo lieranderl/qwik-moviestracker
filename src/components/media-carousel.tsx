@@ -26,7 +26,7 @@ export const MediaCarousel = component$(
             </a>
           )}
         </div>
-        <div class="carousel-start carousel w-full rounded-box p-4">
+        <div class="carousel carousel-start w-full rounded-box p-4">
           <Slot />
         </div>
       </section>

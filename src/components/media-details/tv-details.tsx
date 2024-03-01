@@ -30,7 +30,11 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
   return (
     <div class="pt-[20vh] font-normal lg:mx-20 xl:mx-40">
       <MediaTitle name={tv.name!} original_name={tv.original_name} />
-      <MediaRating vote_average={tv.vote_average} vote_count={tv.vote_count} />
+      <MediaRating
+        vote_average={tv.vote_average}
+        vote_count={tv.vote_count}
+        imdb_id={tv.external_ids.imdb_id}
+      />
 
       <section class="mb-4 flex items-center">
         {tv.videos!.results.length > 0 && (

@@ -168,7 +168,7 @@ export const TorrentList = component$(
                         type="text"
                         value={field.value}
                         placeholder="название"
-                        class="input join-item input-bordered  input-sm   w-48 py-2  pl-2"
+                        class="input input-sm join-item  input-bordered   w-48 py-2  pl-2"
                       />
                       {field.error && (
                         <div class="text-xs text-error">{field.error}</div>
@@ -183,7 +183,7 @@ export const TorrentList = component$(
                         {...props}
                         type="number"
                         value={field.value}
-                        class="input join-item input-bordered input-sm mr-2 w-20 py-2 pl-2"
+                        class="input input-sm join-item input-bordered mr-2 w-20 py-2 pl-2"
                         placeholder="год"
                       />
                       {field.error && (

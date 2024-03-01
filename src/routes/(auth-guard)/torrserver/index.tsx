@@ -148,7 +148,7 @@ export default component$(() => {
                     type="text"
                     value={field.value}
                     placeholder={langAddNewTorrServerURL(resource.value.lang)}
-                    class="input input-bordered input-sm w-72"
+                    class="input input-sm input-bordered w-72"
                   />
                   {field.error && (
                     <div class="text-xs text-error">{field.error}</div>

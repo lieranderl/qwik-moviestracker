@@ -1,11 +1,11 @@
-import { serverAuth$ } from "@builder.io/qwik-auth";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import { Adapter } from "@auth/core/adapters";
+import type { Provider } from "@auth/core/providers";
+import GitHub from "@auth/core/providers/github";
 import type { GoogleProfile } from "@auth/core/providers/google";
 import Google from "@auth/core/providers/google";
-import GitHub from "@auth/core/providers/github";
-import type { Provider } from "@auth/core/providers";
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import { serverAuth$ } from "@builder.io/qwik-auth";
 import mongoClientPromise from "../utils/mongodbinit";
-import { Adapter } from "@auth/core/adapters";
 
 export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
   serverAuth$(({ env }) => ({

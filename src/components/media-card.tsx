@@ -53,7 +53,7 @@ export const MediaCard = component$(
     });
 
     return (
-      <div class={cardWidthClass} style={cardWidthStyle}>
+      <div class={cardWidthClass} style={cardWidthStyle.value.toString()}>
         {charName && (
           <span class="block truncate text-sm font-normal italic">
             {charName}

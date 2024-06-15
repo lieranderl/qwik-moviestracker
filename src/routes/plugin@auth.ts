@@ -1,4 +1,4 @@
-import { Adapter } from "@auth/core/adapters";
+import type { Adapter } from "@auth/core/adapters";
 import type { Provider } from "@auth/core/providers";
 import GitHub from "@auth/core/providers/github";
 import type { GoogleProfile } from "@auth/core/providers/google";

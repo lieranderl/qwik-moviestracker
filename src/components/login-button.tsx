@@ -1,6 +1,6 @@
 import type { QwikIntrinsicElements } from "@builder.io/qwik";
 import { Slot, component$, $, useSignal } from "@builder.io/qwik";
-import { useAuthSignin } from "~/routes/plugin@auth";
+import { useSignIn } from "~/routes/plugin@auth";
 
 export type LoginButtonProps = QwikIntrinsicElements["button"] & {
   providerName: string;
@@ -8,7 +8,7 @@ export type LoginButtonProps = QwikIntrinsicElements["button"] & {
 
 export const LoginButton = component$<LoginButtonProps>((props) => {
   const providerName = props.providerName || "google";
-  const signIn = useAuthSignin();
+  const signIn = useSignIn();
   const isloading = useSignal(false);
   return (
     <button
@@ -17,8 +17,8 @@ export const LoginButton = component$<LoginButtonProps>((props) => {
       onClick$={$(() => {
         isloading.value = true;
         signIn.submit({
+          redirectTo: "/",
           providerId: providerName,
-          options: { callbackUrl: "/" },
         });
       })}
     >

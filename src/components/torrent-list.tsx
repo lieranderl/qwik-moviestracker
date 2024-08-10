@@ -6,19 +6,28 @@ import { TorrentBlock } from "./torrent";
 import type { getTorrentsType } from "~/services/cloud-func-api";
 import { getTorrents } from "~/services/cloud-func-api";
 import type { MovieDetails, Torrent } from "~/services/models";
-import type { Input } from "valibot";
-import { maxValue, minLength, minValue, number, object, string } from "valibot";
+import type { InferInput } from "valibot";
+import {
+  maxValue,
+  minLength,
+  minValue,
+  number,
+  object,
+  pipe,
+  string,
+} from "valibot";
 import { HiMagnifyingGlassCircleSolid } from "@qwikest/icons/heroicons";
 
 const searchTorrSchema = object({
-  name: string([minLength(3, "Please enter movie name.")]),
-  year: number([
+  name: pipe(string(), minLength(3, "Please enter movie name.")),
+  year: pipe(
+    number(),
     minValue(1930, "Please enter a valid year."),
     maxValue(new Date().getFullYear(), "Please enter a valid year."),
-  ]),
+  ),
 });
 
-type SearchTorrForm = Input<typeof searchTorrSchema>;
+type SearchTorrForm = InferInput<typeof searchTorrSchema>;
 
 export type TorrentListProps = {
   torrents: Torrent[] | null;

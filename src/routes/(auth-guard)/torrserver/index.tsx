@@ -12,8 +12,8 @@ import { setValue, useForm, valiForm$ } from "@modular-forms/qwik";
 import { HiPlusSolid, HiMinusSolid } from "@qwikest/icons/heroicons";
 import { LuMagnet } from "@qwikest/icons/lucide";
 import { ToastManagerContext } from "qwik-toasts";
-import type { Input } from "valibot";
-import { object, string, url } from "valibot";
+import type { InferInput } from "valibot";
+import { object, pipe, string, url } from "valibot";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import type { TSResult } from "~/services/models";
@@ -26,10 +26,10 @@ import { useQueryParamsLoader } from "~/shared/loaders";
 import { langAddNewTorrServerURL, langNoResults } from "~/utils/languages";
 
 export const torrServerSchema = object({
-  ipaddress: string([url("Please valid url!")]),
+  ipaddress: pipe(string(), url("Please valid url!")),
 });
 
-export type torrServerForm = Input<typeof torrServerSchema>;
+export type torrServerForm = InferInput<typeof torrServerSchema>;
 
 export default component$(() => {
   const resource = useQueryParamsLoader();

@@ -7,39 +7,42 @@ import { getMediaDetails, getPersonMovies, getPersonTv } from "~/services/tmdb";
 import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
-  const lang = event.query.get("lang") || "en-US";
-  const id = parseInt(event.params.id, 10);
-  try {
-    const [person, perMovies, perTv] = await Promise.all([
-      getMediaDetails({
-        id,
-        language: lang,
-        type: MediaType.Person,
-      }) as Promise<PersonFull>,
-      // getPerson({
-      //   id,
-      //   language: lang,
-      // }),
-      getPersonMovies({ id: id, language: lang }),
-      getPersonTv({ id: id, language: lang }),
-    ]);
-    return { person, perMovies, perTv, lang };
-  } catch (error) {
-    event.redirect(302, paths.notFound(lang));
-  }
+	const lang = event.query.get("lang") || "en-US";
+	const id = Number.parseInt(event.params.id, 10);
+	try {
+		const [person, perMovies, perTv] = await Promise.all([
+			getMediaDetails({
+				id,
+				language: lang,
+				type: MediaType.Person,
+			}) as Promise<PersonFull>,
+			// getPerson({
+			//   id,
+			//   language: lang,
+			// }),
+			getPersonMovies({ id: id, language: lang }),
+			getPersonTv({ id: id, language: lang }),
+		]);
+		return { person, perMovies, perTv, lang };
+	} catch (error) {
+		console.error(error);
+		event.redirect(302, paths.notFound(lang));
+	}
 });
 
 export default component$(() => {
-  const resource = useContentLoader();
+	const resource = useContentLoader();
 
-  return (
-    <div class="container mx-auto px-4 pt-[100px]">
-      <PersonDetails
-        person={resource.value!.person}
-        perMovies={resource.value!.perMovies}
-        perTv={resource.value!.perTv}
-        lang={resource.value!.lang}
-      />
-    </div>
-  );
+	return (
+		<div class="container mx-auto px-4 pt-[100px]">
+			{resource.value && (
+				<PersonDetails
+					person={resource.value.person}
+					perMovies={resource.value.perMovies}
+					perTv={resource.value.perTv}
+					lang={resource.value.lang}
+				/>
+			)}
+		</div>
+	);
 });

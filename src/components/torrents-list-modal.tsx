@@ -1,146 +1,149 @@
-import { component$, $, useStore, useTask$ } from "@builder.io/qwik";
+import { $, component$, useStore, useTask$ } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
+import { HiChevronDownSolid } from "@qwikest/icons/heroicons";
 import { TorrentList } from "~/components/torrent-list";
 import { getTorrents } from "~/services/cloud-func-api";
 import type { MediaDetails, Season, Torrent } from "~/services/models";
+import { useQueryParamsLoader } from "~/shared/loaders";
 import { formatYear } from "~/utils/fomat";
 import { langTorrents } from "~/utils/languages";
-import { useQueryParamsLoader } from "~/shared/loaders";
-import { HiChevronDownSolid } from "@qwikest/icons/heroicons";
 
 export interface TorModalPros {
-  title: string;
-  year: number;
-  isMovie: boolean;
-  seasons: Season[];
-  media: MediaDetails;
+	title: string;
+	year: number;
+	isMovie: boolean;
+	seasons: Season[];
+	media: MediaDetails;
 }
 
 export const TorrentsModal = component$(
-  ({ title, year, isMovie, seasons, media }: TorModalPros) => {
-    const resource = useQueryParamsLoader();
-    const torrentsStore = useStore({
-      torrents: null as Torrent[] | null,
-      year: 0,
-    });
-    useTask$(async () => {
-      torrentsStore.year = year;
-    });
-    const getTorrentsToggle = $(
-      async (name: string, year: number, isMovie: boolean) => {
-        torrentsStore.torrents = null;
-        torrentsStore.year = year;
-        const torrModal = document.getElementById("torrentsModal")
-          ? (document.getElementById("torrentsModal") as HTMLDialogElement)
-          : null;
-        if (torrModal) {
-          torrModal.showModal();
-          try {
-            torrentsStore.torrents = await server$(() => {
-              return getTorrents({ name: name, year: year, isMovie: isMovie });
-            })();
-          } catch (error) {
-            torrentsStore.torrents = [];
-            console.log(error);
-          }
-        }
-      },
-    );
+	({ title, year, isMovie, seasons, media }: TorModalPros) => {
+		const resource = useQueryParamsLoader();
+		const torrentsStore = useStore({
+			torrents: null as Torrent[] | null,
+			year: 0,
+		});
+		useTask$(async () => {
+			torrentsStore.year = year;
+		});
+		const getTorrentsToggle = $(
+			async (name: string, year: number, isMovie: boolean) => {
+				torrentsStore.torrents = null;
+				torrentsStore.year = year;
+				const torrModal = document.getElementById("torrentsModal")
+					? (document.getElementById("torrentsModal") as HTMLDialogElement)
+					: null;
+				if (torrModal) {
+					torrModal.showModal();
+					try {
+						torrentsStore.torrents = await server$(() => {
+							return getTorrents({ name: name, year: year, isMovie: isMovie });
+						})();
+					} catch (error) {
+						torrentsStore.torrents = [];
+						console.log(error);
+					}
+				}
+			},
+		);
 
-    return (
-      <>
-        {seasons.length == 0 && (
-          <button
-            class="btn btn-accent btn-sm"
-            onClick$={() => getTorrentsToggle(title, year, isMovie)}
-          >
-            {langTorrents(resource.value.lang)}
-          </button>
-        )}
+		return (
+			<>
+				{seasons.length === 0 && (
+					<button
+						type="button"
+						class="btn btn-accent btn-sm"
+						onClick$={() => getTorrentsToggle(title, year, isMovie)}
+					>
+						{langTorrents(resource.value.lang)}
+					</button>
+				)}
 
-        {seasons.length > 0 && (
-          <>
-            <div class="dropdown">
-              <div tabIndex={0} role="button" class="btn btn-accent btn-sm m-1">
-                {langTorrents(resource.value.lang)}
-                <HiChevronDownSolid />
-              </div>
-              <ul
-                tabIndex={0}
-                class="menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow"
-              >
-                {seasons!.map((s) => {
-                  if (s.season_number !== 0) {
-                    return (
-                      <>
-                        {s.air_date && (
-                          <li>
-                            <a
-                              onClick$={() => {
-                                const torrModal = document.getElementById(
-                                  "torrentsModal",
-                                )
-                                  ? (document.getElementById(
-                                      "torrentsModal",
-                                    ) as HTMLDialogElement)
-                                  : null;
-                                if (torrModal) {
-                                  torrModal.showModal();
-                                  const updatedYear = formatYear(
-                                    s.air_date ? s.air_date : "",
-                                  );
-                                  getTorrentsToggle(
-                                    title,
-                                    updatedYear,
-                                    isMovie,
-                                  );
-                                }
-                              }}
-                              href="#"
-                              class="block px-4 py-2"
-                            >
-                              Сезон
-                              <span class="ml-1">
-                                {" "}
-                                {s.season_number}(
-                                {formatYear(s.air_date ? s.air_date : "")})
-                              </span>
-                            </a>
-                          </li>
-                        )}
-                      </>
-                    );
-                  }
-                })}
-              </ul>
-            </div>
-          </>
-        )}
+				{seasons.length > 0 && (
+					<>
+						<div class="dropdown">
+							<div tabIndex={0} role="button" class="btn btn-accent btn-sm m-1">
+								{langTorrents(resource.value.lang)}
+								<HiChevronDownSolid />
+							</div>
+							<ul
+								// biome-ignore lint/a11y/noNoninteractiveTabindex: <explanation>
+								tabIndex={0}
+								class="menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow"
+							>
+								{seasons.map((s) => {
+									if (s.season_number !== 0) {
+										return (
+											<>
+												{s.air_date && (
+													<li>
+														<a
+															onClick$={() => {
+																const torrModal = document.getElementById(
+																	"torrentsModal",
+																)
+																	? (document.getElementById(
+																			"torrentsModal",
+																		) as HTMLDialogElement)
+																	: null;
+																if (torrModal) {
+																	torrModal.showModal();
+																	const updatedYear = formatYear(
+																		s.air_date ? s.air_date : "",
+																	);
+																	getTorrentsToggle(
+																		title,
+																		updatedYear,
+																		isMovie,
+																	);
+																}
+															}}
+															// biome-ignore lint/a11y/useValidAnchor: <explanation>
+															href="#"
+															class="block px-4 py-2"
+														>
+															Сезон
+															<span class="ml-1">
+																{" "}
+																{s.season_number}(
+																{formatYear(s.air_date ? s.air_date : "")})
+															</span>
+														</a>
+													</li>
+												)}
+											</>
+										);
+									}
+								})}
+							</ul>
+						</div>
+					</>
+				)}
 
-        <dialog id="torrentsModal" class="modal">
-          <div class="modal-box w-11/12 max-w-5xl">
-            {/* <form method="dialog">
+				<dialog id="torrentsModal" class="modal">
+					<div class="modal-box w-11/12 max-w-5xl">
+						{/* <form method="dialog">
           <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
         </form> */}
-            <h3 class="text-xl font-semibold ">
-              {langTorrents(resource.value.lang)}
-            </h3>
-            <div class="p-6">
-              <TorrentList
-                torrents={torrentsStore.torrents}
-                title={title}
-                year={torrentsStore.year}
-                isMovie={isMovie}
-                movie={media}
-              />
-            </div>
-          </div>
-          <form method="dialog" class="modal-backdrop">
-            <button>close</button>
-          </form>
-        </dialog>
+						<h3 class="text-xl font-semibold">
+							{langTorrents(resource.value.lang)}
+						</h3>
+						<div class="p-6">
+							<TorrentList
+								torrents={torrentsStore.torrents}
+								title={title}
+								year={torrentsStore.year}
+								isMovie={isMovie}
+								movie={media}
+							/>
+						</div>
+					</div>
+					<form method="dialog" class="modal-backdrop">
+						<button type="submit">close</button>
+					</form>
+				</dialog>
 
-        {/* <div
+				{/* <div
           id="torrentsModal"
           tabIndex={0}
           aria-hidden="true"
@@ -187,7 +190,7 @@ export const TorrentsModal = component$(
             </div>
           </div>
         </div> */}
-      </>
-    );
-  },
+			</>
+		);
+	},
 );

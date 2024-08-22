@@ -1,9 +1,9 @@
 export const ParamsLauncher = () => (
-  <script
-    dangerouslySetInnerHTML={`
+	<script
+		// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+		dangerouslySetInnerHTML={`
     const params2 = new URLSearchParams(location.search);
-    const lang = params.get("lang");
-
+    const lang = params2.get("lang");
     if (localStorage.lang) {
       if (lang) {
         if (localStorage.lang !== lang) {
@@ -22,5 +22,5 @@ export const ParamsLauncher = () => (
     }
 
     `}
-  />
+	/>
 );

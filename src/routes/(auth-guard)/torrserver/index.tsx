@@ -46,7 +46,7 @@ export default component$(() => {
 	const isCheckingTorrServer = useSignal(false);
 	const torrentsSig = useSignal([] as TSResult[]);
 
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore:
 	const addTorrserver = $(async (values: torrServerForm): Promise<any> => {
 		isLoading.value = true;
 		if (torrServerStore.list.includes(values.ipaddress)) {

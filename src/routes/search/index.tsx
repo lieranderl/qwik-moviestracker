@@ -4,6 +4,7 @@ import {
 	useResource$,
 	useSignal,
 } from "@builder.io/qwik";
+import { server$ } from "@builder.io/qwik-city";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import { MediaType } from "~/services/models";
@@ -20,19 +21,21 @@ export default component$(() => {
 	const resource = useQueryParamsLoader();
 	const phrase = useSignal("");
 	const searchResource = useResource$(async (ctx) => {
-		ctx.track(() => phrase.value);
+		ctx.track(phrase);
 		try {
-			const s = await search({
-				query: phrase.value,
-				language: resource.value.lang,
-				page: 1,
+			const ss = server$(async () => {
+				const s = await search({
+					query: phrase.value,
+					language: resource.value.lang,
+					page: 1,
+				});
+				return s;
 			});
-			return s;
+			return ss();
 		} catch (error) {
 			console.error(error);
 			throw new Error("Search failed");
 		}
-
 	});
 
 	return (
@@ -47,7 +50,6 @@ export default component$(() => {
 							phrase.value = elem.value;
 						}
 					}
-
 				}}
 			/>
 
@@ -88,23 +90,23 @@ export default component$(() => {
 													year={
 														m.media_type === MediaType.Movie
 															? Number.parseInt(
-																m.release_date
-																	? m.release_date.substring(0, 4)
-																	: "0",
-																10,
-															)
+																	m.release_date
+																		? m.release_date.substring(0, 4)
+																		: "0",
+																	10,
+																)
 															: Number.parseInt(
-																"first_air_date" in m
-																	? m.first_air_date
-																		? m.first_air_date.substring(0, 4)
-																		: "0"
-																	: "",
-																10,
-															)
+																	"first_air_date" in m
+																		? m.first_air_date
+																			? m.first_air_date.substring(0, 4)
+																			: "0"
+																		: "",
+																	10,
+																)
 													}
 													picfile={
 														m.media_type !== MediaType.Movie &&
-															m.media_type !== MediaType.Tv
+														m.media_type !== MediaType.Tv
 															? m.profile_path
 															: m.poster_path
 													}

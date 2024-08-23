@@ -98,7 +98,7 @@ export const TorrentsModal = component$(
 																	);
 																}
 															}}
-															// biome-ignore lint/a11y/useValidAnchor: <explanation>
+															// biome-ignore:
 															href="#"
 															class="block px-4 py-2"
 														>

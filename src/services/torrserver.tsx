@@ -31,15 +31,15 @@ const fetchTorrServer = async <T = unknown>(
 	resource: string,
 	method: MethodType,
 	path: string,
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore:
 	body?: any,
 ): Promise<T> => {
 	const requestOptions: {
 		timeout: number;
 		method: MethodType;
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		// biome-ignore:
 		body?: any;
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		// biome-ignore:
 		headers: any;
 	} = {
 		timeout: 5000,

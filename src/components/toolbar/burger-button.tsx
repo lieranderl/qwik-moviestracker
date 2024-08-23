@@ -7,7 +7,10 @@ export const BurgerButton = component$(() => {
 			<div tabIndex={0} role="button">
 				<HiBars3Solid class="text-3xl" />
 			</div>
-			<ul class="menu dropdown-content z-[1] w-44 rounded-box bg-base-100 p-2 shadow">
+			<ul
+				tabIndex={0}
+				class="menu dropdown-content z-[1] w-44 rounded-box bg-base-100 p-2 shadow"
+			>
 				<Slot />
 			</ul>
 		</div>

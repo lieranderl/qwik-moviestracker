@@ -67,7 +67,7 @@ export const TorrentsModal = component$(
 								<HiChevronDownSolid />
 							</div>
 							<ul
-								// biome-ignore lint/a11y/noNoninteractiveTabindex: <explanation>
+								// biome-ignore:
 								tabIndex={0}
 								class="menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow"
 							>

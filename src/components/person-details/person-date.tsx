@@ -3,7 +3,7 @@ import { BsGeoAlt, BsPerson } from "@qwikest/icons/bootstrap";
 import { showDeathYear, showYearOld } from "~/utils/fomat";
 
 type PersonInfoProps = {
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore:
 	icon: any;
 	text: string;
 };

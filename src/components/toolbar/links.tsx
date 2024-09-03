@@ -15,8 +15,8 @@ type AlinkProps = {
 
 const Alink = component$(({ text, path }: AlinkProps) => {
 	return (
-		<li class="mx-4">
-			<a href={`${path}`} class="flex flex-col hover:text-accent">
+		<li class="mx-2">
+			<a href={`${path}`} class="flex flex-col hover:text-accent link link-hover font-medium">
 				{text}
 			</a>
 		</li>

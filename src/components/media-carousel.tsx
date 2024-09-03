@@ -14,17 +14,16 @@ export const MediaCarousel = component$(
 	({ title, type, category, lang }: MediaCarouselProps) => {
 		return (
 			<section class="my-4">
-				<div class="flex flex-row items-center justify-between">
-					<div class="text-xl font-bold">{title}</div>
+				<div class="flex flex-row items-end justify-between">
+					<div class="text-xl font-semibold">{title}</div>
 					{type !== MediaType.Person &&
 						type !== MediaType.Seasons &&
 						category && (
 							<a
 								href={paths.category(type, category, lang)}
-								class="group text-sm transition duration-300"
+								class="link link-hover text-sm hover:text-accent"
 							>
 								{langExploreAll(lang)}
-								<span class="block h-0.5 max-w-0 transition-all duration-500 group-hover:max-w-full" />
 							</a>
 						)}
 				</div>

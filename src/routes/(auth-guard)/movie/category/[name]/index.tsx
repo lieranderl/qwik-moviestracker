@@ -1,6 +1,7 @@
 import { $, component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, server$ } from "@builder.io/qwik-city";
+import { LoadMoreBtn } from "~/components/load-more-btn";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import type { MediaShort, MovieMongo, MovieShort } from "~/services/models";
@@ -136,19 +137,13 @@ export default component$(() => {
 			</MediaGrid>
 			<div class="my-4 flex justify-center">
 				{showLoadingButton.value && (
-					<button
-						class="btn"
-						type="button"
-						onClick$={() => {
+					<LoadMoreBtn
+						disabledBtn={isloadingMovies.value}
+						refreshFunc={$(() => {
 							pageSig.value = pageSig.value + 1;
-						}}
-					>
-						{isloadingMovies.value ? (
-							<span class="loading loading-ring loading-lg" />
-						) : (
-							<span>Load more</span>
-						)}
-					</button>
+						})}
+						lang={resource.value.lang}
+					/>
 				)}
 			</div>
 		</div>

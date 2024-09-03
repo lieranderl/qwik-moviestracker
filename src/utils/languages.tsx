@@ -589,3 +589,15 @@ export const langOverview = (lang: string) => {
 			return "Описание";
 	}
 };
+
+
+export const langloadMore = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Load more";
+		case "ru-RU":
+			return "Показать ещё";
+		default:
+			return "Показать все";
+	}
+};

@@ -65,7 +65,7 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
 											<p class="py-4"> {s.overview}</p>
 										</div>
 										<form method="dialog" class="modal-backdrop">
-											<button type="button">close</button>
+											<button type="submit">close</button>
 										</form>
 									</dialog>
 								)}

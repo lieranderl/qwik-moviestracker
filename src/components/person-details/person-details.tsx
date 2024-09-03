@@ -31,7 +31,7 @@ export const PersonDetails = component$(
 								width="300"
 								height="450"
 								src={`https://image.tmdb.org/t/p/w300${person.profile_path}`}
-								class="rounded"
+								class="rounded-xl"
 								alt={person.name}
 							/>
 						</div>

@@ -7,6 +7,7 @@ import {
 } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, server$ } from "@builder.io/qwik-city";
+import { LoadMoreBtn } from "~/components/load-more-btn";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import type { TvShort } from "~/services/models";
@@ -133,13 +134,11 @@ export default component$(() => {
 					))}
 			</MediaGrid>
 			<div class="my-4 flex justify-center">
-				<button type="button" class="btn btn-primary" onClick$={getNewMovies}>
-					{isloadingMovies.value ? (
-						<span class="loading loading-ring loading-lg" />
-					) : (
-						<span>Load more</span>
-					)}
-				</button>
+				<LoadMoreBtn
+					disabledBtn={isloadingMovies.value}
+					refreshFunc={getNewMovies}
+					lang={resource.value.lang}
+				/>
 			</div>
 		</div>
 	);

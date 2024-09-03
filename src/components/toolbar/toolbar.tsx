@@ -18,7 +18,7 @@ export const Toolbar = component$<ToolbarProps>(({ lang }) => {
 					<div class="me-2 text-4xl">
 						<HiFilmOutline />
 					</div>
-					<span class="self-center whitespace-nowrap text-2xl font-semibold">
+					<span class="self-center whitespace-nowrap text-2xl font-bold">
 						Moviestracker
 					</span>
 				</a>

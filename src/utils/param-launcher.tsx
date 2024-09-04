@@ -1,6 +1,6 @@
 export const ParamsLauncher = () => (
 	<script
-		// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+		// biome-ignore:
 		dangerouslySetInnerHTML={`
     const params2 = new URLSearchParams(location.search);
     const lang = params2.get("lang");

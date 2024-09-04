@@ -21,13 +21,13 @@ const { router, notFound, staticFile } = createQwikCity({
 });
 
 // Allow for dynamic port
-// biome-ignore lint/correctness/noInvalidUseBeforeDeclaration: <explanation>
+// biome-ignore:
 const port = Number(Bun.env.PORT ?? 3000);
 
 /* eslint-disable */
 console.log(`Server started: http://localhost:${port}/`);
 
-// biome-ignore lint/correctness/noInvalidUseBeforeDeclaration: <explanation>
+// biome-ignore:
 Bun.serve({
 	async fetch(request: Request) {
 		const staticResponse = await staticFile(request);
@@ -47,5 +47,5 @@ Bun.serve({
 	port,
 });
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore:
 declare const Bun: any;

@@ -14,7 +14,7 @@ export default function ClosePlugin() {
 		},
 
 		// use this to catch the end of a build without errors
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		// biome-ignore:
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		closeBundle(_id: any) {
 			console.log("Bundle closed");

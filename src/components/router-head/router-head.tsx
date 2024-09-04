@@ -25,7 +25,7 @@ export const RouterHead = component$(() => {
 			))}
 
 			{head.styles.map((s) => (
-				// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+				// biome-ignore:
 				<style key={s.key} {...s.props} dangerouslySetInnerHTML={s.style} />
 			))}
 		</>

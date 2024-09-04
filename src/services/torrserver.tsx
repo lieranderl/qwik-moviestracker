@@ -1,6 +1,6 @@
 import type { MediaDetails, TSResult, Torrent } from "./models";
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore:
 const fetchWithTimeout = async (resource: string, options: any) => {
 	const { timeout = 8000 } = options;
 

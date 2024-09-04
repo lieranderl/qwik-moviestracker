@@ -590,7 +590,6 @@ export const langOverview = (lang: string) => {
 	}
 };
 
-
 export const langloadMore = (lang: string) => {
 	switch (lang) {
 		case "en-US":

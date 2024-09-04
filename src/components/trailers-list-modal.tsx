@@ -64,7 +64,7 @@ export const TrailersModal = component$(({ videos }: TorModalPros) => {
 					)}
 				</div>
 				<form method="dialog" class="modal-backdrop">
-					<button type="button">close</button>
+					<button type="submit">close</button>
 				</form>
 			</dialog>
 		</>

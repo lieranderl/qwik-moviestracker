@@ -1,6 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 import { HiFilmOutline } from "@qwikest/icons/heroicons";
-import { SiGithub, SiGoogle } from "@qwikest/icons/simpleicons";
+import { SiGoogle } from "@qwikest/icons/simpleicons";
 import { LoginButton } from "~/components/login-button";
 
 export default component$(() => {
@@ -21,9 +21,9 @@ export default component$(() => {
 						<LoginButton providerName="google">
 							<SiGoogle />
 						</LoginButton>
-						<LoginButton providerName="github">
+						{/* <LoginButton providerName="github">
 							<SiGithub />
-						</LoginButton>
+						</LoginButton> */}
 					</div>
 				</div>
 			</div>

@@ -1,6 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 import { HiFilmOutline } from "@qwikest/icons/heroicons";
-import { SiGithub, SiGoogle } from "@qwikest/icons/simpleicons";
+import { SiGoogle } from "@qwikest/icons/simpleicons";
 import { LoginButton } from "~/components/login-button";
 
 export default component$(() => {

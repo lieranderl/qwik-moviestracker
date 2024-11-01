@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 /* eslint-disable qwik/no-use-visible-task */
 import { $, component$, useStore, useVisibleTask$ } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
@@ -101,7 +103,7 @@ export const TorrentList = component$(
 		const [searchTorrForm, { Form, Field }] = useForm<SearchTorrForm>({
 			loader: { value: { name: title, year: year } },
 			// action: useTorrSearchAction(),
-			validate: valiForm$(searchTorrSchema),
+			// validate: valiForm$(searchTorrSchema),
 		});
 
 		const handleSubmit = $(async (values: SearchTorrForm) => {

@@ -82,8 +82,8 @@ export default component$(() => {
 												<MediaCard
 													title={
 														m.media_type === MediaType.Movie
-															? m.title ?? ""
-															: m.name ?? ""
+															? (m.title ?? "")
+															: (m.name ?? "")
 													}
 													width={300}
 													rating={m.vote_average ? m.vote_average : 0}

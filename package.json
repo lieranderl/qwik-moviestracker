@@ -5,7 +5,10 @@
 		"node": ">=15.0.0"
 	},
 	"private": true,
-	"trustedDependencies": ["esbuild", "sharp"],
+	"trustedDependencies": [
+		"esbuild",
+		"sharp"
+	],
 	"type": "module",
 	"scripts": {
 		"build": "qwik build",
@@ -37,14 +40,14 @@
 		"@qwikest/icons": "latest",
 		"@tailwindcss/typography": "^0.5.15",
 		"@types/bun": "^1.1.12",
-		"@types/eslint": "^9.6.1",
+		"@types/eslint": "^8.56.0",
 		"@types/node": "^22.8.6",
 		"@typescript-eslint/eslint-plugin": "^8.12.2",
 		"@typescript-eslint/parser": "^8.12.2",
 		"@unpic/qwik": "^0.0.46",
 		"autoprefixer": "^10.4.20",
 		"daisyui": "^4.12.14",
-		"eslint": "^9.13.0",
+		"eslint": "^8.57.0",
 		"eslint-plugin-qwik": "^1.9.1",
 		"postcss": "^8.4.47",
 		"prettier": "^3.3.3",

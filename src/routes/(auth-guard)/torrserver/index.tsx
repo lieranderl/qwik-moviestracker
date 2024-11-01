@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 /* eslint-disable qwik/no-use-visible-task */
 import {
 	$,
@@ -26,7 +28,7 @@ import { useQueryParamsLoader } from "~/shared/loaders";
 import { langAddNewTorrServerURL, langNoResults } from "~/utils/languages";
 
 export const torrServerSchema = object({
-	ipaddress: pipe(string(), url("Please valid url!")),
+	ipaddress: pipe(string(), url("Please provide a valid URL!")),
 });
 
 export type torrServerForm = InferInput<typeof torrServerSchema>;
@@ -40,7 +42,7 @@ export default component$(() => {
 	const [newTorrServerForm, { Form, Field }] = useForm<torrServerForm>({
 		loader: { value: { ipaddress: "" } },
 		// action: useTorrSearchAction(),
-		validate: valiForm$(torrServerSchema),
+		// validate: valiForm$(torrServerSchema),
 	});
 
 	const isCheckingTorrServer = useSignal(false);

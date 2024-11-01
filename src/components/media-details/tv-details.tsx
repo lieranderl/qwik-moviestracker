@@ -52,7 +52,7 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
 			</section>
 
 			<section class="text-md my-4 flex items-center">
-				<div class="me-2 font-bold">{tv.networks[0].name}</div>
+				<div class="me-2 font-bold">{tv.networks[0]?.name}</div>
 				<div class="me-2 text-xl">
 					<LuLayers3 />
 				</div>

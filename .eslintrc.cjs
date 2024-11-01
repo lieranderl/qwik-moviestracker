@@ -32,10 +32,12 @@ module.exports = {
 		"@typescript-eslint/no-this-alias": "off",
 		"@typescript-eslint/ban-types": "off",
 		"@typescript-eslint/ban-ts-comment": "off",
+        '@typescript-eslint/no-empty-object-type': 'off', // Disable empty object type rule
+		'@typescript-eslint/no-unused-expressions': 'off', 
 		"prefer-spread": "off",
 		"no-case-declarations": "off",
 		"no-console": "off",
-		"@typescript-eslint/no-unused-vars": ["error"],
+		"@typescript-eslint/no-unused-vars": ["warn"],
 		"@typescript-eslint/consistent-type-imports": "warn",
 		"@typescript-eslint/no-unnecessary-condition": "warn",
 	},

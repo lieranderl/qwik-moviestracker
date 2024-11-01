@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 import { createServer } from "node:http";
 /*
  * WHAT IS THIS FILE?

@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 import mongoClientPromise from "~/utils/mongodbinit";
 import type { MovieMongo } from "./models";
 

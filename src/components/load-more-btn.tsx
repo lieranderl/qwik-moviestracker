@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { QRL, component$ } from "@builder.io/qwik";
 import { langloadMore } from "~/utils/languages";
 

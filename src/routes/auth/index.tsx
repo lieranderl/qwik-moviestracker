@@ -21,9 +21,9 @@ export default component$(() => {
 						<LoginButton providerName="google">
 							<SiGoogle />
 						</LoginButton>
-						<LoginButton providerName="github">
+						{/* <LoginButton providerName="github">
 							<SiGithub />
-						</LoginButton>
+						</LoginButton> */}
 					</div>
 				</div>
 			</div>

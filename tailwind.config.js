@@ -1,5 +1,8 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+import tailwindcss from 'tailwindcss';
+import daisyui from 'daisyui';
+
+export default {
 	darkMode: "class",
 	content: [
 		"./src/**/*.{js,ts,jsx,tsx,mdx}",
@@ -102,5 +105,5 @@ module.exports = {
 	extend: {
 		boxShadow: ["dark"],
 	},
-	plugins: [require("@tailwindcss/typography"), require("daisyui")],
+	plugins: [tailwindcss, daisyui],
 };

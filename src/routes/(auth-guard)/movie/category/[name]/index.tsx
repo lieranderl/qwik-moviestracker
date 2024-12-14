@@ -7,7 +7,7 @@ import { MediaGrid } from "~/components/media-grid";
 import type { MediaShort, MovieMongo, MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getMoviesMongo } from "~/services/mongoatlas";
-import { getTrendingMedia } from "~/services/tmdb";
+import { getTrendingMedia, withImages } from "~/services/tmdb";
 import { categoryToDb, categoryToTitle, paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
@@ -34,14 +34,15 @@ export const useContentLoader = routeLoader$(async (event) => {
 	} else {
 		try {
 			console.log("get mongo movies");
-			const [movies] = await Promise.all([
-				getMoviesMongo({
+			const movies = await withImages(
+				(await getMoviesMongo({
 					entries_on_page: 20,
 					dbName: categoryToDb(event.params.name),
 					page: 1,
 					language: lang,
-				}),
-			]);
+				})) as MediaShort[],
+				lang,
+			);
 			return {
 				movies: movies as MovieMongo[],
 				db: categoryToDb(event.params.name),
@@ -75,12 +76,16 @@ export default component$(() => {
 				moviesSig.value.push(...m);
 				return moviesSig.value;
 			}
-			const m = (await getMoviesMongo({
-				entries_on_page: 20,
-				dbName: categoryToDb(resource.value.category),
-				page: pageSig.value,
-				language: resource.value.lang,
-			})) as MediaShort[];
+			const m = await withImages(
+				(await getMoviesMongo({
+					entries_on_page: 20,
+					dbName: categoryToDb(resource.value.category),
+					page: pageSig.value,
+					language: resource.value.lang,
+				})) as MediaShort[],
+				resource.value.lang,
+			);
+
 			moviesSig.value.push(...m);
 			return moviesSig.value;
 		})()) as MediaShort[];

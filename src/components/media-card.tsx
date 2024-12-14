@@ -59,13 +59,13 @@ export const MediaCard = component$(
 				)}
 				{!charName && <span class="block text-sm">&nbsp;</span>}
 				<div class="group">
-					<div class="transition-scale scale-100 drop-shadow duration-300 ease-in-out group-hover:scale-105 group-hover:drop-shadow-md">
+					<div class="transition-scale scale-100 duration-300 ease-in-out group-hover:scale-105 drop-shadow group-hover:drop-shadow-md">
 						<picture>
 							<Image
 								class="rounded-xl border-2 border-base-200"
 								src={
 									picfile
-										? `https://image.tmdb.org/t/p/w${width}/${picfile}`
+										? `https://image.tmdb.org/t/p/w${width}${picfile}`
 										: `https://via.placeholder.com/${width}x${height.value}/14b8a6/042f2e?text=No+Image&font=bebas`
 								}
 								width={width}

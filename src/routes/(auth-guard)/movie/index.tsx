@@ -7,7 +7,7 @@ import { MediaCarousel } from "~/components/media-carousel";
 import type { MediaShort, MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { DbType, getMoviesMongo } from "~/services/mongoatlas";
-import { getTrendingMedia, withBackdrop } from "~/services/tmdb";
+import { getTrendingMedia, withImages } from "~/services/tmdb";
 import { useQueryParamsLoader } from "~/shared/loaders";
 import {
 	langLatestDolbyVisionMovies,
@@ -29,29 +29,32 @@ export default component$(() => {
 					type: MediaType.Movie,
 					needbackdrop: true,
 				}),
-				withBackdrop(
+				withImages(
 					(await getMoviesMongo({
 						page: 1,
 						entries_on_page: 20,
 						language: lang,
 						dbName: DbType.LastMovies,
 					})) as MediaShort[],
+					lang,
 				),
-				withBackdrop(
+				withImages(
 					(await getMoviesMongo({
 						page: 1,
 						entries_on_page: 20,
 						language: lang,
 						dbName: DbType.HDR10,
 					})) as MediaShort[],
+					lang,
 				),
-				withBackdrop(
+				withImages(
 					(await getMoviesMongo({
 						page: 1,
 						entries_on_page: 20,
 						language: lang,
 						dbName: DbType.DV,
 					})) as MediaShort[],
+					lang,
 				),
 			]);
 			const movies = m as MovieShort[];

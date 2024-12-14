@@ -1,6 +1,6 @@
+import daisyui from "daisyui";
 /** @type {import('tailwindcss').Config} */
 import tailwindcss from "tailwindcss";
-import daisyui from "daisyui";
 
 export default {
 	darkMode: "class",

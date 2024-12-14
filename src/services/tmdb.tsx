@@ -57,7 +57,7 @@ export const getTrendingMedia = async ({
 		media = await Promise.all(
 			media.map(async (item) => {
 				const movie = item as MediaShortStrict<typeof type>;
-				movie.backdrop_path = await getMediaBackdrop({
+				[movie.backdrop_path] = await getImages({
 					id: item.id,
 					media_type: type,
 					langString: "en",
@@ -69,7 +69,56 @@ export const getTrendingMedia = async ({
 	return media;
 };
 
-export const getMediaBackdrop = async ({
+export const getImages = async ({
+	id,
+	media_type,
+	langString,
+}: {
+	id: number;
+	media_type: MediaType;
+	langString: string;
+}): Promise<[string, string]> => {
+	try {
+		const fallbackLang = "en";
+		const primaryLang = langString.split("-")[0];
+
+		const fetchImages = async (lang: string) =>
+			await fetchTMDB<Images>(`${media_type}/${id}/images`, {
+				include_image_language: lang,
+			});
+
+		// Fetch initial images
+		const images = await fetchImages(primaryLang);
+
+		// Helper function to get the first file path or fallback to empty string
+		const getFilePath = (
+			items: { file_path: string }[],
+			fallbackItems: { file_path: string }[],
+		) => {
+			if (items.length > 0) return items[0].file_path;
+			if (langString !== fallbackLang && fallbackItems.length > 0)
+				return fallbackItems[0].file_path;
+			return "";
+		};
+
+		// Fetch fallback images if needed
+		const fallbackImages =
+			langString !== fallbackLang
+				? await fetchImages(fallbackLang)
+				: { backdrops: [], posters: [] };
+
+		const backdrop = getFilePath(images.backdrops, fallbackImages.backdrops);
+		const poster = getFilePath(images.posters, fallbackImages.posters);
+
+		return [backdrop, poster];
+	} catch (error) {
+		console.error(error);
+		console.log("skip images");
+		return ["", ""];
+	}
+};
+
+export const getMediaPoster = async ({
 	id,
 	media_type,
 	langString,
@@ -82,33 +131,33 @@ export const getMediaBackdrop = async ({
 		const images = await fetchTMDB<Images>(`${media_type}/${id}/images`, {
 			include_image_language: langString,
 		});
-		if (images.backdrops.length === 0) {
+		if (images.posters.length === 0) {
 			const images = await fetchTMDB<Images>(`${media_type}/${id}/images`);
-			if (images.backdrops.length === 0) {
+			if (images.posters.length === 0) {
 				return "";
 			}
-			const backdrop = images.backdrops[0];
-			return backdrop.file_path;
+			const poster = images.posters[0];
+			return poster.file_path;
 		}
-		const backdrop = images.backdrops[0];
-		return backdrop.file_path;
+		const poster = images.posters[0];
+		return poster.file_path;
 	} catch (error) {
 		console.error(error);
-		console.log("skip backdrop");
+		console.log("skip poster");
 	}
 	return "";
 };
 
-export const withBackdrop = async (movies: MediaShort[]) => {
+export const withImages = async (movies: MediaShort[], lang: string) => {
 	const m = await Promise.all(
 		movies.map(async (item) => {
-			if (item.backdrop_path === "") {
-				item.backdrop_path = await getMediaBackdrop({
-					id: item.id,
-					media_type: MediaType.Movie,
-					langString: "en",
-				});
-			}
+			const [backdrop, poster] = await getImages({
+				id: item.id,
+				media_type: MediaType.Movie,
+				langString: lang,
+			});
+			item.backdrop_path = backdrop;
+			item.poster_path = poster;
 			return item;
 		}),
 	);
@@ -145,7 +194,7 @@ export const getMedias = async ({
 		media = await Promise.all(
 			media.map(async (item) => {
 				const movie = item as MediaShortStrict<typeof type>;
-				movie.backdrop_path = await getMediaBackdrop({
+				[movie.backdrop_path] = await getImages({
 					id: item.id,
 					media_type: type,
 					langString: "en",
@@ -200,7 +249,7 @@ export const getMediaRecom = async ({
 		media = await Promise.all(
 			media.map(async (item) => {
 				const movie = item as MediaShortStrict<typeof type>;
-				movie.backdrop_path = await getMediaBackdrop({
+				[movie.backdrop_path] = await getImages({
 					id: item.id,
 					media_type: type,
 					langString: "en",
@@ -239,7 +288,7 @@ export const getCollectionMovies = async ({
 	});
 	if (result.parts.length === 0) return result.parts;
 	const newMovieMedia = result.parts.map(async (item) => {
-		item.backdrop_path = await getMediaBackdrop({
+		[item.backdrop_path] = await getImages({
 			id: item.id,
 			media_type: MediaType.Movie,
 			langString: "en",

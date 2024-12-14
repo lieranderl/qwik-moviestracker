@@ -11,7 +11,7 @@ import type {
 } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { DbType, getMoviesMongo } from "~/services/mongoatlas";
-import { getTrendingMedia, withBackdrop } from "~/services/tmdb";
+import { getTrendingMedia, withImages } from "~/services/tmdb";
 import { formatYear } from "~/utils/fomat";
 import {
 	langLatestMovies,
@@ -39,13 +39,14 @@ export default component$(() => {
 					type: MediaType.Tv,
 					needbackdrop: needbackdrop,
 				}),
-				withBackdrop(
+				withImages(
 					(await getMoviesMongo({
 						entries_on_page: 20,
 						language: lang,
 						dbName: DbType.LastMovies,
 						page: 1,
 					})) as MediaShort[],
+					lang,
 				),
 			]);
 			const movies = m as MovieShort[];

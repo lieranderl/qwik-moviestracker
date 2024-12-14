@@ -55,6 +55,7 @@ export const MovieDetails = component$(
 						isMovie={true}
 						seasons={[]}
 						media={movie}
+						lang={lang}
 					/>
 				</section>
 

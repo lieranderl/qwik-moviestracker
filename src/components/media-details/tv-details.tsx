@@ -48,6 +48,7 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
 					isMovie={false}
 					seasons={tv.seasons}
 					media={tv}
+					lang={lang}
 				/>
 			</section>
 

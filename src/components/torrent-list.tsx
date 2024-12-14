@@ -3,7 +3,7 @@
 /* eslint-disable qwik/no-use-visible-task */
 import { $, component$, useStore, useVisibleTask$ } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
-import { setValue, useForm, valiForm$ } from "@modular-forms/qwik";
+import { setValue, useForm } from "@modular-forms/qwik";
 import { HiMagnifyingGlassCircleSolid } from "@qwikest/icons/heroicons";
 import type { InferInput } from "valibot";
 import {
@@ -18,6 +18,16 @@ import {
 import type { getTorrentsType } from "~/services/cloud-func-api";
 import { getTorrents } from "~/services/cloud-func-api";
 import type { MovieDetails, Torrent } from "~/services/models";
+import {
+	langDate,
+	langFound,
+	langLeeches,
+	langNotFound,
+	langSeeds,
+	langSize,
+	langSortOn,
+	langTorrentov,
+} from "~/utils/languages";
 import { TorrentBlock } from "./torrent";
 
 const searchTorrSchema = object({
@@ -37,15 +47,16 @@ export type TorrentListProps = {
 	year: number;
 	isMovie: boolean;
 	movie: MovieDetails;
+	lang: string;
 };
 
 export const TorrentList = component$(
-	({ torrents, isMovie, title, year, movie }: TorrentListProps) => {
+	({ torrents, isMovie, title, year, movie, lang }: TorrentListProps) => {
 		const sortAttrib = [
-			{ value: "Date", text: "Дате" },
-			{ value: "Size", text: "Размеру" },
-			{ value: "Seeds", text: "Сидам" },
-			{ value: "Leeches", text: "Личам" },
+			{ value: "Date", text: langDate(lang) },
+			{ value: "Size", text: langSize(lang) },
+			{ value: "Seeds", text: langSeeds(lang) },
+			{ value: "Leeches", text: langLeeches(lang) },
 		];
 
 		const initTorrents = useStore({ value: torrents as Torrent[] | null });
@@ -152,7 +163,7 @@ export const TorrentList = component$(
 				{sortedTorrents.value !== null && (
 					<div class="flex flex-wrap">
 						<div class="me-4 flex flex-wrap items-center justify-start">
-							<div class="mr-2">Сортировать по:</div>
+							<div class="mr-2">{langSortOn(lang)}</div>
 							<select
 								onChange$={(_, e) => {
 									sortFilterStore.filterChecked =
@@ -308,9 +319,14 @@ export const TorrentList = component$(
 						<span class="loading loading-spinner loading-md" />
 					)}
 					{sortedTorrents.value !== null &&
-						sortedTorrents.value.length === 0 && <div>Ничего не найдено</div>}
+						sortedTorrents.value.length === 0 && (
+							<div>{langNotFound(lang)}</div>
+						)}
 					{sortedTorrents.value !== null && sortedTorrents.value.length > 0 && (
-						<div>Найдено {sortedTorrents.value.length} торрентов</div>
+						<div>
+							{langFound(lang)} {sortedTorrents.value.length}{" "}
+							{langTorrentov(lang)}
+						</div>
 					)}
 				</section>
 

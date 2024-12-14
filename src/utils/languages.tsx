@@ -600,3 +600,91 @@ export const langloadMore = (lang: string) => {
 			return "Показать все";
 	}
 };
+
+export const langDate = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Date";
+		case "ru-RU":
+			return "Датe";
+		default:
+			return "Датe";
+	}
+};
+
+export const langSize = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Size";
+		case "ru-RU":
+			return "Размеру";
+		default:
+			return "Размеру";
+	}
+};
+
+export const langSeeds = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Seeds";
+		case "ru-RU":
+			return "Сидам";
+		default:
+			return "Сидам";
+	}
+};
+
+export const langLeeches = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Leeches";
+		case "ru-RU":
+			return "Личам";
+		default:
+			return "Личам";
+	}
+};
+
+export const langSortOn = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Sort by:";
+		case "ru-RU":
+			return "Сортировать по:";
+		default:
+			return "Сортировать по:";
+	}
+};
+
+export const langFound = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Found";
+		case "ru-RU":
+			return "Найдено";
+		default:
+			return "Найдено";
+	}
+};
+
+export const langTorrentov = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Torrents";
+		case "ru-RU":
+			return "Торрентов";
+		default:
+			return "Торрентов";
+	}
+};
+
+export const langNotFound = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Not Found";
+		case "ru-RU":
+			return "Не найдено";
+		default:
+			return "Не найдено";
+	}
+};

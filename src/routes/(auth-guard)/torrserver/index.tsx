@@ -10,7 +10,7 @@ import {
 	useStore,
 	useVisibleTask$,
 } from "@builder.io/qwik";
-import { setValue, useForm, valiForm$ } from "@modular-forms/qwik";
+import { setValue, useForm } from "@modular-forms/qwik";
 import { HiMinusSolid, HiPlusSolid } from "@qwikest/icons/heroicons";
 import { LuMagnet } from "@qwikest/icons/lucide";
 import { ToastManagerContext } from "qwik-toasts";

@@ -14,10 +14,11 @@ export interface TorModalPros {
 	isMovie: boolean;
 	seasons: Season[];
 	media: MediaDetails;
+	lang: string;
 }
 
 export const TorrentsModal = component$(
-	({ title, year, isMovie, seasons, media }: TorModalPros) => {
+	({ title, year, isMovie, seasons, media, lang }: TorModalPros) => {
 		const resource = useQueryParamsLoader();
 		const torrentsStore = useStore({
 			torrents: null as Torrent[] | null,
@@ -135,6 +136,7 @@ export const TorrentsModal = component$(
 								year={torrentsStore.year}
 								isMovie={isMovie}
 								movie={media}
+								lang={lang}
 							/>
 						</div>
 					</div>

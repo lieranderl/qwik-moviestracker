@@ -12,7 +12,7 @@ export const LoginButton = component$<LoginButtonProps>((props) => {
 	const isloading = useSignal(false);
 	return (
 		<button
-			class="btn btn-primary"
+			class="btn btn-neutral"
 			type="button"
 			disabled={isloading.value}
 			onClick$={$(() => {

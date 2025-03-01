@@ -66,7 +66,7 @@ export const MediaCard = component$(
 								src={
 									picfile
 										? `https://image.tmdb.org/t/p/w${width}${picfile}`
-										: `https://placehold.co/${width}x${height.value.toFixed(0)}/transparent/neutral?text=no+image&font=inter`
+										: `https://placehold.co/${width}x${height.value.toFixed(0)}/grey/black?text=${title}&font=inter`
 								}
 								width={width}
 								height={height.value}

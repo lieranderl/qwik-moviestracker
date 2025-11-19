@@ -1,4 +1,4 @@
-import type { MediaDetails, TSResult, Torrent } from "./models";
+import type { MediaDetails, Torrent, TSResult } from "./models";
 
 // biome-ignore:
 const fetchWithTimeout = async (resource: string, options: any) => {

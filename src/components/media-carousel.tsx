@@ -1,4 +1,4 @@
-import { Slot, component$ } from "@builder.io/qwik";
+import { component$, Slot } from "@builder.io/qwik";
 import { MediaType } from "~/services/models";
 import { langExploreAll } from "~/utils/languages";
 import { paths } from "~/utils/paths";

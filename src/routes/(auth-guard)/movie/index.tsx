@@ -1,4 +1,4 @@
-import { Resource, component$, useResource$ } from "@builder.io/qwik";
+import { component$, Resource, useResource$ } from "@builder.io/qwik";
 
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { HiXCircleSolid } from "@qwikest/icons/heroicons";
@@ -8,8 +8,7 @@ import type { MediaShort, MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { DbType, getMoviesMongo } from "~/services/mongoatlas";
 import { getTrendingMedia, withImages } from "~/services/tmdb";
-import { useQueryParamsLoader } from "~/shared/loaders";
-import { useEnv } from "~/shared/loaders";
+import { useEnv, useQueryParamsLoader } from "~/shared/loaders";
 import {
 	langLatestDolbyVisionMovies,
 	langLatestHDR10Movies,

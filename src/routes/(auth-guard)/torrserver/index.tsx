@@ -14,7 +14,7 @@ import { HiMinusSolid, HiPlusSolid } from "@qwikest/icons/heroicons";
 import { LuMagnet } from "@qwikest/icons/lucide";
 import { ToastManagerContext } from "qwik-toasts";
 import type { InferInput } from "valibot";
-import { url, object, pipe, string } from "valibot";
+import { object, pipe, string, url } from "valibot";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import type { TSResult } from "~/services/models";

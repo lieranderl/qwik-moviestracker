@@ -1,13 +1,13 @@
 import {
 	$,
-	Resource,
 	component$,
+	Resource,
 	useOnDocument,
 	useResource$,
 	useSignal,
 } from "@builder.io/qwik";
-import { server$ } from "@builder.io/qwik-city";
 import { isBrowser } from "@builder.io/qwik/build";
+import { server$ } from "@builder.io/qwik-city";
 import { SiImdb } from "@qwikest/icons/simpleicons";
 import { getImdbRating } from "~/services/cloud-func-api";
 

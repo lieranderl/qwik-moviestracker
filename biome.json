@@ -1,29 +1,24 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-	"files": {
-		"ignore": [
-			"**/node_modules/**",
-			"**/dist/**",
-			"**/build/**",
-			"**/coverage/**",
-			"**/temp/**",
-			"**/tmp/**",
-			"**/server/**",
-			"**/.vscode/**"
-		]
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+	"formatter": {
+		"enabled": true,
+		"formatWithErrors": false,
+		"indentStyle": "tab",
+		"indentWidth": 2,
+		"lineEnding": "lf",
+		"lineWidth": 80,
+		"attributePosition": "auto"
 	},
-	"organizeImports": { "enabled": true },
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": false,
+			"recommended": true,
 			"complexity": {
-				"noBannedTypes": "off",
+				"noBannedTypes": "error",
 				"noExtraBooleanCast": "error",
-				"noMultipleSpacesInRegularExpressionLiterals": "error",
 				"noUselessCatch": "error",
-				"noUselessTypeConstraint": "error",
-				"noWith": "error"
+				"noUselessThisAlias": "error",
+				"noUselessTypeConstraint": "error"
 			},
 			"correctness": {
 				"noConstAssign": "error",
@@ -33,12 +28,11 @@
 				"noGlobalObjectCalls": "error",
 				"noInnerDeclarations": "error",
 				"noInvalidConstructorSuper": "error",
-				"noNewSymbol": "error",
 				"noNonoctalDecimalEscape": "error",
 				"noPrecisionLoss": "error",
 				"noSelfAssign": "error",
 				"noSetterReturn": "error",
-				"noSwitchDeclarations": "off",
+				"noSwitchDeclarations": "error",
 				"noUndeclaredVariables": "error",
 				"noUnreachable": "error",
 				"noUnreachableSuper": "error",
@@ -46,18 +40,21 @@
 				"noUnsafeOptionalChaining": "error",
 				"noUnusedLabels": "error",
 				"noUnusedVariables": "error",
-				"useArrayLiterals": "off",
+				"useExhaustiveDependencies": "warn",
+				"useHookAtTopLevel": "error",
 				"useIsNan": "error",
 				"useValidForDirection": "error",
-				"useYield": "error"
+				"useYield": "error",
+				"noUnknownProperty": "warn",
+				"noQwikUseVisibleTask": "warn"
 			},
 			"style": {
-				"noInferrableTypes": "off",
-				"noNamespace": "off",
-				"noNonNullAssertion": "off",
-				"useAsConstAssertion": "error"
+				"noNamespace": "error",
+				"useAsConstAssertion": "error",
+				"useBlockStatements": "off"
 			},
 			"suspicious": {
+				"noAssignInExpressions": "error",
 				"noAsyncPromiseExecutor": "error",
 				"noCatchAssign": "error",
 				"noClassAssign": "error",
@@ -69,9 +66,11 @@
 				"noDuplicateObjectKeys": "error",
 				"noDuplicateParameters": "error",
 				"noEmptyBlockStatements": "error",
-				"noExplicitAny": "off",
+				"noExplicitAny": "error",
+				"noExportsInTest": "error",
 				"noExtraNonNullAssertion": "error",
 				"noFallthroughSwitchClause": "error",
+				"noFocusedTests": "error",
 				"noFunctionAssign": "error",
 				"noGlobalAssign": "error",
 				"noImportAssign": "error",
@@ -80,71 +79,45 @@
 				"noPrototypeBuiltins": "error",
 				"noRedeclare": "error",
 				"noShadowRestrictedNames": "error",
+				"noSkippedTests": "warn",
 				"noUnsafeDeclarationMerging": "error",
 				"noUnsafeNegation": "error",
 				"useGetterReturn": "error",
-				"useValidTypeof": "error"
+				"noUnknownAtRules": "warn"
+			},
+			"a11y": {
+				"noNoninteractiveTabindex": "info",
+				"useSemanticElements": "warn"
 			}
-		},
-		"ignore": [
-			"**/*.log",
-			"**/.DS_Store",
-			"**/*.",
-			".vscode/settings.json",
-			"**/.history",
-			"**/.yarn",
-			"**/bazel-*",
-			"**/bazel-bin",
-			"**/bazel-out",
-			"**/bazel-qwik",
-			"**/bazel-testlogs",
-			"**/dist",
-			"**/dist-dev",
-			"**/lib",
-			"**/lib-types",
-			"**/etc",
-			"**/external",
-			"**/node_modules",
-			"**/temp",
-			"**/tsc-out",
-			"**/tsdoc-metadata.json",
-			"**/target",
-			"**/output",
-			"**/rollup.config.js",
-			"**/build",
-			"**/.cache",
-			"**/.vscode",
-			"**/.rollup.cache",
-			"**/tsconfig.tsbuildinfo",
-			"**/vite.config.ts",
-			"**/*.spec.tsx",
-			"**/*.spec.ts",
-			"**/.netlify",
-			"**/pnpm-lock.yaml",
-			"**/package-lock.json",
-			"**/yarn.lock",
-			"**/server"
-		]
+		}
+	},
+	"javascript": {
+		"globals": ["Bun"],
+		"formatter": {
+			"jsxQuoteStyle": "double",
+			"quoteProperties": "asNeeded",
+			"trailingCommas": "all",
+			"semicolons": "always",
+			"arrowParentheses": "always",
+			"bracketSpacing": true,
+			"bracketSameLine": false,
+			"quoteStyle": "double",
+			"attributePosition": "auto"
+		}
 	},
 	"overrides": [
 		{
-			"include": ["*.ts", "*.tsx", "*.mts", "*.cts"],
+			"includes": ["*.{js,cjs,cts,mjs,ts,mts,jsx,tsx}"],
 			"linter": {
 				"rules": {
 					"correctness": {
 						"noConstAssign": "off",
 						"noGlobalObjectCalls": "off",
 						"noInvalidConstructorSuper": "off",
-						"noNewSymbol": "off",
 						"noSetterReturn": "off",
 						"noUndeclaredVariables": "off",
 						"noUnreachable": "off",
 						"noUnreachableSuper": "off"
-					},
-					"style": {
-						"noArguments": "error",
-						"noVar": "error",
-						"useConst": "error"
 					},
 					"suspicious": {
 						"noDuplicateClassMembers": "off",
@@ -159,5 +132,11 @@
 				}
 			}
 		}
-	]
+	],
+	"files": {
+		"includes": [
+			"src/**/*.{js,cjs,cts,mjs,ts,mts,jsx,tsx,json,yml,yaml,md,html,css,sass,scss,less,vue,svelte}",
+			"!src/global.css"
+		]
+	}
 }

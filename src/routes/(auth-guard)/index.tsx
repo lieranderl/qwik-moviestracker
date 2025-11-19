@@ -1,4 +1,4 @@
-import { Resource, component$, useResource$ } from "@builder.io/qwik";
+import { component$, Resource, useResource$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { HiXCircleSolid } from "@qwikest/icons/heroicons";
 import { MediaCard } from "~/components/media-card";

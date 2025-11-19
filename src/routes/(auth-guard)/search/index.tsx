@@ -1,6 +1,6 @@
 import {
-	Resource,
 	component$,
+	Resource,
 	useResource$,
 	useSignal,
 } from "@builder.io/qwik";

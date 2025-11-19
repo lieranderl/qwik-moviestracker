@@ -1,5 +1,5 @@
 import type { QwikIntrinsicElements } from "@builder.io/qwik";
-import { $, Slot, component$, useSignal } from "@builder.io/qwik";
+import { $, component$, Slot, useSignal } from "@builder.io/qwik";
 import { useSignIn } from "~/routes/plugin@auth";
 
 export type LoginButtonProps = QwikIntrinsicElements["button"] & {

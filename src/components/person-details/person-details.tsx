@@ -1,7 +1,9 @@
 import { component$ } from "@builder.io/qwik";
-import { BsGenderFemale } from "@qwikest/icons/bootstrap";
-import { BsGenderMale } from "@qwikest/icons/bootstrap";
-import { BsGenderTrans } from "@qwikest/icons/bootstrap";
+import {
+	BsGenderFemale,
+	BsGenderMale,
+	BsGenderTrans,
+} from "@qwikest/icons/bootstrap";
 import { Image } from "@unpic/qwik";
 import type { PersonMedia } from "~/services/models";
 import { MediaType, type PersonFull } from "~/services/models";

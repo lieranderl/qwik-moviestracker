@@ -1,4 +1,4 @@
-import { Slot, component$ } from "@builder.io/qwik";
+import { component$, Slot } from "@builder.io/qwik";
 import { HiBars3Solid } from "@qwikest/icons/heroicons";
 
 export const BurgerButton = component$(() => {

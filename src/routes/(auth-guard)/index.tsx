@@ -66,7 +66,7 @@ export default component$(() => {
 	});
 
 	return (
-		<div class="container mx-auto px-4 pt-[64px]">
+		<div class="container mx-auto px-4">
 			<Resource
 				value={useMovies}
 				onPending={() => <span class="loading loading-spinner" />}

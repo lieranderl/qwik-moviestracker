@@ -16,7 +16,7 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
 		adapter: MongoDBAdapter(mongoclient(env.get("MONGO_URI") ?? "")!, {
 			databaseName: "movies",
 		}) as Adapter,
-		secret: env.get("AUTH_SECRET") ?? "fuckyou",
+		secret: env.get("AUTH_SECRET"),
 		trustHost: true,
 		providers: [
 			Google({

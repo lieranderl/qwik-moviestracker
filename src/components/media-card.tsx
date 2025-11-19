@@ -1,5 +1,6 @@
 import { component$, useComputed$ } from "@builder.io/qwik";
 import { Image } from "@unpic/qwik";
+import { TMDB_IMAGE_BASE_URL } from "~/utils/constants";
 
 interface MovieCardProps {
 	title: string;
@@ -30,63 +31,56 @@ export const MediaCard = component$(
 			return (width * 3) / 2;
 		});
 
-		const cardWidthStyle = useComputed$(() => {
-			if (!isHorizontal) {
-				if (isPerson) {
-					return "width: 7vw";
-				}
-				return "width: 14vw;";
-			}
-			return "width: 20vw;";
-		});
-
 		const cardWidthClass = useComputed$(() => {
 			if (!isHorizontal) {
 				if (isPerson) {
-					return "min-w-[120px] max-w-[180px] ms-2";
+					return "w-[7vw] min-w-[120px] max-w-[180px] ms-2";
 				}
-				return "min-w-[150px] max-w-[200px]  ms-2";
+				return "w-[14vw] min-w-[150px] max-w-[200px] ms-2";
 			}
-			return "min-w-[300px] max-w-[500px]  ms-2";
+			return "w-[20vw] min-w-[300px] max-w-[500px] ms-2";
 		});
 
 		return (
-			<div class={cardWidthClass} style={cardWidthStyle.value.toString()}>
+			<div class={cardWidthClass.value}>
 				{charName && (
 					<span class="mb-1 block truncate text-sm font-normal italic">
 						{charName}
 					</span>
 				)}
 				{!charName && <span class="block text-sm">&nbsp;</span>}
-				<div class="group">
-					<div class="transition-scale scale-100 duration-300 ease-in-out group-hover:scale-106">
-						<picture>
-							<Image
-								class="rounded-xl border border-transparent group-hover:shadow-lg"
-								src={
-									picfile
-										? `https://image.tmdb.org/t/p/w${width}${picfile}`
-										: `https://placehold.co/${width}x${height.value.toFixed(0)}/grey/black?text=${title}&font=inter`
-								}
-								width={width}
-								height={height.value}
-								alt=""
-							/>
-							{rating > 0 && (
-								<span class="badge badge-secondary absolute bottom-2 left-2 rounded-lg font-bold">
+				<div class="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-xl">
+					<picture>
+						<Image
+							class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+							src={
+								picfile
+									? `${TMDB_IMAGE_BASE_URL}w${width}${picfile}`
+									: `https://placehold.co/${width}x${height.value.toFixed(0)}/grey/black?text=${title}&font=inter`
+							}
+							width={width}
+							height={height.value}
+							alt={title}
+						/>
+						{rating > 0 && (
+							<div class="absolute bottom-2 left-2 flex items-center gap-1 rounded-lg bg-black/60 px-2 py-1 text-xs font-bold text-yellow-400 backdrop-blur-md">
+								<span>★</span>
+								<span>
 									{typeof rating === "string" ? rating : rating.toFixed(1)}
 								</span>
-							)}
-							{year > 0 && (
-								<span class="badge badge-secondary absolute right-2 bottom-2 rounded-lg font-bold">
-									{year}
-								</span>
-							)}
-						</picture>
+							</div>
+						)}
+						{year > 0 && (
+							<div class="absolute right-2 bottom-2 rounded-lg bg-black/60 px-2 py-1 text-xs font-bold text-white backdrop-blur-md">
+								{year}
+							</div>
+						)}
+					</picture>
+					<div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 pt-12 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+						<span class="block truncate text-sm font-bold text-white">
+							{title}
+						</span>
 					</div>
-					<span class="transition-scale mt-1 block truncate overflow-hidden text-sm font-normal text-ellipsis duration-300 ease-in-out group-hover:font-extrabold">
-						{title}
-					</span>
 				</div>
 			</div>
 		);

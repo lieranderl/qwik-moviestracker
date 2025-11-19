@@ -25,6 +25,7 @@ import {
 	langSortOn,
 	langTorrentov,
 } from "~/utils/languages";
+import { filterAndSortTorrents } from "~/utils/filter-utils";
 import { TorrentBlock } from "./torrent";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -71,40 +72,9 @@ export const TorrentList = component$(
 
 		const filterTorrents = $(() => {
 			if (initTorrents.value) {
-				sortedTorrents.value = initTorrents.value;
-				if (sortFilterStore.k4) {
-					sortedTorrents.value = initTorrents.value.filter(
-						(torrents) => torrents.K4 === true,
-					);
-				}
-				if (sortFilterStore.hdr) {
-					sortedTorrents.value = initTorrents.value.filter(
-						(torrents) => torrents.HDR === true,
-					);
-				}
-				if (sortFilterStore.hdr10) {
-					sortedTorrents.value = initTorrents.value.filter(
-						(torrents) => torrents.HDR10 === true,
-					);
-				}
-
-				if (sortFilterStore.hdr10plus) {
-					sortedTorrents.value = initTorrents.value.filter(
-						(torrents) => torrents.HDR10plus === true,
-					);
-				}
-
-				if (sortFilterStore.dv) {
-					sortedTorrents.value = initTorrents.value.filter(
-						(torrents) => torrents.DV === true,
-					);
-				}
-
-				sortedTorrents.value = sortedTorrents.value.sort((a, b) =>
-					a[sortFilterStore.selectedSort as keyof typeof a] >
-					b[sortFilterStore.selectedSort as keyof typeof b]
-						? -1
-						: 1,
+				sortedTorrents.value = filterAndSortTorrents(
+					initTorrents.value,
+					sortFilterStore,
 				);
 			}
 		});

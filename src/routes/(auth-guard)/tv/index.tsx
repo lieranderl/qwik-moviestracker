@@ -42,7 +42,7 @@ export const useContentLoader = routeLoader$(async (event) => {
 export default component$(() => {
 	const resource = useContentLoader();
 	return (
-		<div class="container mx-auto px-4 pt-[64px] animate-fadeIn">
+		<>
 			<MediaCarousel
 				title={langTrengingTVShows(resource.value.lang)}
 				type={MediaType.Tv}
@@ -93,7 +93,7 @@ export default component$(() => {
 					</div>
 				))}
 			</MediaCarousel>
-		</div>
+		</>
 	);
 });
 

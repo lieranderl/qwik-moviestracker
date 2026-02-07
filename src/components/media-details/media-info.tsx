@@ -1,74 +1,83 @@
 import { component$ } from "@builder.io/qwik";
 import type {
-	Genre,
+	Network,
 	ProductionCompany,
 	ProductionCountry,
 } from "~/services/models";
 import { formatDate, formatLanguage } from "~/utils/fomat";
-import { langMinutes } from "~/utils/languages";
+import {
+	langCountries,
+	langLanguages,
+	langNetworks,
+	langRelease,
+} from "~/utils/languages";
 
 export type MediaInfoProps = {
 	release_date?: string;
-	geners?: Genre[];
-	runtime?: number;
 	production_countries?: ProductionCountry[];
 	original_language?: string;
 	production_companies?: ProductionCompany[];
 	lang: string;
+	networks?: Network[];
 };
 export const MediaInfo = component$<MediaInfoProps>(
 	({
 		release_date,
-		geners,
-		runtime,
 		production_countries,
 		production_companies,
 		original_language,
 		lang,
+		networks
 	}) => {
 		return (
 			<>
-				<section>
-					<ul class="flex flex-wrap items-center justify-start">
-						<li>
-							{release_date && (
-								<div class="me-1 text-nowrap after:content-['\3164\2022\3164']">
-									{formatDate(release_date, lang)}{" "}
-								</div>
-							)}
-						</li>
-						<li>
-							{geners && geners.length > 0 && (
-								<div class="me-1 text-nowrap after:content-['\3164\2022\3164']">
-									{geners.map((g) => g.name).join(", ")}{" "}
-								</div>
-							)}
-						</li>
-						<li>
-							{runtime && runtime > 0 && (
-								<div class="me-1 text-nowrap after:content-['\3164\2022\3164']">
-									{runtime} {langMinutes(lang)}{" "}
-								</div>
-							)}
-						</li>
-						<li>
-							{production_countries && (
-								<div class="me-1 text-nowrap after:content-['\3164\2022\3164']">
-									{production_countries.map((c) => c.name).join(", ")}{" "}
-								</div>
-							)}
-						</li>
 
-						<li>
-							{original_language && (
-								<div>{formatLanguage(original_language)}</div>
-							)}
-						</li>
-					</ul>
+				<section class="grid grid-cols-1 gap-2 text-sm my-2">
+					{release_date && (
+						<div class="flex items-center gap-2">
+							<span class="font-bold opacity-70">{langRelease(lang)}:</span>
+							<span>{formatDate(release_date, lang)}</span>
+						</div>
+					)}
+
+					{production_countries && (
+						<div class="col-span-full flex flex-wrap items-center gap-2">
+							<span class="font-bold opacity-70">{langCountries(lang)}:</span>
+							{production_countries.map((c) => (
+								<span key={c.iso_3166_1} class="badge badge-ghost badge-sm">
+									{c.name}
+								</span>
+							))}
+						</div>
+					)}
+
+					{original_language && (
+						<div class="flex items-center gap-2">
+							<span class="font-bold opacity-70">{langLanguages(lang)}:</span>
+							<span class="uppercase text-sm">{formatLanguage(original_language)}</span>
+						</div>
+					)}
+
+					{/* Networks */}
+					{networks && networks.length > 0 && (
+						<div class="flex items-center gap-2 ">
+							<span class="font-bold opacity-70 text-sm">{langNetworks(lang)}:</span>
+							<span class="font-bold text-sm">
+								{networks.map((n) => n.name).join(", ")}
+							</span>
+						</div>
+					)}
+
+
 				</section>
-				<section class="mt-1">
+
+				<section class="my-4">
 					{production_companies && (
-						<div>{production_companies.map((c) => c.name).join(", ")}</div>
+						<div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs opacity-60">
+							{production_companies.map((c) => (
+								<span key={c.id}>{c.name}</span>
+							))}
+						</div>
 					)}
 				</section>
 			</>

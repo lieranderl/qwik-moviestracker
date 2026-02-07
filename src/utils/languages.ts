@@ -699,3 +699,49 @@ export const langSeason = (lang: string) => {
 			return "Сезон";
 	}
 };
+
+
+export const langRelease = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Release";
+		case "ru-RU":
+			return "Релиз";
+		default:
+			return "Релиз";
+	}
+};
+
+export const langCountries = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Countries";
+		case "ru-RU":
+			return "Страны";
+		default:
+			return "Страны";
+	}
+};
+
+
+export const langLanguages = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Languages";
+		case "ru-RU":
+			return "Языки";
+		default:
+			return "Языки";
+	}
+};
+
+export const langNetworks = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Networks";
+		case "ru-RU":
+			return "Сети";
+		default:
+			return "Сети";
+	}
+};

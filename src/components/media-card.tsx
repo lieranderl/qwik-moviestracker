@@ -63,7 +63,7 @@ export const MediaCard = component$(
 							alt={title}
 						/>
 						{rating > 0 && (
-							<div class="absolute bottom-2 left-2 flex items-center gap-1 rounded-lg bg-black/60 px-2 py-1 text-xs font-bold text-yellow-400 backdrop-blur-md">
+							<div class="absolute bottom-2 left-2 z-20 flex items-center gap-1 rounded-lg bg-black/60 px-2 py-1 text-xs font-bold text-yellow-400 backdrop-blur-md transition-transform duration-300 group-hover:-translate-y-10">
 								<span>★</span>
 								<span>
 									{typeof rating === "string" ? rating : rating.toFixed(1)}
@@ -71,7 +71,7 @@ export const MediaCard = component$(
 							</div>
 						)}
 						{year > 0 && (
-							<div class="absolute right-2 bottom-2 rounded-lg bg-black/60 px-2 py-1 text-xs font-bold text-white backdrop-blur-md">
+							<div class="absolute right-2 bottom-2 z-20 rounded-lg bg-black/60 px-2 py-1 text-xs font-bold text-white backdrop-blur-md transition-transform duration-300 group-hover:-translate-y-10">
 								{year}
 							</div>
 						)}

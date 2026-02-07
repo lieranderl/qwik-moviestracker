@@ -75,127 +75,127 @@ export default component$(() => {
 	});
 
 	return (
-		<>
-			<div class="container mx-auto px-4 pt-[64px]">
-				<Resource
-					value={useMovies}
-					onPending={() => <span class="loading loading-spinner" />}
-					onRejected={(error) => (
-						<div role="alert" class="alert alert-error">
-							<HiXCircleSolid class="h-6 w-6" />
-							<span>{error.message}</span>
-						</div>
-					)}
-					onResolved={(value) => (
-						<div class="animate-fadeIn">
-							<MediaCarousel
-								title={langLatestMovies(lang)}
-								type={MediaType.Movie}
-								category="updated"
-								lang={lang}
-							>
-								{value.torMovies.map((m) => (
-									<div class="carousel-item" key={m.id}>
-										<a href={paths.media(MediaType.Movie, m.id, lang)}>
-											<MediaCard
-												title={m.title ? m.title : ""}
-												width={500}
-												rating={m.vote_average ? m.vote_average : 0}
-												year={Number.parseInt(
-													m.release_date ? m.release_date.substring(0, 4) : "0",
-													10,
-												)}
-												picfile={m.backdrop_path}
-												isPerson={false}
-												isHorizontal={true}
-											/>
-										</a>
-									</div>
-								))}
-							</MediaCarousel>
 
-							<MediaCarousel
-								title={langLatestHDR10Movies(lang)}
-								type={MediaType.Movie}
-								category="hdr10"
-								lang={lang}
-							>
-								{value.hdrMovies.map((m) => (
-									<div class="carousel-item" key={m.id}>
-										<a href={paths.media(MediaType.Movie, m.id, lang)}>
-											<MediaCard
-												title={m.title ? m.title : ""}
-												width={500}
-												rating={m.vote_average ? m.vote_average : 0}
-												year={Number.parseInt(
-													m.release_date ? m.release_date.substring(0, 4) : "0",
-													10,
-												)}
-												picfile={m.backdrop_path}
-												isPerson={false}
-												isHorizontal={true}
-											/>
-										</a>
-									</div>
-								))}
-							</MediaCarousel>
 
-							<MediaCarousel
-								title={langLatestDolbyVisionMovies(lang)}
-								type={MediaType.Movie}
-								category="dolbyvision"
-								lang={lang}
-							>
-								{value.dolbyMovies.map((m) => (
-									<div class="carousel-item" key={m.id}>
-										<a href={paths.media(MediaType.Movie, m.id, lang)}>
-											<MediaCard
-												title={m.title ? m.title : ""}
-												width={500}
-												rating={m.vote_average ? m.vote_average : 0}
-												year={Number.parseInt(
-													m.release_date ? m.release_date.substring(0, 4) : "0",
-													10,
-												)}
-												picfile={m.backdrop_path}
-												isPerson={false}
-												isHorizontal={true}
-											/>
-										</a>
-									</div>
-								))}
-							</MediaCarousel>
+		<Resource
+			value={useMovies}
+			onPending={() => <span class="loading loading-spinner" />}
+			onRejected={(error) => (
+				<div role="alert" class="alert alert-error">
+					<HiXCircleSolid class="h-6 w-6" />
+					<span>{error.message}</span>
+				</div>
+			)}
+			onResolved={(value) => (
+				<div class="animate-fadeIn">
+					<MediaCarousel
+						title={langLatestMovies(lang)}
+						type={MediaType.Movie}
+						category="updated"
+						lang={lang}
+					>
+						{value.torMovies.map((m) => (
+							<div class="carousel-item" key={m.id}>
+								<a href={paths.media(MediaType.Movie, m.id, lang)}>
+									<MediaCard
+										title={m.title ? m.title : ""}
+										width={500}
+										rating={m.vote_average ? m.vote_average : 0}
+										year={Number.parseInt(
+											m.release_date ? m.release_date.substring(0, 4) : "0",
+											10,
+										)}
+										picfile={m.backdrop_path}
+										isPerson={false}
+										isHorizontal={true}
+									/>
+								</a>
+							</div>
+						))}
+					</MediaCarousel>
 
-							<MediaCarousel
-								title={langTrendingMovies(lang)}
-								type={MediaType.Movie}
-								category="trending"
-								lang={lang}
-							>
-								{value.movies.map((m) => (
-									<div class="carousel-item" key={m.id}>
-										<a href={paths.media(MediaType.Movie, m.id, lang)}>
-											<MediaCard
-												title={m.title ? m.title : ""}
-												width={500}
-												rating={m.vote_average ? m.vote_average : 0}
-												year={Number.parseInt(
-													m.release_date ? m.release_date.substring(0, 4) : "0",
-													10,
-												)}
-												picfile={m.backdrop_path}
-												isPerson={false}
-												isHorizontal={true}
-											/>
-										</a>
-									</div>
-								))}
-							</MediaCarousel>
-						</div>
-					)}
-				/>
-			</div>
-		</>
+					<MediaCarousel
+						title={langLatestHDR10Movies(lang)}
+						type={MediaType.Movie}
+						category="hdr10"
+						lang={lang}
+					>
+						{value.hdrMovies.map((m) => (
+							<div class="carousel-item" key={m.id}>
+								<a href={paths.media(MediaType.Movie, m.id, lang)}>
+									<MediaCard
+										title={m.title ? m.title : ""}
+										width={500}
+										rating={m.vote_average ? m.vote_average : 0}
+										year={Number.parseInt(
+											m.release_date ? m.release_date.substring(0, 4) : "0",
+											10,
+										)}
+										picfile={m.backdrop_path}
+										isPerson={false}
+										isHorizontal={true}
+									/>
+								</a>
+							</div>
+						))}
+					</MediaCarousel>
+
+					<MediaCarousel
+						title={langLatestDolbyVisionMovies(lang)}
+						type={MediaType.Movie}
+						category="dolbyvision"
+						lang={lang}
+					>
+						{value.dolbyMovies.map((m) => (
+							<div class="carousel-item" key={m.id}>
+								<a href={paths.media(MediaType.Movie, m.id, lang)}>
+									<MediaCard
+										title={m.title ? m.title : ""}
+										width={500}
+										rating={m.vote_average ? m.vote_average : 0}
+										year={Number.parseInt(
+											m.release_date ? m.release_date.substring(0, 4) : "0",
+											10,
+										)}
+										picfile={m.backdrop_path}
+										isPerson={false}
+										isHorizontal={true}
+									/>
+								</a>
+							</div>
+						))}
+					</MediaCarousel>
+
+					<MediaCarousel
+						title={langTrendingMovies(lang)}
+						type={MediaType.Movie}
+						category="trending"
+						lang={lang}
+					>
+						{value.movies.map((m) => (
+							<div class="carousel-item" key={m.id}>
+								<a href={paths.media(MediaType.Movie, m.id, lang)}>
+									<MediaCard
+										title={m.title ? m.title : ""}
+										width={500}
+										rating={m.vote_average ? m.vote_average : 0}
+										year={Number.parseInt(
+											m.release_date ? m.release_date.substring(0, 4) : "0",
+											10,
+										)}
+										picfile={m.backdrop_path}
+										isPerson={false}
+										isHorizontal={true}
+									/>
+								</a>
+							</div>
+						))}
+					</MediaCarousel>
+				</div>
+			)}
+		/>
+
+
 	);
 });
 

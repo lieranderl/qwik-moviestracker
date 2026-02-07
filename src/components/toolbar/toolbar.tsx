@@ -12,7 +12,7 @@ export type ToolbarProps = {
 };
 export const Toolbar = component$<ToolbarProps>(({ lang }) => {
 	return (
-		<nav class="bg-opacity-50 dark:bg-opacity-50 fixed z-10 block backdrop-blur-sm">
+		<nav class="bg-opacity-50 dark:bg-opacity-50 fixed z-50 block backdrop-blur-sm">
 			<div class="bg-opacity-100 flex w-screen flex-wrap items-center justify-between p-4">
 				<a href={paths.index(lang)} class="flex items-center">
 					<div class="me-2 text-4xl">

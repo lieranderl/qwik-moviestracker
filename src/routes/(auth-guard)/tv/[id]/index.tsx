@@ -54,11 +54,14 @@ export default component$(() => {
 				</div>
 			)}
 			onResolved={(value) => (
-				<div
-					class={`shadow-theme animate-fadeIn mx-auto bg-cover bg-fixed bg-center bg-no-repeat px-4 pb-10`}
-					style={`background-image: url(https://image.tmdb.org/t/p/original${value.tv.backdrop_path});`}
-				>
-					<div class="animate-slideInFromLeft">
+				<div class="relative min-h-screen w-full">
+					<div
+						class="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-35 blur-xs"
+						style={`background-image: url(https://image.tmdb.org/t/p/original${value.tv.backdrop_path});`}
+					/>
+					<div class="fixed inset-0 -z-10 bg-gradient-to-t from-base-100 via-base-100/80 to-transparent" />
+
+					<div class="animate-slideInFromLeft relative z-10 px-4 md:px-8">
 						<TvDetails tv={value.tv} recTv={value.recTv} lang={value.lang} />
 					</div>
 				</div>

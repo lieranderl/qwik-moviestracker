@@ -95,7 +95,7 @@ export const PersonDetails = component$(
 								<div class="carousel-item" key={m.id}>
 									<a href={paths.media(MediaType.Tv, m.id, lang)}>
 										<MediaCard
-											title={m.title ? m.title : ""}
+											title={m.name ? m.name : ""}
 											width={500}
 											rating={m.vote_average ? m.vote_average : 0}
 											year={
@@ -151,7 +151,7 @@ export const PersonDetails = component$(
 								<div class="carousel-item" key={m.id}>
 									<a href={paths.media(MediaType.Tv, m.id, lang)}>
 										<MediaCard
-											title={m.title ? m.title : ""}
+											title={m.name ? m.name : ""}
 											width={500}
 											rating={m.vote_average ? m.vote_average : 0}
 											year={

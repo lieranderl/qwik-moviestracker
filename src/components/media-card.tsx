@@ -7,7 +7,7 @@ interface MovieCardProps {
   picfile: string | null | undefined;
   width: number;
   charName?: string;
-  rating: number;
+  rating: number | string | null | undefined;
   year: number;
   isPerson: boolean;
   isHorizontal: boolean;
@@ -60,6 +60,14 @@ export const MediaCard = component$(
       return `${words[0][0] ?? ""}${words[1][0] ?? ""}`.toUpperCase();
     });
 
+    const safeRating = useComputed$(() => {
+      const parsed =
+        typeof rating === "number"
+          ? rating
+          : Number.parseFloat(String(rating ?? ""));
+      return Number.isFinite(parsed) ? parsed : 0;
+    });
+
     return (
       <div class={cardWidthClass.value}>
         {charName && (
@@ -81,7 +89,7 @@ export const MediaCard = component$(
                 alt={title}
               />
             ) : (
-              <div class="from-base-200 via-base-300/80 to-base-200 absolute inset-0 overflow-hidden bg-gradient-to-br">
+              <div class="from-base-200 via-base-300/80 to-base-200 absolute inset-0 overflow-hidden bg-linear-to-br">
                 <div class="bg-base-content/10 absolute -top-10 -right-8 h-28 w-28 rounded-full blur-xl" />
                 <div class="bg-base-content/10 absolute -bottom-12 -left-8 h-32 w-32 rounded-full blur-xl" />
                 <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center">
@@ -95,16 +103,14 @@ export const MediaCard = component$(
               </div>
             )}
             <div class="pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-20 bg-linear-to-t from-black/45 to-transparent opacity-0 transition-opacity duration-250 ease-out md:group-hover:opacity-100" />
-            {rating > 0 && (
-              <div class="badge badge-warning badge-sm border-base-100/55 absolute bottom-3 left-3 z-20 gap-1 border bg-black/45 font-bold text-white backdrop-blur-md transition-transform duration-200 md:group-hover:-translate-y-1">
+            {safeRating.value > 0 && (
+              <div class="badge badge-warning badge-sm absolute bottom-3 left-3 z-20 gap-1 font-bold shadow-sm">
                 <span>★</span>
-                <span>
-                  {typeof rating === "string" ? rating : rating.toFixed(1)}
-                </span>
+                <span>{safeRating.value.toFixed(1)}</span>
               </div>
             )}
             {year > 0 && (
-              <div class="badge badge-ghost badge-sm border-base-100/55 absolute right-3 bottom-3 z-20 border bg-black/40 font-semibold text-white backdrop-blur-md transition-transform duration-200 md:group-hover:-translate-y-1">
+              <div class="badge badge-neutral badge-sm absolute right-3 bottom-3 z-20 font-semibold shadow-sm">
                 {year}
               </div>
             )}

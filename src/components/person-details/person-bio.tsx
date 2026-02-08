@@ -1,65 +1,36 @@
-import {
-	$,
-	component$,
-	useOnWindow,
-	useSignal,
-	useStore,
-} from "@builder.io/qwik";
-
-export function useWindowSize() {
-	const w_width = useStore({ size: 300 });
-	useOnWindow(
-		"resize",
-		$(() => {
-			console.log("resize");
-			const { innerWidth, innerHeight } = window;
-			if (innerWidth && innerHeight) {
-				if (innerWidth > 1200) {
-					console.log("1200");
-					w_width.size = 700;
-				} else if (innerWidth > 900 && innerWidth < 1200) {
-					console.log("900");
-					w_width.size = 500;
-				} else {
-					console.log("300");
-					w_width.size = 300;
-				}
-			}
-		}),
-	);
-	return w_width;
-}
+import { component$, useSignal } from "@builder.io/qwik";
 
 export type PersonBioProps = {
-	biography?: string;
+  biography?: string;
 };
 export const PersonBio = component$<PersonBioProps>(({ biography }) => {
-	const isShowBio = useSignal(false);
-	const bioSize = useWindowSize();
-	return (
-		<>
-			{biography && (
-				<div>
-					{biography.length >= 300 && (
-						<div>
-							{!isShowBio.value && (
-								<div>{biography.substring(0, bioSize.size)}...</div>
-							)}
-							{isShowBio.value && <div>{biography}</div>}
-							<div
-								class="float-right text-sm underline hover:cursor-pointer"
-								onClick$={() => {
-									isShowBio.value = !isShowBio.value;
-								}}
-							>
-								{!isShowBio.value && <span>Read more...</span>}
-								{isShowBio.value && <span>Read less...</span>}
-							</div>
-						</div>
-					)}
-					{biography.length < 300 && <div>{biography}</div>}
-				</div>
-			)}
-		</>
-	);
+  const isShowBio = useSignal(false);
+  const previewSize = 420;
+
+  if (!biography) {
+    return <p class="text-base-content/70 text-sm">No biography available.</p>;
+  }
+
+  if (biography.length < 300) {
+    return <p class="leading-relaxed">{biography}</p>;
+  }
+
+  return (
+    <div class="space-y-3">
+      <p class="leading-relaxed">
+        {isShowBio.value
+          ? biography
+          : `${biography.substring(0, previewSize)}...`}
+      </p>
+      <button
+        type="button"
+        class="btn btn-ghost btn-sm px-0 normal-case"
+        onClick$={() => {
+          isShowBio.value = !isShowBio.value;
+        }}
+      >
+        {isShowBio.value ? "Read less" : "Read more"}
+      </button>
+    </div>
+  );
 });

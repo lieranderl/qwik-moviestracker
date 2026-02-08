@@ -7,7 +7,7 @@ import {
 import { Image } from "@unpic/qwik";
 import type { PersonMedia } from "~/services/models";
 import { MediaType, type PersonFull } from "~/services/models";
-import { formatYear } from "~/utils/fomat";
+import { formatYear } from "~/utils/format";
 import { paths } from "~/utils/paths";
 import { ExternalIds } from "../external_ids";
 import { MediaCard } from "../media-card";
@@ -106,7 +106,7 @@ export const PersonDetails = component$(
                       title={m.title ? m.title : ""}
                       width={500}
                       rating={m.vote_average ? m.vote_average : 0}
-                      year={(m.release_date && formatYear(m.release_date)) || 0}
+                      year={formatYear(m.release_date)}
                       picfile={m.poster_path}
                       isPerson={false}
                       isHorizontal={false}
@@ -132,9 +132,7 @@ export const PersonDetails = component$(
                       title={m.name ? m.name : ""}
                       width={500}
                       rating={m.vote_average ? m.vote_average : 0}
-                      year={
-                        (m.first_air_date && formatYear(m.first_air_date)) || 0
-                      }
+                      year={formatYear(m.first_air_date)}
                       picfile={m.poster_path}
                       isPerson={false}
                       isHorizontal={false}
@@ -160,7 +158,7 @@ export const PersonDetails = component$(
                       title={m.title ? m.title : ""}
                       width={500}
                       rating={m.vote_average ? m.vote_average : 0}
-                      year={(m.release_date && formatYear(m.release_date)) || 0}
+                      year={formatYear(m.release_date)}
                       picfile={m.poster_path}
                       isPerson={false}
                       isHorizontal={false}
@@ -186,9 +184,7 @@ export const PersonDetails = component$(
                       title={m.name ? m.name : ""}
                       width={500}
                       rating={m.vote_average ? m.vote_average : 0}
-                      year={
-                        (m.first_air_date && formatYear(m.first_air_date)) || 0
-                      }
+                      year={formatYear(m.first_air_date)}
                       picfile={m.poster_path}
                       isPerson={false}
                       isHorizontal={false}

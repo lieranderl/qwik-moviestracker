@@ -2,7 +2,7 @@ import { $, component$, useContext } from "@builder.io/qwik";
 import { ToastManagerContext } from "qwik-toasts";
 import type { MediaDetails, Torrent } from "~/services/models";
 import { addTorrent } from "~/services/torrserver";
-import { formatRating } from "~/utils/fomat";
+import { formatRating } from "~/utils/format";
 
 interface TorrentListProps {
 	torrent: Torrent;

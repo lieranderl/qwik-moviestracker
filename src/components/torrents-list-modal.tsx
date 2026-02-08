@@ -5,7 +5,7 @@ import { TorrentList } from "~/components/torrent-list";
 import { getTorrents } from "~/services/cloud-func-api";
 import type { MediaDetails, Season, Torrent } from "~/services/models";
 import { useQueryParamsLoader } from "~/shared/loaders";
-import { formatYear } from "~/utils/fomat";
+import { formatYear } from "~/utils/format";
 import { langSeason, langTorrents } from "~/utils/languages";
 
 export interface TorModalPros {
@@ -77,17 +77,14 @@ export const TorrentsModal = component$(
                       type="button"
                       class="text-left"
                       onClick$={() => {
-                        const updatedYear = formatYear(
-                          s.air_date ? s.air_date : "",
-                        );
+                        const updatedYear = formatYear(s.air_date);
                         getTorrentsToggle(title, updatedYear, isMovie);
                       }}
                     >
                       {langSeason(lang)}
                       <span class="ml-1">
                         {" "}
-                        {s.season_number} (
-                        {formatYear(s.air_date ? s.air_date : "")})
+                        {s.season_number} ({formatYear(s.air_date)})
                       </span>
                     </button>
                   </li>

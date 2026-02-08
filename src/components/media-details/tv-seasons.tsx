@@ -1,7 +1,7 @@
 import { component$ } from "@builder.io/qwik";
 import type { Season } from "~/services/models";
 import { MediaType } from "~/services/models";
-import { formatYear } from "~/utils/fomat";
+import { formatYear } from "~/utils/format";
 import {
 	langEpisodesCount,
 	langOverview,

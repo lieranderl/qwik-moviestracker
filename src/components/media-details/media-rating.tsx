@@ -1,6 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 
-import { formatRating } from "~/utils/fomat";
+import { formatRating } from "~/utils/format";
 import { Imdb } from "../imdb";
 
 export type MediaRatingProps = {

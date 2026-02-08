@@ -1,6 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 import { BsGeoAlt, BsPerson } from "@qwikest/icons/bootstrap";
-import { showDeathYear, showYearOld } from "~/utils/fomat";
+import { showDeathYear, showYearOld } from "~/utils/format";
 
 type PersonInfoProps = {
   icon: string;

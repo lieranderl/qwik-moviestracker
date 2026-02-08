@@ -22,6 +22,7 @@ import {
   torrServerEcho,
 } from "~/services/torrserver";
 import { useQueryParamsLoader } from "~/shared/loaders";
+import { formatYear } from "~/utils/format";
 import { langAddNewTorrServerURL, langNoResults } from "~/utils/languages";
 
 export const torrServerSchema = object({
@@ -297,11 +298,8 @@ export default component$(() => {
                         rating={m.movie ? m.movie.vote_average : null}
                         year={
                           m.movie
-                            ? Number.parseInt(
-                                m.movie.release_date
-                                  ? m.movie.release_date?.substring(0, 4)
-                                  : m.movie.first_air_date?.substring(0, 4),
-                                10,
+                            ? formatYear(
+                                m.movie.release_date ?? m.movie.first_air_date,
                               )
                             : 0
                         }

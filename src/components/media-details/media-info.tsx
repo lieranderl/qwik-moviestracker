@@ -4,7 +4,7 @@ import type {
   ProductionCompany,
   ProductionCountry,
 } from "~/services/models";
-import { formatDate, formatLanguage } from "~/utils/fomat";
+import { formatDate, formatLanguage } from "~/utils/format";
 import {
   langCountries,
   langLanguages,

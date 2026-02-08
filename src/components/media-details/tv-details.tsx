@@ -2,7 +2,7 @@ import { component$ } from "@builder.io/qwik";
 
 import { LuDisc3, LuLayers3 } from "@qwikest/icons/lucide";
 import { MediaType, type TvFull, type TvShort } from "~/services/models";
-import { formatYear } from "~/utils/fomat";
+import { formatYear } from "~/utils/format";
 import {
   langActors,
   langCreatedby,
@@ -41,7 +41,7 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
 
           <div class="flex flex-wrap items-center gap-2 text-sm font-medium">
             <span class="badge badge-ghost">
-              {formatYear(tv.first_air_date || "") || "N/A"}
+              {formatYear(tv.first_air_date) || "N/A"}
             </span>
             <span class="badge badge-ghost gap-1">
               <LuLayers3 class="text-sm" />
@@ -70,7 +70,7 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
               )}
               <TorrentsModal
                 title={tv.name ? tv.name : ""}
-                year={formatYear(tv.first_air_date ? tv.first_air_date : "")}
+                year={formatYear(tv.first_air_date)}
                 isMovie={false}
                 seasons={tv.seasons}
                 media={tv}
@@ -198,9 +198,7 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
                     title={m.name ? m.name : ""}
                     width={500}
                     rating={m.vote_average ? m.vote_average : 0}
-                    year={
-                      (m.first_air_date && formatYear(m.first_air_date)) || 0
-                    }
+                    year={formatYear(m.first_air_date)}
                     picfile={m.backdrop_path}
                     isPerson={false}
                     isHorizontal={true}

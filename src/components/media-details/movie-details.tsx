@@ -1,7 +1,7 @@
 import { component$ } from "@builder.io/qwik";
 
 import { MediaType, type MovieFull, type MovieShort } from "~/services/models";
-import { formatCrew, formatCurrency, formatYear } from "~/utils/fomat";
+import { formatCrew, formatCurrency, formatYear } from "~/utils/format";
 import {
   langActors,
   langBudget,
@@ -73,7 +73,7 @@ export const MovieDetails = component$(
                 )}
                 <TorrentsModal
                   title={movie.title ?? ""}
-                  year={formatYear(movie.release_date ?? "0")}
+                  year={formatYear(movie.release_date)}
                   isMovie={true}
                   seasons={[]}
                   media={movie}
@@ -201,7 +201,7 @@ export const MovieDetails = component$(
                       title={m.title ? m.title : ""}
                       width={500}
                       rating={m.vote_average ? m.vote_average : 0}
-                      year={(m.release_date && formatYear(m.release_date)) || 0}
+                      year={formatYear(m.release_date)}
                       picfile={m.backdrop_path}
                       isPerson={false}
                       isHorizontal={true}
@@ -226,7 +226,7 @@ export const MovieDetails = component$(
                       title={m.title ? m.title : ""}
                       width={500}
                       rating={m.vote_average ? m.vote_average : 0}
-                      year={(m.release_date && formatYear(m.release_date)) || 0}
+                      year={formatYear(m.release_date)}
                       picfile={m.backdrop_path}
                       isPerson={false}
                       isHorizontal={true}

@@ -79,7 +79,7 @@ export const TorrentBlock = component$(
 												autocloseTime: 5000,
 											});
 										} catch (error) {
-											console.log(error);
+											console.error(error);
 											toastManager.addToast({
 												message: "Torrent hasn't been added!",
 												type: "error",

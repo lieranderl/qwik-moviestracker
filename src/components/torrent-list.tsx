@@ -2,16 +2,6 @@ import { $, component$, useStore, useTask$ } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
 import { setValue, useForm } from "@modular-forms/qwik";
 import { HiMagnifyingGlassOutline } from "@qwikest/icons/heroicons";
-import type { InferInput } from "valibot";
-import {
-	maxValue,
-	minLength,
-	minValue,
-	number,
-	object,
-	pipe,
-	string,
-} from "valibot";
 import type { getTorrentsType } from "~/services/cloud-func-api";
 import { getTorrents } from "~/services/cloud-func-api";
 import type { MovieDetails, Torrent } from "~/services/models";
@@ -28,17 +18,10 @@ import {
 } from "~/utils/languages";
 import { TorrentBlock } from "./torrent";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const searchTorrSchema = object({
-	name: pipe(string(), minLength(3, "Please enter movie name.")),
-	year: pipe(
-		number(),
-		minValue(1930, "Please enter a valid year."),
-		maxValue(new Date().getFullYear(), "Please enter a valid year."),
-	),
-});
-
-type SearchTorrForm = InferInput<typeof searchTorrSchema>;
+type SearchTorrForm = {
+	name: string;
+	year: number;
+};
 
 export type TorrentListProps = {
 	torrents: Torrent[] | null;
@@ -81,8 +64,6 @@ export const TorrentList = component$(
 
 		const [searchTorrForm, { Form, Field }] = useForm<SearchTorrForm>({
 			loader: { value: { name: title, year: year } },
-			// action: useTorrSearchAction(),
-			// validate: valiForm$(searchTorrSchema),
 		});
 
 		const handleSubmit = $(async (values: SearchTorrForm) => {
@@ -102,7 +83,7 @@ export const TorrentList = component$(
 					return;
 				}
 			} catch (error) {
-				console.log(error);
+				console.error(error);
 				sortedTorrents.value = [];
 			}
 
@@ -138,7 +119,6 @@ export const TorrentList = component$(
 										!sortFilterStore.filterChecked;
 									sortFilterStore.selectedSort = e.value;
 								}}
-								id="attrib"
 								class="select select-sm mr-2"
 							>
 								{sortAttrib.map((attrib) => (
@@ -157,7 +137,6 @@ export const TorrentList = component$(
 											<input
 												{...props}
 												type="text"
-												value={field.value}
 												placeholder="название"
 												class="input input-sm join-item w-48"
 											/>
@@ -173,7 +152,6 @@ export const TorrentList = component$(
 											<input
 												{...props}
 												type="number"
-												value={field.value}
 												class="input input-sm join-item mr-2 w-20"
 												placeholder="год"
 											/>

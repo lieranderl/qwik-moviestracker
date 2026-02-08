@@ -41,7 +41,6 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
 			] as Provider[],
 			callbacks: {
 				async session({ session, user }) {
-					// console.log("session:", session, user)
 					session.id = user.id;
 					if (user.language) {
 						session.language = user.language;

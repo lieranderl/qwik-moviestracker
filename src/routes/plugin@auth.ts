@@ -8,6 +8,27 @@ import { mongoclient } from "../utils/mongodbinit";
 
 export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
   ({ env }) => {
+    const googleId = env.get("GOOGLE_ID") ?? "";
+    const googleSecret = env.get("GOOGLE_SECRET") ?? "";
+    const providers: Provider[] =
+      googleId && googleSecret
+        ? [
+            Google({
+              clientId: googleId,
+              clientSecret: googleSecret,
+              profile(profile: GoogleProfile) {
+                return {
+                  id: profile.sub,
+                  language: "en-US",
+                  image: profile.picture,
+                  emailVerified: profile.email_verified,
+                  ...profile,
+                };
+              },
+            }),
+          ]
+        : [];
+
     const mongo = mongoclient(env.get("MONGO_URI") ?? "");
     if (!mongo) {
       // During SSG/build environments MONGO_URI may be intentionally absent.
@@ -20,7 +41,7 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
           maxAge: 60 * 60 * 24 * 7, // 1 week
           updateAge: 60 * 60 * 24, // 1 day
         },
-        providers: [] as Provider[],
+        providers,
       };
     }
 
@@ -35,21 +56,7 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
       }) as Adapter,
       secret: env.get("AUTH_SECRET"),
       trustHost: true,
-      providers: [
-        Google({
-          clientId: env.get("GOOGLE_ID") ?? "",
-          clientSecret: env.get("GOOGLE_SECRET") ?? "",
-          profile(profile: GoogleProfile) {
-            return {
-              id: profile.sub,
-              language: "en-US",
-              image: profile.picture,
-              emailVerified: profile.email_verified,
-              ...profile,
-            };
-          },
-        }),
-      ] as Provider[],
+      providers,
       callbacks: {
         async session({ session, user }) {
           session.id = user.id;

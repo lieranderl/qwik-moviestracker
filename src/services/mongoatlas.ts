@@ -26,8 +26,7 @@ export const getMoviesMongo = async ({
 	if (!client) {
 		throw new Error("Mongo client is not initialized");
 	}
-	const connectedClient = await client.connect();
-	const mdb = connectedClient.db("movies");
+	const mdb = client.db("movies");
 	const col = mdb.collection(dbName);
 	const cursor = col
 		.find()

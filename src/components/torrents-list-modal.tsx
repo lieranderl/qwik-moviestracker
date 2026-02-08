@@ -62,7 +62,7 @@ export const TorrentsModal = component$(
 
 				{seasons.length > 0 && (
 					<div class="dropdown">
-						<button type="button" class="btn btn-primary m-1">
+						<button type="button" class="btn btn-primary">
 							{langTorrents(resource.value.lang)}
 							<HiChevronDownSolid />
 						</button>

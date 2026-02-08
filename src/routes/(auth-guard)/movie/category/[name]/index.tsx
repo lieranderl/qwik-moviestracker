@@ -138,7 +138,7 @@ export default component$(() => {
   });
 
   return (
-    <div class="animate-fadeIn container mx-auto px-4 pt-[64px] pb-10">
+    <div class="animate-fadeIn container mx-auto px-4 pt-16 pb-10">
       <MediaGrid
         title={categoryToTitle(
           resource.value.category,

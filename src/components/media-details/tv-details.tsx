@@ -104,7 +104,6 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
 						networks={tv.networks}
 					/>
 
-
 					<TvEpisodeStatus
 						lang={lang}
 						last_episode_to_air={tv.last_episode_to_air}
@@ -113,9 +112,7 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
 					/>
 				</div>
 
-				<div class="space-y-6">
-					{/* Right column placeholder */}
-				</div>
+				<div class="space-y-6">{/* Right column placeholder */}</div>
 			</div>
 
 			<div class="mt-12 space-y-12">
@@ -182,7 +179,9 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
 										title={m.name ? m.name : ""}
 										width={500}
 										rating={m.vote_average ? m.vote_average : 0}
-										year={(m.first_air_date && formatYear(m.first_air_date)) || 0}
+										year={
+											(m.first_air_date && formatYear(m.first_air_date)) || 0
+										}
 										picfile={m.backdrop_path}
 										isPerson={false}
 										isHorizontal={true}

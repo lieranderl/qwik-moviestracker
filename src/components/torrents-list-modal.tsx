@@ -61,64 +61,50 @@ export const TorrentsModal = component$(
 				)}
 
 				{seasons.length > 0 && (
-					<>
-						<div class="dropdown">
-							<div tabIndex={0} role="button" class="btn btn-primary m-1">
-								{langTorrents(resource.value.lang)}
-								<HiChevronDownSolid />
-							</div>
-							<ul
-								// biome-ignore:
-								tabIndex={0}
-								class="menu dropdown-content rounded-box bg-base-100 z-[1] w-52 p-2 shadow"
-							>
-								{seasons.map((s) => {
-									if (s.season_number !== 0) {
-										return (
-											<>
-												{s.air_date && (
-													<li>
-														<a
-															onClick$={() => {
-																const torrModal = document.getElementById(
-																	"torrentsModal",
-																)
-																	? (document.getElementById(
-																			"torrentsModal",
-																		) as HTMLDialogElement)
-																	: null;
-																if (torrModal) {
-																	torrModal.showModal();
-																	const updatedYear = formatYear(
-																		s.air_date ? s.air_date : "",
-																	);
-																	getTorrentsToggle(
-																		title,
-																		updatedYear,
-																		isMovie,
-																	);
-																}
-															}}
-															// biome-ignore:
-															href="#"
-															class="block px-4 py-2"
-														>
-															{langSeason(lang)}
-															<span class="ml-1">
-																{" "}
-																{s.season_number} (
-																{formatYear(s.air_date ? s.air_date : "")})
-															</span>
-														</a>
-													</li>
-												)}
-											</>
-										);
-									}
-								})}
-							</ul>
-						</div>
-					</>
+					<div class="dropdown">
+						<button type="button" class="btn btn-primary m-1">
+							{langTorrents(resource.value.lang)}
+							<HiChevronDownSolid />
+						</button>
+						<ul class="menu dropdown-content rounded-box bg-base-100 z-1 w-52 p-2 shadow">
+							{seasons.map((s) => {
+								if (s.season_number === 0 || !s.air_date) {
+									return null;
+								}
+								return (
+									<li key={s.season_number}>
+										<button
+											type="button"
+											class="text-left"
+											onClick$={() => {
+												const torrModal = document.getElementById(
+													"torrentsModal",
+												)
+													? (document.getElementById(
+															"torrentsModal",
+														) as HTMLDialogElement)
+													: null;
+												if (torrModal) {
+													torrModal.showModal();
+													const updatedYear = formatYear(
+														s.air_date ? s.air_date : "",
+													);
+													getTorrentsToggle(title, updatedYear, isMovie);
+												}
+											}}
+										>
+											{langSeason(lang)}
+											<span class="ml-1">
+												{" "}
+												{s.season_number} (
+												{formatYear(s.air_date ? s.air_date : "")})
+											</span>
+										</button>
+									</li>
+								);
+							})}
+						</ul>
+					</div>
 				)}
 
 				<dialog id="torrentsModal" class="modal">

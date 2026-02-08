@@ -20,7 +20,7 @@ export const TvEpisodeStatus = component$<TvEpisodeStatusProps>(
 		return (
 			<section class="my-4">
 				{in_production && (
-					<table class="table-fixed" style="max-width: 400px;">
+					<table class="table table-sm w-full max-w-[400px]">
 						<tbody>
 							{last_episode_to_air && (
 								<tr>
@@ -60,7 +60,7 @@ export const TvEpisodeStatus = component$<TvEpisodeStatusProps>(
 				)}
 
 				{!in_production && (
-					<table class="table-fixed" style="max-width: 400px;">
+					<table class="table table-sm w-full max-w-[400px]">
 						<tbody>
 							{last_episode_to_air && (
 								<tr>

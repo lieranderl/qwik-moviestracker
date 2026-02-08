@@ -75,8 +75,6 @@ export default component$(() => {
 	});
 
 	return (
-
-
 		<Resource
 			value={useMovies}
 			onPending={() => <span class="loading loading-spinner" />}
@@ -194,8 +192,6 @@ export default component$(() => {
 				</div>
 			)}
 		/>
-
-
 	);
 });
 

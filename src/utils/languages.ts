@@ -700,7 +700,6 @@ export const langSeason = (lang: string) => {
 	}
 };
 
-
 export const langRelease = (lang: string) => {
 	switch (lang) {
 		case "en-US":
@@ -722,7 +721,6 @@ export const langCountries = (lang: string) => {
 			return "Страны";
 	}
 };
-
 
 export const langLanguages = (lang: string) => {
 	switch (lang) {

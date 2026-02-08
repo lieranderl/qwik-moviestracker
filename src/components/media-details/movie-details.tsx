@@ -109,20 +109,26 @@ export const MovieDetails = component$(
 						<section class="flex flex-wrap gap-8 mt-4 text-sm">
 							{movie.budget !== undefined && movie.budget > 0 && (
 								<div>
-									<span class="block text-xs font-bold uppercase opacity-60">{langBudget(lang)}</span>
-									<span class=" font-medium">{formatCurrency(movie.budget, lang)}</span>
+									<span class="block text-xs font-bold uppercase opacity-60">
+										{langBudget(lang)}
+									</span>
+									<span class=" font-medium">
+										{formatCurrency(movie.budget, lang)}
+									</span>
 								</div>
 							)}
 							{movie.revenue !== undefined && movie.revenue > 0 && (
 								<div>
-									<span class="block text-xs font-bold uppercase opacity-60">{langRevenue(lang)}</span>
-									<span class="font-medium">{formatCurrency(movie.revenue, lang)}</span>
+									<span class="block text-xs font-bold uppercase opacity-60">
+										{langRevenue(lang)}
+									</span>
+									<span class="font-medium">
+										{formatCurrency(movie.revenue, lang)}
+									</span>
 								</div>
 							)}
 						</section>
 					</div>
-
-
 				</div>
 
 				<div class="mt-12 space-y-12">

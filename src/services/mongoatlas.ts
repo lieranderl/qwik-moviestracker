@@ -22,8 +22,12 @@ export const getMoviesMongo = async ({
 	language,
 	env,
 }: getMovieMongoType) => {
-	const client = await mongoclient(env)!.connect();
-	const mdb = client.db("movies");
+	const client = await mongoclient(env);
+	if (!client) {
+		throw new Error("Mongo client is not initialized");
+	}
+	const connectedClient = await client.connect();
+	const mdb = connectedClient.db("movies");
 	const col = mdb.collection(dbName);
 	const cursor = col
 		.find()

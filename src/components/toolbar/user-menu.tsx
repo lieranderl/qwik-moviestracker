@@ -13,18 +13,14 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
 		<div class="ms-4">
 			{session.value && (
 				<div class="dropdown dropdown-end dropdown-bottom">
-					<div tabIndex={0} role="button" class="avatar flex items-center">
+					<button type="button" class="avatar flex items-center">
 						<div class="w-10 rounded-full">
 							{session.value.user && (
 								<Image src={session.value.user.image} alt="user photo" />
 							)}
 						</div>
-					</div>
-					<ul
-						// biome-ignore:
-						tabIndex={0}
-						class="menu dropdown-content rounded-box bg-base-100 z-[1] w-52 p-2 shadow"
-					>
+					</button>
+					<ul class="menu dropdown-content rounded-box bg-base-100 z-[1] w-52 p-2 shadow">
 						{session.value.user && (
 							<div class="px-4 py-3">
 								<span class="block text-sm">{session.value.user.name}</span>
@@ -34,11 +30,13 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
 							</div>
 						)}
 						<LangButton />
-						<li
-							onClick$={() => signOut.submit({ redirectTo: "/auth" })}
-							class="hover:text-primary block cursor-pointer px-4 py-2 text-sm"
-						>
-							{langSingOut(lang)}
+						<li>
+							<button
+								type="button"
+								onClick$={() => signOut.submit({ redirectTo: "/auth" })}
+							>
+								{langSingOut(lang)}
+							</button>
 						</li>
 					</ul>
 				</div>

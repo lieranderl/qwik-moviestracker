@@ -1,7 +1,11 @@
 import type { MediaDetails, Torrent, TSResult } from "./models";
 
-// biome-ignore:
-const fetchWithTimeout = async (resource: string, options: any) => {
+type FetchWithTimeoutOptions = RequestInit & { timeout?: number };
+
+const fetchWithTimeout = async (
+	resource: string,
+	options: FetchWithTimeoutOptions,
+) => {
 	const { timeout = 8000 } = options;
 
 	const controller = new AbortController();
@@ -31,17 +35,9 @@ const fetchTorrServer = async <T = unknown>(
 	resource: string,
 	method: MethodType,
 	path: string,
-	// biome-ignore:
-	body?: any,
+	body?: unknown,
 ): Promise<T> => {
-	const requestOptions: {
-		timeout: number;
-		method: MethodType;
-		// biome-ignore:
-		body?: any;
-		// biome-ignore:
-		headers: any;
-	} = {
+	const requestOptions: FetchWithTimeoutOptions = {
 		timeout: 5000,
 		method: method,
 		headers: { "Content-Type": "application/json" },

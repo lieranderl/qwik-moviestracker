@@ -1,10 +1,10 @@
+import type { JSXNode } from "@builder.io/qwik";
 import { component$ } from "@builder.io/qwik";
 import { BsGeoAlt, BsPerson } from "@qwikest/icons/bootstrap";
 import { showDeathYear, showYearOld } from "~/utils/fomat";
 
 type PersonInfoProps = {
-	// biome-ignore:
-	icon: any;
+	icon: JSXNode;
 	text: string;
 };
 function PersonInfo({ icon, text }: PersonInfoProps) {

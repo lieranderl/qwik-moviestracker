@@ -15,6 +15,7 @@ import {
 import type { getTorrentsType } from "~/services/cloud-func-api";
 import { getTorrents } from "~/services/cloud-func-api";
 import type { MovieDetails, Torrent } from "~/services/models";
+import { filterAndSortTorrents } from "~/utils/filter-utils";
 import {
 	langDate,
 	langFound,
@@ -25,7 +26,6 @@ import {
 	langSortOn,
 	langTorrentov,
 } from "~/utils/languages";
-import { filterAndSortTorrents } from "~/utils/filter-utils";
 import { TorrentBlock } from "./torrent";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -139,7 +139,7 @@ export const TorrentList = component$(
 									sortFilterStore.selectedSort = e.value;
 								}}
 								id="attrib"
-								class="select select-sm min-h-content mr-2 focus:outline-none"
+								class="select select-sm mr-2"
 							>
 								{sortAttrib.map((attrib) => (
 									<option value={attrib.value} key={attrib.value}>
@@ -159,7 +159,7 @@ export const TorrentList = component$(
 												type="text"
 												value={field.value}
 												placeholder="название"
-												class="input input-sm join-item w-48 py-2 pl-2 focus:outline-none"
+												class="input input-sm join-item w-48"
 											/>
 											{field.error && (
 												<div class="text-error text-xs">{field.error}</div>
@@ -174,7 +174,7 @@ export const TorrentList = component$(
 												{...props}
 												type="number"
 												value={field.value}
-												class="input input-sm join-item mr-2 w-20 py-2 pl-2 focus:outline-none"
+												class="input input-sm join-item mr-2 w-20"
 												placeholder="год"
 											/>
 											{field.error && (

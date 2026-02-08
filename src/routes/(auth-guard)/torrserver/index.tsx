@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 import {
 	$,
 	component$,
@@ -47,8 +45,7 @@ export default component$(() => {
 	const isCheckingTorrServer = useSignal(false);
 	const torrentsSig = useSignal([] as TSResult[]);
 
-	// biome-ignore:
-	const addTorrserver = $(async (values: torrServerForm): Promise<any> => {
+	const addTorrserver = $(async (values: torrServerForm): Promise<void> => {
 		isLoading.value = true;
 		if (torrServerStore.list.includes(values.ipaddress)) {
 			isLoading.value = false;
@@ -151,7 +148,7 @@ export default component$(() => {
 										type="text"
 										value={field.value}
 										placeholder={langAddNewTorrServerURL(resource.value.lang)}
-										class="input input-sm input-bordered w-72 focus:outline-none"
+										class="input input-bordered input-sm w-72"
 									/>
 									{field.error && (
 										<div class="text-error text-xs">{field.error}</div>
@@ -177,7 +174,7 @@ export default component$(() => {
 							name=""
 							id="attrib"
 							value={selectedTorServer.value}
-							class="select select-bordered select-sm w-72 focus:outline-none"
+							class="select select-bordered select-sm w-72"
 							onChange$={(_, e) => {
 								selectedTorServer.value = e.value;
 							}}
@@ -227,7 +224,7 @@ export default component$(() => {
 					{torrentsSig.value.length > 0 &&
 						torrentsSig.value.map((t) => {
 							if (!t.data) {
-								return;
+								return null;
 							}
 							const m = JSON.parse(t.data);
 							return (
@@ -235,7 +232,7 @@ export default component$(() => {
 									<a
 										href={`magnet:?xt=urn:btih:${t.hash}`}
 										target="_blank"
-										class="transition-scale bg-info absolute top-[0.85rem] left-1 z-10 scale-[85%] cursor-pointer rounded-full border-1 p-1 duration-300 ease-in-out hover:scale-[105%]"
+										class="btn btn-circle btn-info btn-sm absolute top-[0.85rem] left-1 z-10 scale-[85%] transition-transform duration-300 ease-in-out hover:scale-[105%]"
 										rel="noreferrer"
 									>
 										<LuMagnet class="text-2xl" />

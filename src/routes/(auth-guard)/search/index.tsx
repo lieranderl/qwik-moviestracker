@@ -42,7 +42,7 @@ export default component$(() => {
 		<div class="container mx-auto px-4 pt-[80px] text-center">
 			<input
 				type="text"
-				class="input input-bordered mb-4 w-[60%] focus:outline-none"
+				class="input input-bordered mb-4 w-[60%]"
 				placeholder={langSearch(resource.value.lang)}
 				onKeyDown$={(e, elem) => {
 					if (e.key === "Enter") {

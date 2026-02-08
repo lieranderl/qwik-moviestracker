@@ -32,11 +32,10 @@ export const LangButton = component$(() => {
 	});
 
 	return (
-		<li
-			onClick$={toggleLang}
-			class="block cursor-pointer px-4 py-2 text-sm hover:text-primary"
-		>
-			{loc.url.searchParams.get("lang") || "en-US"}
+		<li>
+			<button type="button" onClick$={toggleLang}>
+				{loc.url.searchParams.get("lang") || "en-US"}
+			</button>
 		</li>
 	);
 });

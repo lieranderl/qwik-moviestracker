@@ -46,19 +46,33 @@ export default component$(() => {
 	return (
 		<Resource
 			value={useTvdetails}
-			onPending={() => <span class="loading loading-spinner" />}
+			onPending={() => (
+				<div class="container mx-auto flex min-h-[60vh] items-center justify-center px-4">
+					<div class="card border-base-200 bg-base-100 border shadow-sm">
+						<div class="card-body items-center">
+							<span class="loading loading-spinner loading-lg" />
+							<p class="text-sm opacity-70">Loading TV details...</p>
+						</div>
+					</div>
+				</div>
+			)}
 			onRejected={(error) => (
-				<div role="alert" class="alert alert-error">
-					<HiXCircleSolid class="h-6 w-6" />
-					<span>{error.message}</span>
+				<div class="container mx-auto px-4 py-10">
+					<div role="alert" class="alert alert-error shadow-sm">
+						<HiXCircleSolid class="h-6 w-6" />
+						<span>{error.message}</span>
+					</div>
 				</div>
 			)}
 			onResolved={(value) => (
-				<div
-					class={`shadow-theme animate-fadeIn mx-auto bg-cover bg-fixed bg-center bg-no-repeat px-4 pb-10`}
-					style={`background-image: url(https://image.tmdb.org/t/p/original${value.tv.backdrop_path});`}
-				>
-					<div class="animate-slideInFromLeft">
+				<div class="relative min-h-screen w-full">
+					<div
+						class="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-32 blur-[1px]"
+						style={`background-image: url(https://image.tmdb.org/t/p/original${value.tv.backdrop_path});`}
+					/>
+					<div class="from-base-100/45 via-base-100/70 to-base-100 fixed inset-0 -z-10 bg-gradient-to-b" />
+
+					<div class="animate-slideInFromLeft relative z-10 px-2 md:px-4">
 						<TvDetails tv={value.tv} recTv={value.recTv} lang={value.lang} />
 					</div>
 				</div>

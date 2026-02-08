@@ -6,6 +6,7 @@ import { MediaCarousel } from "~/components/media-carousel";
 import type { TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getMedias, getTrendingMedia } from "~/services/tmdb";
+import { formatYear } from "~/utils/format";
 import { langTopRatedTvShows, langTrengingTVShows } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
@@ -42,7 +43,7 @@ export const useContentLoader = routeLoader$(async (event) => {
 export default component$(() => {
 	const resource = useContentLoader();
 	return (
-		<div class="container mx-auto px-4 pt-[64px] animate-fadeIn">
+		<>
 			<MediaCarousel
 				title={langTrengingTVShows(resource.value.lang)}
 				type={MediaType.Tv}
@@ -56,10 +57,7 @@ export default component$(() => {
 								title={m.name ? m.name : ""}
 								width={500}
 								rating={m.vote_average ? m.vote_average : 0}
-								year={Number.parseInt(
-									m.first_air_date ? m.first_air_date.substring(0, 4) : "0",
-									10,
-								)}
+								year={formatYear(m.first_air_date)}
 								picfile={m.backdrop_path}
 								isPerson={false}
 								isHorizontal={true}
@@ -81,10 +79,7 @@ export default component$(() => {
 								title={m.name ? m.name : ""}
 								width={500}
 								rating={m.vote_average ? m.vote_average : 0}
-								year={Number.parseInt(
-									m.first_air_date ? m.first_air_date.substring(0, 4) : "0",
-									10,
-								)}
+								year={formatYear(m.first_air_date)}
 								picfile={m.backdrop_path}
 								isPerson={false}
 								isHorizontal={true}
@@ -93,7 +88,7 @@ export default component$(() => {
 					</div>
 				))}
 			</MediaCarousel>
-		</div>
+		</>
 	);
 });
 

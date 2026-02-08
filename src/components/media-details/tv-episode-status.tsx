@@ -18,68 +18,73 @@ export type TvEpisodeStatusProps = {
 export const TvEpisodeStatus = component$<TvEpisodeStatusProps>(
 	({ lang, last_episode_to_air, next_episode_to_air, in_production }) => {
 		return (
-			<section class="my-4">
-				{in_production && (
-					<table class="table-fixed" style="max-width: 400px;">
-						<tbody>
-							{last_episode_to_air && (
-								<tr>
-									<td>
-										{langLastEpisode(lang)}
-										<span class="ps-1">
-											{" "}
-											{last_episode_to_air.season_number}.
-											{last_episode_to_air.episode_number}:
-										</span>
-									</td>
-									<td class="ps-4">{last_episode_to_air.air_date}</td>
-								</tr>
-							)}
-							{!next_episode_to_air && last_episode_to_air && (
-								<tr>
-									<td>
-										{langCurrentSeason(lang)} (
-										{last_episode_to_air.season_number}) {langEnded(lang)}.
-									</td>
-								</tr>
-							)}
-							{next_episode_to_air && (
-								<tr>
-									<td>
-										{langNextEpisode(lang)}
-										<span class="ps-1">
-											{next_episode_to_air.season_number}.
-											{next_episode_to_air.episode_number}:
-										</span>
-									</td>
-									<td class="ps-4">{next_episode_to_air.air_date}</td>
-								</tr>
-							)}
-						</tbody>
-					</table>
-				)}
+			<section class="card border-base-200 bg-base-100/95 border shadow-sm">
+				<div class="card-body">
+					<h3 class="card-title text-base-content/80 text-lg">
+						Episode Status
+					</h3>
+					{in_production && (
+						<table class="table-sm table w-full">
+							<tbody>
+								{last_episode_to_air && (
+									<tr>
+										<td>
+											{langLastEpisode(lang)}
+											<span class="ps-1">
+												{" "}
+												{last_episode_to_air.season_number}.
+												{last_episode_to_air.episode_number}:
+											</span>
+										</td>
+										<td class="ps-4">{last_episode_to_air.air_date}</td>
+									</tr>
+								)}
+								{!next_episode_to_air && last_episode_to_air && (
+									<tr>
+										<td>
+											{langCurrentSeason(lang)} (
+											{last_episode_to_air.season_number}) {langEnded(lang)}.
+										</td>
+									</tr>
+								)}
+								{next_episode_to_air && (
+									<tr>
+										<td>
+											{langNextEpisode(lang)}
+											<span class="ps-1">
+												{next_episode_to_air.season_number}.
+												{next_episode_to_air.episode_number}:
+											</span>
+										</td>
+										<td class="ps-4">{next_episode_to_air.air_date}</td>
+									</tr>
+								)}
+							</tbody>
+						</table>
+					)}
 
-				{!in_production && (
-					<table class="table-fixed" style="max-width: 400px;">
-						<tbody>
-							{last_episode_to_air && (
+					{!in_production && (
+						<table class="table-sm table w-full">
+							<tbody>
+								{last_episode_to_air && (
+									<tr>
+										<td>
+											{langLastEpisode(lang)}
+											<span class="ps-1">
+												{last_episode_to_air.season_number}.
+												{last_episode_to_air.episode_number}:
+											</span>
+										</td>
+										<td class="ps-4">{last_episode_to_air.air_date}</td>
+									</tr>
+								)}
 								<tr>
-									<td>
-										{langLastEpisode(lang)}
-										<span class="ps-1">
-											{last_episode_to_air.season_number}.
-											{last_episode_to_air.episode_number}:
-										</span>
-									</td>
-									<td class="ps-4">{last_episode_to_air.air_date}</td>
+									<td>{langTvShowEnded(lang)}</td>
 								</tr>
-							)}
-							<tr>
-								<td>{langTvShowEnded(lang)}</td>
-							</tr>
-						</tbody>
-					</table>
-				)}
+							</tbody>
+						</table>
+					)}
+				</div>
 			</section>
 		);
 	},

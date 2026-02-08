@@ -8,7 +8,8 @@ import {
 } from "@builder.io/qwik";
 import { isBrowser } from "@builder.io/qwik/build";
 import { server$ } from "@builder.io/qwik-city";
-import { SiImdb } from "@qwikest/icons/simpleicons";
+
+import { RatingStar } from "~/components/rating-star";
 import { getImdbRating } from "~/services/cloud-func-api";
 
 export const Imdb = component$(({ id }: { id: string }) => {
@@ -40,17 +41,16 @@ export const Imdb = component$(({ id }: { id: string }) => {
 			onResolved={(imdb) => (
 				<>
 					{imdb && (
-						<div class="flex items-center">
-							<div class="me-2 text-[2.5rem]">
-								<SiImdb />
-							</div>
+						<div class="flex items-center gap-1">
+							<span class="text-xs font-bold">IMDb</span>
+							<RatingStar containerClass="text-warning" />
+							<span class="inline-flex items-center font-bold">
+								{imdb.Rating}
+							</span>
 
-							<div class="text-md font-bold">
-								{imdb.Rating}{" "}
-								{imdb.Votes && (
-									<span class="text-sm font-bold italic">({imdb.Votes})</span>
-								)}
-							</div>
+							{imdb.Votes && (
+								<span class="text-xs opacity-60">({imdb.Votes})</span>
+							)}
 						</div>
 					)}
 				</>

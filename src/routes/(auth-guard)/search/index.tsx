@@ -10,6 +10,7 @@ import { MediaGrid } from "~/components/media-grid";
 import { MediaType } from "~/services/models";
 import { search } from "~/services/tmdb";
 import { useQueryParamsLoader } from "~/shared/loaders";
+import { formatYear } from "~/utils/format";
 import {
 	langNoResults,
 	langSearch,
@@ -42,7 +43,7 @@ export default component$(() => {
 		<div class="container mx-auto px-4 pt-[80px] text-center">
 			<input
 				type="text"
-				class="input input-bordered mb-4 w-[60%] focus:outline-none"
+				class="input input-bordered mb-4 w-[60%]"
 				placeholder={langSearch(resource.value.lang)}
 				onKeyDown$={(e, elem) => {
 					if (e.key === "Enter") {
@@ -89,20 +90,10 @@ export default component$(() => {
 													rating={m.vote_average ? m.vote_average : 0}
 													year={
 														m.media_type === MediaType.Movie
-															? Number.parseInt(
-																	m.release_date
-																		? m.release_date.substring(0, 4)
-																		: "0",
-																	10,
-																)
-															: Number.parseInt(
-																	"first_air_date" in m
-																		? m.first_air_date
-																			? m.first_air_date.substring(0, 4)
-																			: "0"
-																		: "",
-																	10,
-																)
+															? formatYear(m.release_date)
+															: "first_air_date" in m
+																? formatYear(m.first_air_date)
+																: 0
 													}
 													picfile={
 														m.media_type !== MediaType.Movie &&

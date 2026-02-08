@@ -1,17 +1,18 @@
 import { component$ } from "@builder.io/qwik";
 import { BsGeoAlt, BsPerson } from "@qwikest/icons/bootstrap";
-import { showDeathYear, showYearOld } from "~/utils/fomat";
+import { showDeathYear, showYearOld } from "~/utils/format";
 
 type PersonInfoProps = {
-	// biome-ignore:
-	icon: any;
+	icon: string;
 	text: string;
 };
 function PersonInfo({ icon, text }: PersonInfoProps) {
 	return (
-		<div class="text-md flex items-center">
-			{icon}
-			<span class="ms-1">{text}</span>
+		<div class="text-md flex items-start gap-2">
+			<span class="text-base-content/60">
+				{icon === "geo" ? <BsGeoAlt /> : <BsPerson />}
+			</span>
+			<span class="text-base-content/85">{text}</span>
 		</div>
 	);
 }
@@ -24,21 +25,19 @@ export type PersonDateProps = {
 export const PersonDate = component$<PersonDateProps>(
 	({ place_of_birth, birthday, deathday }) => {
 		return (
-			<section class="my-2">
-				{place_of_birth && (
-					<PersonInfo icon={<BsGeoAlt />} text={place_of_birth} />
-				)}
+			<section class="space-y-2">
+				{place_of_birth && <PersonInfo icon="geo" text={place_of_birth} />}
 
-				{!deathday && (
+				{birthday && !deathday && (
 					<PersonInfo
-						icon={<BsPerson />}
+						icon="person"
 						text={`${birthday} (${showYearOld(birthday ?? "")})`}
 					/>
 				)}
 
-				{deathday && (
+				{birthday && deathday && (
 					<PersonInfo
-						icon={<BsPerson />}
+						icon="person"
 						text={`${birthday} – ${deathday}(${showDeathYear(
 							birthday ?? "",
 							deathday,

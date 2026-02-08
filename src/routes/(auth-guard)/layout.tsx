@@ -37,7 +37,9 @@ export default component$(() => {
 	return (
 		<>
 			<Toolbar lang={useQparam.value.lang} />
-			<Slot />
+			<div class="container mx-auto px-4 pt-16 animate-fadeIn">
+				<Slot />
+			</div>
 		</>
 	);
 });

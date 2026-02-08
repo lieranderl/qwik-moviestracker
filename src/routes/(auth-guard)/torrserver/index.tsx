@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 import {
 	$,
 	component$,
@@ -24,6 +22,7 @@ import {
 	torrServerEcho,
 } from "~/services/torrserver";
 import { useQueryParamsLoader } from "~/shared/loaders";
+import { formatYear } from "~/utils/format";
 import { langAddNewTorrServerURL, langNoResults } from "~/utils/languages";
 
 export const torrServerSchema = object({
@@ -36,22 +35,16 @@ export default component$(() => {
 	const resource = useQueryParamsLoader();
 	const toastManager = useContext(ToastManagerContext);
 	const selectedTorServer = useSignal("");
-	const isLoading = useSignal(false);
 	const torrServerStore = useStore({ list: [] as string[] });
 	const [newTorrServerForm, { Form, Field }] = useForm<torrServerForm>({
 		loader: { value: { ipaddress: "" } },
-		// action: useTorrSearchAction(),
-		// validate: valiForm$(torrServerSchema),
 	});
 
 	const isCheckingTorrServer = useSignal(false);
 	const torrentsSig = useSignal([] as TSResult[]);
 
-	// biome-ignore:
-	const addTorrserver = $(async (values: torrServerForm): Promise<any> => {
-		isLoading.value = true;
+	const addTorrserver = $(async (values: torrServerForm): Promise<void> => {
 		if (torrServerStore.list.includes(values.ipaddress)) {
-			isLoading.value = false;
 			setValue(newTorrServerForm, "ipaddress", "");
 			toastManager.addToast({
 				message: `TorrServer ${values.ipaddress} is already in the list!`,
@@ -74,7 +67,6 @@ export default component$(() => {
 			autocloseTime: 5000,
 		});
 		setValue(newTorrServerForm, "ipaddress", "");
-		isLoading.value = false;
 	});
 
 	useOnWindow(
@@ -149,9 +141,8 @@ export default component$(() => {
 									<input
 										{...props}
 										type="text"
-										value={field.value}
 										placeholder={langAddNewTorrServerURL(resource.value.lang)}
-										class="input input-sm input-bordered w-72 focus:outline-none"
+										class="input input-bordered input-sm w-72"
 									/>
 									{field.error && (
 										<div class="text-error text-xs">{field.error}</div>
@@ -174,10 +165,8 @@ export default component$(() => {
 				<div class="col-span-2 col-start-1 md:col-start-3">
 					<section class="my-2 flex items-center justify-end">
 						<select
-							name=""
-							id="attrib"
 							value={selectedTorServer.value}
-							class="select select-bordered select-sm w-72 focus:outline-none"
+							class="select select-bordered select-sm w-72"
 							onChange$={(_, e) => {
 								selectedTorServer.value = e.value;
 							}}
@@ -227,7 +216,7 @@ export default component$(() => {
 					{torrentsSig.value.length > 0 &&
 						torrentsSig.value.map((t) => {
 							if (!t.data) {
-								return;
+								return null;
 							}
 							const m = JSON.parse(t.data);
 							return (
@@ -235,7 +224,7 @@ export default component$(() => {
 									<a
 										href={`magnet:?xt=urn:btih:${t.hash}`}
 										target="_blank"
-										class="transition-scale bg-info absolute top-[0.85rem] left-1 z-10 scale-[85%] cursor-pointer rounded-full border-1 p-1 duration-300 ease-in-out hover:scale-[105%]"
+										class="btn btn-circle btn-info btn-sm absolute top-[0.85rem] left-1 z-10 scale-[85%] transition-transform duration-300 ease-in-out hover:scale-[105%]"
 										rel="noreferrer"
 									>
 										<LuMagnet class="text-2xl" />
@@ -300,11 +289,8 @@ export default component$(() => {
 												rating={m.movie ? m.movie.vote_average : null}
 												year={
 													m.movie
-														? Number.parseInt(
-																m.movie.release_date
-																	? m.movie.release_date?.substring(0, 4)
-																	: m.movie.first_air_date?.substring(0, 4),
-																10,
+														? formatYear(
+																m.movie.release_date ?? m.movie.first_air_date,
 															)
 														: 0
 												}

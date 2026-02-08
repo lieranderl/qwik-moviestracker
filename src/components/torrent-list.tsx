@@ -2,19 +2,10 @@ import { $, component$, useStore, useTask$ } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
 import { setValue, useForm } from "@modular-forms/qwik";
 import { HiMagnifyingGlassOutline } from "@qwikest/icons/heroicons";
-import type { InferInput } from "valibot";
-import {
-	maxValue,
-	minLength,
-	minValue,
-	number,
-	object,
-	pipe,
-	string,
-} from "valibot";
 import type { getTorrentsType } from "~/services/cloud-func-api";
 import { getTorrents } from "~/services/cloud-func-api";
 import type { MovieDetails, Torrent } from "~/services/models";
+import { filterAndSortTorrents } from "~/utils/filter-utils";
 import {
 	langDate,
 	langFound,
@@ -27,17 +18,10 @@ import {
 } from "~/utils/languages";
 import { TorrentBlock } from "./torrent";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const searchTorrSchema = object({
-	name: pipe(string(), minLength(3, "Please enter movie name.")),
-	year: pipe(
-		number(),
-		minValue(1930, "Please enter a valid year."),
-		maxValue(new Date().getFullYear(), "Please enter a valid year."),
-	),
-});
-
-type SearchTorrForm = InferInput<typeof searchTorrSchema>;
+type SearchTorrForm = {
+	name: string;
+	year: number;
+};
 
 export type TorrentListProps = {
 	torrents: Torrent[] | null;
@@ -71,48 +55,15 @@ export const TorrentList = component$(
 
 		const filterTorrents = $(() => {
 			if (initTorrents.value) {
-				sortedTorrents.value = initTorrents.value;
-				if (sortFilterStore.k4) {
-					sortedTorrents.value = initTorrents.value.filter(
-						(torrents) => torrents.K4 === true,
-					);
-				}
-				if (sortFilterStore.hdr) {
-					sortedTorrents.value = initTorrents.value.filter(
-						(torrents) => torrents.HDR === true,
-					);
-				}
-				if (sortFilterStore.hdr10) {
-					sortedTorrents.value = initTorrents.value.filter(
-						(torrents) => torrents.HDR10 === true,
-					);
-				}
-
-				if (sortFilterStore.hdr10plus) {
-					sortedTorrents.value = initTorrents.value.filter(
-						(torrents) => torrents.HDR10plus === true,
-					);
-				}
-
-				if (sortFilterStore.dv) {
-					sortedTorrents.value = initTorrents.value.filter(
-						(torrents) => torrents.DV === true,
-					);
-				}
-
-				sortedTorrents.value = sortedTorrents.value.sort((a, b) =>
-					a[sortFilterStore.selectedSort as keyof typeof a] >
-					b[sortFilterStore.selectedSort as keyof typeof b]
-						? -1
-						: 1,
+				sortedTorrents.value = filterAndSortTorrents(
+					initTorrents.value,
+					sortFilterStore,
 				);
 			}
 		});
 
 		const [searchTorrForm, { Form, Field }] = useForm<SearchTorrForm>({
 			loader: { value: { name: title, year: year } },
-			// action: useTorrSearchAction(),
-			// validate: valiForm$(searchTorrSchema),
 		});
 
 		const handleSubmit = $(async (values: SearchTorrForm) => {
@@ -132,7 +83,7 @@ export const TorrentList = component$(
 					return;
 				}
 			} catch (error) {
-				console.log(error);
+				console.error(error);
 				sortedTorrents.value = [];
 			}
 
@@ -168,8 +119,7 @@ export const TorrentList = component$(
 										!sortFilterStore.filterChecked;
 									sortFilterStore.selectedSort = e.value;
 								}}
-								id="attrib"
-								class="select select-sm min-h-content mr-2 focus:outline-none"
+								class="select select-sm mr-2"
 							>
 								{sortAttrib.map((attrib) => (
 									<option value={attrib.value} key={attrib.value}>
@@ -187,9 +137,8 @@ export const TorrentList = component$(
 											<input
 												{...props}
 												type="text"
-												value={field.value}
 												placeholder="название"
-												class="input input-sm join-item w-48 py-2 pl-2 focus:outline-none"
+												class="input input-sm join-item w-48"
 											/>
 											{field.error && (
 												<div class="text-error text-xs">{field.error}</div>
@@ -203,8 +152,7 @@ export const TorrentList = component$(
 											<input
 												{...props}
 												type="number"
-												value={field.value}
-												class="input input-sm join-item mr-2 w-20 py-2 pl-2 focus:outline-none"
+												class="input input-sm join-item mr-2 w-20"
 												placeholder="год"
 											/>
 											{field.error && (

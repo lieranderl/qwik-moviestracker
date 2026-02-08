@@ -34,17 +34,27 @@ export default component$(() => {
 	const resource = useContentLoader();
 
 	return (
-		<div class="container mx-auto px-4 pt-[100px]">
+		<>
 			{resource.value && (
-				<div class="animate-slideInFromLeft">
-					<PersonDetails
-						person={resource.value.person}
-						perMovies={resource.value.perMovies}
-						perTv={resource.value.perTv}
-						lang={resource.value.lang}
-					/>
+				<div class="relative min-h-screen w-full">
+					{resource.value.person.profile_path && (
+						<div
+							class="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-28 blur-[1px]"
+							style={`background-image: url(https://image.tmdb.org/t/p/original${resource.value.person.profile_path});`}
+						/>
+					)}
+					<div class="from-base-100/45 via-base-100/70 to-base-100 fixed inset-0 -z-10 bg-gradient-to-b" />
+
+					<div class="animate-slideInFromLeft relative z-10 px-2 md:px-4">
+						<PersonDetails
+							person={resource.value.person}
+							perMovies={resource.value.perMovies}
+							perTv={resource.value.perTv}
+							lang={resource.value.lang}
+						/>
+					</div>
 				</div>
 			)}
-		</div>
+		</>
 	);
 });

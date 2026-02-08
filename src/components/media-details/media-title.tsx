@@ -9,7 +9,9 @@ export const MediaTitle = component$<MediaTitleProps>(
 		return (
 			<section class="my-4">
 				<h2 class="me-1 text-5xl font-extrabold">{name}</h2>
-				{original_name && <div class="text-xl">{original_name}</div>}
+				{original_name && original_name !== name && (
+					<div class="text-xl">{original_name}</div>
+				)}
 			</section>
 		);
 	},

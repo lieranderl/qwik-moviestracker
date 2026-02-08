@@ -7,74 +7,85 @@ import { QwikAuth$ } from "@auth/qwik";
 import { mongoclient } from "../utils/mongodbinit";
 
 export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
-	({ env }) => {
-		const mongo = mongoclient(env.get("MONGO_URI") ?? "");
-		if (!mongo) {
-			throw new Error("Mongo client is not initialized");
-		}
+  ({ env }) => {
+    const mongo = mongoclient(env.get("MONGO_URI") ?? "");
+    if (!mongo) {
+      // During SSG/build environments MONGO_URI may be intentionally absent.
+      // Return a minimal config so static generation can proceed.
+      return {
+        secret: env.get("AUTH_SECRET"),
+        trustHost: true,
+        session: {
+          strategy: "jwt",
+          maxAge: 60 * 60 * 24 * 7, // 1 week
+          updateAge: 60 * 60 * 24, // 1 day
+        },
+        providers: [] as Provider[],
+      };
+    }
 
-		return {
-			session: {
-				strategy: "database",
-				maxAge: 60 * 60 * 24 * 7, // 1 week
-				updateAge: 60 * 60 * 24, // 1 day
-			},
-			adapter: MongoDBAdapter(mongo, {
-				databaseName: "movies",
-			}) as Adapter,
-			secret: env.get("AUTH_SECRET"),
-			trustHost: true,
-			providers: [
-				Google({
-					clientId: env.get("GOOGLE_ID") ?? "",
-					clientSecret: env.get("GOOGLE_SECRET") ?? "",
-					profile(profile: GoogleProfile) {
-						return {
-							id: profile.sub,
-							language: "en-US",
-							image: profile.picture,
-							emailVerified: profile.email_verified,
-							...profile,
-						};
-					},
-				}),
-			] as Provider[],
-			callbacks: {
-				async session({ session, user }) {
-					session.id = user.id;
-					if (user.language) {
-						session.language = user.language;
-					}
+    return {
+      session: {
+        strategy: "database",
+        maxAge: 60 * 60 * 24 * 7, // 1 week
+        updateAge: 60 * 60 * 24, // 1 day
+      },
+      adapter: MongoDBAdapter(mongo, {
+        databaseName: "movies",
+      }) as Adapter,
+      secret: env.get("AUTH_SECRET"),
+      trustHost: true,
+      providers: [
+        Google({
+          clientId: env.get("GOOGLE_ID") ?? "",
+          clientSecret: env.get("GOOGLE_SECRET") ?? "",
+          profile(profile: GoogleProfile) {
+            return {
+              id: profile.sub,
+              language: "en-US",
+              image: profile.picture,
+              emailVerified: profile.email_verified,
+              ...profile,
+            };
+          },
+        }),
+      ] as Provider[],
+      callbacks: {
+        async session({ session, user }) {
+          session.id = user.id;
+          if (user.language) {
+            session.language = user.language;
+          }
 
-					return session;
-				},
-				async signIn({ account, profile }) {
-					if (account && profile) {
-						if (account.provider === "google") {
-							const p = profile as GoogleProfile;
-							return p.email_verified && p.email.endsWith("@gmail.com");
-						}
-						if (account.provider === "github") {
-							return true;
-						}
-					}
-					return false;
-				},
-			},
-		};
-	},
+          return session;
+        },
+        async signIn({ account, profile }) {
+          if (account && profile) {
+            if (account.provider === "google") {
+              const p = profile as GoogleProfile;
+              return p.email_verified && p.email.endsWith("@gmail.com");
+            }
+            if (account.provider === "github") {
+              return true;
+            }
+          }
+          return false;
+        },
+      },
+    };
+  },
 );
 
 declare module "@auth/core/types" {
-	interface Session {
-		error?: "RefreshAccessTokenError";
-		id?: string;
-		language?: string;
-	}
+  interface Session {
+    error?: "RefreshAccessTokenError";
+    id?: string;
+    language?: string;
+  }
 }
 
 declare module "@auth/core/adapters" {
-	interface AdapterUser {
-		language?: string;
-	}
+  interface AdapterUser {
+    language?: string;
+  }
 }

@@ -1,11 +1,11 @@
 import {
 	$,
 	component$,
+	type Signal,
 	useContext,
-	useOnWindow,
 	useSignal,
-	useStore,
 	useTask$,
+	useVisibleTask$,
 } from "@builder.io/qwik";
 import { setValue, useForm } from "@modular-forms/qwik";
 import { HiMinusSolid, HiPlusSolid } from "@qwikest/icons/heroicons";
@@ -25,17 +25,86 @@ import { useQueryParamsLoader } from "~/shared/loaders";
 import { formatYear } from "~/utils/format";
 import { langAddNewTorrServerURL, langNoResults } from "~/utils/languages";
 
+const TORR_SERVER_LIST_KEY = "torrServerList";
+const SELECTED_TORR_SERVER_KEY = "selectedTorServer";
+
 export const torrServerSchema = object({
 	ipaddress: pipe(string(), url("Please provide a valid URL!")),
 });
 
 export type torrServerForm = InferInput<typeof torrServerSchema>;
 
+function normalizeServer(value: string): string {
+	return value.trim();
+}
+
+function normalizeServerList(list: string[]): string[] {
+	return [...new Set(list.map(normalizeServer).filter(Boolean))];
+}
+
+function resolveSelectedServer(
+	list: string[],
+	preferredServer: string,
+): string {
+	const normalizedPreferredServer = normalizeServer(preferredServer);
+	if (normalizedPreferredServer && list.includes(normalizedPreferredServer)) {
+		return normalizedPreferredServer;
+	}
+	return list[0] || "";
+}
+
+function parseStoredServerList(rawList: string | null): string[] {
+	if (!rawList) {
+		return [];
+	}
+	try {
+		const parsedList = JSON.parse(rawList) as unknown;
+		if (!Array.isArray(parsedList)) {
+			return [];
+		}
+		return parsedList.filter(
+			(item): item is string =>
+				typeof item === "string" && normalizeServer(item).length > 0,
+		);
+	} catch (error) {
+		console.error("Failed to parse torrServerList", error);
+		const fallbackServer = normalizeServer(rawList);
+		return fallbackServer ? [fallbackServer] : [];
+	}
+}
+
+function getNormalizedServersState(
+	servers: string[],
+	preferredServer: string,
+): { list: string[]; selected: string } {
+	const normalizedList = normalizeServerList(servers);
+	const nextSelected = resolveSelectedServer(normalizedList, preferredServer);
+
+	return { list: normalizedList, selected: nextSelected };
+}
+
+function persistServersStorage(list: string[], selected: string): void {
+	localStorage.setItem(TORR_SERVER_LIST_KEY, JSON.stringify([...list]));
+	localStorage.setItem(SELECTED_TORR_SERVER_KEY, normalizeServer(selected));
+}
+
+function applyServersState(
+	servers: string[],
+	preferredServer: string,
+	listSig: Signal<string[]>,
+	selectedSig: Signal<string>,
+): { list: string[]; selected: string } {
+	const nextState = getNormalizedServersState(servers, preferredServer);
+	listSig.value = nextState.list;
+	selectedSig.value = nextState.selected;
+	return nextState;
+}
+
 export default component$(() => {
 	const resource = useQueryParamsLoader();
 	const toastManager = useContext(ToastManagerContext);
 	const selectedTorServer = useSignal("");
-	const torrServerStore = useStore({ list: [] as string[] });
+	const torrServerList = useSignal<string[]>([]);
 	const [newTorrServerForm, { Form, Field }] = useForm<torrServerForm>({
 		loader: { value: { ipaddress: "" } },
 	});
@@ -44,62 +113,51 @@ export default component$(() => {
 	const torrentsSig = useSignal([] as TSResult[]);
 
 	const addTorrserver = $(async (values: torrServerForm): Promise<void> => {
-		if (torrServerStore.list.includes(values.ipaddress)) {
+		const newServer = normalizeServer(values.ipaddress);
+		if (torrServerList.value.includes(newServer)) {
 			setValue(newTorrServerForm, "ipaddress", "");
 			toastManager.addToast({
-				message: `TorrServer ${values.ipaddress} is already in the list!`,
+				message: `TorrServer ${newServer} is already in the list!`,
 				type: "error",
 				autocloseTime: 5000,
 			});
 			return;
 		}
-		torrServerStore.list.push(values.ipaddress);
-		if (torrServerStore.list.length === 1) {
-			selectedTorServer.value = values.ipaddress;
-		}
-		localStorage.setItem(
-			"torrServerList",
-			JSON.stringify(torrServerStore.list),
+		const nextState = applyServersState(
+			[...torrServerList.value, newServer],
+			newServer,
+			torrServerList,
+			selectedTorServer,
 		);
+		persistServersStorage(nextState.list, nextState.selected);
 		toastManager.addToast({
-			message: `Torrserver ${values.ipaddress} has been added.`,
+			message: `Torrserver ${newServer} has been added.`,
 			type: "success",
 			autocloseTime: 5000,
 		});
 		setValue(newTorrServerForm, "ipaddress", "");
 	});
 
-	useOnWindow(
-		"DOMContentLoaded",
-		$(() => {
-			const tlist = localStorage.getItem("torrServerList");
-			if (tlist) {
-				torrServerStore.list = JSON.parse(tlist) || [];
-			} else {
-				torrServerStore.list = [];
-			}
-			selectedTorServer.value = localStorage.getItem("selectedTorServer") || "";
-			if (selectedTorServer.value === "") {
-				localStorage.setItem(
-					"selectedTorServer",
-					torrServerStore.list[0] || "",
-				);
-				localStorage.setItem("torrServerList", JSON.stringify([]));
-			} else {
-				if (torrServerStore.list.length === 0) {
-					localStorage.setItem(
-						"torrServerList",
-						JSON.stringify([selectedTorServer.value]),
-					);
-				} else {
-					localStorage.setItem(
-						"torrServerList",
-						JSON.stringify(torrServerStore.list),
-					);
-				}
-			}
-		}),
-	);
+	// eslint-disable-next-line qwik/no-use-visible-task
+	useVisibleTask$(() => {
+		const parsedList = parseStoredServerList(
+			localStorage.getItem(TORR_SERVER_LIST_KEY),
+		);
+		const storedSelected =
+			normalizeServer(localStorage.getItem(SELECTED_TORR_SERVER_KEY) || "") ||
+			"";
+		const nextList = [...parsedList];
+		if (nextList.length === 0 && storedSelected) {
+			nextList.push(storedSelected);
+		}
+		const nextState = applyServersState(
+			nextList,
+			storedSelected,
+			torrServerList,
+			selectedTorServer,
+		);
+		persistServersStorage(nextState.list, nextState.selected);
+	});
 
 	useTask$(async (ctx) => {
 		ctx.track(() => selectedTorServer.value);
@@ -116,7 +174,6 @@ export default component$(() => {
 				type: "success",
 				autocloseTime: 5000,
 			});
-			localStorage.setItem("selectedTorServer", selectedTorServer.value);
 			isCheckingTorrServer.value = false;
 			torrentsSig.value = await listTorrent(selectedTorServer.value);
 		} catch (error) {
@@ -131,7 +188,7 @@ export default component$(() => {
 	});
 
 	return (
-		<div class="container mx-auto px-4 pt-[64px]">
+		<div class="container mx-auto px-4 pt-16">
 			<div class="my-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6">
 				<div class="col-span-2 col-start-1 md:col-start-3">
 					<Form onSubmit$={addTorrserver} class="flex items-start justify-end">
@@ -168,10 +225,17 @@ export default component$(() => {
 							value={selectedTorServer.value}
 							class="select select-bordered select-sm w-72"
 							onChange$={(_, e) => {
-								selectedTorServer.value = e.value;
+								selectedTorServer.value = normalizeServer(e.value);
+								persistServersStorage(
+									torrServerList.value,
+									selectedTorServer.value,
+								);
 							}}
 						>
-							{torrServerStore.list.map((item) => (
+							{torrServerList.value.length === 0 && (
+								<option value="">No TorrServer added</option>
+							)}
+							{torrServerList.value.map((item) => (
 								<option value={item} key={item}>
 									{item}
 								</option>
@@ -179,26 +243,30 @@ export default component$(() => {
 						</select>
 						<div class="ms-2">
 							<button
-								type="submit"
-								disabled={newTorrServerForm.invalid}
+								type="button"
+								disabled={!selectedTorServer.value}
 								class="btn btn-error btn-sm"
 								onClick$={() => {
-									const index = torrServerStore.list.indexOf(
-										selectedTorServer.value,
+									const currentServer = selectedTorServer.value;
+									if (!currentServer) {
+										return;
+									}
+									const nextList = torrServerList.value.filter(
+										(server) => server !== currentServer,
 									);
-									if (index > -1) {
-										torrServerStore.list.splice(index, 1);
-										localStorage.setItem(
-											"torrServerList",
-											JSON.stringify(torrServerStore.list),
+									if (nextList.length !== torrServerList.value.length) {
+										const nextState = applyServersState(
+											nextList,
+											nextList[0] || "",
+											torrServerList,
+											selectedTorServer,
 										);
+										persistServersStorage(nextState.list, nextState.selected);
 										toastManager.addToast({
-											message: `Torrserver ${selectedTorServer.value} has been deleted.`,
+											message: `Torrserver ${currentServer} has been deleted.`,
 											type: "success",
 											autocloseTime: 5000,
 										});
-										selectedTorServer.value = "";
-										localStorage.setItem("selectedTorServer", "");
 									}
 								}}
 							>
@@ -232,8 +300,7 @@ export default component$(() => {
 									<button
 										type="button"
 										onClick$={async () => {
-											const torrserv =
-												localStorage.getItem("selectedTorServer") || "";
+											const torrserv = selectedTorServer.value;
 											if (torrserv === "") {
 												toastManager.addToast({
 													message: "TorrServer has not been added!",

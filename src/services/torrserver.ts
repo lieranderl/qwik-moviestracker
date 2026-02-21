@@ -2,96 +2,121 @@ import type { MediaDetails, Torrent, TSResult } from "./models";
 
 type FetchWithTimeoutOptions = RequestInit & { timeout?: number };
 
-const fetchWithTimeout = async (
+const TORR_SERVER_TIMEOUT_MS = 5000;
+
+function buildRequestUrl(resource: string, path: string): string {
+	const normalizedResource = resource.replace(/\/+$/, "");
+	const normalizedPath = path.replace(/^\/+/, "");
+	return `${normalizedResource}/${normalizedPath}`;
+}
+
+async function fetchWithTimeout(
 	resource: string,
 	options: FetchWithTimeoutOptions,
-) => {
-	const { timeout = 8000 } = options;
-
+): Promise<Response> {
+	const { timeout = TORR_SERVER_TIMEOUT_MS, ...requestOptions } = options;
 	const controller = new AbortController();
 	const id = setTimeout(() => controller.abort(), timeout);
+	try {
+		return await fetch(resource, {
+			...requestOptions,
+			signal: controller.signal,
+		});
+	} catch (error) {
+		if (error instanceof DOMException && error.name === "AbortError") {
+			throw new Error(
+				`TorrServer request timed out after ${timeout}ms for ${resource}`,
+				{
+					cause: error,
+				},
+			);
+		}
+		throw error;
+	} finally {
+		clearTimeout(id);
+	}
+}
 
-	const response = await fetch(resource, {
-		...options,
-		signal: controller.signal,
-	});
-	clearTimeout(id);
+type HttpMethod = "GET" | "POST" | "DELETE" | "PUT" | "PATCH" | "HEAD";
 
-	return response;
-};
-
-type MethodType =
-	| "GET"
-	| "POST"
-	| "DELETE"
-	| "PUT"
-	| "PATCH"
-	| "HEAD"
-	| "OPTIONS"
-	| "CONNECT"
-	| "TRACE";
-
-const fetchTorrServer = async <T = unknown>(
+async function fetchTorrServer<T = unknown>(
 	resource: string,
-	method: MethodType,
+	method: HttpMethod,
 	path: string,
 	body?: unknown,
-): Promise<T> => {
+): Promise<T> {
 	const requestOptions: FetchWithTimeoutOptions = {
-		timeout: 5000,
-		method: method,
+		timeout: TORR_SERVER_TIMEOUT_MS,
+		method,
 		headers: { "Content-Type": "application/json" },
 	};
 
-	if (body) {
-		requestOptions.body = JSON.stringify(body) || "";
+	if (body !== undefined) {
+		requestOptions.body = JSON.stringify(body);
 	}
 
-	const url = `${resource}/${path}`;
+	const url = buildRequestUrl(resource, path);
 	const response = await fetchWithTimeout(url, requestOptions);
 	if (!response.ok) {
+		const errorText = await response.text().catch(() => "");
 		throw new Error(
-			`TorrServer request failed (${response.status}) for ${path}`,
+			`TorrServer request failed (${response.status}) for ${path}${
+				errorText ? `: ${errorText.slice(0, 300)}` : ""
+			}`,
 		);
 	}
-	if (response.headers.get("Content-Type")?.includes("text")) {
-		return response.text() as T;
+
+	if (response.status === 204 || method === "HEAD") {
+		return undefined as T;
 	}
-	return response.json();
-};
+
+	const contentType = response.headers.get("Content-Type")?.toLowerCase() || "";
+	if (contentType.includes("application/json")) {
+		return (await response.json()) as T;
+	}
+	if (contentType.includes("text/")) {
+		return (await response.text()) as T;
+	}
+
+	const rawResponse = await response.text();
+	if (!rawResponse) {
+		return undefined as T;
+	}
+	try {
+		return JSON.parse(rawResponse) as T;
+	} catch {
+		return rawResponse as T;
+	}
+}
 
 export const torrServerEcho = async (url: string) =>
 	fetchTorrServer<string>(url, "GET", "echo");
 
-export const listTorrent = async (url: string) => {
-	const body = {
-		action: "list",
-	};
+function callTorrents<T = unknown>(
+	url: string,
+	action: "list" | "add" | "rem",
+	payload: Record<string, unknown> = {},
+): Promise<T> {
+	const body = { action, ...payload };
+	return fetchTorrServer<T>(url, "POST", "torrents", body);
+}
 
-	return fetchTorrServer<TSResult[]>(url, "POST", "torrents", body);
-};
+export const listTorrent = (url: string) =>
+	callTorrents<TSResult[]>(url, "list");
 
 export const addTorrent = (
 	url: string,
 	torrent: Torrent,
 	media: MediaDetails,
 ) => {
-	const data = JSON.stringify({ moviestracker: true, movie: media }) || "";
-	const body = {
-		action: "add",
+	return callTorrents<TSResult[]>(url, "add", {
 		link: torrent.Magnet,
-		poster: `http://image.tmdb.org/t/p/w300${media.poster_path}`,
-		data: data,
+		poster: `https://image.tmdb.org/t/p/w300${media.poster_path}`,
+		data: JSON.stringify({ moviestracker: true, movie: media }),
 		save_to_db: true,
 		title: `[MT] ${torrent.Name}`,
-	};
-	return fetchTorrServer<TSResult[]>(url, "POST", "torrents", body);
+	});
 };
 
-export const removeTorrent = (url: string, hash: string) => {
-	const body = {
-		action: "rem",
-		hash: hash,
-	};
-	return fetchTorrServer(url, "POST", "torrents", body);
-};
+export const removeTorrent = (url: string, hash: string) =>
+	callTorrents(url, "rem", { hash });

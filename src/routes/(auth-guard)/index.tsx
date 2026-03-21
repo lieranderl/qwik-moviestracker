@@ -1,8 +1,15 @@
 import { component$, Resource, useResource$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
-import { HiXCircleSolid } from "@qwikest/icons/heroicons";
+import { ContinueBrowsingWidget } from "~/components/discovery/continue-browsing";
+import { FeaturedSpotlight } from "~/components/discovery/featured-spotlight";
+import { QuickFilterStrip } from "~/components/discovery/quick-filter-strip";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
+import {
+	ErrorState,
+	LoadingState,
+	SectionHeading,
+} from "~/components/page-feedback";
 import type {
 	MediaShort,
 	MovieMongo,
@@ -16,8 +23,17 @@ import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import {
 	langLatestMovies,
+	langContinueBrowsing,
+	langFeaturedSpotlight,
+	langJumpBackIn,
+	langOpenDetails,
+	langQuickFilters,
+	langRecentSearches,
+	langResume,
+	langStartExploring,
 	langTrendingMovies,
 	langTrengingTVShows,
+	langSwipeToBrowse,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 import { useEnv, useQueryParamsLoader } from "./layout";
@@ -69,16 +85,92 @@ export default component$(() => {
 	return (
 		<Resource
 			value={useMovies}
-			onPending={() => <span class="loading loading-spinner" />}
-			onRejected={(error) => (
-				<div role="alert" class="alert alert-error">
-					<HiXCircleSolid class="h-6 w-6" />
-					<span>{error.message}</span>
-				</div>
+			onPending={() => (
+				<LoadingState
+					title="Loading your home feed"
+					description="We are gathering trending movies, TV shows, and recent additions."
+					compact={true}
+				/>
+			)}
+			onRejected={() => (
+				<ErrorState
+					title="Home feed is unavailable"
+					description="Please refresh the page or try again in a moment."
+					compact={true}
+				/>
 			)}
 			onResolved={(value) => (
-				<div class="animate-fadeIn">
+				<div class="page-enter space-y-6">
+					<SectionHeading
+						eyebrow="Home"
+						title="Your movie and series dashboard"
+					/>
+					<QuickFilterStrip
+						label={langQuickFilters(lang)}
+						items={[
+							{
+								active: true,
+								href: "#featured-spotlight",
+								label: langFeaturedSpotlight(lang),
+							},
+							{
+								href: "#continue-browsing",
+								label: langContinueBrowsing(lang),
+							},
+							{ href: "#latest-movies", label: langLatestMovies(lang) },
+							{ href: "#trending-movies", label: langTrendingMovies(lang) },
+							{ href: "#trending-tv", label: langTrengingTVShows(lang) },
+						]}
+					/>
+					{value.movies.length > 0 && (
+						<FeaturedSpotlight
+							ctaLabel={langOpenDetails(lang)}
+							description={
+								value.movies[
+									(new Date().getDate() - 1) % value.movies.length
+								].overview ||
+								"Open the latest featured title and jump straight into cast, ratings, and related picks."
+							}
+							href={paths.media(
+								MediaType.Movie,
+								value.movies[(new Date().getDate() - 1) % value.movies.length].id,
+								lang,
+							)}
+							imagePath={
+								value.movies[(new Date().getDate() - 1) % value.movies.length]
+									.backdrop_path
+							}
+							meta={[
+								langTrendingMovies(lang),
+								String(
+									formatYear(
+										value.movies[
+											(new Date().getDate() - 1) % value.movies.length
+										].release_date,
+									) || "2026",
+								),
+							]}
+							overline={langFeaturedSpotlight(lang)}
+							rating={
+								value.movies[(new Date().getDate() - 1) % value.movies.length]
+									.vote_average
+							}
+							title={
+								value.movies[(new Date().getDate() - 1) % value.movies.length]
+									.title || "Featured release"
+							}
+						/>
+					)}
+					<ContinueBrowsingWidget
+						emptyDescription={langStartExploring(lang)}
+						label={langContinueBrowsing(lang)}
+						lastViewedLabel={langJumpBackIn(lang)}
+						recentSearchesLabel={langRecentSearches(lang)}
+						resumeLabel={langResume(lang)}
+					/>
 					<MediaCarousel
+						hintLabel={langSwipeToBrowse(lang)}
+						sectionId="latest-movies"
 						title={langLatestMovies(lang)}
 						type={MediaType.Movie}
 						category="updated"
@@ -86,7 +178,10 @@ export default component$(() => {
 					>
 						{value.torMovies.map((m) => (
 							<div class="carousel-item" key={m.id}>
-								<a href={paths.media(MediaType.Movie, m.id, lang)}>
+								<a
+									href={paths.media(MediaType.Movie, m.id, lang)}
+									class="media-card-link"
+								>
 									<MediaCard
 										title={m.title ? m.title : ""}
 										width={500}
@@ -101,6 +196,8 @@ export default component$(() => {
 						))}
 					</MediaCarousel>
 					<MediaCarousel
+						hintLabel={langSwipeToBrowse(lang)}
+						sectionId="trending-movies"
 						title={langTrendingMovies(lang)}
 						type={MediaType.Movie}
 						category="trending"
@@ -108,7 +205,10 @@ export default component$(() => {
 					>
 						{value.movies.map((m) => (
 							<div class="carousel-item" key={m.id}>
-								<a href={paths.media(MediaType.Movie, m.id, lang)}>
+								<a
+									href={paths.media(MediaType.Movie, m.id, lang)}
+									class="media-card-link"
+								>
 									<MediaCard
 										title={m.title ? m.title : ""}
 										width={500}
@@ -123,6 +223,8 @@ export default component$(() => {
 						))}
 					</MediaCarousel>
 					<MediaCarousel
+						hintLabel={langSwipeToBrowse(lang)}
+						sectionId="trending-tv"
 						title={langTrengingTVShows(lang)}
 						type={MediaType.Tv}
 						category="trending"
@@ -130,7 +232,10 @@ export default component$(() => {
 					>
 						{value.tv.map((m) => (
 							<div class="carousel-item" key={m.id}>
-								<a href={paths.media(MediaType.Tv, m.id, lang)}>
+								<a
+									href={paths.media(MediaType.Tv, m.id, lang)}
+									class="media-card-link"
+								>
 									<MediaCard
 										title={m.name ? m.name : ""}
 										width={500}

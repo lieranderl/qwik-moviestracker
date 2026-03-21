@@ -7,12 +7,14 @@ export type MediaTitleProps = {
 export const MediaTitle = component$<MediaTitleProps>(
 	({ name, original_name }) => {
 		return (
-			<section class="my-4">
-				<h2 class="me-1 text-5xl font-extrabold">{name}</h2>
+			<header class="my-4">
+				<h1 class="me-1 text-balance text-4xl font-extrabold md:text-5xl">
+					{name}
+				</h1>
 				{original_name && original_name !== name && (
-					<div class="text-xl">{original_name}</div>
+					<p class="text-base-content/70 text-lg md:text-xl">{original_name}</p>
 				)}
-			</section>
+			</header>
 		);
 	},
 );

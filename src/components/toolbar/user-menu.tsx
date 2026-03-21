@@ -11,16 +11,20 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
 
 	return (
 		<div class="ml-1">
-			{session.value && (
-				<div class="dropdown dropdown-end dropdown-bottom">
-					<button type="button" class="btn btn-ghost btn-circle avatar">
-						<div class="border-base-200 bg-base-100 w-8 rounded-full border">
+				{session.value && (
+					<div class="dropdown dropdown-end dropdown-bottom">
+						<button
+							type="button"
+							aria-label="Open account menu"
+							class="btn btn-ghost btn-circle avatar card-hover"
+						>
+							<div class="border-base-200 bg-base-100 w-8 rounded-full border">
 							{session.value.user && (
 								<Image src={session.value.user.image} alt="user photo" />
 							)}
 						</div>
 					</button>
-					<ul class="menu dropdown-content rounded-box bg-base-100 border-base-200 z-[1] mt-2 w-56 border p-2 shadow-lg">
+					<ul class="menu dropdown-content overlay-enter rounded-box bg-base-100 border-base-200 z-[1] mt-2 w-56 border p-2 shadow-lg">
 						{session.value.user && (
 							<div class="px-3 py-2">
 								<span class="block text-sm font-medium">

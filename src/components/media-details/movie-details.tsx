@@ -1,5 +1,6 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useVisibleTask$ } from "@builder.io/qwik";
 
+import { DetailPageContainer } from "~/components/detail-page-layout";
 import { MediaType, type MovieFull, type MovieShort } from "~/services/models";
 import { formatCrew, formatCurrency, formatYear } from "~/utils/format";
 import {
@@ -7,11 +8,15 @@ import {
 	langBudget,
 	langCollectionMovies,
 	langCrew,
+	langExternalLinks,
 	langOverview,
+	langQuickActions,
 	langRecommendedMovies,
 	langRevenue,
+	langSwipeToBrowse,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
+import { writeLastViewed } from "~/utils/recent-activity";
 import { ExternalIds } from "../external_ids";
 import { MediaCard } from "../media-card";
 import { MediaCarousel } from "../media-carousel";
@@ -31,8 +36,21 @@ interface MovieDetailsProps {
 
 export const MovieDetails = component$(
 	({ movie, recMovies, colMovies, lang }: MovieDetailsProps) => {
+		// eslint-disable-next-line qwik/no-use-visible-task
+		useVisibleTask$(() => {
+			writeLastViewed({
+				href: paths.media(MediaType.Movie, movie.id, lang),
+				title: movie.title ?? "Movie details",
+				kind: "movie",
+				meta: movie.release_date
+					? `${formatYear(movie.release_date)} • Movie`
+					: "Movie",
+				imagePath: movie.poster_path ?? movie.backdrop_path,
+			});
+		});
+
 		return (
-			<div class="container mx-auto min-h-screen max-w-7xl px-2 pt-[18vh] pb-8 md:px-4">
+			<DetailPageContainer>
 				<section class="card border-base-200 bg-base-100/95 border shadow-sm">
 					<div class="card-body gap-6">
 						<div class="space-y-2">
@@ -67,6 +85,19 @@ export const MovieDetails = component$(
 								vote_count={movie.vote_count}
 								imdb_id={movie.imdb_id}
 							/>
+						</div>
+					</div>
+				</section>
+
+				<section class="section-reveal card border-base-200 bg-base-100/95 mt-6 border shadow-sm">
+					<div class="card-body gap-4">
+						<div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+							<div>
+								<p class="text-xs font-semibold tracking-[0.14em] uppercase text-base-content/55">
+									{langQuickActions(lang)}
+								</p>
+								<h3 class="text-xl font-semibold">{langExternalLinks(lang)}</h3>
+							</div>
 							<div class="flex flex-wrap gap-3">
 								{movie.videos && movie.videos.results.length > 0 && (
 									<TrailersModal videos={movie.videos.results} />
@@ -81,12 +112,11 @@ export const MovieDetails = component$(
 								/>
 							</div>
 						</div>
-
 						<ExternalIds external_ids={movie.external_ids} type={"movie"} />
 					</div>
 				</section>
 
-				<section class="card border-base-200 bg-base-100/95 mt-6 border shadow-sm">
+				<section class="section-reveal card border-base-200 bg-base-100/95 mt-6 border shadow-sm">
 					<div class="card-body">
 						<h3 class="card-title text-xl">{langOverview(lang)}</h3>
 						<p class="leading-relaxed opacity-90">
@@ -108,7 +138,7 @@ export const MovieDetails = component$(
 
 					{(movie.budget !== undefined && movie.budget > 0) ||
 					(movie.revenue !== undefined && movie.revenue > 0) ? (
-						<section class="card border-base-200 bg-base-100/95 border shadow-sm">
+						<section class="section-reveal card border-base-200 bg-base-100/95 border shadow-sm">
 							<div class="card-body">
 								<h3 class="card-title text-base-content/80 text-lg">
 									Box Office
@@ -138,13 +168,17 @@ export const MovieDetails = component$(
 
 				<div class="mt-10 space-y-10">
 					<MediaCarousel
+						hintLabel={langSwipeToBrowse(lang)}
 						title={langActors(lang)}
 						type={MediaType.Person}
 						lang={lang}
 					>
 						{movie.credits?.cast.slice(0, 10).map((c) => (
 							<div class="carousel-item" key={c.id}>
-								<a href={paths.media(MediaType.Person, c.id, lang)}>
+								<a
+									href={paths.media(MediaType.Person, c.id, lang)}
+									class="media-card-link"
+								>
 									<MediaCard
 										title={c.name ? c.name : ""}
 										width={300}
@@ -162,6 +196,7 @@ export const MovieDetails = component$(
 
 					{movie.credits !== undefined && movie.credits.crew.length > 0 && (
 						<MediaCarousel
+							hintLabel={langSwipeToBrowse(lang)}
 							title={langCrew(lang)}
 							type={MediaType.Person}
 							lang={lang}
@@ -170,7 +205,10 @@ export const MovieDetails = component$(
 								.slice(0, 10)
 								.map((c) => (
 									<div class="carousel-item" key={c.id}>
-										<a href={paths.media(MediaType.Person, c.id, lang)}>
+										<a
+											href={paths.media(MediaType.Person, c.id, lang)}
+											class="media-card-link"
+										>
 											<MediaCard
 												title={c.name ?? ""}
 												width={300}
@@ -189,6 +227,7 @@ export const MovieDetails = component$(
 
 					{colMovies.length > 0 && (
 						<MediaCarousel
+							hintLabel={langSwipeToBrowse(lang)}
 							title={langCollectionMovies(lang)}
 							type={MediaType.Person}
 							category="updated"
@@ -196,7 +235,10 @@ export const MovieDetails = component$(
 						>
 							{colMovies.map((m) => (
 								<div class="carousel-item" key={m.id}>
-									<a href={paths.media(MediaType.Movie, m.id, lang)}>
+									<a
+										href={paths.media(MediaType.Movie, m.id, lang)}
+										class="media-card-link"
+									>
 										<MediaCard
 											title={m.title ? m.title : ""}
 											width={500}
@@ -214,6 +256,7 @@ export const MovieDetails = component$(
 
 					{recMovies.length > 0 && (
 						<MediaCarousel
+							hintLabel={langSwipeToBrowse(lang)}
 							title={langRecommendedMovies(lang)}
 							type={MediaType.Person}
 							category="updated"
@@ -221,7 +264,10 @@ export const MovieDetails = component$(
 						>
 							{recMovies.map((m) => (
 								<div class="carousel-item" key={m.id}>
-									<a href={paths.media(MediaType.Movie, m.id, lang)}>
+									<a
+										href={paths.media(MediaType.Movie, m.id, lang)}
+										class="media-card-link"
+									>
 										<MediaCard
 											title={m.title ? m.title : ""}
 											width={500}
@@ -237,7 +283,7 @@ export const MovieDetails = component$(
 						</MediaCarousel>
 					)}
 				</div>
-			</div>
+			</DetailPageContainer>
 		);
 	},
 );

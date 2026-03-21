@@ -21,11 +21,14 @@ const Alink = component$(({ text, path, active, mobile }: AlinkProps) => {
 		<li>
 			<a
 				href={`${path}`}
+				aria-current={active ? "page" : undefined}
 				class={[
 					mobile
-						? "hover:bg-base-200 rounded-btn text-sm font-medium"
-						: "btn btn-ghost btn-sm rounded-btn",
-					active ? "text-primary" : "text-base-content/85",
+						? "interactive-underline rounded-btn px-3 py-2 text-sm font-medium transition-colors duration-200 hover:bg-base-200/80"
+						: "interactive-underline btn btn-ghost btn-sm rounded-full px-4",
+					active
+						? "bg-base-200/85 text-primary shadow-sm"
+						: "text-base-content/85 hover:text-base-content",
 				]}
 			>
 				{text}

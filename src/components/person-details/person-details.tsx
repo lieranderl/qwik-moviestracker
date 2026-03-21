@@ -1,14 +1,16 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useVisibleTask$ } from "@builder.io/qwik";
 import {
 	BsGenderFemale,
 	BsGenderMale,
 	BsGenderTrans,
 } from "@qwikest/icons/bootstrap";
 import { Image } from "@unpic/qwik";
+import { DetailPageContainer } from "~/components/detail-page-layout";
 import type { PersonMedia } from "~/services/models";
 import { MediaType, type PersonFull } from "~/services/models";
 import { formatYear } from "~/utils/format";
 import { paths } from "~/utils/paths";
+import { writeLastViewed } from "~/utils/recent-activity";
 import { ExternalIds } from "../external_ids";
 import { MediaCard } from "../media-card";
 import { MediaCarousel } from "../media-carousel";
@@ -24,8 +26,19 @@ interface MovieDetailsProps {
 
 export const PersonDetails = component$(
 	({ person, perMovies, perTv, lang }: MovieDetailsProps) => {
+		// eslint-disable-next-line qwik/no-use-visible-task
+		useVisibleTask$(() => {
+			writeLastViewed({
+				href: paths.media(MediaType.Person, person.id, lang),
+				title: person.name ?? "Person details",
+				kind: "person",
+				meta: person.known_for_department || "Person",
+				imagePath: person.profile_path,
+			});
+		});
+
 		return (
-			<div class="container mx-auto min-h-screen max-w-7xl px-2 pt-[18vh] pb-8 md:px-4">
+			<DetailPageContainer>
 				<section class="card border-base-200 bg-base-100/95 border shadow-sm">
 					<div class="card-body">
 						<div class="grid grid-cols-1 gap-6 md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr]">
@@ -74,17 +87,19 @@ export const PersonDetails = component$(
 										/>
 									</div>
 								</section>
-
-								<ExternalIds
-									external_ids={person.external_ids}
-									type={"person"}
-								/>
 							</div>
 						</div>
 					</div>
 				</section>
 
-				<section class="card border-base-200 bg-base-100/95 mt-6 border shadow-sm">
+				<section class="section-reveal card border-base-200 bg-base-100/95 mt-6 border shadow-sm">
+					<div class="card-body gap-3">
+						<h3 class="text-xl font-semibold">Quick links</h3>
+						<ExternalIds external_ids={person.external_ids} type={"person"} />
+					</div>
+				</section>
+
+				<section class="section-reveal card border-base-200 bg-base-100/95 mt-6 border shadow-sm">
 					<div class="card-body">
 						<h3 class="card-title text-lg">Biography</h3>
 						<PersonBio biography={person.biography} />
@@ -101,7 +116,10 @@ export const PersonDetails = component$(
 						>
 							{perMovies.cast.map((m) => (
 								<div class="carousel-item" key={m.id}>
-									<a href={paths.media(MediaType.Movie, m.id, lang)}>
+									<a
+										href={paths.media(MediaType.Movie, m.id, lang)}
+										class="media-card-link"
+									>
 										<MediaCard
 											title={m.title ? m.title : ""}
 											width={500}
@@ -127,7 +145,10 @@ export const PersonDetails = component$(
 						>
 							{perTv.cast.map((m) => (
 								<div class="carousel-item" key={m.id}>
-									<a href={paths.media(MediaType.Tv, m.id, lang)}>
+									<a
+										href={paths.media(MediaType.Tv, m.id, lang)}
+										class="media-card-link"
+									>
 										<MediaCard
 											title={m.name ? m.name : ""}
 											width={500}
@@ -153,7 +174,10 @@ export const PersonDetails = component$(
 						>
 							{perMovies.crew.map((m) => (
 								<div class="carousel-item" key={m.id}>
-									<a href={paths.media(MediaType.Movie, m.id, lang)}>
+									<a
+										href={paths.media(MediaType.Movie, m.id, lang)}
+										class="media-card-link"
+									>
 										<MediaCard
 											title={m.title ? m.title : ""}
 											width={500}
@@ -179,7 +203,10 @@ export const PersonDetails = component$(
 						>
 							{perTv.crew.map((m) => (
 								<div class="carousel-item" key={m.id}>
-									<a href={paths.media(MediaType.Tv, m.id, lang)}>
+									<a
+										href={paths.media(MediaType.Tv, m.id, lang)}
+										class="media-card-link"
+									>
 										<MediaCard
 											title={m.name ? m.name : ""}
 											width={500}
@@ -196,7 +223,7 @@ export const PersonDetails = component$(
 						</MediaCarousel>
 					)}
 				</section>
-			</div>
+			</DetailPageContainer>
 		);
 	},
 );

@@ -6,6 +6,7 @@ import {
 	langEpisodesCount,
 	langOverview,
 	langSeasons,
+	langSwipeToBrowse,
 } from "~/utils/languages";
 import { MediaCard } from "../media-card";
 import { MediaCarousel } from "../media-carousel";
@@ -19,6 +20,7 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
 		<section class="my-6">
 			{seasons.length > 0 && (
 				<MediaCarousel
+					hintLabel={langSwipeToBrowse(lang)}
 					title={langSeasons(lang)}
 					type={MediaType.Seasons}
 					lang={lang}
@@ -60,7 +62,7 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
 								</div>
 								{s.overview && (
 									<dialog id={`season-modal-${s.id.toString()}`} class="modal">
-										<div class="modal-box">
+										<div class="modal-box overlay-enter">
 											<h3 class="text-lg font-bold">{langOverview(lang)}</h3>
 											<p class="py-4"> {s.overview}</p>
 										</div>

@@ -20,12 +20,14 @@ export const ExternalIds = component$(
 		return (
 			<>
 				{external_ids && (
-					<div class="my-4 flex space-x-2 text-xl">
+					<div class="my-2 flex flex-wrap gap-2 text-xl">
 						{external_ids.facebook_id && (
 							<a
 								href={`https://facebook.com/${external_ids.facebook_id}`}
 								target="_blank"
 								rel="noreferrer"
+								aria-label="Open Facebook profile"
+								class="inline-flex h-10 w-10 items-center justify-center text-base-content/80 no-underline transition-none hover:bg-transparent hover:text-current active:bg-transparent focus:outline-none"
 							>
 								<SiFacebook class="h-6 w-6" />
 							</a>
@@ -35,6 +37,8 @@ export const ExternalIds = component$(
 								href={`https://instagram.com/${external_ids.instagram_id}`}
 								target="_blank"
 								rel="noreferrer"
+								aria-label="Open Instagram profile"
+								class="inline-flex h-10 w-10 items-center justify-center text-base-content/80 no-underline transition-none hover:bg-transparent hover:text-current active:bg-transparent focus:outline-none"
 							>
 								<SiInstagram class="h-6 w-6" />
 							</a>
@@ -44,6 +48,8 @@ export const ExternalIds = component$(
 								href={`https://twitter.com/${external_ids.twitter_id}`}
 								target="_blank"
 								rel="noreferrer"
+								aria-label="Open X profile"
+								class="inline-flex h-10 w-10 items-center justify-center text-base-content/80 no-underline transition-none hover:bg-transparent hover:text-current active:bg-transparent focus:outline-none"
 							>
 								<SiX class="h-6 w-6" />
 							</a>
@@ -53,6 +59,8 @@ export const ExternalIds = component$(
 								href={`https://tiktok.com/@${external_ids.tiktok_id}`}
 								target="_blank"
 								rel="noreferrer"
+								aria-label="Open TikTok profile"
+								class="inline-flex h-10 w-10 items-center justify-center text-base-content/80 no-underline transition-none hover:bg-transparent hover:text-current active:bg-transparent focus:outline-none"
 							>
 								<SiTiktok class="h-6 w-6" />
 							</a>
@@ -63,6 +71,8 @@ export const ExternalIds = component$(
 								href={`https://youtube.com/${external_ids.youtube_id}`}
 								target="_blank"
 								rel="noreferrer"
+								aria-label="Open YouTube profile"
+								class="inline-flex h-10 w-10 items-center justify-center text-base-content/80 no-underline transition-none hover:bg-transparent hover:text-current active:bg-transparent focus:outline-none"
 							>
 								<SiYoutube class="h-6 w-6" />
 							</a>
@@ -76,6 +86,8 @@ export const ExternalIds = component$(
 								}
 								target="_blank"
 								rel="noreferrer"
+								aria-label="Open IMDb profile"
+								class="inline-flex h-10 w-10 items-center justify-center text-base-content/80 no-underline transition-none hover:bg-transparent hover:text-current active:bg-transparent focus:outline-none"
 							>
 								<SiImdb class="h-6 w-6" />
 							</a>
@@ -85,6 +97,8 @@ export const ExternalIds = component$(
 								href={`https://www.wikidata.org/wiki/${external_ids.wikidata_id}`}
 								target="_blank"
 								rel="noreferrer"
+								aria-label="Open Wikidata profile"
+								class="inline-flex h-10 w-10 items-center justify-center text-base-content/80 no-underline transition-none hover:bg-transparent hover:text-current active:bg-transparent focus:outline-none"
 							>
 								<SiWikidata class="h-6 w-6" />
 							</a>

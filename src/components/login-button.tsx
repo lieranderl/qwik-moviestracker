@@ -10,11 +10,15 @@ export const LoginButton = component$<LoginButtonProps>((props) => {
   const { providerName = "google", class: className, ...buttonProps } = props;
   const signIn = useSignIn();
   const isloading = useSignal(false);
+
   return (
     <button
       {...buttonProps}
       aria-busy={isloading.value}
-      class={["btn card-hover border-[#e5e5e5] bg-white text-black", className]}
+      class={[
+        "btn btn-outline border-base-300 bg-base-100 text-base-content hover:border-base-300 hover:bg-base-200/75 shadow-sm",
+        className,
+      ]}
       type="button"
       disabled={isloading.value || !!buttonProps.disabled}
       onClick$={$(() => {
@@ -26,20 +30,20 @@ export const LoginButton = component$<LoginButtonProps>((props) => {
       })}
     >
       {isloading.value && (
-        <div aria-live="polite" class="flex items-center gap-2">
-          <span class="loading" />
-          <div>Signing in...</div>
-        </div>
+        <span aria-live="polite" class="inline-flex items-center gap-2">
+          <span class="loading loading-spinner loading-sm" />
+          <span>Signing in...</span>
+        </span>
       )}
       {!isloading.value && (
-        <div class="flex items-center gap-2">
-          <div class="text-xl">
+        <span class="inline-flex items-center gap-2">
+          <span class="text-xl">
             <Slot />
-          </div>
-          <div>
+          </span>
+          <span>
             Sign In with <span class="capitalize">{providerName}</span>
-          </div>
-        </div>
+          </span>
+        </span>
       )}
     </button>
   );

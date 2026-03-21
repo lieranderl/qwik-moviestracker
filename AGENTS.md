@@ -1,5 +1,7 @@
 # AGENTS.md
 
+USE DAISYUI https://daisyui.com/components 
+
 ## Project Snapshot
 
 - `qwik-moviestracker` is a private Qwik City app for browsing movies and TV,

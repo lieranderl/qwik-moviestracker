@@ -14,13 +14,13 @@
 html {
   scroll-behavior: smooth;
   color-scheme: light;
-  --motion-duration-fast: 180ms;
-  --motion-duration-base: 320ms;
-  --motion-duration-slow: 520ms;
+  --motion-duration-fast: 220ms;
+  --motion-duration-base: 380ms;
+  --motion-duration-slow: 580ms;
   --motion-ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
   --motion-ease-emphasis: cubic-bezier(0.16, 1, 0.3, 1);
-  --motion-lift: -0.35rem;
-  --motion-shadow: 0 18px 40px oklch(24% 0.015 248 / 0.1);
+  --motion-lift: -0.25rem;
+  --motion-shadow: 0 20px 44px oklch(24% 0.015 248 / 0.11);
   --motion-focus-ring: oklch(71% 0.13 255 / 0.24);
   background-color: oklch(96.5% 0.004 245);
   background-image:
@@ -144,7 +144,7 @@ h6 {
   @keyframes sectionReveal {
     0% {
       opacity: 0;
-      transform: translate3d(0, 16px, 0);
+      transform: translate3d(0, 12px, 0);
     }
     100% {
       opacity: 1;
@@ -155,7 +155,7 @@ h6 {
   @keyframes overlayEnter {
     0% {
       opacity: 0;
-      transform: translate3d(0, 8px, 0) scale(0.98);
+      transform: translate3d(0, 6px, 0) scale(0.985);
     }
     100% {
       opacity: 1;
@@ -174,69 +174,65 @@ h6 {
 
   .animate-fadeIn,
   .page-enter {
-    animation: pageEnter var(--motion-duration-slow) var(--motion-ease-standard) both;
+    animation: pageEnter var(--motion-duration-slow) var(--motion-ease-standard)
+      both;
   }
 
   .animate-slideInFromLeft {
-    animation: pageEnter var(--motion-duration-slow) var(--motion-ease-standard) both;
+    animation: pageEnter var(--motion-duration-slow) var(--motion-ease-standard)
+      both;
   }
 
   .toolbar-shell {
-    animation: overlayEnter 520ms var(--motion-ease-emphasis) both;
+    animation: overlayEnter var(--motion-duration-slow)
+      var(--motion-ease-emphasis) both;
   }
 
   .section-reveal {
-    animation: sectionReveal var(--motion-duration-base) var(--motion-ease-standard) both;
+    animation: sectionReveal var(--motion-duration-base)
+      var(--motion-ease-standard) both;
     animation-delay: var(--motion-delay, 0ms);
   }
 
   .overlay-enter {
-    animation: overlayEnter var(--motion-duration-base) var(--motion-ease-emphasis) both;
+    animation: overlayEnter var(--motion-duration-base)
+      var(--motion-ease-emphasis) both;
   }
 
   .motion-stagger > * {
     opacity: 0;
-    transform: translate3d(0, 16px, 0);
-    animation: sectionReveal var(--motion-duration-base) var(--motion-ease-standard) both;
+    transform: translate3d(0, 12px, 0);
+    animation: sectionReveal var(--motion-duration-base)
+      var(--motion-ease-standard) both;
   }
 
-  .motion-stagger > *:nth-child(1) { animation-delay: 40ms; }
-  .motion-stagger > *:nth-child(2) { animation-delay: 80ms; }
-  .motion-stagger > *:nth-child(3) { animation-delay: 120ms; }
-  .motion-stagger > *:nth-child(4) { animation-delay: 160ms; }
-  .motion-stagger > *:nth-child(5) { animation-delay: 200ms; }
-  .motion-stagger > *:nth-child(6) { animation-delay: 240ms; }
-  .motion-stagger > *:nth-child(7) { animation-delay: 280ms; }
-  .motion-stagger > *:nth-child(8) { animation-delay: 320ms; }
-
-  .card-hover {
-    transition:
-      transform var(--motion-duration-fast) var(--motion-ease-standard),
-      box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
-      border-color var(--motion-duration-fast) var(--motion-ease-standard),
-      background-color var(--motion-duration-fast) var(--motion-ease-standard);
+  .motion-stagger > *:nth-child(1) {
+    animation-delay: 40ms;
   }
-
-  .card-hover:hover,
-  .card-hover:focus-visible,
-  .card-hover:focus-within {
-    transform: translate3d(0, var(--motion-lift), 0);
-    box-shadow: var(--motion-shadow);
+  .motion-stagger > *:nth-child(2) {
+    animation-delay: 80ms;
   }
-
-  .btn.card-hover,
-  .btn.card-hover:hover,
-  .btn.card-hover:focus-visible,
-  .btn.card-hover:focus-within {
-    transform: none;
-    box-shadow: none;
+  .motion-stagger > *:nth-child(3) {
+    animation-delay: 120ms;
+  }
+  .motion-stagger > *:nth-child(4) {
+    animation-delay: 160ms;
+  }
+  .motion-stagger > *:nth-child(5) {
+    animation-delay: 200ms;
+  }
+  .motion-stagger > *:nth-child(6) {
+    animation-delay: 240ms;
+  }
+  .motion-stagger > *:nth-child(7) {
+    animation-delay: 280ms;
+  }
+  .motion-stagger > *:nth-child(8) {
+    animation-delay: 320ms;
   }
 
   .focus-ringable {
-    transition:
-      box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
-      border-color var(--motion-duration-fast) var(--motion-ease-standard),
-      background-color var(--motion-duration-fast) var(--motion-ease-standard);
+    backface-visibility: hidden;
   }
 
   .focus-ringable:focus-visible {
@@ -246,36 +242,85 @@ h6 {
       0 0 0 4px var(--motion-focus-ring);
   }
 
+  .media-card-surface {
+    transform: translate3d(0, 0, 0);
+    transition:
+      transform 420ms var(--motion-ease-emphasis),
+      box-shadow 420ms var(--motion-ease-emphasis),
+      border-color 280ms var(--motion-ease-standard),
+      background-color 280ms var(--motion-ease-standard);
+    will-change: transform, box-shadow;
+  }
+
+  .media-card-poster {
+    transform: scale(1);
+    transform-origin: center;
+    transition:
+      transform 560ms var(--motion-ease-standard),
+      filter 560ms var(--motion-ease-standard);
+    will-change: transform, filter;
+  }
+
+  .media-card-overlay {
+    transition: opacity 420ms var(--motion-ease-standard);
+  }
+
+  .media-card-body {
+    transition: background-color 420ms var(--motion-ease-standard);
+  }
+
+  @media (hover: hover) {
+    .media-card-link:hover .media-card-surface {
+      transform: translate3d(0, -4px, 0);
+      box-shadow: var(--motion-shadow);
+    }
+
+    .media-card-link:hover .media-card-poster {
+      transform: scale(1.024);
+      filter: brightness(1.04);
+    }
+
+    .media-card-link:hover .media-card-overlay {
+      opacity: 1;
+    }
+
+    .media-card-link:hover .media-card-body {
+      background-color: color-mix(
+        in oklch,
+        var(--color-base-200) 88%,
+        transparent
+      );
+    }
+  }
+
+  .media-card-link:focus-visible .media-card-surface {
+    transform: translate3d(0, -4px, 0);
+    box-shadow:
+      var(--motion-shadow),
+      0 0 0 1px oklch(70% 0.12 255 / 0.28),
+      0 0 0 4px var(--motion-focus-ring);
+  }
+
+  .media-card-link:focus-visible .media-card-poster {
+    transform: scale(1.024);
+    filter: brightness(1.04);
+  }
+
+  .media-card-link:focus-visible .media-card-overlay {
+    opacity: 1;
+  }
+
+  .media-card-link:focus-visible .media-card-body {
+    background-color: color-mix(
+      in oklch,
+      var(--color-base-200) 88%,
+      transparent
+    );
+  }
+
   .ambient-backdrop {
     animation: ambientFloat 16s ease-in-out infinite alternate;
     will-change: opacity;
-  }
-
-  .interactive-underline {
-    position: relative;
-  }
-
-  .interactive-underline::after {
-    content: "";
-    position: absolute;
-    inset-inline: 0.85rem;
-    bottom: 0.3rem;
-    height: 2px;
-    border-radius: 9999px;
-    background: currentColor;
-    opacity: 0;
-    transform: scaleX(0.4);
-    transform-origin: center;
-    transition:
-      opacity var(--motion-duration-fast) var(--motion-ease-standard),
-      transform var(--motion-duration-fast) var(--motion-ease-standard);
-  }
-
-  .interactive-underline[aria-current="page"]::after,
-  .interactive-underline:hover::after,
-  .interactive-underline:focus-visible::after {
-    opacity: 1;
-    transform: scaleX(1);
   }
 }
 

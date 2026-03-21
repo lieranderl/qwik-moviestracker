@@ -1,13 +1,20 @@
 import { component$ } from "@builder.io/qwik";
 
 import { type DocumentHead, routeLoader$ } from "@builder.io/qwik-city";
+import { QuickFilterStrip } from "~/components/discovery/quick-filter-strip";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
+import { SectionHeading } from "~/components/page-feedback";
 import type { TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getMedias, getTrendingMedia } from "~/services/tmdb";
 import { formatYear } from "~/utils/format";
-import { langTopRatedTvShows, langTrengingTVShows } from "~/utils/languages";
+import {
+	langQuickFilters,
+	langSwipeToBrowse,
+	langTopRatedTvShows,
+	langTrengingTVShows,
+} from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
@@ -43,8 +50,25 @@ export const useContentLoader = routeLoader$(async (event) => {
 export default component$(() => {
 	const resource = useContentLoader();
 	return (
-		<>
+		<div class="page-enter space-y-6">
+			<SectionHeading eyebrow="TV Shows" title="Browse TV collections" />
+			<QuickFilterStrip
+				label={langQuickFilters(resource.value.lang)}
+				items={[
+					{
+						active: true,
+						href: "#trending-tv",
+						label: langTrengingTVShows(resource.value.lang),
+					},
+					{
+						href: "#top-rated-tv",
+						label: langTopRatedTvShows(resource.value.lang),
+					},
+				]}
+			/>
 			<MediaCarousel
+				hintLabel={langSwipeToBrowse(resource.value.lang)}
+				sectionId="trending-tv"
 				title={langTrengingTVShows(resource.value.lang)}
 				type={MediaType.Tv}
 				category="trending"
@@ -52,7 +76,10 @@ export default component$(() => {
 			>
 				{resource.value.tvtrend.map((m) => (
 					<div class="carousel-item" key={m.id}>
-						<a href={paths.media(MediaType.Tv, m.id, resource.value.lang)}>
+						<a
+							href={paths.media(MediaType.Tv, m.id, resource.value.lang)}
+							class="media-card-link"
+						>
 							<MediaCard
 								title={m.name ? m.name : ""}
 								width={500}
@@ -67,6 +94,8 @@ export default component$(() => {
 				))}
 			</MediaCarousel>
 			<MediaCarousel
+				hintLabel={langSwipeToBrowse(resource.value.lang)}
+				sectionId="top-rated-tv"
 				title={langTopRatedTvShows(resource.value.lang)}
 				type={MediaType.Tv}
 				category="toprated"
@@ -74,7 +103,10 @@ export default component$(() => {
 			>
 				{resource.value.tvtoprated.map((m) => (
 					<div class="carousel-item" key={m.id}>
-						<a href={paths.media(MediaType.Tv, m.id, resource.value.lang)}>
+						<a
+							href={paths.media(MediaType.Tv, m.id, resource.value.lang)}
+							class="media-card-link"
+						>
 							<MediaCard
 								title={m.name ? m.name : ""}
 								width={500}
@@ -88,7 +120,7 @@ export default component$(() => {
 					</div>
 				))}
 			</MediaCarousel>
-		</>
+		</div>
 	);
 });
 

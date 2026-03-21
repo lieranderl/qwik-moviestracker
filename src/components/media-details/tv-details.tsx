@@ -1,15 +1,20 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useVisibleTask$ } from "@builder.io/qwik";
 
 import { LuDisc3, LuLayers3 } from "@qwikest/icons/lucide";
+import { DetailPageContainer } from "~/components/detail-page-layout";
 import { MediaType, type TvFull, type TvShort } from "~/services/models";
 import { formatYear } from "~/utils/format";
 import {
 	langActors,
 	langCreatedby,
+	langExternalLinks,
 	langOverview,
+	langQuickActions,
 	langRecommendedTvShows,
+	langSwipeToBrowse,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
+import { writeLastViewed } from "~/utils/recent-activity";
 import { ExternalIds } from "../external_ids";
 import { MediaCard } from "../media-card";
 import { MediaCarousel } from "../media-carousel";
@@ -28,8 +33,19 @@ interface TvDetailsProps {
 }
 
 export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
+	// eslint-disable-next-line qwik/no-use-visible-task
+	useVisibleTask$(() => {
+		writeLastViewed({
+			href: paths.media(MediaType.Tv, tv.id, lang),
+			title: tv.name ?? "TV details",
+			kind: "tv",
+			meta: tv.first_air_date ? `${formatYear(tv.first_air_date)} • TV` : "TV",
+			imagePath: tv.poster_path ?? tv.backdrop_path,
+		});
+	});
+
 	return (
-		<div class="container mx-auto min-h-screen max-w-7xl px-2 pt-[18vh] pb-8 md:px-4">
+		<DetailPageContainer>
 			<section class="card border-base-200 bg-base-100/95 border shadow-sm">
 				<div class="card-body gap-6">
 					<div class="space-y-2">
@@ -64,6 +80,19 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
 							vote_count={tv.vote_count}
 							imdb_id={tv.external_ids.imdb_id}
 						/>
+					</div>
+				</div>
+			</section>
+
+			<section class="section-reveal card border-base-200 bg-base-100/95 mt-6 border shadow-sm">
+				<div class="card-body gap-4">
+					<div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+						<div>
+							<p class="text-xs font-semibold tracking-[0.14em] uppercase text-base-content/55">
+								{langQuickActions(lang)}
+							</p>
+							<h3 class="text-xl font-semibold">{langExternalLinks(lang)}</h3>
+						</div>
 						<div class="flex flex-wrap gap-3">
 							{tv.videos && tv.videos.results.length > 0 && (
 								<TrailersModal videos={tv.videos.results} />
@@ -78,12 +107,11 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
 							/>
 						</div>
 					</div>
-
 					<ExternalIds external_ids={tv.external_ids} type={"tv"} />
 				</div>
 			</section>
 
-			<section class="card border-base-200 bg-base-100/95 mt-6 border shadow-sm">
+			<section class="section-reveal card border-base-200 bg-base-100/95 mt-6 border shadow-sm">
 				<div class="card-body">
 					<h3 class="card-title text-xl">{langOverview(lang)}</h3>
 					<p class="leading-relaxed opacity-90">
@@ -111,7 +139,7 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
 					/>
 				</div>
 
-				<section class="card border-base-200 bg-base-100/95 border shadow-sm">
+					<section class="section-reveal card border-base-200 bg-base-100/95 border shadow-sm">
 					<div class="card-body">
 						<h3 class="card-title text-base-content/80 text-lg">
 							Series Stats
@@ -135,17 +163,21 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
 			</div>
 
 			<div class="mt-10 space-y-10">
-				<TvSeasons lang={lang} seasons={tv.seasons} />
+					<TvSeasons lang={lang} seasons={tv.seasons} />
 
 				{tv.created_by.length > 0 && (
 					<MediaCarousel
+						hintLabel={langSwipeToBrowse(lang)}
 						title={langCreatedby(lang)}
 						type={MediaType.Person}
 						lang={lang}
 					>
 						{tv.created_by.slice(0, 10).map((c) => (
 							<div key={c.id} class="carousel-item">
-								<a href={paths.media(MediaType.Person, c.id, lang)}>
+								<a
+									href={paths.media(MediaType.Person, c.id, lang)}
+									class="media-card-link"
+								>
 									<MediaCard
 										title={c.name ?? ""}
 										width={300}
@@ -162,13 +194,17 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
 				)}
 
 				<MediaCarousel
+					hintLabel={langSwipeToBrowse(lang)}
 					title={langActors(lang)}
 					type={MediaType.Person}
 					lang={lang}
 				>
 					{tv.credits?.cast.slice(0, 10).map((c) => (
 						<div key={c.id} class="carousel-item">
-							<a href={paths.media(MediaType.Person, c.id, lang)}>
+							<a
+								href={paths.media(MediaType.Person, c.id, lang)}
+								class="media-card-link"
+							>
 								<MediaCard
 									title={c.name ?? ""}
 									width={300}
@@ -186,6 +222,7 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
 
 				{recTv.length > 0 && (
 					<MediaCarousel
+						hintLabel={langSwipeToBrowse(lang)}
 						title={langRecommendedTvShows(lang)}
 						type={MediaType.Person}
 						category="updated"
@@ -193,7 +230,10 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
 					>
 						{recTv.map((m) => (
 							<div key={m.id} class="carousel-item">
-								<a href={paths.media(MediaType.Tv, m.id, lang)}>
+								<a
+									href={paths.media(MediaType.Tv, m.id, lang)}
+									class="media-card-link"
+								>
 									<MediaCard
 										title={m.name ? m.name : ""}
 										width={500}
@@ -209,6 +249,6 @@ export const TvDetails = component$(({ tv, recTv, lang }: TvDetailsProps) => {
 					</MediaCarousel>
 				)}
 			</div>
-		</div>
+		</DetailPageContainer>
 	);
 });

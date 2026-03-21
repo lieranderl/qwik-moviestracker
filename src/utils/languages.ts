@@ -743,3 +743,179 @@ export const langNetworks = (lang: string) => {
 			return "Сети";
 	}
 };
+
+export const langQuickFilters = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Quick filters";
+		case "ru-RU":
+			return "Быстрые фильтры";
+		default:
+			return "Быстрые фильтры";
+	}
+};
+
+export const langFeaturedSpotlight = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Featured spotlight";
+		case "ru-RU":
+			return "Главный релиз";
+		default:
+			return "Главный релиз";
+	}
+};
+
+export const langOpenDetails = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Open details";
+		case "ru-RU":
+			return "Открыть детали";
+		default:
+			return "Открыть детали";
+	}
+};
+
+export const langContinueBrowsing = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Continue browsing";
+		case "ru-RU":
+			return "Продолжить просмотр";
+		default:
+			return "Продолжить просмотр";
+	}
+};
+
+export const langJumpBackIn = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Jump back in";
+		case "ru-RU":
+			return "Вернуться";
+		default:
+			return "Вернуться";
+	}
+};
+
+export const langResume = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Resume";
+		case "ru-RU":
+			return "Продолжить";
+		default:
+			return "Продолжить";
+	}
+};
+
+export const langRecentSearches = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Recent searches";
+		case "ru-RU":
+			return "Последние поиски";
+		default:
+			return "Последние поиски";
+	}
+};
+
+export const langSearchAssist = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Search assist";
+		case "ru-RU":
+			return "Помощь в поиске";
+		default:
+			return "Помощь в поиске";
+	}
+};
+
+export const langStartExploring = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Start exploring and your recent activity will appear here.";
+		case "ru-RU":
+			return "Начните просмотр, и ваша недавняя активность появится здесь.";
+		default:
+			return "Начните просмотр, и ваша недавняя активность появится здесь.";
+	}
+};
+
+export const langBrowseHome = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Browse home";
+		case "ru-RU":
+			return "Главная";
+		default:
+			return "Главная";
+	}
+};
+
+export const langBrowseMovies = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Browse movies";
+		case "ru-RU":
+			return "Фильмы";
+		default:
+			return "Фильмы";
+	}
+};
+
+export const langBrowseTv = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Browse TV";
+		case "ru-RU":
+			return "Сериалы";
+		default:
+			return "Сериалы";
+	}
+};
+
+export const langBrowseSearch = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Open search";
+		case "ru-RU":
+			return "Открыть поиск";
+		default:
+			return "Открыть поиск";
+	}
+};
+
+export const langQuickActions = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Quick actions";
+		case "ru-RU":
+			return "Быстрые действия";
+		default:
+			return "Быстрые действия";
+	}
+};
+
+export const langExternalLinks = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "External links";
+		case "ru-RU":
+			return "Внешние ссылки";
+		default:
+			return "Внешние ссылки";
+	}
+};
+
+export const langSwipeToBrowse = (lang: string) => {
+	switch (lang) {
+		case "en-US":
+			return "Swipe or scroll to browse";
+		case "ru-RU":
+			return "Листайте или прокручивайте";
+		default:
+			return "Листайте или прокручивайте";
+	}
+};

@@ -15,7 +15,7 @@ export const TrailersModal = component$(({ videos }: TorModalPros) => {
 		<>
 			<button
 				type="button"
-				class="btn btn-outline btn-primary"
+				class="btn btn-outline btn-primary card-hover"
 				onClick$={() => {
 					const trailersModal = document.getElementById("trailersModal")
 						? (document.getElementById("trailersModal") as HTMLDialogElement)
@@ -28,7 +28,7 @@ export const TrailersModal = component$(({ videos }: TorModalPros) => {
 				{langTrailers(resource.value.lang)}
 			</button>
 			<dialog id="trailersModal" class="modal">
-				<div class="modal-box border-base-200 bg-base-100 max-h-[85vh] max-w-4xl overflow-y-auto border p-0 shadow-xl">
+				<div class="modal-box overlay-enter border-base-200 bg-base-100 max-h-[85vh] max-w-4xl overflow-y-auto border p-0 shadow-xl">
 					<div class="border-base-200 bg-base-100/95 sticky top-0 z-20 flex items-center justify-between border-b px-5 py-4 backdrop-blur">
 						<h3 class="text-lg font-bold">
 							{langTrailers(resource.value.lang)}
@@ -45,7 +45,7 @@ export const TrailersModal = component$(({ videos }: TorModalPros) => {
 							<section class="grid grid-cols-1 gap-4 md:grid-cols-2">
 								{videos.map((video) => (
 									<a
-										class="card border-base-200 bg-base-100 border shadow-sm transition hover:shadow-md"
+										class="card card-hover border-base-200 bg-base-100 border shadow-sm"
 										href={`https://www.youtube.com/watch?v=${video.key}`}
 										key={video.id}
 										target="_blank"

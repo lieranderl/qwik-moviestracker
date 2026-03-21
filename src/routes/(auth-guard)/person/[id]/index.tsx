@@ -1,60 +1,75 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, Resource, useResource$ } from "@builder.io/qwik";
+import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
+import { DetailPageShell } from "~/components/detail-page-layout";
+import { ErrorState, LoadingState } from "~/components/page-feedback";
 import { PersonDetails } from "~/components/person-details/person-details";
-import type { PersonFull } from "~/services/models";
+import type { PersonFull, PersonMedia } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getMediaDetails, getPersonMovies, getPersonTv } from "~/services/tmdb";
-import { paths } from "~/utils/paths";
+import { useQueryParamsLoader } from "~/shared/loaders";
 
 export const useContentLoader = routeLoader$(async (event) => {
-	const lang = event.query.get("lang") || "en-US";
 	const id = Number.parseInt(event.params.id, 10);
-	try {
-		const [person, perMovies, perTv] = await Promise.all([
-			getMediaDetails({
-				id,
-				language: lang,
-				type: MediaType.Person,
-			}) as Promise<PersonFull>,
-			// getPerson({
-			//   id,
-			//   language: lang,
-			// }),
-			getPersonMovies({ id: id, language: lang }),
-			getPersonTv({ id: id, language: lang }),
-		]);
-		return { person, perMovies, perTv, lang };
-	} catch (error) {
-		console.error(error);
-		event.redirect(302, paths.notFound(lang));
-	}
+	return { id };
 });
 
 export default component$(() => {
-	const resource = useContentLoader();
+	const lang = useQueryParamsLoader().value.lang;
+	const id = useContentLoader().value.id;
+	const usePersonDetails = useResource$(async () => {
+		try {
+			const [person, perMovies, perTv] = await Promise.all([
+				getMediaDetails({
+					id,
+					language: lang,
+					type: MediaType.Person,
+				}) as Promise<PersonFull>,
+				getPersonMovies({ id, language: lang }) as Promise<PersonMedia>,
+				getPersonTv({ id, language: lang }) as Promise<PersonMedia>,
+			]);
+			return { person, perMovies, perTv, lang };
+		} catch (error) {
+			console.error(error);
+			throw new Error("Person details could not be loaded.");
+		}
+	});
 
 	return (
-		<>
-			{resource.value && (
-				<div class="relative min-h-screen w-full">
-					{resource.value.person.profile_path && (
-						<div
-							class="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-28 blur-[1px]"
-							style={`background-image: url(https://image.tmdb.org/t/p/original${resource.value.person.profile_path});`}
-						/>
-					)}
-					<div class="from-base-100/45 via-base-100/70 to-base-100 fixed inset-0 -z-10 bg-gradient-to-b" />
-
-					<div class="animate-slideInFromLeft relative z-10 px-2 md:px-4">
-						<PersonDetails
-							person={resource.value.person}
-							perMovies={resource.value.perMovies}
-							perTv={resource.value.perTv}
-							lang={resource.value.lang}
-						/>
-					</div>
-				</div>
+		<Resource
+			value={usePersonDetails}
+			onPending={() => (
+				<LoadingState
+					title="Loading person details"
+					description="We are fetching biography, credits, and known-for titles."
+				/>
 			)}
-		</>
+			onRejected={(error) => (
+				<ErrorState
+					title="Person details are unavailable"
+					description={error.message}
+				/>
+			)}
+			onResolved={(value) => (
+				<DetailPageShell backdropPath={value.person.profile_path}>
+					<PersonDetails
+						person={value.person}
+						perMovies={value.perMovies}
+						perTv={value.perTv}
+						lang={value.lang}
+					/>
+				</DetailPageShell>
+			)}
+		/>
 	);
 });
+
+export const head: DocumentHead = {
+	title: "Moviestracker",
+	meta: [
+		{
+			name: "description",
+			content: "Person Details",
+		},
+	],
+};

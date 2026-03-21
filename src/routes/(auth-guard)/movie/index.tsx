@@ -1,9 +1,14 @@
 import { component$, Resource, useResource$ } from "@builder.io/qwik";
 
 import type { DocumentHead } from "@builder.io/qwik-city";
-import { HiXCircleSolid } from "@qwikest/icons/heroicons";
+import { QuickFilterStrip } from "~/components/discovery/quick-filter-strip";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
+import {
+	ErrorState,
+	LoadingState,
+	SectionHeading,
+} from "~/components/page-feedback";
 import type { MediaShort, MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { DbType, getMoviesMongo } from "~/services/mongoatlas";
@@ -15,7 +20,9 @@ import {
 	langLatestDolbyVisionMovies,
 	langLatestHDR10Movies,
 	langLatestMovies,
+	langQuickFilters,
 	langTrendingMovies,
+	langSwipeToBrowse,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
@@ -78,16 +85,41 @@ export default component$(() => {
 	return (
 		<Resource
 			value={useMovies}
-			onPending={() => <span class="loading loading-spinner" />}
-			onRejected={(error) => (
-				<div role="alert" class="alert alert-error">
-					<HiXCircleSolid class="h-6 w-6" />
-					<span>{error.message}</span>
-				</div>
+			onPending={() => (
+				<LoadingState
+					title="Loading movie collections"
+					description="We are fetching trending releases and curated catalog sections."
+					compact={true}
+				/>
+			)}
+			onRejected={() => (
+				<ErrorState
+					title="Movie collections are unavailable"
+					description="Please refresh the page or try again later."
+					compact={true}
+				/>
 			)}
 			onResolved={(value) => (
-				<div class="animate-fadeIn">
+				<div class="page-enter space-y-6">
+					<SectionHeading eyebrow="Movies" title="Browse movie collections" />
+					<QuickFilterStrip
+						label={langQuickFilters(lang)}
+						items={[
+							{ active: true, href: "#latest-movies", label: langLatestMovies(lang) },
+							{ href: "#hdr10-movies", label: langLatestHDR10Movies(lang) },
+							{
+								href: "#dolby-vision-movies",
+								label: langLatestDolbyVisionMovies(lang),
+							},
+							{
+								href: "#trending-movies",
+								label: langTrendingMovies(lang),
+							},
+						]}
+					/>
 					<MediaCarousel
+						hintLabel={langSwipeToBrowse(lang)}
+						sectionId="latest-movies"
 						title={langLatestMovies(lang)}
 						type={MediaType.Movie}
 						category="updated"
@@ -95,7 +127,10 @@ export default component$(() => {
 					>
 						{value.torMovies.map((m) => (
 							<div class="carousel-item" key={m.id}>
-								<a href={paths.media(MediaType.Movie, m.id, lang)}>
+								<a
+									href={paths.media(MediaType.Movie, m.id, lang)}
+									class="media-card-link"
+								>
 									<MediaCard
 										title={m.title ? m.title : ""}
 										width={500}
@@ -111,6 +146,8 @@ export default component$(() => {
 					</MediaCarousel>
 
 					<MediaCarousel
+						hintLabel={langSwipeToBrowse(lang)}
+						sectionId="hdr10-movies"
 						title={langLatestHDR10Movies(lang)}
 						type={MediaType.Movie}
 						category="hdr10"
@@ -118,7 +155,10 @@ export default component$(() => {
 					>
 						{value.hdrMovies.map((m) => (
 							<div class="carousel-item" key={m.id}>
-								<a href={paths.media(MediaType.Movie, m.id, lang)}>
+								<a
+									href={paths.media(MediaType.Movie, m.id, lang)}
+									class="media-card-link"
+								>
 									<MediaCard
 										title={m.title ? m.title : ""}
 										width={500}
@@ -134,6 +174,8 @@ export default component$(() => {
 					</MediaCarousel>
 
 					<MediaCarousel
+						hintLabel={langSwipeToBrowse(lang)}
+						sectionId="dolby-vision-movies"
 						title={langLatestDolbyVisionMovies(lang)}
 						type={MediaType.Movie}
 						category="dolbyvision"
@@ -141,7 +183,10 @@ export default component$(() => {
 					>
 						{value.dolbyMovies.map((m) => (
 							<div class="carousel-item" key={m.id}>
-								<a href={paths.media(MediaType.Movie, m.id, lang)}>
+								<a
+									href={paths.media(MediaType.Movie, m.id, lang)}
+									class="media-card-link"
+								>
 									<MediaCard
 										title={m.title ? m.title : ""}
 										width={500}
@@ -157,6 +202,8 @@ export default component$(() => {
 					</MediaCarousel>
 
 					<MediaCarousel
+						hintLabel={langSwipeToBrowse(lang)}
+						sectionId="trending-movies"
 						title={langTrendingMovies(lang)}
 						type={MediaType.Movie}
 						category="trending"
@@ -164,7 +211,10 @@ export default component$(() => {
 					>
 						{value.movies.map((m) => (
 							<div class="carousel-item" key={m.id}>
-								<a href={paths.media(MediaType.Movie, m.id, lang)}>
+								<a
+									href={paths.media(MediaType.Movie, m.id, lang)}
+									class="media-card-link"
+								>
 									<MediaCard
 										title={m.title ? m.title : ""}
 										width={500}

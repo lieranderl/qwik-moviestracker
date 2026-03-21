@@ -138,7 +138,7 @@ export default component$(() => {
 	});
 
 	return (
-		<div class="animate-fadeIn container mx-auto px-4 pt-16 pb-10">
+		<div class="page-enter container mx-auto px-4 pt-4 pb-10">
 			<MediaGrid
 				title={categoryToTitle(
 					resource.value.category,
@@ -151,6 +151,7 @@ export default component$(() => {
 						<a
 							href={paths.media(MediaType.Movie, m.id, resource.value.lang)}
 							key={m.id}
+							class="media-card-link block h-full"
 						>
 							<MediaCard
 								title={m.title ? m.title : ""}
@@ -160,6 +161,7 @@ export default component$(() => {
 								picfile={m.poster_path}
 								isPerson={false}
 								isHorizontal={false}
+								layout="grid"
 							/>
 						</a>
 					))}

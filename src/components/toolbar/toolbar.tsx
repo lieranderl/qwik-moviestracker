@@ -12,10 +12,13 @@ export type ToolbarProps = {
 };
 export const Toolbar = component$<ToolbarProps>(({ lang }) => {
 	return (
-		<nav class="bg-base-100/85 border-base-200/70 text-base-content fixed top-0 left-0 z-50 w-full border-b backdrop-blur-md">
+		<nav
+			aria-label="Primary navigation"
+			class="toolbar-shell bg-base-100/85 border-base-200/70 text-base-content fixed top-0 left-0 z-50 w-full border-b backdrop-blur-md"
+		>
 			<div class="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 md:px-6">
-				<a href={paths.index(lang)} class="flex items-center gap-2">
-					<div class="bg-base-200 rounded-box p-1.5 text-2xl">
+				<a href={paths.index(lang)} class="group flex items-center gap-2">
+					<div class="bg-base-200 rounded-box card-hover p-1.5 text-2xl transition-colors duration-200 group-hover:bg-base-200/90">
 						<HiFilmOutline />
 					</div>
 					<span class="self-center text-xl font-bold whitespace-nowrap">
@@ -29,7 +32,7 @@ export const Toolbar = component$<ToolbarProps>(({ lang }) => {
 					</ul>
 
 					<div class="flex items-center gap-2">
-						<div class="rounded-btn btn btn-ghost btn-square justify-center">
+						<div class="rounded-btn btn btn-ghost btn-square card-hover justify-center">
 							<ThemeToggle
 								themeStorageKey="themePref"
 								textSize="text-xl"

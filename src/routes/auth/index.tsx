@@ -4,7 +4,7 @@ import { LoginButton } from "~/components/login-button";
 
 export default component$(() => {
   return (
-    <div class="bg-base-100 relative min-h-screen overflow-hidden">
+    <div class="bg-base-100 page-enter relative min-h-screen overflow-hidden">
       <div
         class="pointer-events-none absolute inset-0 opacity-60"
         style={{
@@ -20,9 +20,9 @@ export default component$(() => {
       </div>
 
       <div class="relative z-10 flex min-h-screen flex-col">
-        <header class="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-6">
+        <header class="section-reveal mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-6">
           <div class="flex items-center gap-3">
-            <div class="border-base-300/70 bg-base-100/85 rounded-2xl border p-2 shadow-sm backdrop-blur-sm">
+            <div class="border-base-300/70 bg-base-100/85 card-hover rounded-2xl border p-2 shadow-sm backdrop-blur-sm">
               <HiFilmOutline class="text-primary text-xl" />
             </div>
             <span class="text-base-content text-lg font-bold tracking-tight">
@@ -34,26 +34,29 @@ export default component$(() => {
           </span>
         </header>
 
-        <main class="mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 gap-10 px-6 pb-10 lg:grid-cols-[1.18fr_0.82fr] lg:items-center lg:gap-16">
+        <main
+          id="main-content"
+          class="mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 gap-10 px-6 pb-10 lg:grid-cols-[1.18fr_0.82fr] lg:items-center lg:gap-16"
+        >
           <section class="space-y-7">
-            <div class="badge bg-base-200/80 h-9 rounded-xl border-0 px-4 text-xs font-semibold tracking-[0.08em] uppercase">
+            <div class="section-reveal badge bg-base-200/80 h-9 rounded-xl border-0 px-4 text-xs font-semibold tracking-[0.08em] uppercase">
               Private movie hub
             </div>
-            <h1 class="text-base-content text-4xl leading-[1.04] font-black tracking-tight md:text-6xl xl:text-7xl">
+            <h1 class="section-reveal text-base-content text-4xl leading-[1.04] font-black tracking-tight md:text-6xl xl:text-7xl" style={{ "--motion-delay": "80ms" }}>
               Track movies and TV shows
               <br class="hidden lg:block" /> with{" "}
               <span class="bg-gradient-to-r from-[#df7d63] via-[#6a8fff] to-[#2fadb6] bg-clip-text text-transparent">
                 clarity.
               </span>
             </h1>
-            <p class="text-base-content/70 max-w-2xl text-lg leading-relaxed md:text-xl">
+            <p class="section-reveal text-base-content/70 max-w-2xl text-lg leading-relaxed md:text-xl" style={{ "--motion-delay": "140ms" }}>
               A simple place to discover titles, open details, and keep your
               watchlist organized across every screen.
             </p>
-            <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <div class="section-reveal flex flex-wrap items-center gap-3 pt-2" style={{ "--motion-delay": "180ms" }}>
               <LoginButton
                 providerName="google"
-                class="h-14 rounded-2xl border-0 bg-gradient-to-r from-[#3f7df0] to-[#5f8ffc] px-7 text-base font-semibold text-white shadow-lg shadow-[#5f8ffc]/35 transition-transform duration-300 hover:-translate-y-0.5 hover:from-[#376fda] hover:to-[#4f81f0]"
+                class="h-14 rounded-2xl border-0 bg-gradient-to-r from-[#3f7df0] to-[#5f8ffc] px-7 text-base font-semibold text-white shadow-lg shadow-[#5f8ffc]/35 hover:from-[#376fda] hover:to-[#4f81f0]"
               >
                 <svg
                   aria-label="Google logo"
@@ -86,7 +89,7 @@ export default component$(() => {
             </div>
           </section>
 
-          <section class="border-base-200/80 bg-base-100/86 shadow-base-content/7 mx-auto w-full max-w-md rounded-3xl border p-6 shadow-2xl backdrop-blur-md sm:p-7">
+          <section class="section-reveal border-base-200/80 bg-base-100/86 shadow-base-content/7 mx-auto w-full max-w-md rounded-3xl border p-6 shadow-2xl backdrop-blur-md sm:p-7" style={{ "--motion-delay": "120ms" }}>
             <div class="mb-6 flex items-center justify-between">
               <div class="text-base-content text-lg font-bold tracking-tight">
                 Why people use it
@@ -97,7 +100,7 @@ export default component$(() => {
             </div>
 
             <div class="grid gap-4 text-sm">
-              <article class="border-base-200 bg-base-200/45 rounded-2xl border p-4">
+              <article class="card-hover border-base-200 bg-base-200/45 rounded-2xl border p-4">
                 <div class="mb-2 flex items-center gap-3">
                   <span class="grid h-9 w-9 place-items-center rounded-xl bg-[#72a0ff]/20 text-sm font-bold text-[#426fd8]">
                     01
@@ -111,7 +114,7 @@ export default component$(() => {
                 </p>
               </article>
 
-              <article class="border-base-200 bg-base-200/45 rounded-2xl border p-4">
+              <article class="card-hover border-base-200 bg-base-200/45 rounded-2xl border p-4">
                 <div class="mb-2 flex items-center gap-3">
                   <span class="grid h-9 w-9 place-items-center rounded-xl bg-[#f0aa78]/25 text-sm font-bold text-[#ce7242]">
                     02
@@ -125,7 +128,7 @@ export default component$(() => {
                 </p>
               </article>
 
-              <article class="border-base-200 bg-base-200/45 rounded-2xl border p-4">
+              <article class="card-hover border-base-200 bg-base-200/45 rounded-2xl border p-4">
                 <div class="mb-2 flex items-center gap-3">
                   <span class="grid h-9 w-9 place-items-center rounded-xl bg-[#6fc5cd]/25 text-sm font-bold text-[#2f939a]">
                     03
@@ -145,17 +148,7 @@ export default component$(() => {
         <footer class="border-base-200/70 bg-base-100/70 border-t backdrop-blur-sm">
           <div class="text-base-content/65 mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-4 text-sm">
             <p>© 2026 Moviestracker</p>
-            <div class="flex items-center gap-5">
-              <a href="#" class="hover:text-base-content transition-colors">
-                Terms
-              </a>
-              <a href="#" class="hover:text-base-content transition-colors">
-                Privacy
-              </a>
-              <a href="#" class="hover:text-base-content transition-colors">
-                Contact
-              </a>
-            </div>
+            <p>Private catalog access for signed-in users.</p>
           </div>
         </footer>
       </div>

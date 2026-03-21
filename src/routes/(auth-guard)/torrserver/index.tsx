@@ -15,6 +15,13 @@ import type { InferInput } from "valibot";
 import { object, pipe, string, url } from "valibot";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
+import {
+	EmptyState,
+	ErrorState,
+	LoadingState,
+	SectionHeading,
+} from "~/components/page-feedback";
+import { MediaType } from "~/services/models";
 import type { TSResult } from "~/services/models";
 import {
 	listTorrent,
@@ -23,10 +30,27 @@ import {
 } from "~/services/torrserver";
 import { useQueryParamsLoader } from "~/shared/loaders";
 import { formatYear } from "~/utils/format";
-import { langAddNewTorrServerURL, langNoResults } from "~/utils/languages";
+import {
+	langAddNewTorrServerURL,
+	langNoResults,
+	langTorrServer,
+} from "~/utils/languages";
+import { paths } from "~/utils/paths";
 
 const TORR_SERVER_LIST_KEY = "torrServerList";
 const SELECTED_TORR_SERVER_KEY = "selectedTorServer";
+
+type ConnectionState = "idle" | "connecting" | "connected" | "error";
+
+type ParsedTorrentMedia = {
+	id: number;
+	title?: string;
+	name?: string;
+	seasons?: unknown;
+	vote_average?: number;
+	release_date?: string;
+	first_air_date?: string;
+};
 
 export const torrServerSchema = object({
 	ipaddress: pipe(string(), url("Please provide a valid URL!")),
@@ -100,9 +124,64 @@ function applyServersState(
 	return nextState;
 }
 
+function parseTorrentMedia(data?: string): ParsedTorrentMedia | null {
+	if (!data) {
+		return null;
+	}
+	try {
+		const parsed = JSON.parse(data) as { movie?: ParsedTorrentMedia };
+		return parsed.movie ?? null;
+	} catch (error) {
+		console.error("Failed to parse torrent metadata", error);
+		return null;
+	}
+}
+
+function getTorrentHref(media: ParsedTorrentMedia | null, lang: string): string | null {
+	if (!media?.id) {
+		return null;
+	}
+	return media.seasons
+		? paths.media(MediaType.Tv, media.id, lang)
+		: paths.media(MediaType.Movie, media.id, lang);
+}
+
+function formatTorrentSize(size?: number): string {
+	if (!size || size <= 0) {
+		return "Unknown size";
+	}
+	const sizeInGb = size / 1024 ** 3;
+	return `${sizeInGb.toFixed(sizeInGb >= 100 ? 0 : 1)} GB`;
+}
+
+function formatStatusLabel(value?: string): string {
+	if (!value) {
+		return "";
+	}
+	return value
+		.replaceAll(/[_-]+/g, " ")
+		.trim()
+		.replace(/\s+/g, " ")
+		.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function connectionAlertClass(state: ConnectionState): string {
+	switch (state) {
+		case "connected":
+			return "alert-success";
+		case "connecting":
+			return "alert-info";
+		case "error":
+			return "alert-error";
+		default:
+			return "alert-ghost border-base-200";
+	}
+}
+
 export default component$(() => {
 	const resource = useQueryParamsLoader();
 	const toastManager = useContext(ToastManagerContext);
+	const lang = resource.value.lang;
 	const selectedTorServer = useSignal("");
 	const torrServerList = useSignal<string[]>([]);
 	const [newTorrServerForm, { Form, Field }] = useForm<torrServerForm>({
@@ -111,6 +190,11 @@ export default component$(() => {
 
 	const isCheckingTorrServer = useSignal(false);
 	const torrentsSig = useSignal([] as TSResult[]);
+	const connectionState = useSignal<ConnectionState>("idle");
+	const connectionMessage = useSignal(
+		"Add a TorrServer URL to start managing your library.",
+	);
+	const serverVersion = useSignal("");
 
 	const addTorrserver = $(async (values: torrServerForm): Promise<void> => {
 		const newServer = normalizeServer(values.ipaddress);
@@ -131,7 +215,7 @@ export default component$(() => {
 		);
 		persistServersStorage(nextState.list, nextState.selected);
 		toastManager.addToast({
-			message: `Torrserver ${newServer} has been added.`,
+			message: `TorrServer ${newServer} has been added.`,
 			type: "success",
 			autocloseTime: 5000,
 		});
@@ -159,220 +243,383 @@ export default component$(() => {
 		persistServersStorage(nextState.list, nextState.selected);
 	});
 
-	useTask$(async (ctx) => {
-		ctx.track(() => selectedTorServer.value);
+	useTask$(async ({ track }) => {
+		track(() => selectedTorServer.value);
 		torrentsSig.value = [];
+		serverVersion.value = "";
 
 		if (!selectedTorServer.value) {
+			connectionState.value = "idle";
+			connectionMessage.value =
+				torrServerList.value.length > 0
+					? "Select a saved server to inspect its library."
+					: "Add a TorrServer URL to start managing your library.";
 			return;
 		}
+
 		try {
 			isCheckingTorrServer.value = true;
+			connectionState.value = "connecting";
+			connectionMessage.value = `Connecting to ${selectedTorServer.value}...`;
+
 			const version = await torrServerEcho(selectedTorServer.value);
-			toastManager.addToast({
-				message: `Connected to server ${selectedTorServer.value} Vesion: ${version}`,
-				type: "success",
-				autocloseTime: 5000,
-			});
-			isCheckingTorrServer.value = false;
+			serverVersion.value = version;
 			torrentsSig.value = await listTorrent(selectedTorServer.value);
+
+			connectionState.value = "connected";
+			connectionMessage.value = `Connected to ${selectedTorServer.value}`;
 		} catch (error) {
 			console.error(error);
-			toastManager.addToast({
-				message: `Failed to reach TorrServer ${selectedTorServer.value}`,
-				type: "error",
-				autocloseTime: 5000,
-			});
+			connectionState.value = "error";
+			connectionMessage.value = `Failed to reach ${selectedTorServer.value}`;
+		} finally {
 			isCheckingTorrServer.value = false;
 		}
 	});
 
 	return (
-		<div class="container mx-auto px-4 pt-16">
-			<div class="my-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6">
-				<div class="col-span-2 col-start-1 md:col-start-3">
-					<Form onSubmit$={addTorrserver} class="flex items-start justify-end">
-						<Field name="ipaddress">
-							{(field, props) => (
-								<div>
-									<input
-										{...props}
-										type="text"
-										placeholder={langAddNewTorrServerURL(resource.value.lang)}
-										class="input input-bordered input-sm w-72"
-									/>
-									{field.error && (
-										<div class="text-error text-xs">{field.error}</div>
-									)}
-								</div>
-							)}
-						</Field>
-						<div class="ms-2 mb-3">
-							<button
-								type="submit"
-								disabled={newTorrServerForm.invalid}
-								class="btn btn-success btn-sm"
-							>
-								<HiPlusSolid class="text-lg" />
-							</button>
-						</div>
-					</Form>
-				</div>
+		<div class="mx-auto w-full max-w-7xl px-4 pb-10">
+			<SectionHeading eyebrow="Tools" title={langTorrServer(lang)} />
+			<p class="text-base-content/70 max-w-3xl text-sm leading-relaxed md:text-base">
+				Connect a TorrServer instance, manage saved endpoints, and review the
+				current library from one focused workspace.
+			</p>
 
-				<div class="col-span-2 col-start-1 md:col-start-3">
-					<section class="my-2 flex items-center justify-end">
-						<select
-							value={selectedTorServer.value}
-							class="select select-bordered select-sm w-72"
-							onChange$={(_, e) => {
-								selectedTorServer.value = normalizeServer(e.value);
-								persistServersStorage(
-									torrServerList.value,
-									selectedTorServer.value,
-								);
-							}}
-						>
-							{torrServerList.value.length === 0 && (
-								<option value="">No TorrServer added</option>
-							)}
-							{torrServerList.value.map((item) => (
-								<option value={item} key={item}>
-									{item}
-								</option>
-							))}
-						</select>
-						<div class="ms-2">
-							<button
-								type="button"
-								disabled={!selectedTorServer.value}
-								class="btn btn-error btn-sm"
-								onClick$={() => {
-									const currentServer = selectedTorServer.value;
-									if (!currentServer) {
-										return;
-									}
-									const nextList = torrServerList.value.filter(
-										(server) => server !== currentServer,
-									);
-									if (nextList.length !== torrServerList.value.length) {
-										const nextState = applyServersState(
-											nextList,
-											nextList[0] || "",
-											torrServerList,
-											selectedTorServer,
-										);
-										persistServersStorage(nextState.list, nextState.selected);
-										toastManager.addToast({
-											message: `Torrserver ${currentServer} has been deleted.`,
-											type: "success",
-											autocloseTime: 5000,
-										});
-									}
-								}}
-							>
-								<HiMinusSolid class="text-lg" />
-							</button>
-						</div>
-					</section>
-				</div>
-			</div>
-			<section>
-				{isCheckingTorrServer.value && (
-					<span class="loading loading-spinner loading-lg" />
-				)}
-				<MediaGrid title={""}>
-					{torrentsSig.value.length > 0 &&
-						torrentsSig.value.map((t) => {
-							if (!t.data) {
-								return null;
-							}
-							const m = JSON.parse(t.data);
-							return (
-								<div key={t.hash} class="indicator relative">
-									<a
-										href={`magnet:?xt=urn:btih:${t.hash}`}
-										target="_blank"
-										class="btn btn-circle btn-info btn-sm absolute top-[0.85rem] left-1 z-10 scale-[85%] transition-transform duration-300 ease-in-out hover:scale-[105%]"
-										rel="noreferrer"
+			<section class="card border-base-200 bg-base-100/90 mt-6 border shadow-sm backdrop-blur">
+				<div class="card-body gap-6">
+					<div class="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.85fr)]">
+						<div class="space-y-5">
+							<div class="space-y-1">
+								<h2 class="card-title text-xl">Connection workspace</h2>
+								<p class="text-base-content/70 text-sm">
+									Add a new endpoint, switch between saved servers, and keep the
+									active library in view below.
+								</p>
+							</div>
+
+							<Form onSubmit$={addTorrserver} class="space-y-2">
+								<label class="label pt-0" for="torrserver-url">
+									<span class="label-text font-medium">Add TorrServer URL</span>
+								</label>
+								<Field name="ipaddress">
+									{(field, props) => (
+										<div class="space-y-2">
+											<div class="join w-full">
+												<input
+													{...props}
+													id="torrserver-url"
+													type="url"
+													placeholder={langAddNewTorrServerURL(lang)}
+													class="input input-bordered join-item w-full"
+												/>
+												<button
+													type="submit"
+													disabled={newTorrServerForm.invalid}
+													class="btn btn-primary join-item w-32 shrink-0 justify-center"
+												>
+													<HiPlusSolid class="text-lg" />
+													Add
+												</button>
+											</div>
+											{field.error && (
+												<p class="text-error text-xs">{field.error}</p>
+											)}
+										</div>
+									)}
+								</Field>
+							</Form>
+
+							<div class="space-y-2">
+								<label class="label pt-0" for="active-torrserver">
+									<span class="label-text font-medium">Active server</span>
+								</label>
+								<div class="join w-full">
+									<select
+										id="active-torrserver"
+										value={selectedTorServer.value}
+										class="select select-bordered join-item w-full"
+										onChange$={(_, element) => {
+											selectedTorServer.value = normalizeServer(element.value);
+											persistServersStorage(
+												torrServerList.value,
+												selectedTorServer.value,
+											);
+										}}
 									>
-										<LuMagnet class="text-2xl" />
-									</a>
+										{torrServerList.value.length === 0 && (
+											<option value="">No TorrServer added</option>
+										)}
+										{torrServerList.value.map((item) => (
+											<option value={item} key={item}>
+												{item}
+											</option>
+										))}
+									</select>
 									<button
 										type="button"
-										onClick$={async () => {
-											const torrserv = selectedTorServer.value;
-											if (torrserv === "") {
-												toastManager.addToast({
-													message: "TorrServer has not been added!",
-													type: "error",
-													autocloseTime: 5000,
-												});
+										disabled={!selectedTorServer.value}
+										class="btn btn-error btn-outline join-item w-32 shrink-0 justify-center"
+										onClick$={() => {
+											const currentServer = selectedTorServer.value;
+											if (!currentServer) {
 												return;
 											}
-											try {
-												try {
-													await removeTorrent(torrserv, t.hash);
-												} catch (error) {
-													console.error(error);
-												}
-
-												toastManager.addToast({
-													message: "Torrent has been deleted!",
-													type: "success",
-													autocloseTime: 5000,
-												});
-
-												torrentsSig.value = await listTorrent(
-													selectedTorServer.value,
+											const nextList = torrServerList.value.filter(
+												(server) => server !== currentServer,
+											);
+											if (nextList.length !== torrServerList.value.length) {
+												const nextState = applyServersState(
+													nextList,
+													nextList[0] || "",
+													torrServerList,
+													selectedTorServer,
 												);
-											} catch (error) {
-												console.error(error);
-												const e = error as Error;
+												persistServersStorage(
+													nextState.list,
+													nextState.selected,
+												);
 												toastManager.addToast({
-													message: e.message || "Unable to delete torrent!",
-													type: "error",
+													message: `TorrServer ${currentServer} has been deleted.`,
+													type: "success",
 													autocloseTime: 5000,
 												});
 											}
 										}}
-										class="transition-scale btn btn-circle btn-error btn-sm absolute top-4 -right-1 z-10 scale-[90%] duration-300 ease-in-out hover:scale-[110%]"
 									>
-										<HiMinusSolid class="text-md" />
+										<HiMinusSolid class="text-lg" />
+										Remove
 									</button>
+								</div>
+								<p class="text-base-content/60 text-xs">
+									Saved locally in this browser for quick switching.
+								</p>
+							</div>
+						</div>
 
-									{m.movie && (
-										<a
-											href={
-												m.movie.seasons
-													? `/tv/${m.movie.id}`
-													: `/movie/${m.movie.id}`
-											}
-											target="_blank"
-											rel="noreferrer"
-										>
-											<MediaCard
-												title={m.movie.title || m.movie.name || t.title}
-												width={300}
-												rating={m.movie ? m.movie.vote_average : null}
-												year={
-													m.movie
-														? formatYear(
-																m.movie.release_date ?? m.movie.first_air_date,
-															)
-														: 0
-												}
-												picfile={t.poster}
-												isPerson={false}
-												isHorizontal={false}
-											/>
-										</a>
-									)}
+						<div class="space-y-4">
+							<div class="stats stats-vertical bg-base-200/45 shadow-none sm:stats-horizontal xl:stats-vertical">
+								<div class="stat py-4">
+									<div class="stat-title">Saved servers</div>
+									<div class="stat-value text-2xl">
+										{torrServerList.value.length}
+									</div>
+									<div class="stat-desc">Available in this browser</div>
+								</div>
+								<div class="stat py-4">
+									<div class="stat-title">Library items</div>
+									<div class="stat-value text-2xl">
+										{isCheckingTorrServer.value ? "..." : torrentsSig.value.length}
+									</div>
+									<div class="stat-desc">Loaded from the active server</div>
+								</div>
+								<div class="stat py-4">
+									<div class="stat-title">Server version</div>
+									<div class="stat-value truncate text-base font-semibold">
+										{serverVersion.value || "Not connected"}
+									</div>
+									<div class="stat-desc truncate">
+										{selectedTorServer.value || "No active server selected"}
+									</div>
+								</div>
+							</div>
+
+							<div
+								role="status"
+								class={`alert ${connectionAlertClass(connectionState.value)}`}
+							>
+								<div class="space-y-1">
+									<p class="font-semibold">
+										{connectionState.value === "connected"
+											? "Connection healthy"
+											: connectionState.value === "connecting"
+												? "Checking server"
+												: connectionState.value === "error"
+													? "Connection failed"
+													: "Waiting for a server"}
+									</p>
+									<p class="text-sm">{connectionMessage.value}</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="mt-8">
+				{isCheckingTorrServer.value ? (
+					<LoadingState
+						title="Syncing TorrServer library"
+						description="Fetching the current queue and matching media details."
+						compact={true}
+					/>
+				) : torrServerList.value.length === 0 ? (
+					<EmptyState
+						title="No TorrServer configured yet"
+						description="Add your TorrServer URL above to connect and view the library."
+						compact={true}
+					/>
+				) : connectionState.value === "error" ? (
+					<ErrorState
+						title="Unable to load the selected server"
+						description="Check the URL, make sure TorrServer is online, and try again."
+						compact={true}
+					/>
+				) : !selectedTorServer.value ? (
+					<EmptyState
+						title="Select a saved server"
+						description="Choose one of your saved endpoints to load its active library."
+						compact={true}
+					/>
+				) : torrentsSig.value.length === 0 ? (
+					<EmptyState
+						title={langNoResults(lang)}
+						description="Connected successfully, but this TorrServer instance does not have any torrents yet."
+						compact={true}
+					/>
+				) : (
+					<MediaGrid title={`Library (${torrentsSig.value.length})`}>
+						{torrentsSig.value.map((torrent) => {
+							const media = parseTorrentMedia(torrent.data);
+							const href = getTorrentHref(media, lang);
+							const title =
+								media?.title || media?.name || torrent.title || torrent.name;
+							const year = media
+								? formatYear(media.release_date ?? media.first_air_date)
+								: 0;
+							const rating = media?.vote_average ?? null;
+							const mediaKind = media?.seasons
+								? "Series"
+								: media
+									? "Movie"
+									: "Torrent";
+							const statusLabel = formatStatusLabel(torrent.stat_string);
+
+							const actionCard = (
+								<div key={torrent.hash} class="card border-base-200 bg-base-100 min-w-0 shadow-sm">
+									<div class="card-body gap-4 p-3 sm:p-4">
+										<div class="flex flex-wrap gap-2">
+											<span class="badge badge-ghost badge-sm">{mediaKind}</span>
+											{statusLabel && (
+												<span class="badge badge-outline badge-sm h-auto px-3 py-2 text-center leading-tight whitespace-normal">
+													{statusLabel}
+												</span>
+											)}
+											<span class="badge badge-outline badge-sm h-auto px-3 py-2 leading-tight">
+												{formatTorrentSize(torrent.torrent_size)}
+											</span>
+											{typeof torrent.connected_seeders === "number" && (
+												<span class="badge badge-success badge-sm h-auto px-3 py-2 leading-tight">
+													{torrent.connected_seeders} seeders
+												</span>
+											)}
+										</div>
+
+										<div class="join w-full">
+											<a
+												href={`magnet:?xt=urn:btih:${torrent.hash}`}
+												target="_blank"
+												class="btn btn-info btn-outline btn-sm join-item min-w-0 flex-1 justify-center"
+												rel="noreferrer"
+											>
+												<LuMagnet class="text-base" />
+												<span>Magnet</span>
+											</a>
+											<button
+												type="button"
+												onClick$={async () => {
+													const torrserv = selectedTorServer.value;
+													if (torrserv === "") {
+														toastManager.addToast({
+															message: "TorrServer has not been added!",
+															type: "error",
+															autocloseTime: 5000,
+														});
+														return;
+													}
+													try {
+														try {
+															await removeTorrent(torrserv, torrent.hash);
+														} catch (error) {
+															console.error(error);
+														}
+
+														toastManager.addToast({
+															message: "Torrent has been deleted!",
+															type: "success",
+															autocloseTime: 5000,
+														});
+
+														torrentsSig.value = await listTorrent(
+															selectedTorServer.value,
+														);
+													} catch (error) {
+														console.error(error);
+														const e = error as Error;
+														toastManager.addToast({
+															message:
+																e.message || "Unable to delete torrent!",
+															type: "error",
+															autocloseTime: 5000,
+														});
+													}
+												}}
+												class="btn btn-error btn-outline btn-sm join-item min-w-0 flex-1 justify-center"
+											>
+												<HiMinusSolid class="text-base" />
+												<span>Remove</span>
+											</button>
+										</div>
+
+										{href ? (
+											<a
+												href={href}
+												target="_blank"
+												class="block min-w-0"
+												rel="noreferrer"
+											>
+												<MediaCard
+													title={title}
+													width={300}
+													rating={rating}
+													year={year}
+													picfile={torrent.poster}
+													isPerson={false}
+													isHorizontal={false}
+													layout="grid"
+												/>
+											</a>
+										) : (
+											<div class="block min-w-0">
+												<MediaCard
+													title={title}
+													width={300}
+													rating={rating}
+													year={year}
+													picfile={torrent.poster}
+													isPerson={false}
+													isHorizontal={false}
+													layout="grid"
+												/>
+											</div>
+										)}
+
+										<div class="rounded-box bg-base-200/50 text-base-content/65 space-y-1 px-3 py-2 text-xs leading-relaxed">
+											<p class="line-clamp-2 break-words">
+												{torrent.name || torrent.title}
+											</p>
+											{typeof torrent.total_peers === "number" && (
+												<p class="text-base-content/55">
+													{torrent.total_peers} peers total
+												</p>
+											)}
+										</div>
+									</div>
 								</div>
 							);
+
+							return actionCard;
 						})}
-				</MediaGrid>
-				{torrentsSig.value.length === 0 && !isCheckingTorrServer.value && (
-					<div>{langNoResults(resource.value.lang)}</div>
+					</MediaGrid>
 				)}
 			</section>
 		</div>

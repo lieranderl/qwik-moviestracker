@@ -13,7 +13,8 @@ export const LoginButton = component$<LoginButtonProps>((props) => {
   return (
     <button
       {...buttonProps}
-      class={["btn border-[#e5e5e5] bg-white text-black", className]}
+      aria-busy={isloading.value}
+      class={["btn card-hover border-[#e5e5e5] bg-white text-black", className]}
       type="button"
       disabled={isloading.value || !!buttonProps.disabled}
       onClick$={$(() => {
@@ -25,9 +26,9 @@ export const LoginButton = component$<LoginButtonProps>((props) => {
       })}
     >
       {isloading.value && (
-        <div class="flex items-center gap-2">
+        <div aria-live="polite" class="flex items-center gap-2">
           <span class="loading" />
-          <div>Logging in...</div>
+          <div>Signing in...</div>
         </div>
       )}
       {!isloading.value && (
@@ -36,7 +37,7 @@ export const LoginButton = component$<LoginButtonProps>((props) => {
             <Slot />
           </div>
           <div>
-            Login with <span class="capitalize">{providerName}</span>
+            Sign In with <span class="capitalize">{providerName}</span>
           </div>
         </div>
       )}

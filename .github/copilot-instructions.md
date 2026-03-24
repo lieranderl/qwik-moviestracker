@@ -1,20 +1,24 @@
 # Copilot Instructions
 
-See the root [`AGENTS.md`](../AGENTS.md) for the full project guidance.
+Start with [AGENTS.md](../AGENTS.md). It is the root contract for agent work in
+this repository.
 
-When working in this repository:
+Working defaults:
 
-- Edit `src/**`, `public/**`, and config files, not generated `dist/**` or
-  `server/**`.
-- Preserve the auth boundary in `src/routes/(auth-guard)/`.
-- Preserve the `lang` query-param flow unless the task explicitly changes it.
-- Keep external API logic in `src/services/**`.
-- Treat env values and `.env` contents as sensitive.
-- Prefer Bun commands.
+- use daisyUI as the primary UI vocabulary
+- daisyUI reference: https://daisyui.com/components/
+- edit `src/**`, `public/**`, and root config files
+- treat `dist/**` and `server/**` as generated output
+- preserve auth boundaries and the `lang` query parameter flow
+- keep external API logic in `src/services/**`
+- prefer Bun commands
 
-Minimum verification before finishing:
+Verification baseline for code changes:
 
-1. `bun run build.types`
-2. `bun run lint`
+1. run the closest targeted test when one exists
+2. `bun run build.types`
+3. `bun run lint`
+4. add `bun run build` for routing, runtime, auth, env, or deployment changes
 
-Run `bun run build` for auth, routing, SSR/runtime, env, or deployment changes.
+If you discover stale guidance, update the corresponding Markdown file in the
+same task instead of leaving it outdated.

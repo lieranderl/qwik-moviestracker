@@ -1,117 +1,60 @@
-# Qwik City App ⚡️
+# Moviestracker
 
-- [Qwik Docs](https://qwik.builder.io/)
-- [Discord](https://qwik.builder.io/chat)
-- [Qwik GitHub](https://github.com/BuilderIO/qwik)
-- [@QwikDev](https://twitter.com/QwikDev)
-- [Vite](https://vitejs.dev/)
+Private Qwik City app for browsing movies and TV, opening detailed media pages,
+authenticating with Google, reading curated/latest items from MongoDB Atlas,
+and managing a connected TorrServer library.
 
----
+## Stack
 
-## Project Structure
+- Qwik + Qwik City
+- Bun SSR runtime
+- Auth.js with Google provider
+- MongoDB Atlas for auth/session and curated content
+- TMDB for media discovery
+- daisyUI + Tailwind CSS v4 + Catppuccin themes
+- Docker + Google Cloud Build / Cloud Run for the practical deploy path
 
-This project is using Qwik with [QwikCity](https://qwik.builder.io/qwikcity/overview/). QwikCity is just an extra set of tools on top of Qwik to make it easier to build a full site, including directory-based routing, layouts, and more.
+## App Areas
 
-Inside your project, you'll see the following directory structure:
-
-```
-├── public/
-│   └── ...
-└── src/
-    ├── components/
-    │   └── ...
-    └── routes/
-        └── ...
-```
-
-- `src/routes`: Provides the directory-based routing, which can include a hierarchy of `layout.tsx` layout files, and an `index.tsx` file as the page. Additionally, `index.ts` files are endpoints. Please see the [routing docs](https://qwik.builder.io/qwikcity/routing/overview/) for more info.
-
-- `src/components`: Recommended directory for components.
-
-- `public`: Any static assets, like images, can be placed in the public directory. Please see the [Vite public directory](https://vitejs.dev/guide/assets.html#the-public-directory) for more info.
-
-## Add Integrations and deployment
-
-Use the `bun qwik add` command to add additional integrations. Some examples of integrations includes: Cloudflare, Netlify or Express Server, and the [Static Site Generator (SSG)](https://qwik.builder.io/qwikcity/guides/static-site-generation/).
-
-```shell
-bun qwik add # or `bun qwik add`
-```
+- `/auth` - login / landing page
+- `/` - authenticated home dashboard
+- `/movie/**` - movie discovery and detail pages
+- `/tv/**` - TV discovery and detail pages
+- `/person/**` - person detail pages
+- `/search` - GET-based discovery search
+- `/torrserver` - TorrServer connection and library management
 
 ## Development
 
-Development mode uses [Vite's development server](https://vitejs.dev/). The `dev` command will server-side render (SSR) the output during development.
-
-```shell
-npm start # or `bun start`
+```bash
+bun install
+bun start
 ```
 
-> Note: during dev mode, Vite may request a significant number of `.js` files. This does not represent a Qwik production build.
+Useful commands:
 
-## Preview
-
-The preview command will create a production build of the client modules, a production build of `src/entry.preview.tsx`, and run a local server. The preview server is only for convenience to preview a production build locally and should not be used as a production server.
-
-```shell
-bun preview # or `bun preview`
+```bash
+bun test
+bun run build.types
+bun run lint
+bun run build
 ```
 
-## Production
+## Deployment Notes
 
-The production build will generate client and server modules by running both client and server build commands. The build command will use Typescript to run a type check on the source code.
+- Preferred runtime output: Bun SSR via `src/entry.bun.ts`
+- Build/deploy shape: `Dockerfile` + `cloudbuild.yaml`
+- `adapters/cloud-run/vite.config.ts` exists, but it is not the current source
+  of truth for deployment
 
-```shell
-bun build # or `bun build`
-```
+## AI Agent Docs
 
-## Google Cloud Run Server
+Project-specific agent guidance lives in:
 
-This app has a minimal [Cloud Run server](https://cloud.google.com/run) implementation. After running a full build, deploy your app with:
+- [AGENTS.md](./AGENTS.md) - root operating contract
+- [.agent/skills/qwik-moviestracker/SKILL.md](./.agent/skills/qwik-moviestracker/SKILL.md) - project-local skill entrypoint
+- [.github/copilot-instructions.md](./.github/copilot-instructions.md) - lightweight GitHub Copilot guidance
 
-```
-bun deploy
-```
-
-## Google Cloud Run Server
-
-This app has a minimal [Cloud Run server](https://cloud.google.com/run) implementation. After running a full build, deploy your app with:
-
-```
-bun deploy
-```
-
-## Bun Server
-
-This app has a minimal [Bun server](https://bun.sh/docs/api/http) implementation. After running a full build, you can preview the build using the command:
-
-```
-bun run serve
-```
-
-Then visit [http://localhost:3000/](http://localhost:3000/)
-
-## Google Cloud Run Server
-
-This app has a minimal [Cloud Run server](https://cloud.google.com/run) implementation. After running a full build, deploy your app with:
-
-```
-bun deploy
-```
-
-## Bun Server
-
-This app has a minimal [Bun server](https://bun.sh/docs/api/http) implementation. After running a full build, you can preview the build using the command:
-
-```
-bun run serve
-```
-
-Then visit [http://localhost:3000/](http://localhost:3000/)
-
-## Google Cloud Run Server
-
-This app has a minimal [Cloud Run server](https://cloud.google.com/run) implementation. After running a full build, deploy your app with:
-
-```
-bun deploy
-```
+The docs are intentionally layered. Agents should update the corresponding
+Markdown file whenever they discover stale guidance, changed behavior, new
+verification steps, or new team preferences.

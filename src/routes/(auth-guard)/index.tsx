@@ -107,9 +107,22 @@ export default component$(() => {
     );
   }
 
+  const featuredMovie =
+    value.movies[(new Date().getDate() - 1) % value.movies.length];
+  const homeBadges = [
+    `${value.torMovies.length} latest`,
+    `${value.movies.length} trending movies`,
+    `${value.tv.length} trending series`,
+  ];
+
   return (
     <div class="space-y-6">
-      <SectionHeading eyebrow="Home" title="Your movie and series dashboard" />
+      <SectionHeading
+        eyebrow="Home"
+        title="Your movie and series dashboard"
+        description="Open a featured release, jump back into your last watched title, or move straight into the latest and trending collections without leaving the dashboard."
+        badges={homeBadges}
+      />
       <QuickFilterStrip
         label={langQuickFilters(lang)}
         items={[
@@ -127,41 +140,22 @@ export default component$(() => {
           { href: "#trending-tv", label: langTrengingTVShows(lang) },
         ]}
       />
-      {value.movies.length > 0 && (
+      {value.movies.length > 0 && featuredMovie && (
         <FeaturedSpotlight
           ctaLabel={langOpenDetails(lang)}
           description={
-            value.movies[(new Date().getDate() - 1) % value.movies.length]
-              .overview ||
+            featuredMovie.overview ||
             "Open the latest featured title and jump straight into cast, ratings, and related picks."
           }
-          href={paths.media(
-            MediaType.Movie,
-            value.movies[(new Date().getDate() - 1) % value.movies.length].id,
-            lang,
-          )}
-          imagePath={
-            value.movies[(new Date().getDate() - 1) % value.movies.length]
-              .backdrop_path
-          }
+          href={paths.media(MediaType.Movie, featuredMovie.id, lang)}
+          imagePath={featuredMovie.backdrop_path}
           meta={[
             langTrendingMovies(lang),
-            String(
-              formatYear(
-                value.movies[(new Date().getDate() - 1) % value.movies.length]
-                  .release_date,
-              ) || "2026",
-            ),
+            String(formatYear(featuredMovie.release_date) || "2026"),
           ]}
           overline={langFeaturedSpotlight(lang)}
-          rating={
-            value.movies[(new Date().getDate() - 1) % value.movies.length]
-              .vote_average
-          }
-          title={
-            value.movies[(new Date().getDate() - 1) % value.movies.length]
-              .title || "Featured release"
-          }
+          rating={featuredMovie.vote_average}
+          title={featuredMovie.title || "Featured release"}
         />
       )}
       <ContinueBrowsingWidget

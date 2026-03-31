@@ -41,6 +41,13 @@
 - Root shell lives in `src/root.tsx`.
 - Protected layout chrome lives in `src/routes/(auth-guard)/layout.tsx`.
 - Toolbar components live in `src/components/toolbar/**`.
+- Route-level page intros should prefer `SectionHeading` in
+  `src/components/page-feedback.tsx` before inventing page-specific hero
+  markup. It now supports `eyebrow`, `title`, `description`, and compact
+  badge lists for top-of-page context.
+- Grid-style collection sections should prefer `MediaGrid` in
+  `src/components/media-grid.tsx` for a titled header plus responsive card
+  grid, instead of open-coded route-level headings above standalone grids.
 
 ## Styling Guidance
 

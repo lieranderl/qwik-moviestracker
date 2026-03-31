@@ -17,13 +17,23 @@ export const SearchAssist = component$<SearchAssistProps>(
     recentSearchesLabel,
     searchTipsLabel,
   }) => {
+    const recentCountLabel =
+      recentSearches.length > 0
+        ? `${recentSearches.length} recent`
+        : "No recent searches";
+
     return (
       <section class="section-reveal grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <div class="card rounded-box border-base-200 bg-base-100/88 border shadow-sm backdrop-blur">
-          <div class="card-body gap-3">
-            <div class="flex items-center gap-2 text-sm font-semibold">
-              <HiClockSolid class="text-primary h-4 w-4" />
-              <span>{recentSearchesLabel}</span>
+          <div class="card-body gap-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-2 text-sm font-semibold">
+                <HiClockSolid class="text-primary h-4 w-4" />
+                <span>{recentSearchesLabel}</span>
+              </div>
+              <span class="badge border-base-300/80 bg-base-200/65 text-base-content/72 rounded-full px-3 py-3 font-medium shadow-none">
+                {recentCountLabel}
+              </span>
             </div>
             <div class="flex flex-wrap gap-2">
               {recentSearches.length > 0 ? (
@@ -37,17 +47,25 @@ export const SearchAssist = component$<SearchAssistProps>(
                   </a>
                 ))
               ) : (
-                <span class="text-base-content/62 text-sm">{emptyState}</span>
+                <div class="rounded-box border-base-200 bg-base-200/35 text-base-content/62 w-full border p-3 text-sm leading-relaxed">
+                  {emptyState}
+                </div>
               )}
             </div>
           </div>
         </div>
 
         <div class="card rounded-box border-base-200 bg-base-100/88 border shadow-sm backdrop-blur">
-          <div class="card-body gap-3">
-            <div class="flex items-center gap-2 text-sm font-semibold">
-              <HiSparklesSolid class="text-primary h-4 w-4" />
-              <span>{searchTipsLabel}</span>
+          <div class="card-body gap-4">
+            <div class="space-y-2">
+              <div class="flex items-center gap-2 text-sm font-semibold">
+                <HiSparklesSolid class="text-primary h-4 w-4" />
+                <span>{searchTipsLabel}</span>
+              </div>
+              <p class="text-base-content/65 text-sm leading-relaxed">
+                Jump back into a discovery route when you want broader browsing
+                instead of a direct query.
+              </p>
             </div>
             <div class="flex flex-wrap gap-2">
               {categoryLinks.map((link) => (

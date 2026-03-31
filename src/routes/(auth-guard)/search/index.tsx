@@ -94,6 +94,8 @@ export default component$(() => {
       <SectionHeading
         eyebrow="Discovery"
         title={langSearch(resource.value.lang)}
+        description="Search movies, TV series, and people with a plain GET flow that keeps the current language in the URL and restores recent activity from browser storage."
+        badges={["Movies", "TV series", "People"]}
       />
 
       <section class="card border-base-200 bg-base-100/90 mb-6 border shadow-sm backdrop-blur">
@@ -190,6 +192,9 @@ export default component$(() => {
           if (movies.total_results > 0) {
             return (
               <MediaGrid
+                description="Results combine movies, TV series, and people in one grid so you can jump straight into the right detail page."
+                eyebrow="Results"
+                headerBadge={`${movies.total_results} matches`}
                 title={`${langSearchResults(resource.value.lang)} (${movies.total_results})`}
               >
                 {movies.results.map((m) => (

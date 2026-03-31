@@ -51,7 +51,15 @@ export default component$(() => {
   const resource = useContentLoader();
   return (
     <div class="space-y-6">
-      <SectionHeading eyebrow="TV Shows" title="Browse TV collections" />
+      <SectionHeading
+        eyebrow="TV Shows"
+        title="Browse TV collections"
+        description="Switch between trending series and top-rated shows without losing your current language or discovery context."
+        badges={[
+          `${resource.value.tvtrend.length} trending`,
+          `${resource.value.tvtoprated.length} top rated`,
+        ]}
+      />
       <QuickFilterStrip
         label={langQuickFilters(resource.value.lang)}
         items={[

@@ -141,6 +141,7 @@ export default component$(() => {
   return (
     <div class="pt-4 pb-10">
       <MediaGrid
+        eyebrow="Catalog"
         title={categoryToTitle(
           resource.value.category,
           MediaType.Movie,

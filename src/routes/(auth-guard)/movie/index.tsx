@@ -113,7 +113,16 @@ export default component$(() => {
 
   return (
     <div class="space-y-6">
-      <SectionHeading eyebrow="Movies" title="Browse movie collections" />
+      <SectionHeading
+        eyebrow="Movies"
+        title="Browse movie collections"
+        description="Move between the freshest catalog drops, HDR and Dolby Vision shelves, and the broader trending movie feed from one place."
+        badges={[
+          `${value.torMovies.length} latest`,
+          `${value.hdrMovies.length} HDR10`,
+          `${value.dolbyMovies.length} Dolby Vision`,
+        ]}
+      />
       <QuickFilterStrip
         label={langQuickFilters(lang)}
         items={[

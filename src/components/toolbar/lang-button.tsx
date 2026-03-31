@@ -1,29 +1,29 @@
 import { $, component$ } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
+import { writeStorageString } from "~/utils/browser";
 
 export const LangButton = component$(() => {
   const loc = useLocation();
   const currentLang = loc.url.searchParams.get("lang") || "en-US";
+  const nextLang = currentLang === "en-US" ? "ru-RU" : "en-US";
+  const nextQueryParams = new URLSearchParams(loc.url.searchParams);
+  nextQueryParams.set("lang", nextLang);
+  const nextHref = `${loc.url.pathname}?${nextQueryParams.toString()}`;
 
-  const toggleLang = $(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const nextLang = currentLang === "en-US" ? "ru-RU" : "en-US";
-
-    queryParams.set("lang", nextLang);
-    localStorage.setItem("lang", nextLang);
-    window.location.href = `${window.location.pathname}?${queryParams.toString()}`;
+  const persistLangPreference = $(() => {
+    writeStorageString("lang", nextLang);
   });
 
   return (
     <li>
-      <button
-        type="button"
-        onClick$={toggleLang}
+      <a
+        href={nextHref}
+        onClick$={persistLangPreference}
         class="flex items-center justify-between gap-3"
       >
         <span>Language</span>
         <span class="badge badge-outline badge-xs">{currentLang}</span>
-      </button>
+      </a>
     </li>
   );
 });

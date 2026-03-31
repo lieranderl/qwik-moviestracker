@@ -29,9 +29,10 @@ Project-local skill for working efficiently in this repository.
 ## Read In This Order
 
 1. `AGENTS.md`
-2. `references/architecture.md`
-3. `references/commands.md`
-4. `references/guardrails.md`
+2. `CLAUDE.md`
+3. `references/architecture.md`
+4. `references/commands.md`
+5. `references/guardrails.md`
 
 Only open the reference file you need for the current task after `AGENTS.md`.
 
@@ -41,10 +42,14 @@ Only open the reference file you need for the current task after `AGENTS.md`.
 2. Keep auth logic centralized.
 3. Preserve the `lang` query-param flow unless the task changes that behavior.
 4. Keep external API logic in `src/services/**`.
-5. Verify with type-check and lint before claiming completion.
+5. Follow Qwik / Qwik City 1.x patterns and daisyUI 5 guidance from
+   `references/ui-system.md` for UI work.
+6. Verify with type-check and lint before claiming completion.
 
 ## Reference Index
 
 - `references/architecture.md` - Route map, service map, and key entry points
+- `references/ui-system.md` - UI vocabulary and styling conventions
 - `references/commands.md` - Bun commands and verification expectations
 - `references/guardrails.md` - Secrets, generated files, deployment notes, and sharp edges
+- `references/maintenance.md` - How to keep agent docs consistent

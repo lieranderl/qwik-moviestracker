@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "plansDirectory": "./plans",
+  "cleanupPeriodDays": 30,
+  "includeGitInstructions": true,
+  "enabledMcpjsonServers": ["playwright", "context7", "deepwiki"],
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash(bun run build.types)",
+      "Bash(bun run lint)",
+      "Bash(bun run build)",
+      "Bash(bun start)",
+      "Bash(bun preview)",
+      "Bash(bun run serve)",
+      "mcp__context7__*",
+      "mcp__playwright__*",
+      "mcp__deepwiki__*"
+    ],
+    "deny": ["Read(./.env)", "Read(./.env.*)", "Read(./adminSDK.json)"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-edits.mjs"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/track-verification.mjs"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/check-stop.mjs"
+          }
+        ]
+      }
+    ]
+  }
+}

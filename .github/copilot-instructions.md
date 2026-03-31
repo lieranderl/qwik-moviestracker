@@ -1,6 +1,7 @@
 # Copilot Instructions
 
-See the root [`AGENTS.md`](../AGENTS.md) for the full project guidance.
+See the root [`AGENTS.md`](../AGENTS.md) for the cross-agent contract and
+[`CLAUDE.md`](../CLAUDE.md) for Claude Code project memory.
 
 When working in this repository:
 
@@ -11,6 +12,8 @@ When working in this repository:
 - Keep external API logic in `src/services/**`.
 - Treat env values and `.env` contents as sensitive.
 - Prefer Bun commands.
+- Open only the one matching file in `references/**` for the task instead of
+  loading every project doc.
 
 Minimum verification before finishing:
 

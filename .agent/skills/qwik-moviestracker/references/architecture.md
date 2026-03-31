@@ -24,7 +24,7 @@ metadata:
 | Base Vite config | `vite.config.ts` |
 | Bun SSR entry | `src/entry.bun.ts` |
 | Auth plugin | `src/routes/plugin@auth.ts` |
-| Shared query/env loaders | `src/shared/loaders.ts` |
+| Auth-guard query/env loaders | `src/routes/(auth-guard)/layout.tsx` |
 
 ## Route Structure
 
@@ -68,8 +68,8 @@ Protected routes live under `src/routes/(auth-guard)/`.
 
 ## Behavior Notes
 
-- Language is derived from the `lang` query parameter through
-  `src/shared/loaders.ts`.
+- Language is derived from the `lang` query parameter through the
+  `(auth-guard)` layout loaders in `src/routes/(auth-guard)/layout.tsx`.
 - Auth redirect enforcement happens in the `(auth-guard)` layout, not each page.
 - External API logic is already centralized in services; keep it there.
 - Mongo-backed auth switches to a JWT fallback when `MONGO_URI` is absent at

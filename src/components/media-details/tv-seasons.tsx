@@ -2,6 +2,7 @@ import { component$ } from "@builder.io/qwik";
 import type { Season } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { formatYear } from "~/utils/format";
+import { showDialogById } from "~/utils/browser";
 import {
   langEpisodesCount,
   langOverview,
@@ -33,16 +34,7 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
                   key={s.id}
                   class={s.overview ? "cursor-pointer" : ""}
                   onClick$={() => {
-                    const seasonsModal = document.getElementById(
-                      `season-modal-${s.id.toString()}`,
-                    )
-                      ? (document.getElementById(
-                          `season-modal-${s.id.toString()}`,
-                        ) as HTMLDialogElement)
-                      : null;
-                    if (seasonsModal) {
-                      seasonsModal.showModal();
-                    }
+                    showDialogById(`season-modal-${s.id.toString()}`);
                   }}
                 >
                   <MediaCard

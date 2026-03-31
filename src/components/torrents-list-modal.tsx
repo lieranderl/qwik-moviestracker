@@ -4,7 +4,8 @@ import { HiChevronDownSolid } from "@qwikest/icons/heroicons";
 import { TorrentList } from "~/components/torrent-list";
 import { getTorrents } from "~/services/cloud-func-api";
 import type { MediaDetails, Season, Torrent } from "~/services/models";
-import { useQueryParamsLoader } from "~/shared/loaders";
+import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
+import { showDialogById } from "~/utils/browser";
 import { formatYear } from "~/utils/format";
 import { langSeason, langTorrents } from "~/utils/languages";
 
@@ -28,11 +29,8 @@ export const TorrentsModal = component$(
       async (name: string, year: number, isMovie: boolean) => {
         torrentsStore.torrents = null;
         torrentsStore.year = year;
-        const torrModal = document.getElementById(
-          "torrentsModal",
-        ) as HTMLDialogElement | null;
+        const torrModal = showDialogById("torrentsModal");
         if (torrModal) {
-          torrModal.showModal();
           try {
             torrentsStore.torrents = await server$(() => {
               return getTorrents({ name: name, year: year, isMovie: isMovie });

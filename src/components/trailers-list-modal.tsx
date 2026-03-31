@@ -2,6 +2,7 @@ import { component$ } from "@builder.io/qwik";
 import { Image } from "@unpic/qwik";
 import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
 import type { VideoResult } from "~/services/models";
+import { showDialogById } from "~/utils/browser";
 import { langTrailers } from "~/utils/languages";
 
 export interface TorModalPros {
@@ -17,12 +18,7 @@ export const TrailersModal = component$(({ videos }: TorModalPros) => {
         type="button"
         class="btn btn-outline btn-primary"
         onClick$={() => {
-          const trailersModal = document.getElementById("trailersModal")
-            ? (document.getElementById("trailersModal") as HTMLDialogElement)
-            : null;
-          if (trailersModal) {
-            trailersModal.showModal();
-          }
+          showDialogById("trailersModal");
         }}
       >
         {langTrailers(resource.value.lang)}

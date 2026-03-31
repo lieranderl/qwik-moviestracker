@@ -102,7 +102,7 @@ export const TvDetails = component$(
           </div>
         </section>
 
-        <section class="section-reveal card border-base-200 bg-base-100/95 mt-6 border shadow-sm">
+        <section class="section-reveal card border-base-200 bg-base-100/95 relative z-20 mt-6 border shadow-sm">
           <div class="card-body gap-4">
             <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div>
@@ -129,7 +129,7 @@ export const TvDetails = component$(
           </div>
         </section>
 
-        <section class="section-reveal card border-base-200 bg-base-100/95 mt-6 border shadow-sm">
+        <section class="section-reveal card border-base-200 bg-base-100/95 relative z-0 mt-6 border shadow-sm">
           <div class="card-body">
             <h3 class="card-title text-xl">{langOverview(lang)}</h3>
             <p class="leading-relaxed opacity-90">

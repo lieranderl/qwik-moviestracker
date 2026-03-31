@@ -73,6 +73,10 @@
 - Preserve the `lang` query parameter when adding navigation.
 - Keep authenticated shell behavior inside the auth-guard layout.
 - Avoid duplicating toasts, theme logic, or app-shell concerns inside pages.
+- When a daisyUI `dropdown` must overlap later sibling cards or sections, raise
+  the host card or section with a local stacking context such as
+  `relative z-20`; raising only the dropdown menu may not beat later sibling
+  stacking contexts.
 
 ## Typography And Motion
 

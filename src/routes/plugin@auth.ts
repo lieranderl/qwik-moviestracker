@@ -8,6 +8,7 @@ import { mongoclient } from "../utils/mongodbinit";
 
 export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
   ({ env }) => {
+    const authSecret = env.get("AUTH_SECRET")?.trim();
     const googleId = env.get("GOOGLE_ID") ?? "";
     const googleSecret = env.get("GOOGLE_SECRET") ?? "";
     const providers: Provider[] =
@@ -31,10 +32,11 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
 
     const mongo = mongoclient(env.get("MONGO_URI") ?? "");
     if (!mongo) {
-      // During SSG/build environments MONGO_URI may be intentionally absent.
-      // Return a minimal config so static generation can proceed.
+      // During CI/SSG builds the runtime auth env may be intentionally absent.
+      // Keep the build-safe fallback self-contained so SSR generation can
+      // complete without production secrets.
       return {
-        secret: env.get("AUTH_SECRET"),
+        secret: authSecret || "build-only-auth-secret",
         trustHost: true,
         session: {
           strategy: "jwt",
@@ -54,7 +56,7 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
       adapter: MongoDBAdapter(mongo, {
         databaseName: "movies",
       }) as Adapter,
-      secret: env.get("AUTH_SECRET"),
+      secret: authSecret,
       trustHost: true,
       providers,
       callbacks: {

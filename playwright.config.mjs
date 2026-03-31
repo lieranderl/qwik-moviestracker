@@ -15,7 +15,7 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   webServer: {
-    command: `bun run dev -- --host ${host} --port ${port} --force`,
+    command: `PLAYWRIGHT_AUTH_BYPASS=1 bun run dev -- --host ${host} --port ${port} --force`,
     reuseExistingServer: true,
     timeout: 120_000,
     url: `${baseURL}/auth?lang=en-US`,

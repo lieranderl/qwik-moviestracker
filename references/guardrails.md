@@ -46,6 +46,9 @@
 - Runtime auth must fail closed without a real `AUTH_SECRET`; do not allow a
   predictable placeholder secret in normal dev, preview, or deployed auth
   flows.
+- The Playwright browser suite may use a dev-only session bypass, but it must
+  stay behind an explicit server env flag plus a dedicated browser cookie.
+  Never enable that bypass by default or in production.
 - Treat deployment config as part of runtime behavior, not standalone docs.
 - Prefer shared browser helpers in `src/utils/browser.ts` for `localStorage`
   and dialog access instead of repeating raw browser-global checks.

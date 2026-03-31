@@ -44,8 +44,8 @@ First-time local browser setup:
 
 - `bunx playwright install chromium`
 - The checked-in Playwright config starts the dev server with
-  `PLAYWRIGHT_AUTH_BYPASS=1` so authenticated-shell and authenticated-detail
-  smoke tests can run against dev-only fixtures.
+  `PLAYWRIGHT_AUTH_BYPASS=1` so authenticated home, search, and detail smoke
+  tests can run against dev-only fixtures.
 
 ## GitHub Actions CI
 

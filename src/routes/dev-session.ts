@@ -3,7 +3,9 @@ import {
   MediaType,
   type ImdbRating,
   type MovieFull,
+  type MovieMongo,
   type MovieShort,
+  type TvShort,
 } from "~/services/models";
 
 export const DEV_SESSION_BYPASS_COOKIE = "moviestracker_dev_session";
@@ -85,6 +87,13 @@ type DevMovieDetailFixture = {
   imdb: ImdbRating | null;
 };
 
+type DevHomeFeedFixture = {
+  lang: string;
+  movies: MovieShort[];
+  tv: TvShort[];
+  torMovies: MovieMongo[];
+};
+
 const DEV_MOVIE_DETAIL = {
   id: DEV_MOVIE_DETAIL_ID,
   media_type: MediaType.Movie,
@@ -95,8 +104,6 @@ const DEV_MOVIE_DETAIL = {
     "An intentionally static movie payload used to verify authenticated detail routes without upstream API dependencies.",
   release_date: "2024-02-14",
   runtime: 126,
-  backdrop_path: "/playwright-backdrop.jpg",
-  poster_path: "/playwright-poster.jpg",
   original_language: "en",
   vote_average: 7.8,
   vote_count: 1284,
@@ -150,7 +157,6 @@ const DEV_MOVIE_RECOMMENDATIONS = [
     title: "Assertions at Dawn",
     release_date: "2023-09-01",
     vote_average: 7.1,
-    backdrop_path: "/assertions-at-dawn.jpg",
   },
 ] satisfies MovieShort[];
 
@@ -159,6 +165,41 @@ const DEV_MOVIE_IMDB = {
   Rating: "7.9",
   Votes: "128,400",
 } satisfies ImdbRating;
+
+const DEV_HOME_MOVIES = [
+  {
+    id: DEV_MOVIE_DETAIL_ID,
+    media_type: MediaType.Movie,
+    title: "Playwright in Paris",
+    overview:
+      "Open a deterministic featured movie when authenticated browser tests need a stable home feed.",
+    release_date: "2024-02-14",
+    vote_average: 7.8,
+  },
+] satisfies MovieShort[];
+
+const DEV_HOME_TV = [
+  {
+    id: 880001,
+    media_type: MediaType.Tv,
+    name: "Selectors",
+    overview: "A reliable series fixture for authenticated dashboard coverage.",
+    first_air_date: "2025-01-10",
+    release_date: "2025-01-10",
+    vote_average: 7.4,
+  },
+] satisfies TvShort[];
+
+const DEV_HOME_TOR_MOVIES = [
+  {
+    id: 880101,
+    media_type: MediaType.Movie,
+    title: "Hydration Station",
+    release_date: "2025-02-20",
+    year: "2025",
+    vote_average: 6.9,
+  },
+] satisfies MovieMongo[];
 
 export const createDevMovieDetail = ({
   bypassCookie,
@@ -184,5 +225,32 @@ export const createDevMovieDetail = ({
     recMovies: DEV_MOVIE_RECOMMENDATIONS,
     colMovies: [],
     imdb: DEV_MOVIE_IMDB,
+  };
+};
+
+export const createDevHomeFeed = ({
+  bypassCookie,
+  bypassFlag,
+  lang,
+  nodeEnv,
+}: Pick<
+  DevSessionOptions,
+  "bypassCookie" | "bypassFlag" | "lang" | "nodeEnv"
+>): DevHomeFeedFixture | null => {
+  if (
+    !hasDevSessionBypassCookie({
+      bypassCookie,
+      bypassFlag,
+      nodeEnv,
+    })
+  ) {
+    return null;
+  }
+
+  return {
+    lang,
+    movies: DEV_HOME_MOVIES,
+    tv: DEV_HOME_TV,
+    torMovies: DEV_HOME_TOR_MOVIES,
   };
 };

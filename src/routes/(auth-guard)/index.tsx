@@ -7,6 +7,10 @@ import { QuickFilterStrip } from "~/components/discovery/quick-filter-strip";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
 import { ErrorState, SectionHeading } from "~/components/page-feedback";
+import {
+  createDevHomeFeed,
+  DEV_SESSION_BYPASS_COOKIE,
+} from "~/routes/dev-session";
 import type {
   MediaShort,
   MovieMongo,
@@ -50,6 +54,20 @@ type HomeFeedData =
 export const useHomeFeedLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   const envMongoUrl = event.env.get("MONGO_URI") ?? "";
+
+  const devHomeFeed = createDevHomeFeed({
+    bypassCookie: event.cookie.get(DEV_SESSION_BYPASS_COOKIE)?.value ?? null,
+    bypassFlag: event.env.get("PLAYWRIGHT_AUTH_BYPASS"),
+    lang,
+    nodeEnv: event.env.get("NODE_ENV") ?? process.env.NODE_ENV,
+  });
+
+  if (devHomeFeed) {
+    return {
+      status: "ready",
+      ...devHomeFeed,
+    } satisfies HomeFeedData;
+  }
 
   try {
     const [m, t, tm] = await Promise.all([

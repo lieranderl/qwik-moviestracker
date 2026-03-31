@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import {
+  createDevHomeFeed,
   createDevMovieDetail,
   createDevSession,
   DEV_MOVIE_DETAIL_ID,
@@ -93,5 +94,18 @@ describe("dev session bypass", () => {
     });
 
     expect(fixture).toBeNull();
+  });
+
+  it("creates a deterministic home feed fixture behind the same bypass gate", () => {
+    const fixture = createDevHomeFeed({
+      bypassCookie: DEV_SESSION_BYPASS_VALUE,
+      bypassFlag: "1",
+      lang: "en-US",
+      nodeEnv: "development",
+    });
+
+    expect(fixture?.movies[0]?.title).toBe("Playwright in Paris");
+    expect(fixture?.tv[0]?.name).toBe("Selectors");
+    expect(fixture?.torMovies[0]?.title).toBe("Hydration Station");
   });
 });

@@ -112,7 +112,7 @@ export default component$(() => {
   }
 
   return (
-    <div class="page-enter space-y-6">
+    <div class="space-y-6">
       <SectionHeading eyebrow="Movies" title="Browse movie collections" />
       <QuickFilterStrip
         label={langQuickFilters(lang)}

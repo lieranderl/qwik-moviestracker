@@ -32,7 +32,7 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
               </div>
             ) : (
               <div class="avatar placeholder">
-                <div class="bg-base-200 text-base-content h-10 w-10 rounded-full text-sm font-semibold shadow-sm">
+                <div class="border-base-200 bg-base-200 text-base-content h-10 w-10 rounded-full border text-sm font-semibold shadow-sm">
                   <span>{userInitial}</span>
                 </div>
               </div>
@@ -41,10 +41,10 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
           <ul
             tabIndex={-1}
             role="menu"
-            class="menu menu-sm dropdown-content bg-base-100 border-base-200 rounded-box z-[60] mt-3 w-72 border p-2 shadow-xl"
+            class="menu menu-sm dropdown-content rounded-box border-base-200 bg-base-100 z-[60] mt-3 w-72 border p-2 shadow-xl"
           >
             <li class="pointer-events-none mb-1 px-3 py-3">
-              <div class="bg-base-200/55 flex items-center gap-3 rounded-xl px-3 py-3">
+              <div class="rounded-box border-base-200 bg-base-200/55 flex items-center gap-3 border px-3 py-3 shadow-sm backdrop-blur">
                 {user.image ? (
                   <div class="avatar">
                     <div class="h-11 w-11 overflow-hidden rounded-full">
@@ -57,7 +57,7 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
                   </div>
                 ) : (
                   <div class="avatar placeholder">
-                    <div class="bg-base-300 text-base-content h-11 w-11 rounded-full text-sm font-semibold">
+                    <div class="border-base-200 bg-base-300 text-base-content h-11 w-11 rounded-full border text-sm font-semibold shadow-sm">
                       <span>{userInitial}</span>
                     </div>
                   </div>
@@ -82,7 +82,7 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
             <li>
               <button
                 type="button"
-                class="text-error hover:bg-error/10 active:bg-error/15"
+                class="btn btn-ghost text-error hover:bg-error/10 active:bg-error/15 h-auto min-h-0 justify-start rounded-full px-3 py-2.5 text-sm font-medium normal-case shadow-none"
                 onClick$={() => signOut.submit({ redirectTo: "/auth" })}
               >
                 {langSingOut(lang)}

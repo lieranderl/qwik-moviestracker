@@ -42,7 +42,7 @@ export default component$(() => {
       <Toolbar lang={useQparam.value.lang} />
       <main
         id="main-content"
-        class="page-enter container mx-auto px-4 pt-20 pb-8 md:pt-24"
+        class="custom-container page-enter pt-20 pb-8 md:pt-24"
       >
         <Slot />
       </main>

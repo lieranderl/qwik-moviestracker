@@ -90,7 +90,7 @@ export default component$(() => {
   });
 
   return (
-    <div class="page-enter mx-auto w-full max-w-7xl px-4 pb-8">
+    <div class="mx-auto w-full max-w-7xl pb-8">
       <SectionHeading
         eyebrow="Discovery"
         title={langSearch(resource.value.lang)}

@@ -29,7 +29,7 @@ export const QuickFilterStrip = component$<QuickFilterStripProps>(
 
     return (
       <section class="section-reveal -mt-2 mb-6 md:sticky md:top-[4.1rem] md:z-30 md:-mt-4">
-        <div class="rounded-box border-base-200 bg-base-100/90 shadow-base-content/5 border px-2 py-2 shadow-sm backdrop-blur">
+        <div class="rounded-box border-base-200 bg-base-100/92 shadow-base-content/5 border px-2 py-2 shadow-sm backdrop-blur">
           <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <div class="text-base-content/55 px-2 text-xs font-semibold tracking-[0.12em] uppercase">
               {label}

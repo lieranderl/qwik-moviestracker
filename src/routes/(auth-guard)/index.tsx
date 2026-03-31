@@ -108,11 +108,8 @@ export default component$(() => {
   }
 
   return (
-    <div class="page-enter space-y-6">
-      <SectionHeading
-        eyebrow="Home"
-        title="Your movie and series dashboard"
-      />
+    <div class="space-y-6">
+      <SectionHeading eyebrow="Home" title="Your movie and series dashboard" />
       <QuickFilterStrip
         label={langQuickFilters(lang)}
         items={[

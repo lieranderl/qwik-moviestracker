@@ -47,6 +47,11 @@
 - Tailwind v4 uses CSS-first configuration. Do not add `tailwind.config.js`
   unless there is a deliberate migration away from the current setup.
 - Theme tokens and theme-plugin changes belong in `src/global.css`.
+- Shared custom CSS in `src/global.css` should be limited to theme tokens,
+  typography, motion, and app-level layout concerns such as `.custom-container`.
+- Do not introduce named helper classes for cards, buttons, badges, avatars,
+  or modal shells when the same result can be expressed with daisyUI component
+  classes plus a few local Tailwind utilities.
 - If theme overrides expand beyond the current plugin setup, place them in a
   `@plugin "daisyui/theme"` block in `src/global.css`.
 - The repo already defines `.custom-container` in `src/global.css`; use it for
@@ -71,16 +76,29 @@
 
 ## Typography And Motion
 
-- Current repo reality: headings use `font-montserrat` and the body still uses
-  `font-inter` in `src/global.css` and `src/root.tsx`.
-- New design-system preference: heading/display typography should move toward
-  `font-qestero` and body typography should standardize on `font-montserrat`.
+- Current repo baseline: body and heading typography should both use
+  `font-montserrat` until a dedicated display font is added to the codebase.
 - Current repo reality: shared motion uses utility classes and keyframes in
   `src/global.css`.
 - New design-system preference: if a shared `FadeUp` component is introduced,
   use it for scroll-triggered reveal behavior instead of ad hoc duplicates.
 - Until `font-qestero` and a shared `FadeUp` component exist in the codebase,
   do not document them as already implemented assets.
+
+## Visual Consistency
+
+- Prefer daisyUI shells first: `card`, `rounded-box`, `badge`, `btn`,
+  `dropdown`, `modal-box`, and `tabs-box`.
+- Treat `rounded-box` as the default radius for cards, alerts, dropdown panes,
+  and modal shells unless a tighter or fully round treatment is clearly needed.
+- Treat pill controls as explicit daisyUI markup, for example
+  `btn btn-sm rounded-full normal-case` and
+  `badge rounded-full px-3 py-3`.
+- Use `btn-circle btn-sm` for small icon actions and `avatar` patterns with
+  local border/shadow utilities for user imagery.
+- Route-level spacing should come from the auth layout shell first. Avoid
+  stacking `page-enter` on nested pages inside the protected layout unless a
+  page genuinely needs its own animation boundary.
 
 ## UI Change Heuristics
 

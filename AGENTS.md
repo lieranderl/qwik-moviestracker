@@ -2,7 +2,8 @@
 
 Use this file as the root contract for AI agents working in this repository.
 Keep it short, operational, and non-repetitive. Deeper project truth lives in
-the reference files and Claude project files linked below.
+the skill reference files linked below.
+the reference files and project memory files linked below.
 
 ## Read Order
 

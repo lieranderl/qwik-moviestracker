@@ -1,40 +1,50 @@
 ---
 name: qwik-moviestracker
 description: >-
-  Use when working in the qwik-moviestracker repository and you need the
-  project's architecture, commands, guardrails, or task-to-file routing.
+  Use when working in the qwik-moviestracker repository and you need concise,
+  project-specific guidance for architecture, daisyUI-first UI work,
+  verification, guardrails, or doc maintenance.
 metadata:
   category: reference
-  triggers: qwik, qwik city, moviestracker, tmdb, torrserver, mongodb, bun, cloud run
+  triggers:
+    - qwik
+    - qwik city
+    - moviestracker
+    - tmdb
+    - torrserver
+    - mongodb
+    - bun
+    - cloud run
+    - daisyui
 ---
 
 # Qwik Moviestracker
 
-Project-local skill for working efficiently in this repository.
+Project-local skill for working efficiently in this repository without
+repeating obvious facts in every prompt.
 
-## When To Use
+## Start Here
 
-- Editing features in this repo for the first time
-- Fixing auth, routing, TMDB, MongoDB, or TorrServer behavior
-- Running validation commands before finishing work
-- Avoiding mistakes around generated files, env usage, or deployment
+1. Read `AGENTS.md`
+2. Read only the reference file(s) needed for the task
 
-## What This Skill Covers
+## Reference Files
 
-- Architecture map
-- Common commands and verification
-- Task routing to the right files
-- Project-specific guardrails
+- `references/architecture.md` - route map, runtime shape, major UI/service
+  areas
+- `references/ui-system.md` - daisyUI-first patterns, shared UI primitives, and
+  styling expectations
+- `references/commands.md` - Bun commands, tests, and verification expectations
+- `references/guardrails.md` - secrets, generated output, runtime boundaries,
+  and repo sharp edges
+- `references/maintenance.md` - how and when to update Markdown guidance files
 
-## Read In This Order
+## Use This Skill When
 
-1. `AGENTS.md`
-2. `CLAUDE.md`
-3. `references/architecture.md`
-4. `references/commands.md`
-5. `references/guardrails.md`
-
-Only open the reference file you need for the current task after `AGENTS.md`.
+- editing or debugging routes, services, or auth flows
+- changing UI and you need the repo’s daisyUI conventions
+- validating work before completion
+- deciding where project truth belongs in the Markdown docs
 
 ## Operating Guidance
 
@@ -42,14 +52,8 @@ Only open the reference file you need for the current task after `AGENTS.md`.
 2. Keep auth logic centralized.
 3. Preserve the `lang` query-param flow unless the task changes that behavior.
 4. Keep external API logic in `src/services/**`.
-5. Follow Qwik / Qwik City 1.x patterns and daisyUI 5 guidance from
+5. Reuse the project’s shared UI primitives before inventing new ones.
+6. Follow Qwik / Qwik City 1.x patterns and daisyUI 5 guidance from
    `references/ui-system.md` for UI work.
-6. Verify with type-check and lint before claiming completion.
-
-## Reference Index
-
-- `references/architecture.md` - Route map, service map, and key entry points
-- `references/ui-system.md` - UI vocabulary and styling conventions
-- `references/commands.md` - Bun commands and verification expectations
-- `references/guardrails.md` - Secrets, generated files, deployment notes, and sharp edges
-- `references/maintenance.md` - How to keep agent docs consistent
+7. Keep behavior, verification, and documentation aligned in the same task.
+8. Update the relevant Markdown reference when project truth changes.

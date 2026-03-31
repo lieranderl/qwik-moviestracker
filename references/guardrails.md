@@ -55,13 +55,12 @@
 - Do not treat `typeof localStorage !== "undefined"` as sufficient. Validate
   the Storage API shape (`getItem` / `setItem`) or go through the shared helper
   because some runtimes expose a non-Storage placeholder.
-- Prefer `useTask$` with an `isServer` guard for ongoing storage sync.
 - Use `useVisibleTask$` for initial browser-only hydration when route state must
   be restored from `localStorage` after resume or browser restart, such as the
   TorrServer page.
-- Recent activity and recent-search storage are also resume-sensitive browser
-  state. Read and write them from `useVisibleTask$`, not a no-track `useTask$`
-  with an `isServer` early return.
+- Recent activity and recent-search storage are resume-sensitive browser state.
+  Read and write them from `useVisibleTask$`; the authenticated search/browser
+  smoke tests rely on that behavior.
 - Reserve raw DOM logic for actual DOM-dependent work such as element refs,
   layout measurement, or event listeners.
 

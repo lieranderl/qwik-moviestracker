@@ -1,4 +1,4 @@
-import { component$, isBrowser, useSignal, useTask$ } from "@builder.io/qwik";
+import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import {
   HiArrowTrendingUpSolid,
   HiClockSolid,
@@ -30,11 +30,8 @@ export const ContinueBrowsingWidget = component$<ContinueBrowsingWidgetProps>(
     const lastViewed = useSignal<LastViewedItem | null>(null);
     const recentSearches = useSignal<ReturnType<typeof readRecentSearches>>([]);
 
-    useTask$(() => {
-      if (!isBrowser) {
-        return;
-      }
-
+    // eslint-disable-next-line qwik/no-use-visible-task
+    useVisibleTask$(() => {
       lastViewed.value = readLastViewed();
       recentSearches.value = readRecentSearches();
     });

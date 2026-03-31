@@ -1,4 +1,4 @@
-import { component$, isBrowser, useTask$ } from "@builder.io/qwik";
+import { component$, useVisibleTask$ } from "@builder.io/qwik";
 import {
   BsGenderFemale,
   BsGenderMale,
@@ -26,11 +26,8 @@ interface MovieDetailsProps {
 
 export const PersonDetails = component$(
   ({ person, perMovies, perTv, lang }: MovieDetailsProps) => {
-    useTask$(() => {
-      if (!isBrowser) {
-        return;
-      }
-
+    // eslint-disable-next-line qwik/no-use-visible-task
+    useVisibleTask$(() => {
       writeLastViewed({
         href: paths.media(MediaType.Person, person.id, lang),
         title: person.name ?? "Person details",

@@ -1,4 +1,4 @@
-import { component$, isBrowser, useTask$ } from "@builder.io/qwik";
+import { component$, useVisibleTask$ } from "@builder.io/qwik";
 
 import { LuDisc3, LuLayers3 } from "@qwikest/icons/lucide";
 import { DetailPageContainer } from "~/components/detail-page-layout";
@@ -40,11 +40,8 @@ interface TvDetailsProps {
 
 export const TvDetails = component$(
   ({ tv, recTv, imdb, lang }: TvDetailsProps) => {
-    useTask$(() => {
-      if (!isBrowser) {
-        return;
-      }
-
+    // eslint-disable-next-line qwik/no-use-visible-task
+    useVisibleTask$(() => {
       writeLastViewed({
         href: paths.media(MediaType.Tv, tv.id, lang),
         title: tv.name ?? "TV details",

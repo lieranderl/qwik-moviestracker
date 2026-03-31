@@ -1,10 +1,9 @@
 import {
   component$,
-  isBrowser,
   Resource,
   useResource$,
   useSignal,
-  useTask$,
+  useVisibleTask$,
 } from "@builder.io/qwik";
 import { server$, useLocation } from "@builder.io/qwik-city";
 import { HiMagnifyingGlassOutline } from "@qwikest/icons/heroicons";
@@ -56,11 +55,8 @@ export default component$(() => {
   const searchPhrase = getSearchPhrase(initialQuery);
   const recentSearches = useSignal<ReturnType<typeof readRecentSearches>>([]);
 
-  useTask$(() => {
-    if (!isBrowser) {
-      return;
-    }
-
+  // eslint-disable-next-line qwik/no-use-visible-task
+  useVisibleTask$(() => {
     if (!searchPhrase) {
       recentSearches.value = readRecentSearches();
       return;

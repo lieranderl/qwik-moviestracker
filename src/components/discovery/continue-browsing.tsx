@@ -1,5 +1,4 @@
-import { component$, useSignal, useTask$ } from "@builder.io/qwik";
-import { isServer } from "@builder.io/qwik/build";
+import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import {
   HiArrowTrendingUpSolid,
   HiClockSolid,
@@ -31,11 +30,8 @@ export const ContinueBrowsingWidget = component$<ContinueBrowsingWidgetProps>(
     const lastViewed = useSignal<LastViewedItem | null>(null);
     const recentSearches = useSignal(readRecentSearches());
 
-    useTask$(() => {
-      if (isServer) {
-        return;
-      }
-
+    // eslint-disable-next-line qwik/no-use-visible-task
+    useVisibleTask$(() => {
       lastViewed.value = readLastViewed();
       recentSearches.value = readRecentSearches();
     });

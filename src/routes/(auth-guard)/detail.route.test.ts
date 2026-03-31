@@ -41,4 +41,23 @@ describe("detail route server data boundaries", () => {
     expect(imdbComponentSource).not.toContain("server$");
     expect(imdbComponentSource).not.toContain("getImdbRating");
   });
+
+  it("writes recent activity from browser-only visible tasks after resume", async () => {
+    const detailComponentFiles = [
+      join(import.meta.dir, "../../components/media-details/movie-details.tsx"),
+      join(import.meta.dir, "../../components/media-details/tv-details.tsx"),
+      join(
+        import.meta.dir,
+        "../../components/person-details/person-details.tsx",
+      ),
+    ];
+
+    for (const componentFile of detailComponentFiles) {
+      const source = await readFile(componentFile, "utf8");
+
+      expect(source).toContain("useVisibleTask$");
+      expect(source).toContain("writeLastViewed({");
+      expect(source).not.toContain("useTask$(() =>");
+    }
+  });
 });

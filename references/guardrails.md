@@ -55,6 +55,9 @@
 - Use `useVisibleTask$` for initial browser-only hydration when route state must
   be restored from `localStorage` after resume or browser restart, such as the
   TorrServer page.
+- Recent activity and recent-search storage are also resume-sensitive browser
+  state. Read and write them from `useVisibleTask$`, not a no-track `useTask$`
+  with an `isServer` early return.
 - Reserve raw DOM logic for actual DOM-dependent work such as element refs,
   layout measurement, or event listeners.
 

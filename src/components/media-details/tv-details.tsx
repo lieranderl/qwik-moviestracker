@@ -1,5 +1,4 @@
-import { component$, useTask$ } from "@builder.io/qwik";
-import { isServer } from "@builder.io/qwik/build";
+import { component$, useVisibleTask$ } from "@builder.io/qwik";
 
 import { LuDisc3, LuLayers3 } from "@qwikest/icons/lucide";
 import { DetailPageContainer } from "~/components/detail-page-layout";
@@ -41,11 +40,8 @@ interface TvDetailsProps {
 
 export const TvDetails = component$(
   ({ tv, recTv, imdb, lang }: TvDetailsProps) => {
-    useTask$(() => {
-      if (isServer) {
-        return;
-      }
-
+    // eslint-disable-next-line qwik/no-use-visible-task
+    useVisibleTask$(() => {
       writeLastViewed({
         href: paths.media(MediaType.Tv, tv.id, lang),
         title: tv.name ?? "TV details",

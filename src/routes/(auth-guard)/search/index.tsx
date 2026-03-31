@@ -3,9 +3,8 @@ import {
   Resource,
   useResource$,
   useSignal,
-  useTask$,
+  useVisibleTask$,
 } from "@builder.io/qwik";
-import { isServer } from "@builder.io/qwik/build";
 import { server$, useLocation } from "@builder.io/qwik-city";
 import { HiMagnifyingGlassOutline } from "@qwikest/icons/heroicons";
 import { SearchAssist } from "~/components/discovery/search-assist";
@@ -56,11 +55,8 @@ export default component$(() => {
   const searchPhrase = getSearchPhrase(initialQuery);
   const recentSearches = useSignal(readRecentSearches());
 
-  useTask$(() => {
-    if (isServer) {
-      return;
-    }
-
+  // eslint-disable-next-line qwik/no-use-visible-task
+  useVisibleTask$(() => {
     if (!searchPhrase) {
       recentSearches.value = readRecentSearches();
       return;

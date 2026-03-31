@@ -21,6 +21,24 @@ html {
   --motion-lift: -0.25rem;
   --motion-shadow: 0 20px 44px oklch(24% 0.015 248 / 0.11);
   --motion-focus-ring: oklch(71% 0.13 255 / 0.24);
+  --auth-blob-one: oklch(87% 0.056 37 / 0.42);
+  --auth-blob-two: oklch(76% 0.098 265 / 0.28);
+  --auth-blob-three: oklch(81% 0.072 205 / 0.24);
+  --auth-accent-from: oklch(73% 0.128 33);
+  --auth-accent-via: oklch(70% 0.157 278);
+  --auth-accent-to: oklch(74% 0.123 215);
+  --auth-primary-from: oklch(62% 0.165 264);
+  --auth-primary-to: oklch(69% 0.132 255);
+  --auth-primary-from-hover: oklch(57% 0.16 264);
+  --auth-primary-to-hover: oklch(64% 0.128 255);
+  --auth-primary-shadow: oklch(62% 0.15 262 / 0.35);
+  --auth-badge-bg: oklch(78% 0.104 59);
+  --auth-feature-one-bg: oklch(77% 0.099 265 / 0.18);
+  --auth-feature-one-fg: oklch(56% 0.134 264);
+  --auth-feature-two-bg: oklch(81% 0.087 52 / 0.2);
+  --auth-feature-two-fg: oklch(62% 0.126 45);
+  --auth-feature-three-bg: oklch(83% 0.076 201 / 0.2);
+  --auth-feature-three-fg: oklch(58% 0.112 205);
   background-color: oklch(96.5% 0.004 245);
   background-image:
     linear-gradient(
@@ -41,6 +59,24 @@ html {
 html[data-theme="mocha"] {
   scroll-behavior: smooth;
   color-scheme: dark;
+  --auth-blob-one: oklch(56% 0.072 32 / 0.28);
+  --auth-blob-two: oklch(53% 0.095 268 / 0.2);
+  --auth-blob-three: oklch(58% 0.068 208 / 0.18);
+  --auth-accent-from: oklch(78% 0.13 35);
+  --auth-accent-via: oklch(74% 0.167 279);
+  --auth-accent-to: oklch(76% 0.122 214);
+  --auth-primary-from: oklch(67% 0.17 264);
+  --auth-primary-to: oklch(71% 0.134 252);
+  --auth-primary-from-hover: oklch(63% 0.16 264);
+  --auth-primary-to-hover: oklch(67% 0.128 252);
+  --auth-primary-shadow: oklch(54% 0.116 256 / 0.38);
+  --auth-badge-bg: oklch(74% 0.096 59);
+  --auth-feature-one-bg: oklch(61% 0.078 265 / 0.2);
+  --auth-feature-one-fg: oklch(83% 0.085 272);
+  --auth-feature-two-bg: oklch(65% 0.072 52 / 0.2);
+  --auth-feature-two-fg: oklch(84% 0.083 56);
+  --auth-feature-three-bg: oklch(62% 0.065 202 / 0.2);
+  --auth-feature-three-fg: oklch(82% 0.078 205);
   background-color: oklch(21% 0.012 252);
   background-image:
     linear-gradient(

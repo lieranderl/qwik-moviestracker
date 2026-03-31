@@ -3,10 +3,12 @@
 ## Core Bun Commands
 
 - Install dependencies: `bun install`
-- Dev server: `bun start`
+- Dev server: `bun run dev`
+- Browser-opening dev alias: `bun start`
 - Type-check: `bun run build.types`
 - Lint: `bun run lint`
 - Test: `bun run test`
+- Playwright smoke test: `bun run test:e2e`
 - Full build: `bun run build`
 - Preview build: `bun preview`
 - Serve Bun SSR output: `bun run serve`
@@ -33,6 +35,14 @@ when the task touches:
 - SSR/runtime behavior
 - environment usage
 - deployment config
+
+Optional frontend verification:
+
+5. `bun run test:e2e` for auth-page and browser smoke checks
+
+First-time local browser setup:
+
+- `bunx playwright install chromium`
 
 ## GitHub Actions CI
 

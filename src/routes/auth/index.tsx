@@ -2,6 +2,30 @@ import { component$ } from "@builder.io/qwik";
 import { HiFilmOutline } from "@qwikest/icons/heroicons";
 import { LoginButton } from "~/components/login-button";
 
+const authFeatureCards = [
+  {
+    copy: "Instant discovery with clean results across movies and series.",
+    index: "01",
+    title: "Fast search",
+    toneClass:
+      "bg-[color:var(--auth-feature-one-bg)] text-[color:var(--auth-feature-one-fg)]",
+  },
+  {
+    copy: "Get key info quickly without heavy UI clutter or noise.",
+    index: "02",
+    title: "Clear details",
+    toneClass:
+      "bg-[color:var(--auth-feature-two-bg)] text-[color:var(--auth-feature-two-fg)]",
+  },
+  {
+    copy: "Keep everything you plan to watch in a single personal queue.",
+    index: "03",
+    title: "One watchlist",
+    toneClass:
+      "bg-[color:var(--auth-feature-three-bg)] text-[color:var(--auth-feature-three-fg)]",
+  },
+] as const;
+
 export default component$(() => {
   return (
     <div class="bg-base-100 page-enter relative min-h-screen overflow-hidden">
@@ -14,9 +38,9 @@ export default component$(() => {
         }}
       />
       <div class="pointer-events-none absolute inset-0">
-        <div class="absolute -top-40 -left-32 h-112 w-md rounded-full bg-[#f4b8a5]/40 blur-[120px]" />
-        <div class="absolute top-[24%] -right-32 h-96 w-96 rounded-full bg-[#7da2ff]/30 blur-[120px]" />
-        <div class="absolute -bottom-48 left-[30%] h-96 w-96 rounded-full bg-[#58c1c9]/25 blur-[130px]" />
+        <div class="absolute -top-40 -left-32 h-112 w-md rounded-full bg-[color:var(--auth-blob-one)] blur-[120px]" />
+        <div class="absolute top-[24%] -right-32 h-96 w-96 rounded-full bg-[color:var(--auth-blob-two)] blur-[120px]" />
+        <div class="absolute -bottom-48 left-[30%] h-96 w-96 rounded-full bg-[color:var(--auth-blob-three)] blur-[130px]" />
       </div>
 
       <div class="relative z-10 flex min-h-screen flex-col">
@@ -48,7 +72,7 @@ export default component$(() => {
             >
               Track movies and TV shows
               <br class="hidden lg:block" /> with{" "}
-              <span class="bg-gradient-to-r from-[#df7d63] via-[#6a8fff] to-[#2fadb6] bg-clip-text text-transparent">
+              <span class="bg-gradient-to-r from-[color:var(--auth-accent-from)] via-[color:var(--auth-accent-via)] to-[color:var(--auth-accent-to)] bg-clip-text text-transparent">
                 clarity.
               </span>
             </h1>
@@ -65,7 +89,7 @@ export default component$(() => {
             >
               <LoginButton
                 providerName="google"
-                class="h-14 rounded-2xl border-0 bg-gradient-to-r from-[#3f7df0] to-[#5f8ffc] px-7 text-base font-semibold text-white shadow-lg shadow-[#5f8ffc]/35 hover:from-[#376fda] hover:to-[#4f81f0]"
+                class="h-14 rounded-2xl border-0 bg-gradient-to-r from-[color:var(--auth-primary-from)] to-[color:var(--auth-primary-to)] px-7 text-base font-semibold text-white shadow-[0_18px_42px_var(--auth-primary-shadow)] hover:from-[color:var(--auth-primary-from-hover)] hover:to-[color:var(--auth-primary-to-hover)]"
               >
                 <svg
                   aria-label="Google logo"
@@ -106,53 +130,35 @@ export default component$(() => {
               <div class="text-base-content text-lg font-bold tracking-tight">
                 Why people use it
               </div>
-              <span class="badge border-0 bg-[#f6b37c] text-[0.7rem] font-semibold text-white uppercase">
+              <span class="badge border-0 bg-[color:var(--auth-badge-bg)] text-[0.7rem] font-semibold text-white uppercase">
                 New
               </span>
             </div>
 
             <div class="grid gap-4 text-sm">
-              <article class="border-base-200 bg-base-200/45 rounded-2xl border p-4">
-                <div class="mb-2 flex items-center gap-3">
-                  <span class="grid h-9 w-9 place-items-center rounded-xl bg-[#72a0ff]/20 text-sm font-bold text-[#426fd8]">
-                    01
-                  </span>
-                  <p class="text-base-content text-base font-bold">
-                    Fast search
+              {authFeatureCards.map((feature) => (
+                <article
+                  key={feature.index}
+                  class="border-base-200 bg-base-200/45 rounded-2xl border p-4"
+                >
+                  <div class="mb-2 flex items-center gap-3">
+                    <span
+                      class={[
+                        "grid h-9 w-9 place-items-center rounded-xl text-sm font-bold",
+                        feature.toneClass,
+                      ]}
+                    >
+                      {feature.index}
+                    </span>
+                    <p class="text-base-content text-base font-bold">
+                      {feature.title}
+                    </p>
+                  </div>
+                  <p class="text-base-content/70 leading-relaxed">
+                    {feature.copy}
                   </p>
-                </div>
-                <p class="text-base-content/70 leading-relaxed">
-                  Instant discovery with clean results across movies and series.
-                </p>
-              </article>
-
-              <article class="border-base-200 bg-base-200/45 rounded-2xl border p-4">
-                <div class="mb-2 flex items-center gap-3">
-                  <span class="grid h-9 w-9 place-items-center rounded-xl bg-[#f0aa78]/25 text-sm font-bold text-[#ce7242]">
-                    02
-                  </span>
-                  <p class="text-base-content text-base font-bold">
-                    Clear details
-                  </p>
-                </div>
-                <p class="text-base-content/70 leading-relaxed">
-                  Get key info quickly without heavy UI clutter or noise.
-                </p>
-              </article>
-
-              <article class="border-base-200 bg-base-200/45 rounded-2xl border p-4">
-                <div class="mb-2 flex items-center gap-3">
-                  <span class="grid h-9 w-9 place-items-center rounded-xl bg-[#6fc5cd]/25 text-sm font-bold text-[#2f939a]">
-                    03
-                  </span>
-                  <p class="text-base-content text-base font-bold">
-                    One watchlist
-                  </p>
-                </div>
-                <p class="text-base-content/70 leading-relaxed">
-                  Keep everything you plan to watch in a single personal queue.
-                </p>
-              </article>
+                </article>
+              ))}
             </div>
           </section>
         </main>

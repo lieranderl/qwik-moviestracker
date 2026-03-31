@@ -33,7 +33,9 @@
 - Auth is configured centrally in `src/routes/plugin@auth.ts`.
 - Google is the active provider.
 - MongoDB-backed sessions are used when `MONGO_URI` is available.
-- Build and SSG contexts fall back to JWT sessions when Mongo is absent.
+- Build and test contexts may fall back to JWT sessions when Mongo is absent.
+- Normal runtime auth must use a real `AUTH_SECRET`; the build-safe placeholder
+  secret is not a valid deployed runtime configuration.
 - Redirect enforcement belongs in `src/routes/(auth-guard)/layout.tsx`.
 - Unauthenticated redirects from the auth guard must preserve the current
   `lang` query parameter when it is present.

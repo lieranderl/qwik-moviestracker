@@ -1,4 +1,4 @@
-import { component$, useVisibleTask$ } from "@builder.io/qwik";
+import { component$, isBrowser, useTask$ } from "@builder.io/qwik";
 import {
   BsGenderFemale,
   BsGenderMale,
@@ -26,8 +26,11 @@ interface MovieDetailsProps {
 
 export const PersonDetails = component$(
   ({ person, perMovies, perTv, lang }: MovieDetailsProps) => {
-    // eslint-disable-next-line qwik/no-use-visible-task
-    useVisibleTask$(() => {
+    useTask$(() => {
+      if (!isBrowser) {
+        return;
+      }
+
       writeLastViewed({
         href: paths.media(MediaType.Person, person.id, lang),
         title: person.name ?? "Person details",
@@ -126,9 +129,8 @@ export const PersonDetails = component$(
                       rating={m.vote_average ? m.vote_average : 0}
                       year={formatYear(m.release_date)}
                       picfile={m.poster_path}
-                      isPerson={false}
-                      isHorizontal={false}
-                      charName={m.character}
+                      variant="poster"
+                      metaLabel={m.character}
                     />
                   </a>
                 </div>
@@ -155,9 +157,8 @@ export const PersonDetails = component$(
                       rating={m.vote_average ? m.vote_average : 0}
                       year={formatYear(m.first_air_date)}
                       picfile={m.poster_path}
-                      isPerson={false}
-                      isHorizontal={false}
-                      charName={m.character}
+                      variant="poster"
+                      metaLabel={m.character}
                     />
                   </a>
                 </div>
@@ -184,9 +185,8 @@ export const PersonDetails = component$(
                       rating={m.vote_average ? m.vote_average : 0}
                       year={formatYear(m.release_date)}
                       picfile={m.poster_path}
-                      isPerson={false}
-                      isHorizontal={false}
-                      charName={m.job}
+                      variant="poster"
+                      metaLabel={m.job}
                     />
                   </a>
                 </div>
@@ -213,9 +213,8 @@ export const PersonDetails = component$(
                       rating={m.vote_average ? m.vote_average : 0}
                       year={formatYear(m.first_air_date)}
                       picfile={m.poster_path}
-                      isPerson={false}
-                      isHorizontal={false}
-                      charName={m.job}
+                      variant="poster"
+                      metaLabel={m.job}
                     />
                   </a>
                 </div>

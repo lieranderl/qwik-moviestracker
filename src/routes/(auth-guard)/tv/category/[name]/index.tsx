@@ -151,8 +151,7 @@ export default component$(() => {
                 rating={m.vote_average ? m.vote_average : 0}
                 year={formatYear(m.first_air_date)}
                 picfile={m.poster_path}
-                isPerson={false}
-                isHorizontal={false}
+                variant="poster"
                 layout="grid"
               />
             </a>

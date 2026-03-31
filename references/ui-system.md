@@ -93,6 +93,11 @@
 
 - Prefer daisyUI shells first: `card`, `rounded-box`, `badge`, `btn`,
   `dropdown`, `modal-box`, and `tabs-box`.
+- `MediaCard` uses an explicit `variant` prop with `poster`, `landscape`, or
+  `person`. Do not reintroduce boolean shape flags such as `isHorizontal` or
+  `isPerson`.
+- `MediaCard` metadata rows should use the `metaLabel` prop instead of route-
+  level ad hoc character/job prop names.
 - Treat `rounded-box` as the default radius for cards, alerts, dropdown panes,
   and modal shells unless a tighter or fully round treatment is clearly needed.
 - Treat pill controls as explicit daisyUI markup, for example

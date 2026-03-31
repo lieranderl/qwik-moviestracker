@@ -1,4 +1,4 @@
-import { component$, useVisibleTask$ } from "@builder.io/qwik";
+import { component$, isBrowser, useTask$ } from "@builder.io/qwik";
 
 import { LuDisc3, LuLayers3 } from "@qwikest/icons/lucide";
 import { DetailPageContainer } from "~/components/detail-page-layout";
@@ -40,8 +40,11 @@ interface TvDetailsProps {
 
 export const TvDetails = component$(
   ({ tv, recTv, imdb, lang }: TvDetailsProps) => {
-    // eslint-disable-next-line qwik/no-use-visible-task
-    useVisibleTask$(() => {
+    useTask$(() => {
+      if (!isBrowser) {
+        return;
+      }
+
       writeLastViewed({
         href: paths.media(MediaType.Tv, tv.id, lang),
         title: tv.name ?? "TV details",
@@ -198,8 +201,7 @@ export const TvDetails = component$(
                       year={0}
                       rating={0}
                       picfile={c.profile_path}
-                      isPerson={true}
-                      isHorizontal={false}
+                      variant="person"
                     />
                   </a>
                 </div>
@@ -225,9 +227,8 @@ export const TvDetails = component$(
                     year={0}
                     rating={0}
                     picfile={c.profile_path}
-                    isPerson={true}
-                    isHorizontal={false}
-                    charName={c.character}
+                    variant="person"
+                    metaLabel={c.character}
                   />
                 </a>
               </div>
@@ -254,8 +255,7 @@ export const TvDetails = component$(
                       rating={m.vote_average ? m.vote_average : 0}
                       year={formatYear(m.first_air_date)}
                       picfile={m.backdrop_path}
-                      isPerson={false}
-                      isHorizontal={true}
+                      variant="landscape"
                     />
                   </a>
                 </div>

@@ -12,6 +12,8 @@ node_modules
 .cache
 .mf
 .rollup.cache
+playwright-report
+test-results
 tsconfig.tsbuildinfo
 
 # Logs

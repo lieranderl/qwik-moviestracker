@@ -41,10 +41,11 @@
 - Read request-scoped env inside `routeLoader$`, request handlers, or `server$`
   functions only, and pass derived data rather than raw secret values.
 - Be careful with auth fallback behavior during build and SSG.
-- `src/routes/plugin@auth.ts` may use a placeholder secret only in the
-  build-safe fallback branch where MongoDB is absent, so CI and SSG can build
-  without production auth env. The normal runtime auth path must still rely on
-  a real `AUTH_SECRET`.
+- `src/routes/plugin@auth.ts` may use a placeholder secret only for build/test
+  contexts in the JWT fallback branch where MongoDB is absent.
+- Runtime auth must fail closed without a real `AUTH_SECRET`; do not allow a
+  predictable placeholder secret in normal dev, preview, or deployed auth
+  flows.
 - Treat deployment config as part of runtime behavior, not standalone docs.
 - Prefer shared browser helpers in `src/utils/browser.ts` for `localStorage`
   and dialog access instead of repeating raw browser-global checks.

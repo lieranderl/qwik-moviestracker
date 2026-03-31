@@ -191,8 +191,7 @@ export default component$(() => {
                 rating={m.vote_average ? m.vote_average : 0}
                 year={formatYear(m.release_date)}
                 picfile={m.backdrop_path}
-                isPerson={false}
-                isHorizontal={true}
+                variant="landscape"
               />
             </a>
           </div>
@@ -218,8 +217,7 @@ export default component$(() => {
                 rating={m.vote_average ? m.vote_average : 0}
                 year={formatYear(m.release_date)}
                 picfile={m.backdrop_path}
-                isPerson={false}
-                isHorizontal={true}
+                variant="landscape"
               />
             </a>
           </div>
@@ -245,8 +243,7 @@ export default component$(() => {
                 rating={m.vote_average ? m.vote_average : 0}
                 year={formatYear(m.first_air_date)}
                 picfile={m.backdrop_path}
-                isPerson={false}
-                isHorizontal={true}
+                variant="landscape"
               />
             </a>
           </div>

@@ -21,12 +21,12 @@ describe("search route form fallback", () => {
     expect(source).not.toContain("onInput$={");
   });
 
-  it("tracks recent searches from a browser-only visible task", async () => {
+  it("tracks recent searches from a browser-guarded task", async () => {
     const routeFile = join(import.meta.dir, "index.tsx");
     const source = await readFile(routeFile, "utf8");
 
-    expect(source).toContain("useVisibleTask$");
+    expect(source).toContain("useTask$(() =>");
+    expect(source).toContain("if (!isBrowser)");
     expect(source).toContain("pushRecentSearch({");
-    expect(source).not.toContain("useTask$(() =>");
   });
 });

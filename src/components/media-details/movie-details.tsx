@@ -1,4 +1,4 @@
-import { component$, useVisibleTask$ } from "@builder.io/qwik";
+import { component$, isBrowser, useTask$ } from "@builder.io/qwik";
 
 import { DetailPageContainer } from "~/components/detail-page-layout";
 import {
@@ -42,8 +42,11 @@ interface MovieDetailsProps {
 
 export const MovieDetails = component$(
   ({ movie, recMovies, colMovies, imdb, lang }: MovieDetailsProps) => {
-    // eslint-disable-next-line qwik/no-use-visible-task
-    useVisibleTask$(() => {
+    useTask$(() => {
+      if (!isBrowser) {
+        return;
+      }
+
       writeLastViewed({
         href: paths.media(MediaType.Movie, movie.id, lang),
         title: movie.title ?? "Movie details",
@@ -191,9 +194,8 @@ export const MovieDetails = component$(
                     year={0}
                     rating={0}
                     picfile={c.profile_path}
-                    isPerson={true}
-                    isHorizontal={false}
-                    charName={c.character}
+                    variant="person"
+                    metaLabel={c.character}
                   />
                 </a>
               </div>
@@ -221,9 +223,8 @@ export const MovieDetails = component$(
                         year={0}
                         rating={0}
                         picfile={c.profile_path}
-                        isPerson={true}
-                        isHorizontal={false}
-                        charName={c.job}
+                        variant="person"
+                        metaLabel={c.job}
                       />
                     </a>
                   </div>
@@ -251,8 +252,7 @@ export const MovieDetails = component$(
                       rating={m.vote_average ? m.vote_average : 0}
                       year={formatYear(m.release_date)}
                       picfile={m.backdrop_path}
-                      isPerson={false}
-                      isHorizontal={true}
+                      variant="landscape"
                     />
                   </a>
                 </div>
@@ -280,8 +280,7 @@ export const MovieDetails = component$(
                       rating={m.vote_average ? m.vote_average : 0}
                       year={formatYear(m.release_date)}
                       picfile={m.backdrop_path}
-                      isPerson={false}
-                      isHorizontal={true}
+                      variant="landscape"
                     />
                   </a>
                 </div>

@@ -1,9 +1,10 @@
 import {
   component$,
+  isBrowser,
   Resource,
   useResource$,
   useSignal,
-  useVisibleTask$,
+  useTask$,
 } from "@builder.io/qwik";
 import { server$, useLocation } from "@builder.io/qwik-city";
 import { HiMagnifyingGlassOutline } from "@qwikest/icons/heroicons";
@@ -53,10 +54,13 @@ export default component$(() => {
   const loc = useLocation();
   const initialQuery = loc.url.searchParams.get("q")?.trim() ?? "";
   const searchPhrase = getSearchPhrase(initialQuery);
-  const recentSearches = useSignal(readRecentSearches());
+  const recentSearches = useSignal<ReturnType<typeof readRecentSearches>>([]);
 
-  // eslint-disable-next-line qwik/no-use-visible-task
-  useVisibleTask$(() => {
+  useTask$(() => {
+    if (!isBrowser) {
+      return;
+    }
+
     if (!searchPhrase) {
       recentSearches.value = readRecentSearches();
       return;
@@ -219,13 +223,12 @@ export default component$(() => {
                           ? m.profile_path
                           : m.poster_path
                       }
-                      isPerson={
-                        !!(
-                          m.media_type !== MediaType.Movie &&
-                          m.media_type !== MediaType.Tv
-                        )
+                      variant={
+                        m.media_type !== MediaType.Movie &&
+                        m.media_type !== MediaType.Tv
+                          ? "person"
+                          : "poster"
                       }
-                      isHorizontal={false}
                       layout="grid"
                     />
                   </a>

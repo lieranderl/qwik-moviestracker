@@ -38,7 +38,7 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
                   }}
                 >
                   <MediaCard
-                    charName={
+                    metaLabel={
                       s.episode_count
                         ? `${langEpisodesCount(lang)} ${s.episode_count.toString()}`
                         : ""
@@ -48,8 +48,7 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
                     year={s.air_date ? formatYear(s.air_date) : 0}
                     rating={s.vote_average ? s.vote_average : 0}
                     picfile={s.poster_path}
-                    isPerson={false}
-                    isHorizontal={false}
+                    variant="poster"
                   />
                 </div>
                 {s.overview && (

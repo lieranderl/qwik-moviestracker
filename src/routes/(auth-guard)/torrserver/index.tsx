@@ -602,8 +602,7 @@ export default component$(() => {
                           rating={rating}
                           year={year}
                           picfile={torrent.poster}
-                          isPerson={false}
-                          isHorizontal={false}
+                          variant="poster"
                           layout="grid"
                         />
                       </a>
@@ -615,8 +614,7 @@ export default component$(() => {
                           rating={rating}
                           year={year}
                           picfile={torrent.poster}
-                          isPerson={false}
-                          isHorizontal={false}
+                          variant="poster"
                           layout="grid"
                         />
                       </div>

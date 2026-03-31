@@ -1,17 +1,21 @@
 # Copilot Instructions
 
-Start with [AGENTS.md](../AGENTS.md). It is the root contract for agent work in
-this repository.
+See the root [`AGENTS.md`](../AGENTS.md) for the cross-agent contract and
+[`CLAUDE.md`](../CLAUDE.md) for Claude Code project memory.
 
 Working defaults:
 
-- use daisyUI as the primary UI vocabulary
+- Edit `src/**`, `public/**`, and config files, not generated `dist/**` or
+  `server/**`.
+- Preserve the auth boundary in `src/routes/(auth-guard)/`.
+- Preserve the `lang` query-param flow unless the task explicitly changes it.
+- Keep external API logic in `src/services/**`.
+- Treat env values and `.env` contents as sensitive.
+- Prefer Bun commands.
+- Open only the one matching file in `references/**` for the task instead of
+  loading every project doc.
+- Use daisyUI as the primary UI vocabulary.
 - daisyUI reference: https://daisyui.com/components/
-- edit `src/**`, `public/**`, and root config files
-- treat `dist/**` and `server/**` as generated output
-- preserve auth boundaries and the `lang` query parameter flow
-- keep external API logic in `src/services/**`
-- prefer Bun commands
 
 Verification baseline for code changes:
 

@@ -22,7 +22,7 @@ export const LoadingState = component$<FeedbackCardProps>(
             : "flex min-h-[40vh] items-center justify-center py-8",
         ]}
       >
-        <div class="alert alert-info alert-vertical sm:alert-horizontal border-info/20 bg-base-100/95 w-full max-w-xl border shadow-sm">
+        <div class="alert alert-info alert-vertical sm:alert-horizontal rounded-box border-info/20 bg-base-100/95 w-full max-w-xl border shadow-sm">
           <span class="loading loading-spinner loading-lg shrink-0" />
           <div class="space-y-1 text-center sm:text-left">
             <h2 class="text-lg font-semibold">{title}</h2>
@@ -52,7 +52,7 @@ export const ErrorState = component$<FeedbackCardProps>(
       >
         <div
           role="alert"
-          class="alert alert-error alert-vertical sm:alert-horizontal bg-base-100/95 w-full max-w-xl shadow-sm"
+          class="alert alert-error alert-vertical sm:alert-horizontal rounded-box bg-base-100/95 w-full max-w-xl shadow-sm"
         >
           <HiXCircleSolid class="h-10 w-10 shrink-0" />
           <div class="space-y-1 text-center sm:text-left">
@@ -81,7 +81,7 @@ export const EmptyState = component$<FeedbackCardProps>(
             : "flex min-h-[32vh] items-center justify-center py-8",
         ]}
       >
-        <div class="alert alert-vertical sm:alert-horizontal border-base-200 bg-base-100/95 w-full max-w-xl border shadow-sm">
+        <div class="alert alert-vertical sm:alert-horizontal rounded-box border-base-200 bg-base-100/95 w-full max-w-xl border shadow-sm">
           <HiInformationCircleSolid class="text-info h-10 w-10 shrink-0" />
           <div class="space-y-1 text-center sm:text-left">
             <h2 class="text-lg font-semibold">{title}</h2>
@@ -124,7 +124,7 @@ export const InlineFilterGroup = component$(() => {
 
 export const FilterChip = component$<{ label: string }>(({ label }) => {
   return (
-    <span class="badge border-base-300/80 bg-base-200/60 text-base-content/70 pointer-events-none h-8 rounded-full px-3 font-medium shadow-none">
+    <span class="badge border-base-300/80 bg-base-200/60 text-base-content/70 pointer-events-none h-8 rounded-full px-3 py-3 font-medium shadow-none">
       {label}
     </span>
   );

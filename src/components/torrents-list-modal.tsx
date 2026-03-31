@@ -4,7 +4,8 @@ import { HiChevronDownSolid } from "@qwikest/icons/heroicons";
 import { TorrentList } from "~/components/torrent-list";
 import { getTorrents } from "~/services/cloud-func-api";
 import type { MediaDetails, Season, Torrent } from "~/services/models";
-import { useQueryParamsLoader } from "~/shared/loaders";
+import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
+import { showDialogById } from "~/utils/browser";
 import { formatYear } from "~/utils/format";
 import { langSeason, langTorrents } from "~/utils/languages";
 
@@ -28,11 +29,8 @@ export const TorrentsModal = component$(
       async (name: string, year: number, isMovie: boolean) => {
         torrentsStore.torrents = null;
         torrentsStore.year = year;
-        const torrModal = document.getElementById(
-          "torrentsModal",
-        ) as HTMLDialogElement | null;
+        const torrModal = showDialogById("torrentsModal");
         if (torrModal) {
-          torrModal.showModal();
           try {
             torrentsStore.torrents = await server$(() => {
               return getTorrents({ name: name, year: year, isMovie: isMovie });
@@ -58,12 +56,12 @@ export const TorrentsModal = component$(
         )}
 
         {seasons.length > 0 && (
-          <div class="dropdown dropdown-end">
+          <div class="dropdown dropdown-end relative z-30">
             <button type="button" class="btn btn-outline btn-primary">
               {langTorrents(resource.value.lang)}
               <HiChevronDownSolid />
             </button>
-            <ul class="menu dropdown-content rounded-box bg-base-100 border-base-200 z-1 mt-2 w-60 border p-2 shadow-lg">
+            <ul class="menu dropdown-content rounded-box bg-base-100 border-base-200 z-30 mt-2 w-60 border p-2 shadow-xl">
               {seasons.map((s) => {
                 if (s.season_number === 0 || !s.air_date) {
                   return null;

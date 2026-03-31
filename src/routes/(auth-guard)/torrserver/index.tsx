@@ -28,7 +28,12 @@ import {
   removeTorrent,
   torrServerEcho,
 } from "~/services/torrserver";
-import { useQueryParamsLoader } from "~/shared/loaders";
+import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
+import {
+  readStorageString,
+  writeStorageJson,
+  writeStorageString,
+} from "~/utils/browser";
 import { formatYear } from "~/utils/format";
 import {
   langAddNewTorrServerURL,
@@ -108,8 +113,8 @@ function getNormalizedServersState(
 }
 
 function persistServersStorage(list: string[], selected: string): void {
-  localStorage.setItem(TORR_SERVER_LIST_KEY, JSON.stringify([...list]));
-  localStorage.setItem(SELECTED_TORR_SERVER_KEY, normalizeServer(selected));
+  writeStorageJson(TORR_SERVER_LIST_KEY, [...list]);
+  writeStorageString(SELECTED_TORR_SERVER_KEY, normalizeServer(selected));
 }
 
 function applyServersState(
@@ -228,10 +233,10 @@ export default component$(() => {
   // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(() => {
     const parsedList = parseStoredServerList(
-      localStorage.getItem(TORR_SERVER_LIST_KEY),
+      readStorageString(TORR_SERVER_LIST_KEY),
     );
     const storedSelected =
-      normalizeServer(localStorage.getItem(SELECTED_TORR_SERVER_KEY) || "") ||
+      normalizeServer(readStorageString(SELECTED_TORR_SERVER_KEY, "") || "") ||
       "";
     const nextList = [...parsedList];
     if (nextList.length === 0 && storedSelected) {
@@ -618,7 +623,7 @@ export default component$(() => {
                     )}
 
                     <div class="rounded-box bg-base-200/50 text-base-content/65 space-y-1 px-3 py-2 text-xs leading-relaxed">
-                      <p class="line-clamp-2 break-words">
+                      <p class="line-clamp-2 wrap-break-word">
                         {torrent.name || torrent.title}
                       </p>
                       {typeof torrent.total_peers === "number" && (

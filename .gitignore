@@ -41,7 +41,10 @@ lerna-debug.log*
 !.yarn/releases
 .env
 .firebaserc
+CLAUDE.local.md
+.claude/settings.local.json
+.claude/worktrees/
+.claude/hooks/state/
 
 adminSDK.json
 package-lock.json
-

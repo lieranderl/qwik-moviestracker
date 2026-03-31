@@ -3,12 +3,14 @@
 Use this file as the root contract for AI agents working in this repository.
 Keep it short, operational, and non-repetitive. Deeper project truth lives in
 the skill reference files linked below.
+the reference files and project memory files linked below.
 
 ## Read Order
 
 1. `AGENTS.md`
-2. `.agent/skills/qwik-moviestracker/SKILL.md`
-3. The one reference file that matches the current task
+2. `CLAUDE.md`
+3. `.agent/skills/qwik-moviestracker/SKILL.md`
+4. The one reference file that matches the current task
 
 Reference files:
 
@@ -22,6 +24,8 @@ Do not load every reference by default. Open only what the task needs.
 
 ## Working Defaults
 
+- Stack baseline: Qwik / Qwik City 1.x, Tailwind CSS v4, daisyUI 5, Bun,
+  Vite 7, and Biome 2.
 - Use daisyUI as the primary UI vocabulary.
 - Reference: https://daisyui.com/components/
 - Edit `src/**`, `public/**`, and root config files.
@@ -33,6 +37,13 @@ Do not load every reference by default. Open only what the task needs.
 - Keep TMDB, MongoDB, Cloud gateway, and TorrServer integration logic in
   `src/services/**`.
 - Prefer Bun commands over npm when both are possible.
+- Follow Qwik patterns and daisyUI 5 rules in `references/ui-system.md` for
+  all component and styling work.
+- For Claude Code, keep project automation in `.claude/**` and keep the root
+  `CLAUDE.md` concise. Put durable detail in `references/**`. Project-scoped
+  MCP config lives in `.mcp.json`.
+- For cross-model work, prefer: Claude Code plans, Codex reviews the plan
+  against the codebase, Claude implements, Codex verifies.
 
 ## Verification
 

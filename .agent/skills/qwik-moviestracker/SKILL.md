@@ -48,7 +48,12 @@ repeating obvious facts in every prompt.
 
 ## Operating Guidance
 
-1. Start from `src/`, not generated output.
-2. Reuse the project’s shared UI primitives before inventing new ones.
-3. Keep behavior, verification, and documentation aligned in the same task.
-4. Update the relevant Markdown reference when project truth changes.
+1. Start from `src/`, not `dist/` or `server/`.
+2. Keep auth logic centralized.
+3. Preserve the `lang` query-param flow unless the task changes that behavior.
+4. Keep external API logic in `src/services/**`.
+5. Reuse the project’s shared UI primitives before inventing new ones.
+6. Follow Qwik / Qwik City 1.x patterns and daisyUI 5 guidance from
+   `references/ui-system.md` for UI work.
+7. Keep behavior, verification, and documentation aligned in the same task.
+8. Update the relevant Markdown reference when project truth changes.

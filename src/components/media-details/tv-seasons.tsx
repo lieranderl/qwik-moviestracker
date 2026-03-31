@@ -2,6 +2,7 @@ import { component$ } from "@builder.io/qwik";
 import type { Season } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { formatYear } from "~/utils/format";
+import { showDialogById } from "~/utils/browser";
 import {
   langEpisodesCount,
   langOverview,
@@ -33,16 +34,7 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
                   key={s.id}
                   class={s.overview ? "cursor-pointer" : ""}
                   onClick$={() => {
-                    const seasonsModal = document.getElementById(
-                      `season-modal-${s.id.toString()}`,
-                    )
-                      ? (document.getElementById(
-                          `season-modal-${s.id.toString()}`,
-                        ) as HTMLDialogElement)
-                      : null;
-                    if (seasonsModal) {
-                      seasonsModal.showModal();
-                    }
+                    showDialogById(`season-modal-${s.id.toString()}`);
                   }}
                 >
                   <MediaCard
@@ -62,8 +54,8 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
                 </div>
                 {s.overview && (
                   <dialog id={`season-modal-${s.id.toString()}`} class="modal">
-                    <div class="modal-box overlay-enter border-base-200 bg-base-100 max-w-2xl border shadow-xl">
-                      <div class="mb-4 flex items-start justify-between gap-4">
+                    <div class="modal-box overlay-enter border-base-200 bg-base-100 max-w-2xl border p-0 shadow-xl">
+                      <div class="border-base-200 bg-base-100/95 sticky top-0 z-20 flex items-start justify-between gap-4 border-b px-6 py-4 backdrop-blur">
                         <h3 class="text-lg font-bold">{langOverview(lang)}</h3>
                         <form method="dialog">
                           <button
@@ -74,9 +66,11 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
                           </button>
                         </form>
                       </div>
-                      <p class="text-base-content/80 leading-relaxed">
-                        {s.overview}
-                      </p>
+                      <div class="p-6">
+                        <p class="text-base-content/80 leading-relaxed">
+                          {s.overview}
+                        </p>
+                      </div>
                     </div>
                     <form method="dialog" class="modal-backdrop">
                       <button type="submit">close</button>

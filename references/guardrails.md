@@ -49,6 +49,9 @@
 - The Playwright browser suite may use a dev-only session bypass, but it must
   stay behind an explicit server env flag plus a dedicated browser cookie.
   Never enable that bypass by default or in production.
+- Deterministic Playwright route fixtures are allowed only behind that same
+  explicit bypass gate. Keep them narrow, route-scoped, and obviously fake so
+  they never become an alternate production data path.
 - Treat deployment config as part of runtime behavior, not standalone docs.
 - Prefer shared browser helpers in `src/utils/browser.ts` for `localStorage`
   and dialog access instead of repeating raw browser-global checks.

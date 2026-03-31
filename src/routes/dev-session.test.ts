@@ -1,7 +1,10 @@
 import { describe, expect, it } from "bun:test";
 import {
+  createDevMovieDetail,
   createDevSession,
+  DEV_MOVIE_DETAIL_ID,
   DEV_SESSION_BYPASS_VALUE,
+  hasDevSessionBypassCookie,
   isDevSessionBypassEnabled,
 } from "./dev-session";
 
@@ -45,5 +48,50 @@ describe("dev session bypass", () => {
     });
 
     expect(session).toBeNull();
+  });
+
+  it("reuses the same explicit cookie gate for dev-only route fixtures", () => {
+    expect(
+      hasDevSessionBypassCookie({
+        bypassCookie: DEV_SESSION_BYPASS_VALUE,
+        bypassFlag: "1",
+        nodeEnv: "development",
+      }),
+    ).toBe(true);
+
+    expect(
+      hasDevSessionBypassCookie({
+        bypassCookie: DEV_SESSION_BYPASS_VALUE,
+        bypassFlag: "1",
+        nodeEnv: "production",
+      }),
+    ).toBe(false);
+  });
+
+  it("creates a deterministic movie detail fixture only for the expected route id", () => {
+    const fixture = createDevMovieDetail({
+      bypassCookie: DEV_SESSION_BYPASS_VALUE,
+      bypassFlag: "1",
+      id: DEV_MOVIE_DETAIL_ID,
+      lang: "en-US",
+      nodeEnv: "development",
+    });
+
+    expect(fixture?.movie.title).toBe("Playwright in Paris");
+    expect(fixture?.lang).toBe("en-US");
+    expect(fixture?.recMovies).toHaveLength(1);
+    expect(fixture?.imdb?.Id).toBe("tt9900010");
+  });
+
+  it("does not create a movie detail fixture for other route ids", () => {
+    const fixture = createDevMovieDetail({
+      bypassCookie: DEV_SESSION_BYPASS_VALUE,
+      bypassFlag: "1",
+      id: 42,
+      lang: "en-US",
+      nodeEnv: "development",
+    });
+
+    expect(fixture).toBeNull();
   });
 });

@@ -4,6 +4,10 @@ import { routeLoader$ } from "@builder.io/qwik-city";
 import { DetailPageShell } from "~/components/detail-page-layout";
 import { ErrorState } from "~/components/page-feedback";
 import { MovieDetails } from "~/components/media-details/movie-details";
+import {
+  createDevMovieDetail,
+  DEV_SESSION_BYPASS_COOKIE,
+} from "~/routes/dev-session";
 import { getOptionalImdbRating } from "~/services/cloud-func-api";
 import type { ImdbRating, MovieFull, MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
@@ -35,6 +39,21 @@ export const useMovieDetailLoader = routeLoader$(async (event) => {
     return {
       status: "error",
       lang,
+    } satisfies MovieDetailData;
+  }
+
+  const devMovieDetail = createDevMovieDetail({
+    bypassCookie: event.cookie.get(DEV_SESSION_BYPASS_COOKIE)?.value ?? null,
+    bypassFlag: event.env.get("PLAYWRIGHT_AUTH_BYPASS"),
+    id,
+    lang,
+    nodeEnv: event.env.get("NODE_ENV") ?? process.env.NODE_ENV,
+  });
+
+  if (devMovieDetail) {
+    return {
+      status: "ready",
+      ...devMovieDetail,
     } satisfies MovieDetailData;
   }
 

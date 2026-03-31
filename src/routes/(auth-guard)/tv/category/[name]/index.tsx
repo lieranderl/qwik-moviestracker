@@ -132,7 +132,9 @@ export default component$(() => {
   return (
     <div class="pt-4 pb-10">
       <MediaGrid
+        description="Scroll down to keep loading more results from this TV shelf."
         eyebrow="Catalog"
+        headerBadge={`${tvItemsSig.value.length} loaded`}
         title={categoryToTitle(
           resource.value.category,
           MediaType.Tv,
@@ -160,7 +162,12 @@ export default component$(() => {
       </MediaGrid>
       <div class="my-4 flex justify-center">
         <div ref={sentinelRef} class="h-8 w-full" />
-        {isLoadingTv.value && <span class="loading loading-ring loading-lg" />}
+        {isLoadingTv.value && (
+          <div class="border-base-200 bg-base-100/88 flex items-center gap-3 rounded-full border px-4 py-2 text-sm shadow-sm">
+            <span class="loading loading-ring loading-sm" />
+            <span>Loading more series…</span>
+          </div>
+        )}
       </div>
     </div>
   );

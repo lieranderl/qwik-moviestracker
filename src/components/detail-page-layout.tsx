@@ -18,7 +18,7 @@ export const DetailPageShell = component$<DetailPageShellProps>(
             style={{ backgroundImage }}
           />
         )}
-        <div class="from-base-100/45 via-base-100/70 to-base-100 fixed inset-0 -z-10 bg-gradient-to-b" />
+        <div class="from-base-100/45 via-base-100/70 to-base-100 fixed inset-0 -z-10 bg-linear-to-b" />
 
         <div class="relative z-10 px-2 md:px-4">
           <Slot />

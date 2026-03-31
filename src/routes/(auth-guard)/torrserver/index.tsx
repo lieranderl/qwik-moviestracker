@@ -623,7 +623,7 @@ export default component$(() => {
                     )}
 
                     <div class="rounded-box bg-base-200/50 text-base-content/65 space-y-1 px-3 py-2 text-xs leading-relaxed">
-                      <p class="line-clamp-2 break-words">
+                      <p class="line-clamp-2 wrap-break-word">
                         {torrent.name || torrent.title}
                       </p>
                       {typeof torrent.total_peers === "number" && (

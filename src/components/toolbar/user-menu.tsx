@@ -41,7 +41,7 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
           <ul
             tabIndex={-1}
             role="menu"
-            class="menu menu-sm dropdown-content rounded-box border-base-200 bg-base-100 z-[60] mt-3 w-72 border p-2 shadow-xl"
+            class="menu menu-sm dropdown-content rounded-box border-base-200 bg-base-100 z-60 mt-3 w-72 border p-2 shadow-xl"
           >
             <li class="pointer-events-none mb-1 px-3 py-3">
               <div class="rounded-box border-base-200 bg-base-200/55 flex items-center gap-3 border px-3 py-3 shadow-sm backdrop-blur">

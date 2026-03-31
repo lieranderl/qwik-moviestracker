@@ -42,7 +42,7 @@ export default component$(() => {
       <body class="font-montserrat antialiased" lang="en-US">
         <a
           href="#main-content"
-          class="bg-base-100 text-base-content sr-only fixed top-3 left-3 z-[100] rounded-full px-4 py-2 text-sm font-semibold shadow-md focus:not-sr-only focus:outline-none"
+          class="bg-base-100 text-base-content sr-only fixed top-3 left-3 z-100 rounded-full px-4 py-2 text-sm font-semibold shadow-md focus:not-sr-only focus:outline-none"
         >
           Skip to content
         </a>

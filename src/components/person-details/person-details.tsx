@@ -48,11 +48,11 @@ export const PersonDetails = component$(
                     width="300"
                     height="450"
                     src={`https://image.tmdb.org/t/p/w300${person.profile_path}`}
-                    class="border-base-200 aspect-[2/3] w-[180px] rounded-xl border object-cover shadow-sm md:w-[220px]"
+                    class="border-base-200 aspect-2/3 w-45 rounded-xl border object-cover shadow-sm md:w-55"
                     alt={person.name}
                   />
                 ) : (
-                  <div class="border-base-200 bg-base-200 text-base-content/55 flex aspect-[2/3] w-[180px] items-center justify-center rounded-xl border text-sm font-medium shadow-sm md:w-[220px]">
+                  <div class="border-base-200 bg-base-200 text-base-content/55 flex aspect-2/3 w-45 items-center justify-center rounded-xl border text-sm font-medium shadow-sm md:w-55">
                     No image
                   </div>
                 )}

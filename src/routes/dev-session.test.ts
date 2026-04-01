@@ -2,9 +2,13 @@ import { describe, expect, it } from "bun:test";
 import {
   createDevHomeFeed,
   createDevMovieDetail,
+  createDevPersonDetail,
   createDevSession,
+  createDevTvDetail,
   DEV_MOVIE_DETAIL_ID,
+  DEV_PERSON_DETAIL_ID,
   DEV_SESSION_BYPASS_VALUE,
+  DEV_TV_DETAIL_ID,
   hasDevSessionBypassCookie,
   isDevSessionBypassEnabled,
 } from "./dev-session";
@@ -107,5 +111,33 @@ describe("dev session bypass", () => {
     expect(fixture?.movies[0]?.title).toBe("Playwright in Paris");
     expect(fixture?.tv[0]?.name).toBe("Selectors");
     expect(fixture?.torMovies[0]?.title).toBe("Hydration Station");
+  });
+
+  it("creates a deterministic tv detail fixture only for the expected route id", () => {
+    const fixture = createDevTvDetail({
+      bypassCookie: DEV_SESSION_BYPASS_VALUE,
+      bypassFlag: "1",
+      id: DEV_TV_DETAIL_ID,
+      lang: "en-US",
+      nodeEnv: "development",
+    });
+
+    expect(fixture?.tv.name).toBe("Selectors");
+    expect(fixture?.recTv[0]?.name).toBe("State Machines");
+    expect(fixture?.imdb?.Id).toBe("tt9901010");
+  });
+
+  it("creates a deterministic person detail fixture only for the expected route id", () => {
+    const fixture = createDevPersonDetail({
+      bypassCookie: DEV_SESSION_BYPASS_VALUE,
+      bypassFlag: "1",
+      id: DEV_PERSON_DETAIL_ID,
+      lang: "en-US",
+      nodeEnv: "development",
+    });
+
+    expect(fixture?.person.name).toBe("Lin Carter");
+    expect(fixture?.perMovies.cast[0]?.title).toBe("Playwright in Paris");
+    expect(fixture?.perTv.cast[0]?.name).toBe("Selectors");
   });
 });

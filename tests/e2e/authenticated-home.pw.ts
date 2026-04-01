@@ -42,7 +42,7 @@ test.describe("authenticated home", () => {
     ).toBeVisible();
     await expect(
       page.getByRole("link", {
-        name: /selectors/i,
+        name: /tv selectors 2025 • series resume/i,
       }),
     ).toBeVisible();
     await expect(

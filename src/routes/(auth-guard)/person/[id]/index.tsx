@@ -4,6 +4,10 @@ import { routeLoader$ } from "@builder.io/qwik-city";
 import { DetailPageShell } from "~/components/detail-page-layout";
 import { ErrorState } from "~/components/page-feedback";
 import { PersonDetails } from "~/components/person-details/person-details";
+import {
+  createDevPersonDetail,
+  DEV_SESSION_BYPASS_COOKIE,
+} from "~/routes/dev-session";
 import type { PersonFull, PersonMedia } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getMediaDetails, getPersonMovies, getPersonTv } from "~/services/tmdb";
@@ -29,6 +33,21 @@ export const usePersonDetailLoader = routeLoader$(async (event) => {
     return {
       status: "error",
       lang,
+    } satisfies PersonDetailData;
+  }
+
+  const devPersonDetail = createDevPersonDetail({
+    bypassCookie: event.cookie.get(DEV_SESSION_BYPASS_COOKIE)?.value ?? null,
+    bypassFlag: event.env.get("PLAYWRIGHT_AUTH_BYPASS"),
+    id,
+    lang,
+    nodeEnv: event.env.get("NODE_ENV") ?? process.env.NODE_ENV,
+  });
+
+  if (devPersonDetail) {
+    return {
+      status: "ready",
+      ...devPersonDetail,
     } satisfies PersonDetailData;
   }
 

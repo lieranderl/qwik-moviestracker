@@ -4,6 +4,10 @@ import { routeLoader$ } from "@builder.io/qwik-city";
 import { DetailPageShell } from "~/components/detail-page-layout";
 import { ErrorState } from "~/components/page-feedback";
 import { TvDetails } from "~/components/media-details/tv-details";
+import {
+  createDevTvDetail,
+  DEV_SESSION_BYPASS_COOKIE,
+} from "~/routes/dev-session";
 import { getOptionalImdbRating } from "~/services/cloud-func-api";
 import type { ImdbRating, TvFull, TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
@@ -30,6 +34,21 @@ export const useTvDetailLoader = routeLoader$(async (event) => {
     return {
       status: "error",
       lang,
+    } satisfies TvDetailData;
+  }
+
+  const devTvDetail = createDevTvDetail({
+    bypassCookie: event.cookie.get(DEV_SESSION_BYPASS_COOKIE)?.value ?? null,
+    bypassFlag: event.env.get("PLAYWRIGHT_AUTH_BYPASS"),
+    id,
+    lang,
+    nodeEnv: event.env.get("NODE_ENV") ?? process.env.NODE_ENV,
+  });
+
+  if (devTvDetail) {
+    return {
+      status: "ready",
+      ...devTvDetail,
     } satisfies TvDetailData;
   }
 

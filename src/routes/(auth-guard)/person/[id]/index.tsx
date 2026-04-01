@@ -9,8 +9,11 @@ import {
   DEV_SESSION_BYPASS_COOKIE,
 } from "~/routes/dev-session";
 import type { PersonFull, PersonMedia } from "~/services/models";
-import { MediaType } from "~/services/models";
-import { getMediaDetails, getPersonMovies, getPersonTv } from "~/services/tmdb";
+import {
+  getPersonDetails,
+  getPersonMovies,
+  getPersonTv,
+} from "~/services/tmdb";
 
 type PersonDetailData =
   | {
@@ -53,10 +56,9 @@ export const usePersonDetailLoader = routeLoader$(async (event) => {
 
   try {
     const [person, perMovies, perTv] = await Promise.all([
-      getMediaDetails({
+      getPersonDetails({
         id,
         language: lang,
-        type: MediaType.Person,
       }) as Promise<PersonFull>,
       getPersonMovies({ id, language: lang }) as Promise<PersonMedia>,
       getPersonTv({ id, language: lang }) as Promise<PersonMedia>,

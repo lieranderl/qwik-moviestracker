@@ -1,5 +1,6 @@
 import type { Session } from "@auth/core/types";
 import {
+  type LocalizedCertification,
   MediaType,
   type ImdbRating,
   type MovieFull,
@@ -7,6 +8,7 @@ import {
   type MovieShort,
   type PersonFull,
   type PersonMedia,
+  type RegionalWatchProviders,
   type TvShort,
   type TvFull,
 } from "~/services/models";
@@ -90,6 +92,8 @@ type DevMovieDetailFixture = {
   recMovies: MovieShort[];
   colMovies: MovieShort[];
   imdb: ImdbRating | null;
+  certification: LocalizedCertification | null;
+  watchProviders: RegionalWatchProviders | null;
 };
 
 type DevHomeFeedFixture = {
@@ -104,6 +108,8 @@ type DevTvDetailFixture = {
   tv: TvFull;
   recTv: TvShort[];
   imdb: ImdbRating | null;
+  certification: LocalizedCertification | null;
+  watchProviders: RegionalWatchProviders | null;
 };
 
 type DevPersonDetailFixture = {
@@ -184,6 +190,36 @@ const DEV_MOVIE_IMDB = {
   Rating: "7.9",
   Votes: "128,400",
 } satisfies ImdbRating;
+
+const DEV_MOVIE_CERTIFICATION = {
+  rating: "PG-13",
+  region: "US",
+} satisfies LocalizedCertification;
+
+const DEV_MOVIE_WATCH_PROVIDERS = {
+  ads: [],
+  buy: [
+    {
+      provider_id: 2,
+      provider_name: "Apple TV",
+    },
+  ],
+  flatrate: [
+    {
+      provider_id: 8,
+      provider_name: "Netflix",
+    },
+  ],
+  free: [],
+  link: "https://www.themoviedb.org/movie/990001/watch?locale=US",
+  region: "US",
+  rent: [
+    {
+      provider_id: 3,
+      provider_name: "Google Play Movies",
+    },
+  ],
+} satisfies RegionalWatchProviders;
 
 const DEV_HOME_MOVIES = [
   {
@@ -324,6 +360,31 @@ const DEV_TV_IMDB = {
   Votes: "94,000",
 } satisfies ImdbRating;
 
+const DEV_TV_CERTIFICATION = {
+  rating: "TV-14",
+  region: "US",
+} satisfies LocalizedCertification;
+
+const DEV_TV_WATCH_PROVIDERS = {
+  ads: [],
+  buy: [
+    {
+      provider_id: 10,
+      provider_name: "Amazon Video",
+    },
+  ],
+  flatrate: [
+    {
+      provider_id: 15,
+      provider_name: "Hulu",
+    },
+  ],
+  free: [],
+  link: "https://www.themoviedb.org/tv/990101/watch?locale=US",
+  region: "US",
+  rent: [],
+} satisfies RegionalWatchProviders;
+
 const DEV_PERSON_DETAIL = {
   id: DEV_PERSON_DETAIL_ID,
   media_type: MediaType.Person,
@@ -422,6 +483,8 @@ export const createDevMovieDetail = ({
     recMovies: DEV_MOVIE_RECOMMENDATIONS,
     colMovies: [],
     imdb: DEV_MOVIE_IMDB,
+    certification: DEV_MOVIE_CERTIFICATION,
+    watchProviders: DEV_MOVIE_WATCH_PROVIDERS,
   };
 };
 
@@ -475,6 +538,8 @@ export const createDevTvDetail = ({
     tv: DEV_TV_DETAIL,
     recTv: DEV_TV_RECOMMENDATIONS,
     imdb: DEV_TV_IMDB,
+    certification: DEV_TV_CERTIFICATION,
+    watchProviders: DEV_TV_WATCH_PROVIDERS,
   };
 };
 

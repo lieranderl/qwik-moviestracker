@@ -15,12 +15,16 @@ test.describe("authenticated movie detail", () => {
     await expect(
       page.getByRole("heading", { name: "Playwright in Paris" }),
     ).toBeVisible();
-    await expect(page.getByText("A deterministic movie for browser tests.")).toBeVisible();
+    await expect(
+      page.getByText("A deterministic movie for browser tests."),
+    ).toBeVisible();
     await expect(
       page.getByRole("link", {
         name: /open imdb profile/i,
       }),
     ).toBeVisible();
+    await expect(page.getByText("PG-13 • US")).toBeVisible();
+    await expect(page.getByText("Netflix")).toBeVisible();
     await expect(
       page.getByRole("link", {
         name: /assertions at dawn/i,
@@ -28,9 +32,15 @@ test.describe("authenticated movie detail", () => {
     ).toBeVisible();
 
     await expect
-      .poll(() =>
-        page.evaluate(() => window.localStorage.getItem("moviestracker:last-viewed")),
-      )
+      .poll(async () => {
+        try {
+          return await page.evaluate(() =>
+            window.localStorage.getItem("moviestracker:last-viewed"),
+          );
+        } catch {
+          return null;
+        }
+      })
       .toContain(`"/movie/${DEV_MOVIE_DETAIL_ID}/?lang=en-US"`);
   });
 });

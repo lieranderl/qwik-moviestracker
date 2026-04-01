@@ -9,9 +9,22 @@ import {
   DEV_SESSION_BYPASS_COOKIE,
 } from "~/routes/dev-session";
 import { getOptionalImdbRating } from "~/services/cloud-func-api";
-import type { ImdbRating, TvFull, TvShort } from "~/services/models";
+import type {
+  ImdbRating,
+  LocalizedCertification,
+  RegionalWatchProviders,
+  TvFull,
+  TvShort,
+} from "~/services/models";
 import { MediaType } from "~/services/models";
-import { getMediaDetails, getMediaRecom } from "~/services/tmdb";
+import {
+  getMediaRecom,
+  getOptionalWatchProviders,
+  getRegionFromLanguage,
+  getTvDetails,
+  resolveRegionalWatchProviders,
+  resolveTvCertification,
+} from "~/services/tmdb";
 
 type TvDetailData =
   | {
@@ -20,6 +33,8 @@ type TvDetailData =
       tv: TvFull;
       recTv: TvShort[];
       imdb: ImdbRating | null;
+      certification: LocalizedCertification | null;
+      watchProviders: RegionalWatchProviders | null;
     }
   | {
       status: "error";
@@ -53,13 +68,13 @@ export const useTvDetailLoader = routeLoader$(async (event) => {
   }
 
   try {
-    const tv = (await getMediaDetails({
+    const tv = await getTvDetails({
       id,
       language: lang,
-      type: MediaType.Tv,
-    })) as TvFull;
+    });
+    const region = getRegionFromLanguage(lang);
 
-    const [recTv, imdb] = await Promise.all([
+    const [recTv, imdb, watchProviderResults] = await Promise.all([
       getMediaRecom({
         id,
         language: lang,
@@ -67,6 +82,10 @@ export const useTvDetailLoader = routeLoader$(async (event) => {
         query: "recommendations",
       }) as Promise<TvShort[]>,
       getOptionalImdbRating(tv.external_ids.imdb_id),
+      getOptionalWatchProviders({
+        id,
+        type: MediaType.Tv,
+      }),
     ]);
 
     return {
@@ -75,6 +94,11 @@ export const useTvDetailLoader = routeLoader$(async (event) => {
       tv,
       recTv,
       imdb,
+      certification: resolveTvCertification(tv.content_ratings, region),
+      watchProviders: resolveRegionalWatchProviders(
+        watchProviderResults,
+        region,
+      ),
     } satisfies TvDetailData;
   } catch (error) {
     console.error(error);
@@ -103,6 +127,8 @@ export default component$(() => {
         tv={value.tv}
         recTv={value.recTv}
         imdb={value.imdb}
+        certification={value.certification}
+        watchProviders={value.watchProviders}
         lang={value.lang}
       />
     </DetailPageShell>

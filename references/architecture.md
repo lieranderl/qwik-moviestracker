@@ -60,6 +60,8 @@ Keep new external API access in `src/services/**`, not inside route files.
   fetched data, not the connection string itself.
 - Protected movie, TV, and person detail routes should fetch TMDB and IMDb data
   inside `routeLoader$` and pass plain data into presentational components.
+- Movie and TV detail loaders now normalize TMDB region-specific certifications
+  and watch-provider availability before rendering the detail UI.
 
 ## Generated Output
 

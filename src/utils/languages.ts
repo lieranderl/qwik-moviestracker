@@ -700,6 +700,127 @@ export const langNetworks = (lang: string) => {
   }
 };
 
+export const langAvailability = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Availability";
+    case "ru-RU":
+      return "Доступность";
+    default:
+      return "Доступность";
+  }
+};
+
+export const langWhereToWatch = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Where to watch in";
+    case "ru-RU":
+      return "Где смотреть в регионе";
+    default:
+      return "Где смотреть в регионе";
+  }
+};
+
+export const langCertification = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Certification";
+    case "ru-RU":
+      return "Возрастной рейтинг";
+    default:
+      return "Возрастной рейтинг";
+  }
+};
+
+export const langRegion = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Region:";
+    case "ru-RU":
+      return "Регион:";
+    default:
+      return "Регион:";
+  }
+};
+
+export const langStream = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Stream";
+    case "ru-RU":
+      return "Стриминг";
+    default:
+      return "Стриминг";
+  }
+};
+
+export const langFree = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Free";
+    case "ru-RU":
+      return "Бесплатно";
+    default:
+      return "Бесплатно";
+  }
+};
+
+export const langWatchWithAds = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "With ads";
+    case "ru-RU":
+      return "С рекламой";
+    default:
+      return "С рекламой";
+  }
+};
+
+export const langRent = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Rent";
+    case "ru-RU":
+      return "Аренда";
+    default:
+      return "Аренда";
+  }
+};
+
+export const langBuy = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Buy";
+    case "ru-RU":
+      return "Покупка";
+    default:
+      return "Покупка";
+  }
+};
+
+export const langOpenOnTmdb = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Open on TMDB";
+    case "ru-RU":
+      return "Открыть на TMDB";
+    default:
+      return "Открыть на TMDB";
+  }
+};
+
+export const langSupportedByTmdb = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Regional metadata from TMDB";
+    case "ru-RU":
+      return "Региональные данные из TMDB";
+    default:
+      return "Региональные данные из TMDB";
+  }
+};
+
 export const langQuickFilters = (lang: string) => {
   switch (lang) {
     case "en-US":

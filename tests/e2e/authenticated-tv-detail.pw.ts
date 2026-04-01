@@ -19,15 +19,23 @@ test.describe("authenticated tv detail", () => {
     await expect(
       page.getByRole("link", { name: /open imdb profile/i }),
     ).toBeVisible();
+    await expect(page.getByText("TV-14 • US")).toBeVisible();
+    await expect(page.getByText("Hulu")).toBeVisible();
     await expect(page.getByText("Returning Series")).toBeVisible();
     await expect(
       page.getByRole("link", { name: /state machines/i }),
     ).toBeVisible();
 
     await expect
-      .poll(() =>
-        page.evaluate(() => window.localStorage.getItem("moviestracker:last-viewed")),
-      )
+      .poll(async () => {
+        try {
+          return await page.evaluate(() =>
+            window.localStorage.getItem("moviestracker:last-viewed"),
+          );
+        } catch {
+          return null;
+        }
+      })
       .toContain(`"/tv/${DEV_TV_DETAIL_ID}/?lang=en-US"`);
   });
 });

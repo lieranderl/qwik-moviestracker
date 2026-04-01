@@ -188,6 +188,9 @@ export type MediaAppended = {
 	credits?: Credits;
 	similar?: Similar;
 	recommendations?: Similar;
+	release_dates?: ReleaseDates;
+	content_ratings?: ContentRatings;
+	watch_providers?: WatchProviderResults;
 };
 
 export type Videos = {
@@ -234,6 +237,72 @@ export type ExternalIDS = {
 	twitter_id?: string;
 	tiktok_id?: string;
 	youtube_id?: string;
+};
+
+export type ReleaseDates = {
+	id: number;
+	results: ReleaseDateRegion[];
+};
+
+export type ReleaseDateRegion = {
+	iso_3166_1: string;
+	release_dates: ReleaseDateEntry[];
+};
+
+export type ReleaseDateEntry = {
+	certification?: string;
+	descriptors?: string[];
+	iso_639_1?: string;
+	note?: string;
+	release_date?: string;
+	type?: number;
+};
+
+export type ContentRatings = {
+	id: number;
+	results: ContentRating[];
+};
+
+export type ContentRating = {
+	descriptors?: string[];
+	iso_3166_1: string;
+	rating?: string;
+};
+
+export type WatchProvider = {
+	display_priority?: number;
+	logo_path?: null | string;
+	provider_id: number;
+	provider_name?: string;
+};
+
+export type WatchProviderRegion = {
+	ads?: WatchProvider[];
+	buy?: WatchProvider[];
+	flatrate?: WatchProvider[];
+	free?: WatchProvider[];
+	link?: string;
+	rent?: WatchProvider[];
+};
+
+export type WatchProviderResults = {
+	id: number;
+	results: Record<string, WatchProviderRegion>;
+};
+
+export type RegionalWatchProviders = {
+	ads: WatchProvider[];
+	buy: WatchProvider[];
+	flatrate: WatchProvider[];
+	free: WatchProvider[];
+	link?: string;
+	region: string;
+	rent: WatchProvider[];
+};
+
+export type LocalizedCertification = {
+	rating: string;
+	region: string;
 };
 
 export type Credits = {

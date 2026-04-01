@@ -27,6 +27,14 @@
   - `person`
   - `search`
   - `torrserver`
+- Discovery landing pages under `movie/` and `tv/` blend TMDB shelves with the
+  existing localized routing pattern (`?lang=...`).
+- Movie category routes mix TMDB discovery shelves (`trending`, `popular`,
+  `nowplaying`, `upcoming`) with Mongo-backed local collections
+  (`updated`, `hdr10`, `dolbyvision`).
+- TV category routes are TMDB-backed discovery shelves (`trending`,
+  `popular`, `toprated`, `airingtoday`, `ontheair`) and should reject unknown
+  slugs instead of falling back to unrelated content.
 
 ## Auth Model
 

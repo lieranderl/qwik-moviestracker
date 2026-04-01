@@ -9,15 +9,18 @@ import { ErrorState, SectionHeading } from "~/components/page-feedback";
 import type { MediaShort, MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { DbType, getMoviesMongo } from "~/services/mongoatlas";
-import { getTrendingMedia, withImages } from "~/services/tmdb";
+import { getMedias, getTrendingMedia, withImages } from "~/services/tmdb";
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import {
   langLatestDolbyVisionMovies,
   langLatestHDR10Movies,
   langLatestMovies,
+  langNowPlayingMovies,
+  langPopularMovies,
   langQuickFilters,
   langTrendingMovies,
+  langUpcomingMovies,
   langSwipeToBrowse,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
@@ -27,6 +30,9 @@ type MovieCollectionsData =
       status: "ready";
       lang: string;
       movies: MovieShort[];
+      popularMovies: MovieShort[];
+      nowPlayingMovies: MovieShort[];
+      upcomingMovies: MovieShort[];
       torMovies: MediaShort[];
       hdrMovies: MediaShort[];
       dolbyMovies: MediaShort[];
@@ -41,9 +47,38 @@ export const useMovieCollectionsLoader = routeLoader$(async (event) => {
   const envMongoUrl = event.env.get("MONGO_URI") ?? "";
 
   try {
-    const [m, torMovies, hdrMovies, dolbyMovies] = await Promise.all([
+    const [
+      movies,
+      popularMovies,
+      nowPlayingMovies,
+      upcomingMovies,
+      torMovies,
+      hdrMovies,
+      dolbyMovies,
+    ] = await Promise.all([
       getTrendingMedia({
         page: 1,
+        language: lang,
+        type: MediaType.Movie,
+        needbackdrop: true,
+      }),
+      getMedias({
+        page: 1,
+        query: "popular",
+        language: lang,
+        type: MediaType.Movie,
+        needbackdrop: true,
+      }),
+      getMedias({
+        page: 1,
+        query: "now_playing",
+        language: lang,
+        type: MediaType.Movie,
+        needbackdrop: true,
+      }),
+      getMedias({
+        page: 1,
+        query: "upcoming",
         language: lang,
         type: MediaType.Movie,
         needbackdrop: true,
@@ -83,7 +118,10 @@ export const useMovieCollectionsLoader = routeLoader$(async (event) => {
     return {
       status: "ready",
       lang,
-      movies: m as MovieShort[],
+      movies: movies as MovieShort[],
+      popularMovies: popularMovies as MovieShort[],
+      nowPlayingMovies: nowPlayingMovies as MovieShort[],
+      upcomingMovies: upcomingMovies as MovieShort[],
       torMovies,
       hdrMovies,
       dolbyMovies,
@@ -116,9 +154,12 @@ export default component$(() => {
       <SectionHeading
         eyebrow="Movies"
         title="Browse movie collections"
-        description="Move between the freshest catalog drops, HDR and Dolby Vision shelves, and the broader trending movie feed from one place."
+        description="Move between local premium shelves and TMDB-powered movie discovery feeds without losing your language context."
         badges={[
           `${value.torMovies.length} latest`,
+          `${value.popularMovies.length} popular`,
+          `${value.nowPlayingMovies.length} now playing`,
+          `${value.upcomingMovies.length} upcoming`,
           `${value.hdrMovies.length} HDR10`,
           `${value.dolbyMovies.length} Dolby Vision`,
         ]}
@@ -131,6 +172,9 @@ export default component$(() => {
             href: "#latest-movies",
             label: langLatestMovies(lang),
           },
+          { href: "#popular-movies", label: langPopularMovies(lang) },
+          { href: "#now-playing-movies", label: langNowPlayingMovies(lang) },
+          { href: "#upcoming-movies", label: langUpcomingMovies(lang) },
           { href: "#hdr10-movies", label: langLatestHDR10Movies(lang) },
           {
             href: "#dolby-vision-movies",
@@ -151,6 +195,87 @@ export default component$(() => {
         lang={lang}
       >
         {value.torMovies.map((m) => (
+          <div class="carousel-item" key={m.id}>
+            <a
+              href={paths.media(MediaType.Movie, m.id, lang)}
+              class="media-card-link"
+            >
+              <MediaCard
+                title={m.title ? m.title : ""}
+                width={500}
+                rating={m.vote_average ? m.vote_average : 0}
+                year={formatYear(m.release_date)}
+                picfile={m.backdrop_path}
+                variant="landscape"
+              />
+            </a>
+          </div>
+        ))}
+      </MediaCarousel>
+
+      <MediaCarousel
+        hintLabel={langSwipeToBrowse(lang)}
+        sectionId="popular-movies"
+        title={langPopularMovies(lang)}
+        type={MediaType.Movie}
+        category="popular"
+        lang={lang}
+      >
+        {value.popularMovies.map((m) => (
+          <div class="carousel-item" key={m.id}>
+            <a
+              href={paths.media(MediaType.Movie, m.id, lang)}
+              class="media-card-link"
+            >
+              <MediaCard
+                title={m.title ? m.title : ""}
+                width={500}
+                rating={m.vote_average ? m.vote_average : 0}
+                year={formatYear(m.release_date)}
+                picfile={m.backdrop_path}
+                variant="landscape"
+              />
+            </a>
+          </div>
+        ))}
+      </MediaCarousel>
+
+      <MediaCarousel
+        hintLabel={langSwipeToBrowse(lang)}
+        sectionId="now-playing-movies"
+        title={langNowPlayingMovies(lang)}
+        type={MediaType.Movie}
+        category="nowplaying"
+        lang={lang}
+      >
+        {value.nowPlayingMovies.map((m) => (
+          <div class="carousel-item" key={m.id}>
+            <a
+              href={paths.media(MediaType.Movie, m.id, lang)}
+              class="media-card-link"
+            >
+              <MediaCard
+                title={m.title ? m.title : ""}
+                width={500}
+                rating={m.vote_average ? m.vote_average : 0}
+                year={formatYear(m.release_date)}
+                picfile={m.backdrop_path}
+                variant="landscape"
+              />
+            </a>
+          </div>
+        ))}
+      </MediaCarousel>
+
+      <MediaCarousel
+        hintLabel={langSwipeToBrowse(lang)}
+        sectionId="upcoming-movies"
+        title={langUpcomingMovies(lang)}
+        type={MediaType.Movie}
+        category="upcoming"
+        lang={lang}
+      >
+        {value.upcomingMovies.map((m) => (
           <div class="carousel-item" key={m.id}>
             <a
               href={paths.media(MediaType.Movie, m.id, lang)}

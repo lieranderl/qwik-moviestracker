@@ -6,7 +6,7 @@ import { MediaGrid } from "~/components/media-grid";
 import type { MediaShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getMoviesMongo } from "~/services/mongoatlas";
-import { getTrendingMedia, withImages } from "~/services/tmdb";
+import { getMedias, getTrendingMedia, withImages } from "~/services/tmdb";
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import { createInfiniteScrollObserver } from "~/utils/infinite-scroll";
@@ -19,16 +19,41 @@ type FetchMovieCategoryPageArgs = {
   page: number;
 };
 
+const MOVIE_TMDB_CATEGORY_QUERIES: Record<string, string | null> = {
+  trending: null,
+  popular: "popular",
+  nowplaying: "now_playing",
+  upcoming: "upcoming",
+};
+
+const isSupportedMovieCategory = (category: string) =>
+  category in MOVIE_TMDB_CATEGORY_QUERIES ||
+  category === "updated" ||
+  category === "hdr10" ||
+  category === "dolbyvision";
+
 const fetchMovieCategoryPage = async ({
   category,
   env,
   lang,
   page,
 }: FetchMovieCategoryPageArgs): Promise<MediaShort[]> => {
-  if (category === "trending") {
+  const tmdbQuery = MOVIE_TMDB_CATEGORY_QUERIES[category];
+
+  if (tmdbQuery === null) {
     return (await getTrendingMedia({
       page,
       language: lang,
+      type: MediaType.Movie,
+      needbackdrop: false,
+    })) as MediaShort[];
+  }
+
+  if (tmdbQuery) {
+    return (await getMedias({
+      page,
+      language: lang,
+      query: tmdbQuery,
       type: MediaType.Movie,
       needbackdrop: false,
     })) as MediaShort[];
@@ -50,6 +75,10 @@ export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   const env = event.env.get("MONGO_URI") ?? "";
   const category = event.params.name;
+
+  if (!isSupportedMovieCategory(category)) {
+    throw event.redirect(302, paths.notFound(lang));
+  }
 
   try {
     const movies = await fetchMovieCategoryPage({

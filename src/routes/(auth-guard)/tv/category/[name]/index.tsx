@@ -17,38 +17,52 @@ type FetchTvCategoryPageArgs = {
   page: number;
 };
 
+const TV_CATEGORY_QUERIES: Record<string, string | null> = {
+  trending: null,
+  toprated: "top_rated",
+  popular: "popular",
+  airingtoday: "airing_today",
+  ontheair: "on_the_air",
+};
+
 const fetchTvCategoryPage = async ({
   category,
   lang,
   page,
 }: FetchTvCategoryPageArgs): Promise<TvShort[]> => {
-  if (category === "toprated") {
-    return (await getMedias({
+  const tmdbQuery = TV_CATEGORY_QUERIES[category];
+
+  if (tmdbQuery === null) {
+    return (await getTrendingMedia({
       page,
       language: lang,
-      query: "top_rated",
       type: MediaType.Tv,
       needbackdrop: false,
     })) as TvShort[];
   }
 
-  return (await getTrendingMedia({
-    page,
-    language: lang,
-    type: MediaType.Tv,
-    needbackdrop: false,
-  })) as TvShort[];
+  if (tmdbQuery) {
+    return (await getMedias({
+      page,
+      language: lang,
+      query: tmdbQuery,
+      type: MediaType.Tv,
+      needbackdrop: false,
+    })) as TvShort[];
+  }
+
+  return [];
 };
 
 const isSupportedTvCategory = (category: string) =>
-  category === "trending" || category === "toprated";
+  category in TV_CATEGORY_QUERIES;
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   const category = event.params.name;
 
   if (!isSupportedTvCategory(category)) {
-    return { tv: [] as TvShort[], category, lang };
+    throw event.redirect(302, paths.notFound(lang));
   }
 
   try {

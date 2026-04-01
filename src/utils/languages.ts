@@ -287,14 +287,80 @@ export const langTrendingMovies = (lang: string) => {
   }
 };
 
+export const langNowPlayingMovies = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Now Playing";
+    case "ru-RU":
+      return "Сейчас в кино";
+    default:
+      return "Сейчас в кино";
+  }
+};
+
+export const langUpcomingMovies = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Upcoming Movies";
+    case "ru-RU":
+      return "Скоро в кино";
+    default:
+      return "Скоро в кино";
+  }
+};
+
+export const langPopularMovies = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Popular Movies";
+    case "ru-RU":
+      return "Популярные фильмы";
+    default:
+      return "Популярные фильмы";
+  }
+};
+
 export const langTrengingTVShows = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Trenging TV Shows";
+      return "Trending TV Shows";
     case "ru-RU":
       return "Популярные Сериалы";
     default:
       return "Популярные Сериалы";
+  }
+};
+
+export const langAiringTodayTvShows = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Airing Today";
+    case "ru-RU":
+      return "Сегодня в эфире";
+    default:
+      return "Сегодня в эфире";
+  }
+};
+
+export const langOnTheAirTvShows = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "On The Air";
+    case "ru-RU":
+      return "Сейчас выходят";
+    default:
+      return "Сейчас выходят";
+  }
+};
+
+export const langPopularTvShows = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Popular TV Shows";
+    case "ru-RU":
+      return "Популярные сериалы";
+    default:
+      return "Популярные сериалы";
   }
 };
 

@@ -25,6 +25,8 @@ import { formatYear } from "~/utils/format";
 import { pushRecentSearch, readRecentSearches } from "~/utils/recent-activity";
 import {
   langBrowseHome,
+  langDiscoverMovies,
+  langDiscoverTv,
   langBrowseMovies,
   langBrowseTv,
   langNoResults,
@@ -148,8 +150,16 @@ export default component$(() => {
             label: langBrowseMovies(resource.value.lang),
           },
           {
+            href: paths.movieDiscover(resource.value.lang),
+            label: langDiscoverMovies(resource.value.lang),
+          },
+          {
             href: paths.tv(resource.value.lang),
             label: langBrowseTv(resource.value.lang),
+          },
+          {
+            href: paths.tvDiscover(resource.value.lang),
+            label: langDiscoverTv(resource.value.lang),
           },
         ]}
         emptyState="Search for a title once and it will show up here."

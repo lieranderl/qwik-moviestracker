@@ -75,6 +75,8 @@ export const paths = {
     `/${mediaType}/${id}/?lang=${lang}`,
   category: (type: string, category: string, lang: string) =>
     `/${type}/category/${category}/?lang=${lang}`,
+  movieDiscover: (lang: string) => `/movie/discover/?lang=${lang}`,
+  tvDiscover: (lang: string) => `/tv/discover/?lang=${lang}`,
   moviePhotos: (id: number, lang: string) =>
     `/movie/${id}/photos/?lang=${lang}`,
   movieVideo: (id: number, lang: string) => `/movie/${id}/videos/?lang=${lang}`,

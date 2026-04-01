@@ -37,4 +37,9 @@ describe("category paths", () => {
       "/tv/category/airingtoday/?lang=ru-RU",
     );
   });
+
+  it("builds dedicated discover routes for movies and tv", () => {
+    expect(paths.movieDiscover("en-US")).toBe("/movie/discover/?lang=en-US");
+    expect(paths.tvDiscover("ru-RU")).toBe("/tv/discover/?lang=ru-RU");
+  });
 });

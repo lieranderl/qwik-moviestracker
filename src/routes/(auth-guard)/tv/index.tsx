@@ -11,6 +11,7 @@ import { getMedias, getTrendingMedia } from "~/services/tmdb";
 import { formatYear } from "~/utils/format";
 import {
   langAiringTodayTvShows,
+  langDiscoverTv,
   langOnTheAirTvShows,
   langPopularTvShows,
   langQuickFilters,
@@ -90,6 +91,13 @@ export default component$(() => {
           `${resource.value.tvontheair.length} on the air`,
         ]}
       />
+      <section class="alert alert-info rounded-box border-info/20 bg-base-100/95 border shadow-sm">
+        <span class="text-sm leading-relaxed">
+          Trending surfaces short-window movement on TMDB, while Popular and
+          Discover rely on broader popularity and vote history. Use TV discover
+          when you want provider, regional, year, and vote-count filters.
+        </span>
+      </section>
       <QuickFilterStrip
         label={langQuickFilters(resource.value.lang)}
         items={[
@@ -116,6 +124,14 @@ export default component$(() => {
           },
         ]}
       />
+      <div class="flex flex-wrap items-center gap-2">
+        <a
+          href={paths.tvDiscover(resource.value.lang)}
+          class="btn btn-primary rounded-full"
+        >
+          {langDiscoverTv(resource.value.lang)}
+        </a>
+      </div>
       <MediaCarousel
         hintLabel={langSwipeToBrowse(resource.value.lang)}
         sectionId="trending-tv"

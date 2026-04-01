@@ -276,6 +276,14 @@ export type WatchProvider = {
 	provider_name?: string;
 };
 
+export type WatchProviderCatalogItem = WatchProvider & {
+	display_priorities?: Record<string, number>;
+};
+
+export type WatchProviderCatalog = {
+	results: WatchProviderCatalogItem[];
+};
+
 export type WatchProviderRegion = {
 	ads?: WatchProvider[];
 	buy?: WatchProvider[];
@@ -303,6 +311,16 @@ export type RegionalWatchProviders = {
 export type LocalizedCertification = {
 	rating: string;
 	region: string;
+};
+
+export type CertificationListEntry = {
+	certification: string;
+	meaning?: string;
+	order?: number;
+};
+
+export type CertificationList = {
+	certifications: Record<string, CertificationListEntry[]>;
 };
 
 export type Credits = {

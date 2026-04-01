@@ -25,6 +25,8 @@ import { formatYear } from "~/utils/format";
 import {
   langLatestMovies,
   langContinueBrowsing,
+  langDiscoverMovies,
+  langDiscoverTv,
   langFeaturedSpotlight,
   langJumpBackIn,
   langOpenDetails,
@@ -158,6 +160,17 @@ export default component$(() => {
           { href: "#trending-tv", label: langTrengingTVShows(lang) },
         ]}
       />
+      <div class="flex flex-wrap items-center gap-2">
+        <a
+          href={paths.movieDiscover(lang)}
+          class="btn btn-primary rounded-full"
+        >
+          {langDiscoverMovies(lang)}
+        </a>
+        <a href={paths.tvDiscover(lang)} class="btn btn-outline rounded-full">
+          {langDiscoverTv(lang)}
+        </a>
+      </div>
       {value.movies.length > 0 && featuredMovie && (
         <FeaturedSpotlight
           ctaLabel={langOpenDetails(lang)}

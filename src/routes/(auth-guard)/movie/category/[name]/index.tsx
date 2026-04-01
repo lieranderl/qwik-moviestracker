@@ -6,7 +6,12 @@ import { MediaGrid } from "~/components/media-grid";
 import type { MediaShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getMoviesMongo } from "~/services/mongoatlas";
-import { getMedias, getTrendingMedia, withImages } from "~/services/tmdb";
+import {
+  getMedias,
+  getRegionFromLanguage,
+  getTrendingMedia,
+  withImages,
+} from "~/services/tmdb";
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import { createInfiniteScrollObserver } from "~/utils/infinite-scroll";
@@ -54,6 +59,10 @@ const fetchMovieCategoryPage = async ({
       page,
       language: lang,
       query: tmdbQuery,
+      region:
+        category === "nowplaying" || category === "upcoming"
+          ? getRegionFromLanguage(lang)
+          : undefined,
       type: MediaType.Movie,
       needbackdrop: false,
     })) as MediaShort[];

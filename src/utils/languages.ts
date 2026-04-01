@@ -898,6 +898,127 @@ export const langQuickFilters = (lang: string) => {
   }
 };
 
+export const langDiscoverMovies = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Discover Movies";
+    case "ru-RU":
+      return "Подбор фильмов";
+    default:
+      return "Подбор фильмов";
+  }
+};
+
+export const langDiscoverTv = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Discover TV";
+    case "ru-RU":
+      return "Подбор сериалов";
+    default:
+      return "Подбор сериалов";
+  }
+};
+
+export const langApplyFilters = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Apply filters";
+    case "ru-RU":
+      return "Применить фильтры";
+    default:
+      return "Применить фильтры";
+  }
+};
+
+export const langResetFilters = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Reset filters";
+    case "ru-RU":
+      return "Сбросить фильтры";
+    default:
+      return "Сбросить фильтры";
+  }
+};
+
+export const langSortBy = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Sort by";
+    case "ru-RU":
+      return "Сортировка";
+    default:
+      return "Сортировка";
+  }
+};
+
+export const langMinimumVotes = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Minimum votes";
+    case "ru-RU":
+      return "Минимум голосов";
+    default:
+      return "Минимум голосов";
+  }
+};
+
+export const langReleaseYear = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Release year";
+    case "ru-RU":
+      return "Год релиза";
+    default:
+      return "Год релиза";
+  }
+};
+
+export const langFirstAirYear = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "First air year";
+    case "ru-RU":
+      return "Год премьеры";
+    default:
+      return "Год премьеры";
+  }
+};
+
+export const langStreamingProvider = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Streaming provider";
+    case "ru-RU":
+      return "Стриминг-провайдер";
+    default:
+      return "Стриминг-провайдер";
+  }
+};
+
+export const langAllProviders = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "All providers";
+    case "ru-RU":
+      return "Все провайдеры";
+    default:
+      return "Все провайдеры";
+  }
+};
+
+export const langAllCertifications = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "All certifications";
+    case "ru-RU":
+      return "Все рейтинги";
+    default:
+      return "Все рейтинги";
+  }
+};
+
 export const langFeaturedSpotlight = (lang: string) => {
   switch (lang) {
     case "en-US":

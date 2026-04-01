@@ -1,14 +1,18 @@
 import { formatYear } from "~/utils/format";
 import type {
+  CertificationList,
   Collection,
   Images,
   MediaCollection,
   MediaShort,
   MediaShortStrict,
+  MovieShort,
   MovieFull,
   PersonMedia,
   PersonFull,
+  TvShort,
   TvFull,
+  WatchProviderCatalog,
   WatchProviderResults,
 } from "./models";
 import { MediaType } from "./models";
@@ -164,6 +168,7 @@ type GetMedias = {
   language: string;
   type: Exclude<MediaType, MediaType.Seasons>;
   needbackdrop: boolean;
+  region?: string;
 };
 export const getMedias = async ({
   query,
@@ -171,12 +176,14 @@ export const getMedias = async ({
   language,
   type,
   needbackdrop,
+  region,
 }: GetMedias) => {
   const result = await fetchTMDB<
     MediaCollection<MediaShortStrict<typeof type>>
   >(`${type}/${query}`, {
     page: String(page),
     language,
+    ...(region ? { region } : {}),
   });
 
   if (result.total_results === 0) return result.results;
@@ -364,4 +371,118 @@ export const search = ({ query, page, language }: Search) => {
       query,
     },
   );
+};
+
+type DiscoverMovie = {
+  certification?: string;
+  language: string;
+  minVotes?: number;
+  page: number;
+  providerId?: number;
+  region: string;
+  sortBy: string;
+  year?: number;
+};
+
+export const discoverMovies = ({
+  certification,
+  language,
+  minVotes,
+  page,
+  providerId,
+  region,
+  sortBy,
+  year,
+}: DiscoverMovie) => {
+  return fetchTMDB<MediaCollection<MovieShort>>("discover/movie", {
+    page: String(page),
+    language,
+    sort_by: sortBy,
+    region,
+    watch_region: region,
+    ...(minVotes ? { "vote_count.gte": String(minVotes) } : {}),
+    ...(year ? { primary_release_year: String(year) } : {}),
+    ...(providerId ? { with_watch_providers: String(providerId) } : {}),
+    ...(certification
+      ? {
+          certification,
+          certification_country: region,
+        }
+      : {}),
+  });
+};
+
+type DiscoverTv = {
+  language: string;
+  minVotes?: number;
+  page: number;
+  providerId?: number;
+  region: string;
+  sortBy: string;
+  year?: number;
+};
+
+export const discoverTv = ({
+  language,
+  minVotes,
+  page,
+  providerId,
+  region,
+  sortBy,
+  year,
+}: DiscoverTv) => {
+  return fetchTMDB<MediaCollection<TvShort>>("discover/tv", {
+    page: String(page),
+    language,
+    sort_by: sortBy,
+    watch_region: region,
+    ...(minVotes ? { "vote_count.gte": String(minVotes) } : {}),
+    ...(year ? { first_air_date_year: String(year) } : {}),
+    ...(providerId ? { with_watch_providers: String(providerId) } : {}),
+  });
+};
+
+export const getMovieCertificationList = () => {
+  return fetchTMDB<CertificationList>("certification/movie/list");
+};
+
+export const getOptionalMovieCertificationList = async () => {
+  try {
+    return await getMovieCertificationList();
+  } catch (error) {
+    console.error("Unable to fetch TMDB movie certifications", error);
+    return null;
+  }
+};
+
+export const getTvCertificationList = () => {
+  return fetchTMDB<CertificationList>("certification/tv/list");
+};
+
+export const getOptionalTvCertificationList = async () => {
+  try {
+    return await getTvCertificationList();
+  } catch (error) {
+    console.error("Unable to fetch TMDB TV certifications", error);
+    return null;
+  }
+};
+
+type GetWatchProviderCatalog = {
+  type: MediaType.Movie | MediaType.Tv;
+};
+
+export const getWatchProviderCatalog = ({ type }: GetWatchProviderCatalog) => {
+  return fetchTMDB<WatchProviderCatalog>(`watch/providers/${type}`);
+};
+
+export const getOptionalWatchProviderCatalog = async ({
+  type,
+}: GetWatchProviderCatalog) => {
+  try {
+    return await getWatchProviderCatalog({ type });
+  } catch (error) {
+    console.error("Unable to fetch TMDB watch provider catalog", error);
+    return null;
+  }
 };

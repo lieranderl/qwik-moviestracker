@@ -9,10 +9,16 @@ import { ErrorState, SectionHeading } from "~/components/page-feedback";
 import type { MediaShort, MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { DbType, getMoviesMongo } from "~/services/mongoatlas";
-import { getMedias, getTrendingMedia, withImages } from "~/services/tmdb";
+import {
+  getMedias,
+  getRegionFromLanguage,
+  getTrendingMedia,
+  withImages,
+} from "~/services/tmdb";
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import {
+  langDiscoverMovies,
   langLatestDolbyVisionMovies,
   langLatestHDR10Movies,
   langLatestMovies,
@@ -45,6 +51,7 @@ type MovieCollectionsData =
 export const useMovieCollectionsLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   const envMongoUrl = event.env.get("MONGO_URI") ?? "";
+  const region = getRegionFromLanguage(lang);
 
   try {
     const [
@@ -73,6 +80,7 @@ export const useMovieCollectionsLoader = routeLoader$(async (event) => {
         page: 1,
         query: "now_playing",
         language: lang,
+        region,
         type: MediaType.Movie,
         needbackdrop: true,
       }),
@@ -80,6 +88,7 @@ export const useMovieCollectionsLoader = routeLoader$(async (event) => {
         page: 1,
         query: "upcoming",
         language: lang,
+        region,
         type: MediaType.Movie,
         needbackdrop: true,
       }),
@@ -154,7 +163,7 @@ export default component$(() => {
       <SectionHeading
         eyebrow="Movies"
         title="Browse movie collections"
-        description="Move between local premium shelves and TMDB-powered movie discovery feeds without losing your language context."
+        description={`Move between local premium shelves and TMDB-powered discovery feeds without losing your language context. Now Playing and Upcoming shelves use ${getRegionFromLanguage(lang)} release windows.`}
         badges={[
           `${value.torMovies.length} latest`,
           `${value.popularMovies.length} popular`,
@@ -164,6 +173,13 @@ export default component$(() => {
           `${value.dolbyMovies.length} Dolby Vision`,
         ]}
       />
+      <section class="alert alert-info rounded-box border-info/20 bg-base-100/95 border shadow-sm">
+        <span class="text-sm leading-relaxed">
+          Trending reflects short weekly movement on TMDB. Popularity is a
+          longer-lived score. Use movie discover when you need provider,
+          certification, regional, year, and vote-count filters.
+        </span>
+      </section>
       <QuickFilterStrip
         label={langQuickFilters(lang)}
         items={[
@@ -186,6 +202,14 @@ export default component$(() => {
           },
         ]}
       />
+      <div class="flex flex-wrap items-center gap-2">
+        <a
+          href={paths.movieDiscover(lang)}
+          class="btn btn-primary rounded-full"
+        >
+          {langDiscoverMovies(lang)}
+        </a>
+      </div>
       <MediaCarousel
         hintLabel={langSwipeToBrowse(lang)}
         sectionId="latest-movies"

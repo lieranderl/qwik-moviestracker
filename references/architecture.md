@@ -29,6 +29,9 @@
   - `torrserver`
 - Discovery landing pages under `movie/` and `tv/` blend TMDB shelves with the
   existing localized routing pattern (`?lang=...`).
+- Dedicated TMDB discover routes now live at `movie/discover/` and
+  `tv/discover/`. They use GET query params so filters, pagination, and `lang`
+  stay in the URL.
 - Movie category routes mix TMDB discovery shelves (`trending`, `popular`,
   `nowplaying`, `upcoming`) with Mongo-backed local collections
   (`updated`, `hdr10`, `dolbyvision`).
@@ -55,6 +58,8 @@
 - MongoDB Atlas reads: `src/services/mongoatlas.ts`
 - TorrServer client: `src/services/torrserver.ts`
 - Mongo client init and reuse: `src/utils/mongodbinit.ts`
+- Discover filter normalization and TMDB catalog option helpers live in
+  `src/utils/discover.ts`.
 
 Keep new external API access in `src/services/**`, not inside route files.
 
@@ -70,6 +75,12 @@ Keep new external API access in `src/services/**`, not inside route files.
   inside `routeLoader$` and pass plain data into presentational components.
 - Movie and TV detail loaders now normalize TMDB region-specific certifications
   and watch-provider availability before rendering the detail UI.
+- Movie `nowplaying` and `upcoming` shelves now pass the region derived from
+  the active `lang` into TMDB so release-driven results better match the
+  localized browsing context.
+- Movie and TV discover loaders fetch TMDB certification and provider catalogs
+  on the server, validate query-param filters against those catalogs, and only
+  then call the discover endpoints.
 
 ## Generated Output
 

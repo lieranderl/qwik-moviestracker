@@ -19,6 +19,9 @@ export const DEV_MOVIE_DETAIL_ID = 990001;
 export const DEV_TV_DETAIL_ID = 990101;
 export const DEV_PERSON_DETAIL_ID = 990201;
 
+const normalizeNodeEnv = (nodeEnv?: string | null) =>
+  nodeEnv?.trim().toLowerCase();
+
 type DevSessionOptions = {
   bypassCookie?: string | null;
   bypassFlag?: string | null;
@@ -31,7 +34,7 @@ export const isDevSessionBypassEnabled = ({
   bypassFlag,
   nodeEnv,
 }: Pick<DevSessionOptions, "bypassFlag" | "nodeEnv">) => {
-  return bypassFlag === "1" && nodeEnv !== "production";
+  return bypassFlag === "1" && normalizeNodeEnv(nodeEnv) !== "production";
 };
 
 export const hasDevSessionBypassCookie = ({

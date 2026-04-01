@@ -28,6 +28,13 @@ describe("dev session bypass", () => {
         nodeEnv: "production",
       }),
     ).toBe(false);
+
+    expect(
+      isDevSessionBypassEnabled({
+        bypassFlag: "1",
+        nodeEnv: " Production ",
+      }),
+    ).toBe(false);
   });
 
   it("creates a fake session only for the expected cookie in non-production contexts", () => {

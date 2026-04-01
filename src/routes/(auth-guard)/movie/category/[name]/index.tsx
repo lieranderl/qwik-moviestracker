@@ -6,7 +6,12 @@ import { MediaGrid } from "~/components/media-grid";
 import type { MediaShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { getMoviesMongo } from "~/services/mongoatlas";
-import { getTrendingMedia, withImages } from "~/services/tmdb";
+import {
+  getMedias,
+  getRegionFromLanguage,
+  getTrendingMedia,
+  withImages,
+} from "~/services/tmdb";
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import { createInfiniteScrollObserver } from "~/utils/infinite-scroll";
@@ -19,16 +24,45 @@ type FetchMovieCategoryPageArgs = {
   page: number;
 };
 
+const MOVIE_TMDB_CATEGORY_QUERIES: Record<string, string | null> = {
+  trending: null,
+  popular: "popular",
+  nowplaying: "now_playing",
+  upcoming: "upcoming",
+};
+
+const isSupportedMovieCategory = (category: string) =>
+  category in MOVIE_TMDB_CATEGORY_QUERIES ||
+  category === "updated" ||
+  category === "hdr10" ||
+  category === "dolbyvision";
+
 const fetchMovieCategoryPage = async ({
   category,
   env,
   lang,
   page,
 }: FetchMovieCategoryPageArgs): Promise<MediaShort[]> => {
-  if (category === "trending") {
+  const tmdbQuery = MOVIE_TMDB_CATEGORY_QUERIES[category];
+
+  if (tmdbQuery === null) {
     return (await getTrendingMedia({
       page,
       language: lang,
+      type: MediaType.Movie,
+      needbackdrop: false,
+    })) as MediaShort[];
+  }
+
+  if (tmdbQuery) {
+    return (await getMedias({
+      page,
+      language: lang,
+      query: tmdbQuery,
+      region:
+        category === "nowplaying" || category === "upcoming"
+          ? getRegionFromLanguage(lang)
+          : undefined,
       type: MediaType.Movie,
       needbackdrop: false,
     })) as MediaShort[];
@@ -50,6 +84,10 @@ export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   const env = event.env.get("MONGO_URI") ?? "";
   const category = event.params.name;
+
+  if (!isSupportedMovieCategory(category)) {
+    throw event.redirect(302, paths.notFound(lang));
+  }
 
   try {
     const movies = await fetchMovieCategoryPage({
@@ -141,6 +179,9 @@ export default component$(() => {
   return (
     <div class="pt-4 pb-10">
       <MediaGrid
+        description="Scroll down to keep loading more results from this movie shelf."
+        eyebrow="Catalog"
+        headerBadge={`${movieItemsSig.value.length} loaded`}
         title={categoryToTitle(
           resource.value.category,
           MediaType.Movie,
@@ -160,8 +201,7 @@ export default component$(() => {
                 rating={m.vote_average ? m.vote_average : 0}
                 year={formatYear(m.year ?? m.release_date)}
                 picfile={m.poster_path}
-                isPerson={false}
-                isHorizontal={false}
+                variant="poster"
                 layout="grid"
               />
             </a>
@@ -170,7 +210,10 @@ export default component$(() => {
       <div class="my-4 flex justify-center">
         <div ref={sentinelRef} class="h-8 w-full" />
         {isLoadingMovies.value && (
-          <span class="loading loading-ring loading-lg" />
+          <div class="border-base-200 bg-base-100/88 flex items-center gap-3 rounded-full border px-4 py-2 text-sm shadow-sm">
+            <span class="loading loading-ring loading-sm" />
+            <span>Loading more movies…</span>
+          </div>
         )}
       </div>
     </div>

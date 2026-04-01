@@ -28,7 +28,7 @@ export const ContinueBrowsingWidget = component$<ContinueBrowsingWidgetProps>(
     resumeLabel,
   }) => {
     const lastViewed = useSignal<LastViewedItem | null>(null);
-    const recentSearches = useSignal(readRecentSearches());
+    const recentSearches = useSignal<ReturnType<typeof readRecentSearches>>([]);
 
     // eslint-disable-next-line qwik/no-use-visible-task
     useVisibleTask$(() => {

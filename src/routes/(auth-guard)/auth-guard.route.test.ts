@@ -1,6 +1,10 @@
 import { describe, expect, it } from "bun:test";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import {
+  createDevSession,
+  DEV_SESSION_BYPASS_VALUE,
+} from "~/routes/dev-session";
 
 describe("auth guard redirect behavior", () => {
   it("preserves the lang query parameter when redirecting unauthenticated users", async () => {
@@ -18,5 +22,18 @@ describe("auth guard redirect behavior", () => {
 
     expect(source).not.toContain("export const useEnv");
     expect(source).not.toContain("envMongoUrl");
+  });
+
+  it("allows an explicit dev-only Playwright session bypass outside production", () => {
+    const session = createDevSession({
+      bypassCookie: DEV_SESSION_BYPASS_VALUE,
+      bypassFlag: "1",
+      lang: "en-US",
+      nodeEnv: "development",
+      now: new Date("2026-03-31T00:00:00.000Z"),
+    });
+
+    expect(session?.user?.name).toBe("Playwright User");
+    expect(session?.language).toBe("en-US");
   });
 });

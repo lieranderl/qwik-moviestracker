@@ -4,8 +4,10 @@ import { DetailPageContainer } from "~/components/detail-page-layout";
 import {
   MediaType,
   type ImdbRating,
+  type LocalizedCertification,
   type MovieFull,
   type MovieShort,
+  type RegionalWatchProviders,
 } from "~/services/models";
 import { formatCrew, formatCurrency, formatYear } from "~/utils/format";
 import {
@@ -28,6 +30,7 @@ import { MediaCarousel } from "../media-carousel";
 import { TorrentsModal } from "../torrents-list-modal";
 import { TrailersModal } from "../trailers-list-modal";
 import { MediaInfo } from "./media-info";
+import { MediaAvailability } from "./media-availability";
 
 import { MediaRating } from "./media-rating";
 import { MediaTitle } from "./media-title";
@@ -37,11 +40,21 @@ interface MovieDetailsProps {
   recMovies: MovieShort[];
   colMovies: MovieShort[];
   imdb: ImdbRating | null;
+  certification: LocalizedCertification | null;
+  watchProviders: RegionalWatchProviders | null;
   lang: string;
 }
 
 export const MovieDetails = component$(
-  ({ movie, recMovies, colMovies, imdb, lang }: MovieDetailsProps) => {
+  ({
+    movie,
+    recMovies,
+    colMovies,
+    imdb,
+    certification,
+    watchProviders,
+    lang,
+  }: MovieDetailsProps) => {
     // eslint-disable-next-line qwik/no-use-visible-task
     useVisibleTask$(() => {
       writeLastViewed({
@@ -75,6 +88,11 @@ export const MovieDetails = component$(
               <span class="badge badge-ghost">
                 {movie.release_date ? formatYear(movie.release_date) : "N/A"}
               </span>
+              {certification && (
+                <span class="badge badge-primary badge-outline">
+                  {certification.rating} • {certification.region}
+                </span>
+              )}
               {movie.runtime && movie.runtime > 0 && (
                 <span class="badge badge-ghost">{movie.runtime} min</span>
               )}
@@ -144,32 +162,45 @@ export const MovieDetails = component$(
 
           {(movie.budget !== undefined && movie.budget > 0) ||
           (movie.revenue !== undefined && movie.revenue > 0) ? (
-            <section class="section-reveal card border-base-200 bg-base-100/95 border shadow-sm">
-              <div class="card-body">
-                <h3 class="card-title text-base-content/80 text-lg">
-                  Box Office
-                </h3>
-                <div class="stats stats-vertical bg-transparent">
-                  {movie.budget !== undefined && movie.budget > 0 && (
-                    <div class="stat px-0 py-3">
-                      <div class="stat-title">{langBudget(lang)}</div>
-                      <div class="stat-value text-lg">
-                        {formatCurrency(movie.budget, lang)}
+            <div class="space-y-6">
+              <MediaAvailability
+                certification={certification}
+                watchProviders={watchProviders}
+                lang={lang}
+              />
+              <section class="section-reveal card border-base-200 bg-base-100/95 border shadow-sm">
+                <div class="card-body">
+                  <h3 class="card-title text-base-content/80 text-lg">
+                    Box Office
+                  </h3>
+                  <div class="stats stats-vertical bg-transparent">
+                    {movie.budget !== undefined && movie.budget > 0 && (
+                      <div class="stat px-0 py-3">
+                        <div class="stat-title">{langBudget(lang)}</div>
+                        <div class="stat-value text-lg">
+                          {formatCurrency(movie.budget, lang)}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  {movie.revenue !== undefined && movie.revenue > 0 && (
-                    <div class="stat px-0 py-3">
-                      <div class="stat-title">{langRevenue(lang)}</div>
-                      <div class="stat-value text-lg">
-                        {formatCurrency(movie.revenue, lang)}
+                    )}
+                    {movie.revenue !== undefined && movie.revenue > 0 && (
+                      <div class="stat px-0 py-3">
+                        <div class="stat-title">{langRevenue(lang)}</div>
+                        <div class="stat-value text-lg">
+                          {formatCurrency(movie.revenue, lang)}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
-            </section>
-          ) : null}
+              </section>
+            </div>
+          ) : (
+            <MediaAvailability
+              certification={certification}
+              watchProviders={watchProviders}
+              lang={lang}
+            />
+          )}
         </div>
 
         <div class="mt-10 space-y-10">
@@ -191,9 +222,8 @@ export const MovieDetails = component$(
                     year={0}
                     rating={0}
                     picfile={c.profile_path}
-                    isPerson={true}
-                    isHorizontal={false}
-                    charName={c.character}
+                    variant="person"
+                    metaLabel={c.character}
                   />
                 </a>
               </div>
@@ -221,9 +251,8 @@ export const MovieDetails = component$(
                         year={0}
                         rating={0}
                         picfile={c.profile_path}
-                        isPerson={true}
-                        isHorizontal={false}
-                        charName={c.job}
+                        variant="person"
+                        metaLabel={c.job}
                       />
                     </a>
                   </div>
@@ -251,8 +280,7 @@ export const MovieDetails = component$(
                       rating={m.vote_average ? m.vote_average : 0}
                       year={formatYear(m.release_date)}
                       picfile={m.backdrop_path}
-                      isPerson={false}
-                      isHorizontal={true}
+                      variant="landscape"
                     />
                   </a>
                 </div>
@@ -280,8 +308,7 @@ export const MovieDetails = component$(
                       rating={m.vote_average ? m.vote_average : 0}
                       year={formatYear(m.release_date)}
                       picfile={m.backdrop_path}
-                      isPerson={false}
-                      isHorizontal={true}
+                      variant="landscape"
                     />
                   </a>
                 </div>

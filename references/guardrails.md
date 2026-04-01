@@ -41,23 +41,29 @@
 - Read request-scoped env inside `routeLoader$`, request handlers, or `server$`
   functions only, and pass derived data rather than raw secret values.
 - Be careful with auth fallback behavior during build and SSG.
-- `src/routes/plugin@auth.ts` may use a placeholder secret only in the
-  build-safe fallback branch where MongoDB is absent, so CI and SSG can build
-  without production auth env. The normal runtime auth path must still rely on
-  a real `AUTH_SECRET`.
+- `src/routes/plugin@auth.ts` may use a placeholder secret only for build/test
+  contexts in the JWT fallback branch where MongoDB is absent.
+- Runtime auth must fail closed without a real `AUTH_SECRET`; do not allow a
+  predictable placeholder secret in normal dev, preview, or deployed auth
+  flows.
+- The Playwright browser suite may use a dev-only session bypass, but it must
+  stay behind an explicit server env flag plus a dedicated browser cookie.
+  Never enable that bypass by default or in production.
+- Deterministic Playwright route fixtures are allowed only behind that same
+  explicit bypass gate. Keep them narrow, route-scoped, and obviously fake so
+  they never become an alternate production data path.
 - Treat deployment config as part of runtime behavior, not standalone docs.
 - Prefer shared browser helpers in `src/utils/browser.ts` for `localStorage`
   and dialog access instead of repeating raw browser-global checks.
 - Do not treat `typeof localStorage !== "undefined"` as sufficient. Validate
   the Storage API shape (`getItem` / `setItem`) or go through the shared helper
   because some runtimes expose a non-Storage placeholder.
-- Prefer `useTask$` with an `isServer` guard for ongoing storage sync.
 - Use `useVisibleTask$` for initial browser-only hydration when route state must
   be restored from `localStorage` after resume or browser restart, such as the
   TorrServer page.
-- Recent activity and recent-search storage are also resume-sensitive browser
-  state. Read and write them from `useVisibleTask$`, not a no-track `useTask$`
-  with an `isServer` early return.
+- Recent activity and recent-search storage are resume-sensitive browser state.
+  Read and write them from `useVisibleTask$`; the authenticated search/browser
+  smoke tests rely on that behavior.
 - Reserve raw DOM logic for actual DOM-dependent work such as element refs,
   layout measurement, or event listeners.
 

@@ -3,15 +3,16 @@ import { Image } from "@unpic/qwik";
 import { RatingStar } from "~/components/rating-star";
 import { TMDB_IMAGE_BASE_URL } from "~/utils/constants";
 
-interface MovieCardProps {
+export type MediaCardVariant = "landscape" | "poster" | "person";
+
+interface MediaCardProps {
   title: string;
   picfile: string | null | undefined;
   width: number;
-  charName?: string;
+  metaLabel?: string;
   rating: number | string | null | undefined;
   year: number;
-  isPerson: boolean;
-  isHorizontal: boolean;
+  variant?: MediaCardVariant;
   layout?: "carousel" | "grid";
 }
 
@@ -19,19 +20,18 @@ const META_ROW_CLASS =
   "mb-1 flex h-5 items-center truncate text-xs font-medium tracking-wider uppercase";
 
 const getCardWidthClass = ({
-  isHorizontal,
-  isPerson,
   layout,
-}: Pick<MovieCardProps, "isHorizontal" | "isPerson" | "layout">) => {
+  variant,
+}: Pick<MediaCardProps, "layout" | "variant">) => {
   if (layout === "grid") {
     return "w-full";
   }
 
-  if (isHorizontal) {
+  if (variant === "landscape") {
     return "ms-2 w-[16rem] sm:w-[18rem] lg:w-[20rem] xl:w-[22rem]";
   }
 
-  return isPerson
+  return variant === "person"
     ? "ms-2 w-[7.25rem] sm:w-[7.75rem] lg:w-[8.25rem]"
     : "ms-2 w-[8.5rem] sm:w-[9rem] lg:w-[9.5rem]";
 };
@@ -50,7 +50,7 @@ const getPlaceholderLabel = (title: string) => {
   return `${words[0][0] ?? ""}${words[1][0] ?? ""}`.toUpperCase();
 };
 
-const getSafeRating = (rating: MovieCardProps["rating"]) => {
+const getSafeRating = (rating: MediaCardProps["rating"]) => {
   const parsed =
     typeof rating === "number"
       ? rating
@@ -63,22 +63,21 @@ export const MediaCard = component$(
     title,
     picfile,
     width,
-    charName,
+    metaLabel,
     rating,
     year,
-    isPerson,
-    isHorizontal,
+    variant = "poster",
     layout = "carousel",
-  }: MovieCardProps) => {
+  }: MediaCardProps) => {
     const hasPoster = Boolean(picfile);
-    const height = isHorizontal ? (width * 9) / 16 : (width * 3) / 2;
+    const isLandscape = variant === "landscape";
+    const height = isLandscape ? (width * 9) / 16 : (width * 3) / 2;
     const cardWidthClass = getCardWidthClass({
-      isHorizontal,
-      isPerson,
+      variant,
       layout,
     });
-    const aspectClass = isHorizontal ? "aspect-video" : "aspect-[2/3]";
-    const bodyHeightClass = isHorizontal ? "h-[3.5rem]" : "h-[3.75rem]";
+    const aspectClass = isLandscape ? "aspect-video" : "aspect-[2/3]";
+    const bodyHeightClass = isLandscape ? "h-[3.5rem]" : "h-[3.75rem]";
     const containerClass =
       layout === "grid" ? `${cardWidthClass} h-full` : cardWidthClass;
     const cardClass = `focus-ringable media-card-surface card bg-base-100 border-base-300/60 rounded-box relative overflow-hidden border shadow-sm transform-gpu ${
@@ -89,14 +88,14 @@ export const MediaCard = component$(
 
     return (
       <div class={containerClass}>
-        {charName && (
+        {metaLabel && (
           <span
             class={`text-base-content/70 before:text-base-content/40 ${META_ROW_CLASS} before:mr-2 before:content-['•']`}
           >
-            {charName}
+            {metaLabel}
           </span>
         )}
-        {!charName && (
+        {!metaLabel && (
           <span class={`text-base-content/0 ${META_ROW_CLASS}`}>&nbsp;</span>
         )}
         <div class={cardClass}>

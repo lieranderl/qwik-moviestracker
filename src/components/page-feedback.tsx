@@ -97,22 +97,42 @@ export const EmptyState = component$<FeedbackCardProps>(
   },
 );
 
-export const SectionHeading = component$<{ eyebrow?: string; title: string }>(
-  ({ eyebrow, title }) => {
-    return (
-      <header class="section-reveal mb-5 space-y-2 text-left">
-        {eyebrow && (
-          <p class="text-base-content/60 text-xs font-semibold tracking-[0.12em] uppercase">
-            {eyebrow}
-          </p>
-        )}
-        <h1 class="text-3xl font-bold tracking-tight text-balance md:text-4xl">
-          {title}
-        </h1>
-      </header>
-    );
-  },
-);
+export const SectionHeading = component$<{
+  badges?: string[];
+  description?: string;
+  eyebrow?: string;
+  title: string;
+}>(({ badges, description, eyebrow, title }) => {
+  return (
+    <header class="section-reveal mb-5 space-y-3 text-left">
+      {eyebrow && (
+        <p class="text-base-content/60 text-xs font-semibold tracking-[0.12em] uppercase">
+          {eyebrow}
+        </p>
+      )}
+      <h1 class="text-3xl font-bold tracking-tight text-balance md:text-4xl">
+        {title}
+      </h1>
+      {description && (
+        <p class="text-base-content/70 max-w-3xl text-sm leading-relaxed md:text-base">
+          {description}
+        </p>
+      )}
+      {badges && badges.length > 0 && (
+        <div class="flex flex-wrap items-center gap-2">
+          {badges.map((badge) => (
+            <span
+              key={badge}
+              class="badge border-base-300/80 bg-base-200/65 text-base-content/75 rounded-full px-3 py-3 font-medium shadow-none"
+            >
+              {badge}
+            </span>
+          ))}
+        </div>
+      )}
+    </header>
+  );
+});
 
 export const InlineFilterGroup = component$(() => {
   return (

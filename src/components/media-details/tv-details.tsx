@@ -5,6 +5,8 @@ import { DetailPageContainer } from "~/components/detail-page-layout";
 import {
   MediaType,
   type ImdbRating,
+  type LocalizedCertification,
+  type RegionalWatchProviders,
   type TvFull,
   type TvShort,
 } from "~/services/models";
@@ -26,6 +28,7 @@ import { MediaCarousel } from "../media-carousel";
 import { TorrentsModal } from "../torrents-list-modal";
 import { TrailersModal } from "../trailers-list-modal";
 import { MediaInfo } from "./media-info";
+import { MediaAvailability } from "./media-availability";
 import { MediaRating } from "./media-rating";
 import { MediaTitle } from "./media-title";
 import { TvEpisodeStatus } from "./tv-episode-status";
@@ -35,11 +38,20 @@ interface TvDetailsProps {
   tv: TvFull;
   recTv: TvShort[];
   imdb: ImdbRating | null;
+  certification: LocalizedCertification | null;
+  watchProviders: RegionalWatchProviders | null;
   lang: string;
 }
 
 export const TvDetails = component$(
-  ({ tv, recTv, imdb, lang }: TvDetailsProps) => {
+  ({
+    tv,
+    recTv,
+    imdb,
+    certification,
+    watchProviders,
+    lang,
+  }: TvDetailsProps) => {
     // eslint-disable-next-line qwik/no-use-visible-task
     useVisibleTask$(() => {
       writeLastViewed({
@@ -73,6 +85,11 @@ export const TvDetails = component$(
               <span class="badge badge-ghost">
                 {formatYear(tv.first_air_date) || "N/A"}
               </span>
+              {certification && (
+                <span class="badge badge-primary badge-outline">
+                  {certification.rating} • {certification.region}
+                </span>
+              )}
               <span class="badge badge-ghost gap-1">
                 <LuLayers3 class="text-sm" />
                 {tv.number_of_seasons} Seasons
@@ -153,27 +170,39 @@ export const TvDetails = component$(
             />
           </div>
 
-          <section class="section-reveal card border-base-200 bg-base-100/95 border shadow-sm">
-            <div class="card-body">
-              <h3 class="card-title text-base-content/80 text-lg">
-                Series Stats
-              </h3>
-              <div class="stats stats-vertical bg-transparent">
-                <div class="stat px-0 py-3">
-                  <div class="stat-title">Seasons</div>
-                  <div class="stat-value text-lg">{tv.number_of_seasons}</div>
-                </div>
-                <div class="stat px-0 py-3">
-                  <div class="stat-title">Episodes</div>
-                  <div class="stat-value text-lg">{tv.number_of_episodes}</div>
-                </div>
-                <div class="stat px-0 py-3">
-                  <div class="stat-title">Status</div>
-                  <div class="stat-value text-lg">{tv.status || "Unknown"}</div>
+          <div class="space-y-6">
+            <MediaAvailability
+              certification={certification}
+              watchProviders={watchProviders}
+              lang={lang}
+            />
+
+            <section class="section-reveal card border-base-200 bg-base-100/95 border shadow-sm">
+              <div class="card-body">
+                <h3 class="card-title text-base-content/80 text-lg">
+                  Series Stats
+                </h3>
+                <div class="stats stats-vertical bg-transparent">
+                  <div class="stat px-0 py-3">
+                    <div class="stat-title">Seasons</div>
+                    <div class="stat-value text-lg">{tv.number_of_seasons}</div>
+                  </div>
+                  <div class="stat px-0 py-3">
+                    <div class="stat-title">Episodes</div>
+                    <div class="stat-value text-lg">
+                      {tv.number_of_episodes}
+                    </div>
+                  </div>
+                  <div class="stat px-0 py-3">
+                    <div class="stat-title">Status</div>
+                    <div class="stat-value text-lg">
+                      {tv.status || "Unknown"}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
         </div>
 
         <div class="mt-10 space-y-10">
@@ -198,8 +227,7 @@ export const TvDetails = component$(
                       year={0}
                       rating={0}
                       picfile={c.profile_path}
-                      isPerson={true}
-                      isHorizontal={false}
+                      variant="person"
                     />
                   </a>
                 </div>
@@ -225,9 +253,8 @@ export const TvDetails = component$(
                     year={0}
                     rating={0}
                     picfile={c.profile_path}
-                    isPerson={true}
-                    isHorizontal={false}
-                    charName={c.character}
+                    variant="person"
+                    metaLabel={c.character}
                   />
                 </a>
               </div>
@@ -254,8 +281,7 @@ export const TvDetails = component$(
                       rating={m.vote_average ? m.vote_average : 0}
                       year={formatYear(m.first_air_date)}
                       picfile={m.backdrop_path}
-                      isPerson={false}
-                      isHorizontal={true}
+                      variant="landscape"
                     />
                   </a>
                 </div>

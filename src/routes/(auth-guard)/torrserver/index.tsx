@@ -287,7 +287,11 @@ export default component$(() => {
 
   return (
     <div class="mx-auto w-full max-w-7xl px-4 pb-10">
-      <SectionHeading eyebrow="Tools" title={langTorrServer(lang)} />
+      <SectionHeading
+        eyebrow="Tools"
+        title={langTorrServer(lang)}
+        description="Connect TorrServer, inspect indexed items, and launch playback-ready actions from the same operational view."
+      />
       <p class="text-base-content/70 max-w-3xl text-sm leading-relaxed md:text-base">
         Connect a TorrServer instance, manage saved endpoints, and review the
         current library from one focused workspace.
@@ -492,7 +496,11 @@ export default component$(() => {
             compact={true}
           />
         ) : (
-          <MediaGrid title={`Library (${torrentsSig.value.length})`}>
+          <MediaGrid
+            eyebrow="Library"
+            headerBadge={`${torrentsSig.value.length} items`}
+            title={`Library (${torrentsSig.value.length})`}
+          >
             {torrentsSig.value.map((torrent) => {
               const media = parseTorrentMedia(torrent.data);
               const href = getTorrentHref(media, lang);
@@ -602,8 +610,7 @@ export default component$(() => {
                           rating={rating}
                           year={year}
                           picfile={torrent.poster}
-                          isPerson={false}
-                          isHorizontal={false}
+                          variant="poster"
                           layout="grid"
                         />
                       </a>
@@ -615,8 +622,7 @@ export default component$(() => {
                           rating={rating}
                           year={year}
                           picfile={torrent.poster}
-                          isPerson={false}
-                          isHorizontal={false}
+                          variant="poster"
                           layout="grid"
                         />
                       </div>

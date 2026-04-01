@@ -1,17 +1,35 @@
 import { formatYear } from "~/utils/format";
 import type {
+  CertificationList,
   Collection,
   Images,
   MediaCollection,
-  MediaFull,
   MediaShort,
   MediaShortStrict,
+  MovieShort,
+  MovieFull,
   PersonMedia,
+  PersonFull,
+  TvShort,
+  TvFull,
+  WatchProviderCatalog,
+  WatchProviderResults,
 } from "./models";
 import { MediaType } from "./models";
+export {
+  getRegionFromLanguage,
+  resolveMovieCertification,
+  resolveRegionalWatchProviders,
+  resolveTvCertification,
+} from "./tmdb-metadata";
 
 const TMDB_API_BASE_URL = "https://api.themoviedb.org/3";
 const DEFAULT_IMAGE_LANGUAGE = "en";
+const MOVIE_DETAIL_APPEND_RESPONSE =
+  "videos,credits,images,external_ids,release_dates";
+const TV_DETAIL_APPEND_RESPONSE =
+  "videos,credits,images,external_ids,content_ratings";
+const PERSON_DETAIL_APPEND_RESPONSE = "images,external_ids";
 type BackdropMediaType = MediaType.Movie | MediaType.Tv;
 
 const isBackdropMediaType = (
@@ -150,6 +168,7 @@ type GetMedias = {
   language: string;
   type: Exclude<MediaType, MediaType.Seasons>;
   needbackdrop: boolean;
+  region?: string;
 };
 export const getMedias = async ({
   query,
@@ -157,12 +176,14 @@ export const getMedias = async ({
   language,
   type,
   needbackdrop,
+  region,
 }: GetMedias) => {
   const result = await fetchTMDB<
     MediaCollection<MediaShortStrict<typeof type>>
   >(`${type}/${query}`, {
     page: String(page),
     language,
+    ...(region ? { region } : {}),
   });
 
   if (result.total_results === 0) return result.results;
@@ -176,22 +197,57 @@ export const getMedias = async ({
   );
 };
 
-type GetMediaDetailsType = {
+type GetDetailType = {
   id: number;
   language: string;
-  append_to_response?: string;
-  type: MediaType;
 };
-export const getMediaDetails = ({
-  id,
-  language,
-  type,
-}: GetMediaDetailsType) => {
-  return fetchTMDB<MediaFull>(`${type}/${id}`, {
-    append_to_response: "videos,credits,images,external_ids,release_dates",
+
+export const getMovieDetails = ({ id, language }: GetDetailType) => {
+  return fetchTMDB<MovieFull>(`${MediaType.Movie}/${id}`, {
+    append_to_response: MOVIE_DETAIL_APPEND_RESPONSE,
     include_image_language: DEFAULT_IMAGE_LANGUAGE,
     language,
   });
+};
+
+export const getTvDetails = ({ id, language }: GetDetailType) => {
+  return fetchTMDB<TvFull>(`${MediaType.Tv}/${id}`, {
+    append_to_response: TV_DETAIL_APPEND_RESPONSE,
+    include_image_language: DEFAULT_IMAGE_LANGUAGE,
+    language,
+  });
+};
+
+export const getPersonDetails = ({ id, language }: GetDetailType) => {
+  return fetchTMDB<PersonFull>(`${MediaType.Person}/${id}`, {
+    append_to_response: PERSON_DETAIL_APPEND_RESPONSE,
+    include_image_language: DEFAULT_IMAGE_LANGUAGE,
+    language,
+  });
+};
+
+type GetWatchProviders = {
+  id: number;
+  type: MediaType.Movie | MediaType.Tv;
+};
+
+export const getWatchProviders = ({ id, type }: GetWatchProviders) => {
+  return fetchTMDB<WatchProviderResults>(`${type}/${id}/watch/providers`);
+};
+
+export const getOptionalWatchProviders = async ({
+  id,
+  type,
+}: GetWatchProviders) => {
+  try {
+    return await getWatchProviders({
+      id,
+      type,
+    });
+  } catch (error) {
+    console.error("Unable to fetch TMDB watch providers", error);
+    return null;
+  }
 };
 
 type GetMediaRecomType = {
@@ -307,9 +363,126 @@ type Search = {
 };
 
 export const search = ({ query, page, language }: Search) => {
-  return fetchTMDB<MediaCollection<MediaFull>>("search/multi", {
+  return fetchTMDB<MediaCollection<MovieFull & TvFull & PersonFull>>(
+    "search/multi",
+    {
+      page: String(page),
+      language,
+      query,
+    },
+  );
+};
+
+type DiscoverMovie = {
+  certification?: string;
+  language: string;
+  minVotes?: number;
+  page: number;
+  providerId?: number;
+  region: string;
+  sortBy: string;
+  year?: number;
+};
+
+export const discoverMovies = ({
+  certification,
+  language,
+  minVotes,
+  page,
+  providerId,
+  region,
+  sortBy,
+  year,
+}: DiscoverMovie) => {
+  return fetchTMDB<MediaCollection<MovieShort>>("discover/movie", {
     page: String(page),
     language,
-    query,
+    sort_by: sortBy,
+    region,
+    watch_region: region,
+    ...(minVotes ? { "vote_count.gte": String(minVotes) } : {}),
+    ...(year ? { primary_release_year: String(year) } : {}),
+    ...(providerId ? { with_watch_providers: String(providerId) } : {}),
+    ...(certification
+      ? {
+          certification,
+          certification_country: region,
+        }
+      : {}),
   });
+};
+
+type DiscoverTv = {
+  language: string;
+  minVotes?: number;
+  page: number;
+  providerId?: number;
+  region: string;
+  sortBy: string;
+  year?: number;
+};
+
+export const discoverTv = ({
+  language,
+  minVotes,
+  page,
+  providerId,
+  region,
+  sortBy,
+  year,
+}: DiscoverTv) => {
+  return fetchTMDB<MediaCollection<TvShort>>("discover/tv", {
+    page: String(page),
+    language,
+    sort_by: sortBy,
+    watch_region: region,
+    ...(minVotes ? { "vote_count.gte": String(minVotes) } : {}),
+    ...(year ? { first_air_date_year: String(year) } : {}),
+    ...(providerId ? { with_watch_providers: String(providerId) } : {}),
+  });
+};
+
+export const getMovieCertificationList = () => {
+  return fetchTMDB<CertificationList>("certification/movie/list");
+};
+
+export const getOptionalMovieCertificationList = async () => {
+  try {
+    return await getMovieCertificationList();
+  } catch (error) {
+    console.error("Unable to fetch TMDB movie certifications", error);
+    return null;
+  }
+};
+
+export const getTvCertificationList = () => {
+  return fetchTMDB<CertificationList>("certification/tv/list");
+};
+
+export const getOptionalTvCertificationList = async () => {
+  try {
+    return await getTvCertificationList();
+  } catch (error) {
+    console.error("Unable to fetch TMDB TV certifications", error);
+    return null;
+  }
+};
+
+type GetWatchProviderCatalog = {
+  type: MediaType.Movie | MediaType.Tv;
+};
+
+export const getWatchProviderCatalog = ({ type }: GetWatchProviderCatalog) => {
+  return fetchTMDB<WatchProviderCatalog>(`watch/providers/${type}`);
+};
+
+export const getOptionalWatchProviderCatalog = async ({
+  type,
+}: GetWatchProviderCatalog) => {
+  try {
+    return await getWatchProviderCatalog({ type });
+  } catch (error) {
+    console.error("Unable to fetch TMDB watch provider catalog", error);
+    return null;
+  }
 };

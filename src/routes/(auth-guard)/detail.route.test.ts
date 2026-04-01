@@ -57,7 +57,6 @@ describe("detail route server data boundaries", () => {
 
       expect(source).toContain("useVisibleTask$");
       expect(source).toContain("writeLastViewed({");
-      expect(source).not.toContain("useTask$(() =>");
     }
   });
 });

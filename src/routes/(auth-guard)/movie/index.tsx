@@ -9,15 +9,24 @@ import { ErrorState, SectionHeading } from "~/components/page-feedback";
 import type { MediaShort, MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { DbType, getMoviesMongo } from "~/services/mongoatlas";
-import { getTrendingMedia, withImages } from "~/services/tmdb";
+import {
+  getMedias,
+  getRegionFromLanguage,
+  getTrendingMedia,
+  withImages,
+} from "~/services/tmdb";
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import {
+  langDiscoverMovies,
   langLatestDolbyVisionMovies,
   langLatestHDR10Movies,
   langLatestMovies,
+  langNowPlayingMovies,
+  langPopularMovies,
   langQuickFilters,
   langTrendingMovies,
+  langUpcomingMovies,
   langSwipeToBrowse,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
@@ -27,6 +36,9 @@ type MovieCollectionsData =
       status: "ready";
       lang: string;
       movies: MovieShort[];
+      popularMovies: MovieShort[];
+      nowPlayingMovies: MovieShort[];
+      upcomingMovies: MovieShort[];
       torMovies: MediaShort[];
       hdrMovies: MediaShort[];
       dolbyMovies: MediaShort[];
@@ -39,12 +51,44 @@ type MovieCollectionsData =
 export const useMovieCollectionsLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   const envMongoUrl = event.env.get("MONGO_URI") ?? "";
+  const region = getRegionFromLanguage(lang);
 
   try {
-    const [m, torMovies, hdrMovies, dolbyMovies] = await Promise.all([
+    const [
+      movies,
+      popularMovies,
+      nowPlayingMovies,
+      upcomingMovies,
+      torMovies,
+      hdrMovies,
+      dolbyMovies,
+    ] = await Promise.all([
       getTrendingMedia({
         page: 1,
         language: lang,
+        type: MediaType.Movie,
+        needbackdrop: true,
+      }),
+      getMedias({
+        page: 1,
+        query: "popular",
+        language: lang,
+        type: MediaType.Movie,
+        needbackdrop: true,
+      }),
+      getMedias({
+        page: 1,
+        query: "now_playing",
+        language: lang,
+        region,
+        type: MediaType.Movie,
+        needbackdrop: true,
+      }),
+      getMedias({
+        page: 1,
+        query: "upcoming",
+        language: lang,
+        region,
         type: MediaType.Movie,
         needbackdrop: true,
       }),
@@ -83,7 +127,10 @@ export const useMovieCollectionsLoader = routeLoader$(async (event) => {
     return {
       status: "ready",
       lang,
-      movies: m as MovieShort[],
+      movies: movies as MovieShort[],
+      popularMovies: popularMovies as MovieShort[],
+      nowPlayingMovies: nowPlayingMovies as MovieShort[],
+      upcomingMovies: upcomingMovies as MovieShort[],
       torMovies,
       hdrMovies,
       dolbyMovies,
@@ -113,7 +160,26 @@ export default component$(() => {
 
   return (
     <div class="space-y-6">
-      <SectionHeading eyebrow="Movies" title="Browse movie collections" />
+      <SectionHeading
+        eyebrow="Movies"
+        title="Browse movie collections"
+        description={`Move between local premium shelves and TMDB-powered discovery feeds without losing your language context. Now Playing and Upcoming shelves use ${getRegionFromLanguage(lang)} release windows.`}
+        badges={[
+          `${value.torMovies.length} latest`,
+          `${value.popularMovies.length} popular`,
+          `${value.nowPlayingMovies.length} now playing`,
+          `${value.upcomingMovies.length} upcoming`,
+          `${value.hdrMovies.length} HDR10`,
+          `${value.dolbyMovies.length} Dolby Vision`,
+        ]}
+      />
+      <section class="alert alert-info rounded-box border-info/20 bg-base-100/95 border shadow-sm">
+        <span class="text-sm leading-relaxed">
+          Trending reflects short weekly movement on TMDB. Popularity is a
+          longer-lived score. Use movie discover when you need provider,
+          certification, regional, year, and vote-count filters.
+        </span>
+      </section>
       <QuickFilterStrip
         label={langQuickFilters(lang)}
         items={[
@@ -122,6 +188,9 @@ export default component$(() => {
             href: "#latest-movies",
             label: langLatestMovies(lang),
           },
+          { href: "#popular-movies", label: langPopularMovies(lang) },
+          { href: "#now-playing-movies", label: langNowPlayingMovies(lang) },
+          { href: "#upcoming-movies", label: langUpcomingMovies(lang) },
           { href: "#hdr10-movies", label: langLatestHDR10Movies(lang) },
           {
             href: "#dolby-vision-movies",
@@ -133,6 +202,14 @@ export default component$(() => {
           },
         ]}
       />
+      <div class="flex flex-wrap items-center gap-2">
+        <a
+          href={paths.movieDiscover(lang)}
+          class="btn btn-primary rounded-full"
+        >
+          {langDiscoverMovies(lang)}
+        </a>
+      </div>
       <MediaCarousel
         hintLabel={langSwipeToBrowse(lang)}
         sectionId="latest-movies"
@@ -153,8 +230,88 @@ export default component$(() => {
                 rating={m.vote_average ? m.vote_average : 0}
                 year={formatYear(m.release_date)}
                 picfile={m.backdrop_path}
-                isPerson={false}
-                isHorizontal={true}
+                variant="landscape"
+              />
+            </a>
+          </div>
+        ))}
+      </MediaCarousel>
+
+      <MediaCarousel
+        hintLabel={langSwipeToBrowse(lang)}
+        sectionId="popular-movies"
+        title={langPopularMovies(lang)}
+        type={MediaType.Movie}
+        category="popular"
+        lang={lang}
+      >
+        {value.popularMovies.map((m) => (
+          <div class="carousel-item" key={m.id}>
+            <a
+              href={paths.media(MediaType.Movie, m.id, lang)}
+              class="media-card-link"
+            >
+              <MediaCard
+                title={m.title ? m.title : ""}
+                width={500}
+                rating={m.vote_average ? m.vote_average : 0}
+                year={formatYear(m.release_date)}
+                picfile={m.backdrop_path}
+                variant="landscape"
+              />
+            </a>
+          </div>
+        ))}
+      </MediaCarousel>
+
+      <MediaCarousel
+        hintLabel={langSwipeToBrowse(lang)}
+        sectionId="now-playing-movies"
+        title={langNowPlayingMovies(lang)}
+        type={MediaType.Movie}
+        category="nowplaying"
+        lang={lang}
+      >
+        {value.nowPlayingMovies.map((m) => (
+          <div class="carousel-item" key={m.id}>
+            <a
+              href={paths.media(MediaType.Movie, m.id, lang)}
+              class="media-card-link"
+            >
+              <MediaCard
+                title={m.title ? m.title : ""}
+                width={500}
+                rating={m.vote_average ? m.vote_average : 0}
+                year={formatYear(m.release_date)}
+                picfile={m.backdrop_path}
+                variant="landscape"
+              />
+            </a>
+          </div>
+        ))}
+      </MediaCarousel>
+
+      <MediaCarousel
+        hintLabel={langSwipeToBrowse(lang)}
+        sectionId="upcoming-movies"
+        title={langUpcomingMovies(lang)}
+        type={MediaType.Movie}
+        category="upcoming"
+        lang={lang}
+      >
+        {value.upcomingMovies.map((m) => (
+          <div class="carousel-item" key={m.id}>
+            <a
+              href={paths.media(MediaType.Movie, m.id, lang)}
+              class="media-card-link"
+            >
+              <MediaCard
+                title={m.title ? m.title : ""}
+                width={500}
+                rating={m.vote_average ? m.vote_average : 0}
+                year={formatYear(m.release_date)}
+                picfile={m.backdrop_path}
+                variant="landscape"
               />
             </a>
           </div>
@@ -181,8 +338,7 @@ export default component$(() => {
                 rating={m.vote_average ? m.vote_average : 0}
                 year={formatYear(m.release_date)}
                 picfile={m.backdrop_path}
-                isPerson={false}
-                isHorizontal={true}
+                variant="landscape"
               />
             </a>
           </div>
@@ -209,8 +365,7 @@ export default component$(() => {
                 rating={m.vote_average ? m.vote_average : 0}
                 year={formatYear(m.release_date)}
                 picfile={m.backdrop_path}
-                isPerson={false}
-                isHorizontal={true}
+                variant="landscape"
               />
             </a>
           </div>
@@ -237,8 +392,7 @@ export default component$(() => {
                 rating={m.vote_average ? m.vote_average : 0}
                 year={formatYear(m.release_date)}
                 picfile={m.backdrop_path}
-                isPerson={false}
-                isHorizontal={true}
+                variant="landscape"
               />
             </a>
           </div>

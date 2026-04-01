@@ -17,38 +17,52 @@ type FetchTvCategoryPageArgs = {
   page: number;
 };
 
+const TV_CATEGORY_QUERIES: Record<string, string | null> = {
+  trending: null,
+  toprated: "top_rated",
+  popular: "popular",
+  airingtoday: "airing_today",
+  ontheair: "on_the_air",
+};
+
 const fetchTvCategoryPage = async ({
   category,
   lang,
   page,
 }: FetchTvCategoryPageArgs): Promise<TvShort[]> => {
-  if (category === "toprated") {
-    return (await getMedias({
+  const tmdbQuery = TV_CATEGORY_QUERIES[category];
+
+  if (tmdbQuery === null) {
+    return (await getTrendingMedia({
       page,
       language: lang,
-      query: "top_rated",
       type: MediaType.Tv,
       needbackdrop: false,
     })) as TvShort[];
   }
 
-  return (await getTrendingMedia({
-    page,
-    language: lang,
-    type: MediaType.Tv,
-    needbackdrop: false,
-  })) as TvShort[];
+  if (tmdbQuery) {
+    return (await getMedias({
+      page,
+      language: lang,
+      query: tmdbQuery,
+      type: MediaType.Tv,
+      needbackdrop: false,
+    })) as TvShort[];
+  }
+
+  return [];
 };
 
 const isSupportedTvCategory = (category: string) =>
-  category === "trending" || category === "toprated";
+  category in TV_CATEGORY_QUERIES;
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   const category = event.params.name;
 
   if (!isSupportedTvCategory(category)) {
-    return { tv: [] as TvShort[], category, lang };
+    throw event.redirect(302, paths.notFound(lang));
   }
 
   try {
@@ -132,6 +146,9 @@ export default component$(() => {
   return (
     <div class="pt-4 pb-10">
       <MediaGrid
+        description="Scroll down to keep loading more results from this TV shelf."
+        eyebrow="Catalog"
+        headerBadge={`${tvItemsSig.value.length} loaded`}
         title={categoryToTitle(
           resource.value.category,
           MediaType.Tv,
@@ -151,8 +168,7 @@ export default component$(() => {
                 rating={m.vote_average ? m.vote_average : 0}
                 year={formatYear(m.first_air_date)}
                 picfile={m.poster_path}
-                isPerson={false}
-                isHorizontal={false}
+                variant="poster"
                 layout="grid"
               />
             </a>
@@ -160,7 +176,12 @@ export default component$(() => {
       </MediaGrid>
       <div class="my-4 flex justify-center">
         <div ref={sentinelRef} class="h-8 w-full" />
-        {isLoadingTv.value && <span class="loading loading-ring loading-lg" />}
+        {isLoadingTv.value && (
+          <div class="border-base-200 bg-base-100/88 flex items-center gap-3 rounded-full border px-4 py-2 text-sm shadow-sm">
+            <span class="loading loading-ring loading-sm" />
+            <span>Loading more series…</span>
+          </div>
+        )}
       </div>
     </div>
   );

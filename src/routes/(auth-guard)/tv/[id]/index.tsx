@@ -4,10 +4,27 @@ import { routeLoader$ } from "@builder.io/qwik-city";
 import { DetailPageShell } from "~/components/detail-page-layout";
 import { ErrorState } from "~/components/page-feedback";
 import { TvDetails } from "~/components/media-details/tv-details";
+import {
+  createDevTvDetail,
+  DEV_SESSION_BYPASS_COOKIE,
+} from "~/routes/dev-session";
 import { getOptionalImdbRating } from "~/services/cloud-func-api";
-import type { ImdbRating, TvFull, TvShort } from "~/services/models";
+import type {
+  ImdbRating,
+  LocalizedCertification,
+  RegionalWatchProviders,
+  TvFull,
+  TvShort,
+} from "~/services/models";
 import { MediaType } from "~/services/models";
-import { getMediaDetails, getMediaRecom } from "~/services/tmdb";
+import {
+  getMediaRecom,
+  getOptionalWatchProviders,
+  getRegionFromLanguage,
+  getTvDetails,
+  resolveRegionalWatchProviders,
+  resolveTvCertification,
+} from "~/services/tmdb";
 
 type TvDetailData =
   | {
@@ -16,6 +33,8 @@ type TvDetailData =
       tv: TvFull;
       recTv: TvShort[];
       imdb: ImdbRating | null;
+      certification: LocalizedCertification | null;
+      watchProviders: RegionalWatchProviders | null;
     }
   | {
       status: "error";
@@ -33,14 +52,29 @@ export const useTvDetailLoader = routeLoader$(async (event) => {
     } satisfies TvDetailData;
   }
 
+  const devTvDetail = createDevTvDetail({
+    bypassCookie: event.cookie.get(DEV_SESSION_BYPASS_COOKIE)?.value ?? null,
+    bypassFlag: event.env.get("PLAYWRIGHT_AUTH_BYPASS"),
+    id,
+    lang,
+    nodeEnv: event.env.get("NODE_ENV") ?? process.env.NODE_ENV,
+  });
+
+  if (devTvDetail) {
+    return {
+      status: "ready",
+      ...devTvDetail,
+    } satisfies TvDetailData;
+  }
+
   try {
-    const tv = (await getMediaDetails({
+    const tv = await getTvDetails({
       id,
       language: lang,
-      type: MediaType.Tv,
-    })) as TvFull;
+    });
+    const region = getRegionFromLanguage(lang);
 
-    const [recTv, imdb] = await Promise.all([
+    const [recTv, imdb, watchProviderResults] = await Promise.all([
       getMediaRecom({
         id,
         language: lang,
@@ -48,6 +82,10 @@ export const useTvDetailLoader = routeLoader$(async (event) => {
         query: "recommendations",
       }) as Promise<TvShort[]>,
       getOptionalImdbRating(tv.external_ids.imdb_id),
+      getOptionalWatchProviders({
+        id,
+        type: MediaType.Tv,
+      }),
     ]);
 
     return {
@@ -56,6 +94,11 @@ export const useTvDetailLoader = routeLoader$(async (event) => {
       tv,
       recTv,
       imdb,
+      certification: resolveTvCertification(tv.content_ratings, region),
+      watchProviders: resolveRegionalWatchProviders(
+        watchProviderResults,
+        region,
+      ),
     } satisfies TvDetailData;
   } catch (error) {
     console.error(error);
@@ -84,6 +127,8 @@ export default component$(() => {
         tv={value.tv}
         recTv={value.recTv}
         imdb={value.imdb}
+        certification={value.certification}
+        watchProviders={value.watchProviders}
         lang={value.lang}
       />
     </DetailPageShell>

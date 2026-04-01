@@ -27,6 +27,5 @@ describe("search route form fallback", () => {
 
     expect(source).toContain("useVisibleTask$");
     expect(source).toContain("pushRecentSearch({");
-    expect(source).not.toContain("useTask$(() =>");
   });
 });

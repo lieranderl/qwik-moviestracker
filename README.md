@@ -1,8 +1,8 @@
 # Moviestracker
 
-Private Qwik City app for browsing movies and TV, opening detailed media pages,
-authenticating with Google, reading curated/latest items from MongoDB Atlas,
-and managing a connected TorrServer library.
+Private Qwik City app for discovering movies and TV shows, opening rich detail
+pages, authenticating with Google, reading curated/latest items from MongoDB
+Atlas, and managing a connected TorrServer library.
 
 ## Stack
 
@@ -16,8 +16,8 @@ and managing a connected TorrServer library.
 
 ## App Areas
 
-- `/auth` - login / landing page
-- `/` - authenticated home dashboard
+- `/auth` - branded Google sign-in / landing page
+- `/` - authenticated discovery dashboard with spotlight, continue-browsing, and carousel sections
 - `/movie/**` - movie discovery and detail pages
 - `/tv/**` - TV discovery and detail pages
 - `/person/**` - person detail pages
@@ -28,16 +28,31 @@ and managing a connected TorrServer library.
 
 ```bash
 bun install
-bun start
+bun run dev
 ```
 
 Useful commands:
 
 ```bash
+bun start
+```
+
+```bash
 bun test
+bun run test:e2e
 bun run build.types
 bun run lint
 bun run build
+```
+
+`bun start` is still available as a convenience alias that opens the app in a
+browser. `bun run dev` is the clearer command when you want the SSR dev server
+without relying on browser auto-open behavior.
+
+For the first local Playwright run, install the browser once:
+
+```bash
+bunx playwright install chromium
 ```
 
 ## Deployment Notes
@@ -53,6 +68,7 @@ Project-specific agent guidance lives in:
 
 - [AGENTS.md](./AGENTS.md) - root operating contract
 - [.agent/skills/qwik-moviestracker/SKILL.md](./.agent/skills/qwik-moviestracker/SKILL.md) - project-local skill entrypoint
+- [.claude/skills/qwik-moviestracker/SKILL.md](./.claude/skills/qwik-moviestracker/SKILL.md) - Claude Code project skill
 - [.github/copilot-instructions.md](./.github/copilot-instructions.md) - lightweight GitHub Copilot guidance
 
 The docs are intentionally layered. Agents should update the corresponding

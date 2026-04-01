@@ -25,6 +25,8 @@ import { formatYear } from "~/utils/format";
 import { pushRecentSearch, readRecentSearches } from "~/utils/recent-activity";
 import {
   langBrowseHome,
+  langDiscoverMovies,
+  langDiscoverTv,
   langBrowseMovies,
   langBrowseTv,
   langNoResults,
@@ -53,7 +55,7 @@ export default component$(() => {
   const loc = useLocation();
   const initialQuery = loc.url.searchParams.get("q")?.trim() ?? "";
   const searchPhrase = getSearchPhrase(initialQuery);
-  const recentSearches = useSignal(readRecentSearches());
+  const recentSearches = useSignal<ReturnType<typeof readRecentSearches>>([]);
 
   // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(() => {
@@ -90,6 +92,8 @@ export default component$(() => {
       <SectionHeading
         eyebrow="Discovery"
         title={langSearch(resource.value.lang)}
+        description="Search movies, TV series, and people with a plain GET flow that keeps the current language in the URL and restores recent activity from browser storage."
+        badges={["Movies", "TV series", "People"]}
       />
 
       <section class="card border-base-200 bg-base-100/90 mb-6 border shadow-sm backdrop-blur">
@@ -146,8 +150,16 @@ export default component$(() => {
             label: langBrowseMovies(resource.value.lang),
           },
           {
+            href: paths.movieDiscover(resource.value.lang),
+            label: langDiscoverMovies(resource.value.lang),
+          },
+          {
             href: paths.tv(resource.value.lang),
             label: langBrowseTv(resource.value.lang),
+          },
+          {
+            href: paths.tvDiscover(resource.value.lang),
+            label: langDiscoverTv(resource.value.lang),
           },
         ]}
         emptyState="Search for a title once and it will show up here."
@@ -186,6 +198,9 @@ export default component$(() => {
           if (movies.total_results > 0) {
             return (
               <MediaGrid
+                description="Results combine movies, TV series, and people in one grid so you can jump straight into the right detail page."
+                eyebrow="Results"
+                headerBadge={`${movies.total_results} matches`}
                 title={`${langSearchResults(resource.value.lang)} (${movies.total_results})`}
               >
                 {movies.results.map((m) => (
@@ -219,13 +234,12 @@ export default component$(() => {
                           ? m.profile_path
                           : m.poster_path
                       }
-                      isPerson={
-                        !!(
-                          m.media_type !== MediaType.Movie &&
-                          m.media_type !== MediaType.Tv
-                        )
+                      variant={
+                        m.media_type !== MediaType.Movie &&
+                        m.media_type !== MediaType.Tv
+                          ? "person"
+                          : "poster"
                       }
-                      isHorizontal={false}
                       layout="grid"
                     />
                   </a>

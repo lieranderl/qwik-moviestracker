@@ -287,14 +287,80 @@ export const langTrendingMovies = (lang: string) => {
   }
 };
 
+export const langNowPlayingMovies = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Now Playing";
+    case "ru-RU":
+      return "Сейчас в кино";
+    default:
+      return "Сейчас в кино";
+  }
+};
+
+export const langUpcomingMovies = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Upcoming Movies";
+    case "ru-RU":
+      return "Скоро в кино";
+    default:
+      return "Скоро в кино";
+  }
+};
+
+export const langPopularMovies = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Popular Movies";
+    case "ru-RU":
+      return "Популярные фильмы";
+    default:
+      return "Популярные фильмы";
+  }
+};
+
 export const langTrengingTVShows = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Trenging TV Shows";
+      return "Trending TV Shows";
     case "ru-RU":
       return "Популярные Сериалы";
     default:
       return "Популярные Сериалы";
+  }
+};
+
+export const langAiringTodayTvShows = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Airing Today";
+    case "ru-RU":
+      return "Сегодня в эфире";
+    default:
+      return "Сегодня в эфире";
+  }
+};
+
+export const langOnTheAirTvShows = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "On The Air";
+    case "ru-RU":
+      return "Сейчас выходят";
+    default:
+      return "Сейчас выходят";
+  }
+};
+
+export const langPopularTvShows = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Popular TV Shows";
+    case "ru-RU":
+      return "Популярные сериалы";
+    default:
+      return "Популярные сериалы";
   }
 };
 
@@ -700,6 +766,127 @@ export const langNetworks = (lang: string) => {
   }
 };
 
+export const langAvailability = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Availability";
+    case "ru-RU":
+      return "Доступность";
+    default:
+      return "Доступность";
+  }
+};
+
+export const langWhereToWatch = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Where to watch in";
+    case "ru-RU":
+      return "Где смотреть в регионе";
+    default:
+      return "Где смотреть в регионе";
+  }
+};
+
+export const langCertification = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Certification";
+    case "ru-RU":
+      return "Возрастной рейтинг";
+    default:
+      return "Возрастной рейтинг";
+  }
+};
+
+export const langRegion = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Region:";
+    case "ru-RU":
+      return "Регион:";
+    default:
+      return "Регион:";
+  }
+};
+
+export const langStream = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Stream";
+    case "ru-RU":
+      return "Стриминг";
+    default:
+      return "Стриминг";
+  }
+};
+
+export const langFree = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Free";
+    case "ru-RU":
+      return "Бесплатно";
+    default:
+      return "Бесплатно";
+  }
+};
+
+export const langWatchWithAds = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "With ads";
+    case "ru-RU":
+      return "С рекламой";
+    default:
+      return "С рекламой";
+  }
+};
+
+export const langRent = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Rent";
+    case "ru-RU":
+      return "Аренда";
+    default:
+      return "Аренда";
+  }
+};
+
+export const langBuy = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Buy";
+    case "ru-RU":
+      return "Покупка";
+    default:
+      return "Покупка";
+  }
+};
+
+export const langOpenOnTmdb = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Open on TMDB";
+    case "ru-RU":
+      return "Открыть на TMDB";
+    default:
+      return "Открыть на TMDB";
+  }
+};
+
+export const langSupportedByTmdb = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Regional metadata from TMDB";
+    case "ru-RU":
+      return "Региональные данные из TMDB";
+    default:
+      return "Региональные данные из TMDB";
+  }
+};
+
 export const langQuickFilters = (lang: string) => {
   switch (lang) {
     case "en-US":
@@ -708,6 +895,127 @@ export const langQuickFilters = (lang: string) => {
       return "Быстрые фильтры";
     default:
       return "Быстрые фильтры";
+  }
+};
+
+export const langDiscoverMovies = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Discover Movies";
+    case "ru-RU":
+      return "Подбор фильмов";
+    default:
+      return "Подбор фильмов";
+  }
+};
+
+export const langDiscoverTv = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Discover TV";
+    case "ru-RU":
+      return "Подбор сериалов";
+    default:
+      return "Подбор сериалов";
+  }
+};
+
+export const langApplyFilters = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Apply filters";
+    case "ru-RU":
+      return "Применить фильтры";
+    default:
+      return "Применить фильтры";
+  }
+};
+
+export const langResetFilters = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Reset filters";
+    case "ru-RU":
+      return "Сбросить фильтры";
+    default:
+      return "Сбросить фильтры";
+  }
+};
+
+export const langSortBy = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Sort by";
+    case "ru-RU":
+      return "Сортировка";
+    default:
+      return "Сортировка";
+  }
+};
+
+export const langMinimumVotes = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Minimum votes";
+    case "ru-RU":
+      return "Минимум голосов";
+    default:
+      return "Минимум голосов";
+  }
+};
+
+export const langReleaseYear = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Release year";
+    case "ru-RU":
+      return "Год релиза";
+    default:
+      return "Год релиза";
+  }
+};
+
+export const langFirstAirYear = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "First air year";
+    case "ru-RU":
+      return "Год премьеры";
+    default:
+      return "Год премьеры";
+  }
+};
+
+export const langStreamingProvider = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "Streaming provider";
+    case "ru-RU":
+      return "Стриминг-провайдер";
+    default:
+      return "Стриминг-провайдер";
+  }
+};
+
+export const langAllProviders = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "All providers";
+    case "ru-RU":
+      return "Все провайдеры";
+    default:
+      return "Все провайдеры";
+  }
+};
+
+export const langAllCertifications = (lang: string) => {
+  switch (lang) {
+    case "en-US":
+      return "All certifications";
+    case "ru-RU":
+      return "Все рейтинги";
+    default:
+      return "Все рейтинги";
   }
 };
 

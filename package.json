@@ -27,6 +27,7 @@
     "serve": "bun server/entry.bun.js",
     "start": "vite --open --mode ssr",
     "test": "bun test",
+    "test:e2e": "playwright test -c playwright.config.mjs",
     "biome": "biome check --fix",
     "qwik": "qwik"
   },
@@ -60,6 +61,7 @@
     "@catppuccin/daisyui": "^2.1.1",
     "@ditadi/qwik-hooks": "^0.1.6",
     "@modular-forms/qwik": "^0.29.1",
+    "@playwright/test": "^1.58.2",
     "@qwikest/icons": "latest",
     "@tailwindcss/vite": "^4.2.2",
     "@unpic/qwik": "v1.0.0",

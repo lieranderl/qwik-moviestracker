@@ -4,9 +4,15 @@ import {
   langLatestDolbyVisionMovies,
   langLatestHDR10Movies,
   langLatestMovies,
+  langNowPlayingMovies,
+  langOnTheAirTvShows,
+  langPopularMovies,
+  langPopularTvShows,
   langTopRatedTvShows,
   langTrendingMovies,
   langTrengingTVShows,
+  langUpcomingMovies,
+  langAiringTodayTvShows,
 } from "./languages";
 
 const CATEGORY_TO_DB: Record<string, string> = {
@@ -33,6 +39,12 @@ export const categoryToTitle = (
         return `${allLabel} ${langLatestHDR10Movies(lang)}`;
       case "dolbyvision":
         return `${allLabel} ${langLatestDolbyVisionMovies(lang)}`;
+      case "popular":
+        return `${allLabel} ${langPopularMovies(lang)}`;
+      case "nowplaying":
+        return `${allLabel} ${langNowPlayingMovies(lang)}`;
+      case "upcoming":
+        return `${allLabel} ${langUpcomingMovies(lang)}`;
       case "trending":
         return `${allLabel} ${langTrendingMovies(lang)}`;
       case "updated":
@@ -42,6 +54,12 @@ export const categoryToTitle = (
   }
 
   switch (category) {
+    case "popular":
+      return `${allLabel} ${langPopularTvShows(lang)}`;
+    case "airingtoday":
+      return `${allLabel} ${langAiringTodayTvShows(lang)}`;
+    case "ontheair":
+      return `${allLabel} ${langOnTheAirTvShows(lang)}`;
     case "toprated":
       return `${allLabel} ${langTopRatedTvShows(lang)}`;
     case "trending":
@@ -57,6 +75,8 @@ export const paths = {
     `/${mediaType}/${id}/?lang=${lang}`,
   category: (type: string, category: string, lang: string) =>
     `/${type}/category/${category}/?lang=${lang}`,
+  movieDiscover: (lang: string) => `/movie/discover/?lang=${lang}`,
+  tvDiscover: (lang: string) => `/tv/discover/?lang=${lang}`,
   moviePhotos: (id: number, lang: string) =>
     `/movie/${id}/photos/?lang=${lang}`,
   movieVideo: (id: number, lang: string) => `/movie/${id}/videos/?lang=${lang}`,

@@ -10,6 +10,10 @@ import { MediaType } from "~/services/models";
 import { getMedias, getTrendingMedia } from "~/services/tmdb";
 import { formatYear } from "~/utils/format";
 import {
+  langAiringTodayTvShows,
+  langDiscoverTv,
+  langOnTheAirTvShows,
+  langPopularTvShows,
   langQuickFilters,
   langSwipeToBrowse,
   langTopRatedTvShows,
@@ -20,26 +24,50 @@ import { paths } from "~/utils/paths";
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   try {
-    const [tt, tttop] = await Promise.all([
-      getTrendingMedia({
-        page: 1,
-        language: lang,
-        type: MediaType.Tv,
-        needbackdrop: true,
-      }),
-      getMedias({
-        page: 1,
-        query: "top_rated",
-        language: lang,
-        type: MediaType.Tv,
-        needbackdrop: true,
-      }),
-    ]);
-    const tvtrend = tt as TvShort[];
-    const tvtoprated = tttop as TvShort[];
+    const [tvtrend, tvtoprated, tvpopular, tvairingtoday, tvontheair] =
+      await Promise.all([
+        getTrendingMedia({
+          page: 1,
+          language: lang,
+          type: MediaType.Tv,
+          needbackdrop: true,
+        }),
+        getMedias({
+          page: 1,
+          query: "top_rated",
+          language: lang,
+          type: MediaType.Tv,
+          needbackdrop: true,
+        }),
+        getMedias({
+          page: 1,
+          query: "popular",
+          language: lang,
+          type: MediaType.Tv,
+          needbackdrop: true,
+        }),
+        getMedias({
+          page: 1,
+          query: "airing_today",
+          language: lang,
+          type: MediaType.Tv,
+          needbackdrop: true,
+        }),
+        getMedias({
+          page: 1,
+          query: "on_the_air",
+          language: lang,
+          type: MediaType.Tv,
+          needbackdrop: true,
+        }),
+      ]);
+
     return {
-      tvtrend,
-      tvtoprated,
+      tvtrend: tvtrend as TvShort[],
+      tvtoprated: tvtoprated as TvShort[],
+      tvpopular: tvpopular as TvShort[],
+      tvairingtoday: tvairingtoday as TvShort[],
+      tvontheair: tvontheair as TvShort[],
       lang,
     };
   } catch {
@@ -51,7 +79,25 @@ export default component$(() => {
   const resource = useContentLoader();
   return (
     <div class="space-y-6">
-      <SectionHeading eyebrow="TV Shows" title="Browse TV collections" />
+      <SectionHeading
+        eyebrow="TV Shows"
+        title="Browse TV collections"
+        description="Switch between TMDB discovery feeds for trending, popular, top-rated, and currently airing series."
+        badges={[
+          `${resource.value.tvtrend.length} trending`,
+          `${resource.value.tvpopular.length} popular`,
+          `${resource.value.tvtoprated.length} top rated`,
+          `${resource.value.tvairingtoday.length} airing today`,
+          `${resource.value.tvontheair.length} on the air`,
+        ]}
+      />
+      <section class="alert alert-info rounded-box border-info/20 bg-base-100/95 border shadow-sm">
+        <span class="text-sm leading-relaxed">
+          Trending surfaces short-window movement on TMDB, while Popular and
+          Discover rely on broader popularity and vote history. Use TV discover
+          when you want provider, regional, year, and vote-count filters.
+        </span>
+      </section>
       <QuickFilterStrip
         label={langQuickFilters(resource.value.lang)}
         items={[
@@ -61,11 +107,31 @@ export default component$(() => {
             label: langTrengingTVShows(resource.value.lang),
           },
           {
+            href: "#popular-tv",
+            label: langPopularTvShows(resource.value.lang),
+          },
+          {
             href: "#top-rated-tv",
             label: langTopRatedTvShows(resource.value.lang),
           },
+          {
+            href: "#airing-today-tv",
+            label: langAiringTodayTvShows(resource.value.lang),
+          },
+          {
+            href: "#on-the-air-tv",
+            label: langOnTheAirTvShows(resource.value.lang),
+          },
         ]}
       />
+      <div class="flex flex-wrap items-center gap-2">
+        <a
+          href={paths.tvDiscover(resource.value.lang)}
+          class="btn btn-primary rounded-full"
+        >
+          {langDiscoverTv(resource.value.lang)}
+        </a>
+      </div>
       <MediaCarousel
         hintLabel={langSwipeToBrowse(resource.value.lang)}
         sectionId="trending-tv"
@@ -86,8 +152,33 @@ export default component$(() => {
                 rating={m.vote_average ? m.vote_average : 0}
                 year={formatYear(m.first_air_date)}
                 picfile={m.backdrop_path}
-                isPerson={false}
-                isHorizontal={true}
+                variant="landscape"
+              />
+            </a>
+          </div>
+        ))}
+      </MediaCarousel>
+      <MediaCarousel
+        hintLabel={langSwipeToBrowse(resource.value.lang)}
+        sectionId="popular-tv"
+        title={langPopularTvShows(resource.value.lang)}
+        type={MediaType.Tv}
+        category="popular"
+        lang={resource.value.lang}
+      >
+        {resource.value.tvpopular.map((m) => (
+          <div class="carousel-item" key={m.id}>
+            <a
+              href={paths.media(MediaType.Tv, m.id, resource.value.lang)}
+              class="media-card-link"
+            >
+              <MediaCard
+                title={m.name ? m.name : ""}
+                width={500}
+                rating={m.vote_average ? m.vote_average : 0}
+                year={formatYear(m.first_air_date)}
+                picfile={m.backdrop_path}
+                variant="landscape"
               />
             </a>
           </div>
@@ -113,8 +204,59 @@ export default component$(() => {
                 rating={m.vote_average ? m.vote_average : 0}
                 year={formatYear(m.first_air_date)}
                 picfile={m.backdrop_path}
-                isPerson={false}
-                isHorizontal={true}
+                variant="landscape"
+              />
+            </a>
+          </div>
+        ))}
+      </MediaCarousel>
+      <MediaCarousel
+        hintLabel={langSwipeToBrowse(resource.value.lang)}
+        sectionId="airing-today-tv"
+        title={langAiringTodayTvShows(resource.value.lang)}
+        type={MediaType.Tv}
+        category="airingtoday"
+        lang={resource.value.lang}
+      >
+        {resource.value.tvairingtoday.map((m) => (
+          <div class="carousel-item" key={m.id}>
+            <a
+              href={paths.media(MediaType.Tv, m.id, resource.value.lang)}
+              class="media-card-link"
+            >
+              <MediaCard
+                title={m.name ? m.name : ""}
+                width={500}
+                rating={m.vote_average ? m.vote_average : 0}
+                year={formatYear(m.first_air_date)}
+                picfile={m.backdrop_path}
+                variant="landscape"
+              />
+            </a>
+          </div>
+        ))}
+      </MediaCarousel>
+      <MediaCarousel
+        hintLabel={langSwipeToBrowse(resource.value.lang)}
+        sectionId="on-the-air-tv"
+        title={langOnTheAirTvShows(resource.value.lang)}
+        type={MediaType.Tv}
+        category="ontheair"
+        lang={resource.value.lang}
+      >
+        {resource.value.tvontheair.map((m) => (
+          <div class="carousel-item" key={m.id}>
+            <a
+              href={paths.media(MediaType.Tv, m.id, resource.value.lang)}
+              class="media-card-link"
+            >
+              <MediaCard
+                title={m.name ? m.name : ""}
+                width={500}
+                rating={m.vote_average ? m.vote_average : 0}
+                year={formatYear(m.first_air_date)}
+                picfile={m.backdrop_path}
+                variant="landscape"
               />
             </a>
           </div>

@@ -126,9 +126,8 @@ export const PersonDetails = component$(
                       rating={m.vote_average ? m.vote_average : 0}
                       year={formatYear(m.release_date)}
                       picfile={m.poster_path}
-                      isPerson={false}
-                      isHorizontal={false}
-                      charName={m.character}
+                      variant="poster"
+                      metaLabel={m.character}
                     />
                   </a>
                 </div>
@@ -155,9 +154,8 @@ export const PersonDetails = component$(
                       rating={m.vote_average ? m.vote_average : 0}
                       year={formatYear(m.first_air_date)}
                       picfile={m.poster_path}
-                      isPerson={false}
-                      isHorizontal={false}
-                      charName={m.character}
+                      variant="poster"
+                      metaLabel={m.character}
                     />
                   </a>
                 </div>
@@ -184,9 +182,8 @@ export const PersonDetails = component$(
                       rating={m.vote_average ? m.vote_average : 0}
                       year={formatYear(m.release_date)}
                       picfile={m.poster_path}
-                      isPerson={false}
-                      isHorizontal={false}
-                      charName={m.job}
+                      variant="poster"
+                      metaLabel={m.job}
                     />
                   </a>
                 </div>
@@ -213,9 +210,8 @@ export const PersonDetails = component$(
                       rating={m.vote_average ? m.vote_average : 0}
                       year={formatYear(m.first_air_date)}
                       picfile={m.poster_path}
-                      isPerson={false}
-                      isHorizontal={false}
-                      charName={m.job}
+                      variant="poster"
+                      metaLabel={m.job}
                     />
                   </a>
                 </div>

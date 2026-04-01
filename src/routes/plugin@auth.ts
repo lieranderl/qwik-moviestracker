@@ -4,11 +4,17 @@ import type { GoogleProfile } from "@auth/core/providers/google";
 import Google from "@auth/core/providers/google";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import { QwikAuth$ } from "@auth/qwik";
+import {
+  resolveDatabaseAuthSecret,
+  resolveFallbackJwtSecret,
+} from "./auth-config";
 import { mongoclient } from "../utils/mongodbinit";
 
 export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
   ({ env }) => {
     const authSecret = env.get("AUTH_SECRET")?.trim();
+    const lifecycleEvent = process.env.npm_lifecycle_event;
+    const nodeEnv = env.get("NODE_ENV")?.trim() || process.env.NODE_ENV;
     const googleId = env.get("GOOGLE_ID") ?? "";
     const googleSecret = env.get("GOOGLE_SECRET") ?? "";
     const providers: Provider[] =
@@ -34,9 +40,13 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
     if (!mongo) {
       // During CI/SSG builds the runtime auth env may be intentionally absent.
       // Keep the build-safe fallback self-contained so SSR generation can
-      // complete without production secrets.
+      // complete without runtime auth secrets.
       return {
-        secret: authSecret || "build-only-auth-secret",
+        secret: resolveFallbackJwtSecret({
+          authSecret,
+          lifecycleEvent,
+          nodeEnv,
+        }),
         trustHost: true,
         session: {
           strategy: "jwt",
@@ -56,7 +66,7 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
       adapter: MongoDBAdapter(mongo, {
         databaseName: "movies",
       }) as Adapter,
-      secret: authSecret,
+      secret: resolveDatabaseAuthSecret({ authSecret }),
       trustHost: true,
       providers,
       callbacks: {

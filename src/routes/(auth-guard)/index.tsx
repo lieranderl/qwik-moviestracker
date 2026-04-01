@@ -7,6 +7,10 @@ import { QuickFilterStrip } from "~/components/discovery/quick-filter-strip";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
 import { ErrorState, SectionHeading } from "~/components/page-feedback";
+import {
+  createDevHomeFeed,
+  DEV_SESSION_BYPASS_COOKIE,
+} from "~/routes/dev-session";
 import type {
   MediaShort,
   MovieMongo,
@@ -21,6 +25,8 @@ import { formatYear } from "~/utils/format";
 import {
   langLatestMovies,
   langContinueBrowsing,
+  langDiscoverMovies,
+  langDiscoverTv,
   langFeaturedSpotlight,
   langJumpBackIn,
   langOpenDetails,
@@ -50,6 +56,20 @@ type HomeFeedData =
 export const useHomeFeedLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   const envMongoUrl = event.env.get("MONGO_URI") ?? "";
+
+  const devHomeFeed = createDevHomeFeed({
+    bypassCookie: event.cookie.get(DEV_SESSION_BYPASS_COOKIE)?.value ?? null,
+    bypassFlag: event.env.get("PLAYWRIGHT_AUTH_BYPASS"),
+    lang,
+    nodeEnv: event.env.get("NODE_ENV") ?? process.env.NODE_ENV,
+  });
+
+  if (devHomeFeed) {
+    return {
+      status: "ready",
+      ...devHomeFeed,
+    } satisfies HomeFeedData;
+  }
 
   try {
     const [m, t, tm] = await Promise.all([
@@ -107,9 +127,22 @@ export default component$(() => {
     );
   }
 
+  const featuredMovie =
+    value.movies[(new Date().getDate() - 1) % value.movies.length];
+  const homeBadges = [
+    `${value.torMovies.length} latest`,
+    `${value.movies.length} trending movies`,
+    `${value.tv.length} trending series`,
+  ];
+
   return (
     <div class="space-y-6">
-      <SectionHeading eyebrow="Home" title="Your movie and series dashboard" />
+      <SectionHeading
+        eyebrow="Home"
+        title="Your movie and series dashboard"
+        description="Open a featured release, jump back into your last watched title, or move straight into the latest and trending collections without leaving the dashboard."
+        badges={homeBadges}
+      />
       <QuickFilterStrip
         label={langQuickFilters(lang)}
         items={[
@@ -127,41 +160,33 @@ export default component$(() => {
           { href: "#trending-tv", label: langTrengingTVShows(lang) },
         ]}
       />
-      {value.movies.length > 0 && (
+      <div class="flex flex-wrap items-center gap-2">
+        <a
+          href={paths.movieDiscover(lang)}
+          class="btn btn-primary rounded-full"
+        >
+          {langDiscoverMovies(lang)}
+        </a>
+        <a href={paths.tvDiscover(lang)} class="btn btn-outline rounded-full">
+          {langDiscoverTv(lang)}
+        </a>
+      </div>
+      {value.movies.length > 0 && featuredMovie && (
         <FeaturedSpotlight
           ctaLabel={langOpenDetails(lang)}
           description={
-            value.movies[(new Date().getDate() - 1) % value.movies.length]
-              .overview ||
+            featuredMovie.overview ||
             "Open the latest featured title and jump straight into cast, ratings, and related picks."
           }
-          href={paths.media(
-            MediaType.Movie,
-            value.movies[(new Date().getDate() - 1) % value.movies.length].id,
-            lang,
-          )}
-          imagePath={
-            value.movies[(new Date().getDate() - 1) % value.movies.length]
-              .backdrop_path
-          }
+          href={paths.media(MediaType.Movie, featuredMovie.id, lang)}
+          imagePath={featuredMovie.backdrop_path}
           meta={[
             langTrendingMovies(lang),
-            String(
-              formatYear(
-                value.movies[(new Date().getDate() - 1) % value.movies.length]
-                  .release_date,
-              ) || "2026",
-            ),
+            String(formatYear(featuredMovie.release_date) || "2026"),
           ]}
           overline={langFeaturedSpotlight(lang)}
-          rating={
-            value.movies[(new Date().getDate() - 1) % value.movies.length]
-              .vote_average
-          }
-          title={
-            value.movies[(new Date().getDate() - 1) % value.movies.length]
-              .title || "Featured release"
-          }
+          rating={featuredMovie.vote_average}
+          title={featuredMovie.title || "Featured release"}
         />
       )}
       <ContinueBrowsingWidget
@@ -191,8 +216,7 @@ export default component$(() => {
                 rating={m.vote_average ? m.vote_average : 0}
                 year={formatYear(m.release_date)}
                 picfile={m.backdrop_path}
-                isPerson={false}
-                isHorizontal={true}
+                variant="landscape"
               />
             </a>
           </div>
@@ -218,8 +242,7 @@ export default component$(() => {
                 rating={m.vote_average ? m.vote_average : 0}
                 year={formatYear(m.release_date)}
                 picfile={m.backdrop_path}
-                isPerson={false}
-                isHorizontal={true}
+                variant="landscape"
               />
             </a>
           </div>
@@ -245,8 +268,7 @@ export default component$(() => {
                 rating={m.vote_average ? m.vote_average : 0}
                 year={formatYear(m.first_air_date)}
                 picfile={m.backdrop_path}
-                isPerson={false}
-                isHorizontal={true}
+                variant="landscape"
               />
             </a>
           </div>

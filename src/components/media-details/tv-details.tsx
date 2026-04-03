@@ -86,7 +86,7 @@ export const TvDetails = component$(
                 {formatYear(tv.first_air_date) || "N/A"}
               </span>
               {certification && (
-                <span class="badge badge-primary badge-outline">
+                <span class="badge badge-ghost">
                   {certification.rating} • {certification.region}
                 </span>
               )}

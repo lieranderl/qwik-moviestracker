@@ -181,7 +181,7 @@ export default component$(() => {
         ]}
       />
 
-      <section class="alert alert-info rounded-box border-info/20 bg-base-100/95 border shadow-sm">
+      <section class="alert alert-info alert-soft section-reveal">
         <span class="text-sm leading-relaxed">
           TMDB trending highlights short daily or weekly movement. Discover
           sorting uses the longer-lived popularity and vote signals, which makes

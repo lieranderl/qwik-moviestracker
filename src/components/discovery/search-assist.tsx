@@ -1,10 +1,12 @@
 import { component$ } from "@builder.io/qwik";
 import { HiClockSolid, HiSparklesSolid } from "@qwikest/icons/heroicons";
+import type { RecentSearch } from "~/utils/recent-activity";
 
 type SearchAssistProps = {
-  categoryLinks: { href: string; label: string }[];
-  emptyState: string;
-  recentSearches: { href: string; query: string }[];
+  categoryLinks: ReadonlyArray<{ href: string; label: string }>;
+  discoveryDescription: string;
+  emptyRecentSearchesMessage: string;
+  recentSearches: ReadonlyArray<RecentSearch>;
   recentSearchesLabel: string;
   searchTipsLabel: string;
 };
@@ -12,7 +14,8 @@ type SearchAssistProps = {
 export const SearchAssist = component$<SearchAssistProps>(
   ({
     categoryLinks,
-    emptyState,
+    discoveryDescription,
+    emptyRecentSearchesMessage,
     recentSearches,
     recentSearchesLabel,
     searchTipsLabel,
@@ -48,7 +51,7 @@ export const SearchAssist = component$<SearchAssistProps>(
                 ))
               ) : (
                 <div class="rounded-box border-base-200 bg-base-200/35 text-base-content/62 w-full border p-3 text-sm leading-relaxed">
-                  {emptyState}
+                  {emptyRecentSearchesMessage}
                 </div>
               )}
             </div>
@@ -63,8 +66,7 @@ export const SearchAssist = component$<SearchAssistProps>(
                 <span>{searchTipsLabel}</span>
               </div>
               <p class="text-base-content/65 text-sm leading-relaxed">
-                Jump back into a discovery route when you want broader browsing
-                instead of a direct query.
+                {discoveryDescription}
               </p>
             </div>
             <div class="flex flex-wrap gap-2">

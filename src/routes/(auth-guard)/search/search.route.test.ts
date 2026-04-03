@@ -21,11 +21,20 @@ describe("search route form fallback", () => {
     expect(source).not.toContain("onInput$={");
   });
 
-  it("tracks recent searches from a browser-only visible task", async () => {
+  it("uses browser-only task logic with centralized recent-search helpers", async () => {
     const routeFile = join(import.meta.dir, "index.tsx");
     const source = await readFile(routeFile, "utf8");
 
     expect(source).toContain("useVisibleTask$");
-    expect(source).toContain("pushRecentSearch({");
+    expect(source).toContain("pushRecentSearchQuery({");
+  });
+
+  it("renders a dedicated minimum-query hint for the GET form", async () => {
+    const routeFile = join(import.meta.dir, "index.tsx");
+    const source = await readFile(routeFile, "utf8");
+
+    expect(source).toContain('aria-describedby="search-query-help"');
+    expect(source).toContain('id="search-query-help"');
+    expect(source).toContain("formModel.shortQueryMessage");
   });
 });

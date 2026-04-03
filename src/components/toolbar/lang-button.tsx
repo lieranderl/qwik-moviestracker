@@ -19,7 +19,7 @@ export const LangButton = component$(() => {
       <a
         href={nextHref}
         onClick$={persistLangPreference}
-        class="btn btn-ghost flex h-auto min-h-0 items-center justify-between gap-3 rounded-full px-3 py-2.5 text-sm font-medium normal-case shadow-none"
+        class="btn btn-ghost flex h-auto min-h-0 w-full items-center justify-between gap-3 rounded-full px-3 py-2.5 text-sm font-medium normal-case shadow-none"
       >
         <span>Language</span>
         <span class="badge badge-outline badge-xs rounded-full px-3 py-3 font-medium">

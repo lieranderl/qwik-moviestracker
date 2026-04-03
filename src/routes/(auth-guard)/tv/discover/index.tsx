@@ -164,11 +164,11 @@ export default component$(() => {
         ]}
       />
 
-      <section class="alert alert-info rounded-box border-info/20 bg-base-100/95 border shadow-sm">
+      <section class="alert alert-info alert-soft section-reveal">
         <span class="text-sm leading-relaxed">
           TMDB trending surfaces what is spiking right now. Discover sorting
-          leans on broader popularity and vote signals, which is better when
-          you want reusable filters instead of the short-window trending feed.
+          leans on broader popularity and vote signals, which is better when you
+          want reusable filters instead of the short-window trending feed.
         </span>
       </section>
 
@@ -200,7 +200,11 @@ export default component$(() => {
               <select
                 class="select select-bordered"
                 name="provider"
-                value={value.filters.providerId ? String(value.filters.providerId) : ""}
+                value={
+                  value.filters.providerId
+                    ? String(value.filters.providerId)
+                    : ""
+                }
               >
                 <option value="">{langAllProviders(value.lang)}</option>
                 {value.providerOptions.map((option) => (

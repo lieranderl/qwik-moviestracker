@@ -91,7 +91,7 @@ export default component$(() => {
           `${resource.value.tvontheair.length} on the air`,
         ]}
       />
-      <section class="alert alert-info rounded-box border-info/20 bg-base-100/95 border shadow-sm">
+      <section class="alert alert-info alert-soft section-reveal">
         <span class="text-sm leading-relaxed">
           Trending surfaces short-window movement on TMDB, while Popular and
           Discover rely on broader popularity and vote history. Use TV discover

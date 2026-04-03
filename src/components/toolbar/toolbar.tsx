@@ -14,7 +14,7 @@ export const Toolbar = component$<ToolbarProps>(({ lang }) => {
   return (
     <nav
       aria-label="Primary navigation"
-      class="navbar toolbar-shell bg-base-100/85 border-base-200/70 text-base-content fixed top-0 left-0 z-50 min-h-16 w-full border-b px-4 backdrop-blur-md md:px-6"
+      class="navbar toolbar-shell bg-base-100/85 border-base-200/70 text-base-content fixed top-0 left-0 z-[60] min-h-16 w-full border-b px-4 backdrop-blur-md md:px-6"
     >
       <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-0">
         <a href={paths.index(lang)} class="group flex items-center gap-2">

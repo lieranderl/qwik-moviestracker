@@ -89,7 +89,7 @@ export const MovieDetails = component$(
                 {movie.release_date ? formatYear(movie.release_date) : "N/A"}
               </span>
               {certification && (
-                <span class="badge badge-primary badge-outline">
+                <span class="badge badge-ghost">
                   {certification.rating} • {certification.region}
                 </span>
               )}

@@ -23,6 +23,11 @@ test.describe("authenticated search", () => {
         name: "Arrival",
       }),
     ).toBeVisible();
+    await expect(
+      page.getByRole("link", {
+        name: "Arrival",
+      }),
+    ).toHaveAttribute("href", "/search/?lang=en-US&q=arrival");
   });
 
   test("submits search through GET and keeps the lang parameter", async ({
@@ -35,6 +40,11 @@ test.describe("authenticated search", () => {
     await page.getByRole("button", { name: /^search$/i }).click();
 
     await expect(page).toHaveURL(/\/search\/?\?lang=en-US&q=ab$/);
+    await expect(
+      page.getByRole("status").filter({
+        hasText: /search starts after 3 characters\. add 1 more character and submit again\./i,
+      }),
+    ).toBeVisible();
     await expect(
       page.getByRole("heading", {
         name: /start with a title, actor, or director/i,

@@ -1,4 +1,5 @@
 import { canUseStorage, readStorageJson, writeStorageJson } from "./browser";
+import { paths } from "./paths";
 
 export type LastViewedItem = {
   href: string;
@@ -8,7 +9,7 @@ export type LastViewedItem = {
   imagePath?: string | null;
 };
 
-type RecentSearch = {
+export type RecentSearch = {
   href: string;
   query: string;
 };
@@ -41,6 +42,34 @@ export const readRecentSearches = () => {
   return readStorageJson<RecentSearch[]>(RECENT_SEARCHES_KEY, []);
 };
 
+const normalizeRecentSearchQuery = (query: string) => query.trim();
+
+export const createRecentSearchHref = ({
+  lang,
+  query,
+}: {
+  lang: string;
+  query: string;
+}) => `${paths.search(lang)}&q=${encodeURIComponent(normalizeRecentSearchQuery(query))}`;
+
+export const createRecentSearch = ({
+  lang,
+  query,
+}: {
+  lang: string;
+  query: string;
+}): RecentSearch => {
+  const normalizedQuery = normalizeRecentSearchQuery(query);
+
+  return {
+    href: createRecentSearchHref({
+      lang,
+      query: normalizedQuery,
+    }),
+    query: normalizedQuery,
+  };
+};
+
 export const pushRecentSearch = (search: RecentSearch) => {
   if (!canUseStorage()) {
     return [] as RecentSearch[];
@@ -53,4 +82,25 @@ export const pushRecentSearch = (search: RecentSearch) => {
   const dedupedSearches = [search, ...nextSearches];
   writeStorageJson(RECENT_SEARCHES_KEY, dedupedSearches);
   return dedupedSearches;
+};
+
+export const pushRecentSearchQuery = ({
+  lang,
+  query,
+}: {
+  lang: string;
+  query: string;
+}) => {
+  const normalizedQuery = normalizeRecentSearchQuery(query);
+
+  if (!normalizedQuery) {
+    return readRecentSearches();
+  }
+
+  return pushRecentSearch(
+    createRecentSearch({
+      lang,
+      query: normalizedQuery,
+    }),
+  );
 };

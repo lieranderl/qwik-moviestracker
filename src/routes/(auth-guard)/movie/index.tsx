@@ -173,7 +173,7 @@ export default component$(() => {
           `${value.dolbyMovies.length} Dolby Vision`,
         ]}
       />
-      <section class="alert alert-info rounded-box border-info/20 bg-base-100/95 border shadow-sm">
+      <section class="alert alert-info alert-soft section-reveal">
         <span class="text-sm leading-relaxed">
           Trending reflects short weekly movement on TMDB. Popularity is a
           longer-lived score. Use movie discover when you need provider,

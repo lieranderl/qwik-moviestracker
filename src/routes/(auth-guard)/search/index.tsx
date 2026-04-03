@@ -18,29 +18,30 @@ import {
 } from "~/components/page-feedback";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
-import { MediaType } from "~/services/models";
 import { search } from "~/services/tmdb";
 import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
-import { formatYear } from "~/utils/format";
-import { pushRecentSearch, readRecentSearches } from "~/utils/recent-activity";
 import {
-  langBrowseHome,
-  langDiscoverMovies,
-  langDiscoverTv,
-  langBrowseMovies,
-  langBrowseTv,
+  pushRecentSearchQuery,
+  readRecentSearches,
+  type RecentSearch,
+} from "~/utils/recent-activity";
+import {
   langNoResults,
   langRecentSearches,
   langSearch,
   langSearchAssist,
   langSearchResults,
 } from "~/utils/languages";
-import { paths } from "~/utils/paths";
 import {
-  getSearchPhrase,
+  MIN_SEARCH_QUERY_LENGTH,
   runSearchQuery,
   type SearchRequest,
 } from "./search.logic";
+import {
+  createSearchAssistLinks,
+  createSearchFormViewModel,
+  normalizeSearchResults,
+} from "./search.view-model";
 
 const runSearch = server$(async (request: SearchRequest) => {
   return search({
@@ -53,25 +54,27 @@ const runSearch = server$(async (request: SearchRequest) => {
 export default component$(() => {
   const resource = useQueryParamsLoader();
   const loc = useLocation();
-  const initialQuery = loc.url.searchParams.get("q")?.trim() ?? "";
-  const searchPhrase = getSearchPhrase(initialQuery);
-  const recentSearches = useSignal<ReturnType<typeof readRecentSearches>>([]);
+  const formModel = createSearchFormViewModel(
+    loc.url.searchParams.get("q") ?? "",
+  );
+  const recentSearches = useSignal<RecentSearch[]>([]);
+  const assistLinks = createSearchAssistLinks(resource.value.lang);
 
   // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(() => {
-    if (!searchPhrase) {
+    if (!formModel.searchPhrase) {
       recentSearches.value = readRecentSearches();
       return;
     }
 
-    recentSearches.value = pushRecentSearch({
-      href: `${paths.search(resource.value.lang)}&q=${encodeURIComponent(searchPhrase)}`,
-      query: searchPhrase,
+    recentSearches.value = pushRecentSearchQuery({
+      lang: resource.value.lang,
+      query: formModel.searchPhrase,
     });
   });
 
   const searchResource = useResource$(async () => {
-    if (!searchPhrase) {
+    if (!formModel.searchPhrase) {
       return null;
     }
 
@@ -79,7 +82,7 @@ export default component$(() => {
       return runSearchQuery({
         execute: runSearch,
         language: resource.value.lang,
-        query: searchPhrase,
+        query: formModel.searchPhrase,
       });
     } catch (error) {
       console.error(error);
@@ -114,9 +117,11 @@ export default component$(() => {
                 inputMode="search"
                 autoComplete="off"
                 spellcheck={false}
+                aria-describedby="search-query-help"
+                aria-invalid={Boolean(formModel.shortQueryMessage)}
                 placeholder="Search titles, cast, and crew..."
                 class="input input-bordered focus-ringable w-full"
-                value={initialQuery}
+                value={formModel.query}
               />
             </label>
 
@@ -126,12 +131,29 @@ export default component$(() => {
             </button>
           </form>
 
+          <p id="search-query-help" class="text-base-content/65 text-sm">
+            Search starts after {MIN_SEARCH_QUERY_LENGTH} characters and keeps
+            your current language in the URL.
+          </p>
+
+          {formModel.shortQueryMessage && (
+            <div
+              class="alert alert-warning alert-soft text-sm"
+              role="status"
+              aria-live="polite"
+            >
+              <span>{formModel.shortQueryMessage}</span>
+            </div>
+          )}
+
           <div class="space-y-2">
             <p class="text-base-content/60 text-xs font-semibold tracking-[0.08em] uppercase">
               Search tips
             </p>
             <InlineFilterGroup>
-              <FilterChip label="Use at least 3 characters" />
+              <FilterChip
+                label={`Submit ${MIN_SEARCH_QUERY_LENGTH}+ characters to load results`}
+              />
               <FilterChip label="Searches movies, TV, and people" />
               <FilterChip label="Results update when you submit" />
             </InlineFilterGroup>
@@ -140,29 +162,9 @@ export default component$(() => {
       </section>
 
       <SearchAssist
-        categoryLinks={[
-          {
-            href: paths.index(resource.value.lang),
-            label: langBrowseHome(resource.value.lang),
-          },
-          {
-            href: paths.movie(resource.value.lang),
-            label: langBrowseMovies(resource.value.lang),
-          },
-          {
-            href: paths.movieDiscover(resource.value.lang),
-            label: langDiscoverMovies(resource.value.lang),
-          },
-          {
-            href: paths.tv(resource.value.lang),
-            label: langBrowseTv(resource.value.lang),
-          },
-          {
-            href: paths.tvDiscover(resource.value.lang),
-            label: langDiscoverTv(resource.value.lang),
-          },
-        ]}
-        emptyState="Search for a title once and it will show up here."
+        categoryLinks={assistLinks}
+        discoveryDescription="Jump back into discovery when you want broader browsing instead of a direct query."
+        emptyRecentSearchesMessage="Search for a title once and it will show up here."
         recentSearches={recentSearches.value}
         recentSearchesLabel={langRecentSearches(resource.value.lang)}
         searchTipsLabel={langSearchAssist(resource.value.lang)}
@@ -195,7 +197,12 @@ export default component$(() => {
             );
           }
 
-          if (movies.total_results > 0) {
+          const normalizedResults = normalizeSearchResults({
+            language: resource.value.lang,
+            results: movies.results,
+          });
+
+          if (normalizedResults.length > 0) {
             return (
               <MediaGrid
                 description="Results combine movies, TV series, and people in one grid so you can jump straight into the right detail page."
@@ -203,43 +210,19 @@ export default component$(() => {
                 headerBadge={`${movies.total_results} matches`}
                 title={`${langSearchResults(resource.value.lang)} (${movies.total_results})`}
               >
-                {movies.results.map((m) => (
+                {normalizedResults.map((result) => (
                   <a
-                    key={m.id}
+                    key={result.id}
                     class="media-card-link block h-full text-left"
-                    href={paths.media(
-                      m.media_type ?? ("movie" as MediaType),
-                      m.id,
-                      resource.value.lang,
-                    )}
+                    href={result.href}
                   >
                     <MediaCard
-                      title={
-                        m.media_type === MediaType.Movie
-                          ? (m.title ?? "")
-                          : (m.name ?? "")
-                      }
+                      title={result.title}
                       width={300}
-                      rating={m.vote_average ? m.vote_average : 0}
-                      year={
-                        m.media_type === MediaType.Movie
-                          ? formatYear(m.release_date)
-                          : "first_air_date" in m
-                            ? formatYear(m.first_air_date)
-                            : 0
-                      }
-                      picfile={
-                        m.media_type !== MediaType.Movie &&
-                        m.media_type !== MediaType.Tv
-                          ? m.profile_path
-                          : m.poster_path
-                      }
-                      variant={
-                        m.media_type !== MediaType.Movie &&
-                        m.media_type !== MediaType.Tv
-                          ? "person"
-                          : "poster"
-                      }
+                      rating={result.rating}
+                      year={result.year}
+                      picfile={result.picfile}
+                      variant={result.variant}
                       layout="grid"
                     />
                   </a>

@@ -34,7 +34,7 @@ export const ContinueBrowsingWidget = component$<ContinueBrowsingWidgetProps>(
     useVisibleTask$(() => {
       lastViewed.value = readLastViewed();
       recentSearches.value = readRecentSearches();
-    });
+    }, { strategy: "document-ready" });
 
     return (
       <section id="continue-browsing" class="section-reveal">

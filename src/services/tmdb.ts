@@ -16,6 +16,7 @@ import type {
   WatchProviderResults,
 } from "./models";
 import { MediaType } from "./models";
+import { createJsonApiClient, getOptionalResult } from "./json-api";
 export {
   getRegionFromLanguage,
   resolveMovieCertification,
@@ -32,6 +33,15 @@ const TV_DETAIL_APPEND_RESPONSE =
 const PERSON_DETAIL_APPEND_RESPONSE = "images,external_ids";
 type BackdropMediaType = MediaType.Movie | MediaType.Tv;
 
+const tmdbClient = createJsonApiClient({
+  baseUrl: TMDB_API_BASE_URL,
+  name: "TMDB",
+  auth: {
+    param: "api_key",
+    value: () => process.env.TMDB_API_KEY,
+  },
+});
+
 const isBackdropMediaType = (
   type: Exclude<MediaType, MediaType.Seasons>,
 ): type is BackdropMediaType =>
@@ -39,18 +49,9 @@ const isBackdropMediaType = (
 
 const fetchTMDB = async <T = unknown>(
   path: string,
-  search: Record<string, string> = {},
+  search: Record<string, boolean | number | string | undefined> = {},
 ): Promise<T> => {
-  const params = new URLSearchParams({
-    ...search,
-    api_key: process.env.TMDB_API_KEY || "",
-  });
-  const url = `${TMDB_API_BASE_URL}/${path}?${params}`;
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`TMDB request failed (${response.status}) for ${path}`);
-  }
-  return response.json() as T;
+  return tmdbClient.request<T>(path, { search });
 };
 
 const withBackdrops = async <T extends MediaShortStrict<BackdropMediaType>>(
@@ -65,12 +66,20 @@ const withBackdrops = async <T extends MediaShortStrict<BackdropMediaType>>(
         media_type: type,
         langString: DEFAULT_IMAGE_LANGUAGE,
       });
-      item.backdrop_path = backdropPath;
-      if (setMediaType) {
-        item.media_type = type;
-      }
-      return item;
+      return {
+        ...item,
+        backdrop_path: backdropPath,
+        ...(setMediaType ? { media_type: type } : {}),
+      } as T;
     }),
+  );
+
+const sortByYearDesc = <T>(
+  items: T[],
+  getDate: (item: T) => null | string | undefined,
+) =>
+  [...items].sort(
+    (left, right) => formatYear(getDate(right)) - formatYear(getDate(left)),
   );
 
 type GetTrendingMedia = {
@@ -147,19 +156,20 @@ export const getImages = async ({
 };
 
 export const withImages = async (movies: MediaShort[], lang: string) => {
-  const m = await Promise.all(
+  return Promise.all(
     movies.map(async (item) => {
       const [backdrop, poster] = await getImages({
         id: item.id,
         media_type: MediaType.Movie,
         langString: lang,
       });
-      item.backdrop_path = backdrop;
-      item.poster_path = poster;
-      return item;
+      return {
+        ...item,
+        backdrop_path: backdrop,
+        poster_path: poster,
+      };
     }),
   );
-  return m;
 };
 
 type GetMedias = {
@@ -239,15 +249,16 @@ export const getOptionalWatchProviders = async ({
   id,
   type,
 }: GetWatchProviders) => {
-  try {
-    return await getWatchProviders({
-      id,
-      type,
-    });
-  } catch (error) {
-    console.error("Unable to fetch TMDB watch providers", error);
-    return null;
-  }
+  return getOptionalResult(
+    () =>
+      getWatchProviders({
+        id,
+        type,
+      }),
+    (error) => {
+      console.error("Unable to fetch TMDB watch providers", error);
+    },
+  );
 };
 
 type GetMediaRecomType = {
@@ -269,25 +280,21 @@ export const getMediaRecom = async ({
   });
 
   if (result.total_results === 0) return result.results;
-  let media = result.results;
-  if (isBackdropMediaType(type)) {
-    media = await withBackdrops(
-      media as MediaShortStrict<BackdropMediaType>[],
-      type,
-      true,
-    );
-    if (type === MediaType.Movie) {
-      media = media.sort(
-        (a, b) => formatYear(b.release_date) - formatYear(a.release_date),
-      );
-    }
-    if (type === MediaType.Tv) {
-      media = media.sort(
-        (a, b) => formatYear(b.first_air_date) - formatYear(a.first_air_date),
-      );
-    }
+  if (!isBackdropMediaType(type)) {
+    return result.results;
   }
-  return media;
+
+  const media = await withBackdrops(
+    result.results as MediaShortStrict<BackdropMediaType>[],
+    type,
+    true,
+  );
+
+  if (type === MediaType.Movie) {
+    return sortByYearDesc(media, (item) => item.release_date);
+  }
+
+  return sortByYearDesc(media, (item) => item.first_air_date);
 };
 
 type GetColMoviesType = {
@@ -302,19 +309,23 @@ export const getCollectionMovies = async ({
     language,
   });
   if (result.parts.length === 0) return result.parts;
-  const newMovieMedia = result.parts.map(async (item) => {
-    [item.backdrop_path] = await getImages({
-      id: item.id,
-      media_type: MediaType.Movie,
-      langString: DEFAULT_IMAGE_LANGUAGE,
-    });
-    return item;
-  });
   try {
-    result.parts = await Promise.all(newMovieMedia);
-    result.parts = result.parts.sort(
-      (a, b) => formatYear(b.release_date) - formatYear(a.release_date),
+    const parts = await Promise.all(
+      result.parts.map(async (item) => {
+        const [backdropPath] = await getImages({
+          id: item.id,
+          media_type: MediaType.Movie,
+          langString: DEFAULT_IMAGE_LANGUAGE,
+        });
+
+        return {
+          ...item,
+          backdrop_path: backdropPath,
+        };
+      }),
     );
+
+    return sortByYearDesc(parts, (item) => item.release_date);
   } catch (error) {
     console.error("Unable to fetch collection movie backdrops", error);
   }
@@ -332,13 +343,11 @@ export const getPersonMovies = async ({ id, language }: GetPerson) => {
     language,
   });
 
-  result.cast = result.cast.sort(
-    (a, b) => formatYear(b.release_date) - formatYear(a.release_date),
-  );
-  result.crew = result.crew.sort(
-    (a, b) => formatYear(b.release_date) - formatYear(a.release_date),
-  );
-  return result;
+  return {
+    ...result,
+    cast: sortByYearDesc(result.cast, (item) => item.release_date),
+    crew: sortByYearDesc(result.crew, (item) => item.release_date),
+  };
 };
 
 export const getPersonTv = async ({ id, language }: GetPerson) => {
@@ -347,13 +356,11 @@ export const getPersonTv = async ({ id, language }: GetPerson) => {
     language,
   });
 
-  result.cast = result.cast.sort(
-    (a, b) => formatYear(b.first_air_date) - formatYear(a.first_air_date),
-  );
-  result.crew = result.crew.sort(
-    (a, b) => formatYear(b.first_air_date) - formatYear(a.first_air_date),
-  );
-  return result;
+  return {
+    ...result,
+    cast: sortByYearDesc(result.cast, (item) => item.first_air_date),
+    crew: sortByYearDesc(result.crew, (item) => item.first_air_date),
+  };
 };
 
 type Search = {
@@ -447,12 +454,12 @@ export const getMovieCertificationList = () => {
 };
 
 export const getOptionalMovieCertificationList = async () => {
-  try {
-    return await getMovieCertificationList();
-  } catch (error) {
-    console.error("Unable to fetch TMDB movie certifications", error);
-    return null;
-  }
+  return getOptionalResult(
+    () => getMovieCertificationList(),
+    (error) => {
+      console.error("Unable to fetch TMDB movie certifications", error);
+    },
+  );
 };
 
 export const getTvCertificationList = () => {
@@ -460,12 +467,12 @@ export const getTvCertificationList = () => {
 };
 
 export const getOptionalTvCertificationList = async () => {
-  try {
-    return await getTvCertificationList();
-  } catch (error) {
-    console.error("Unable to fetch TMDB TV certifications", error);
-    return null;
-  }
+  return getOptionalResult(
+    () => getTvCertificationList(),
+    (error) => {
+      console.error("Unable to fetch TMDB TV certifications", error);
+    },
+  );
 };
 
 type GetWatchProviderCatalog = {
@@ -479,10 +486,10 @@ export const getWatchProviderCatalog = ({ type }: GetWatchProviderCatalog) => {
 export const getOptionalWatchProviderCatalog = async ({
   type,
 }: GetWatchProviderCatalog) => {
-  try {
-    return await getWatchProviderCatalog({ type });
-  } catch (error) {
-    console.error("Unable to fetch TMDB watch provider catalog", error);
-    return null;
-  }
+  return getOptionalResult(
+    () => getWatchProviderCatalog({ type }),
+    (error) => {
+      console.error("Unable to fetch TMDB watch provider catalog", error);
+    },
+  );
 };

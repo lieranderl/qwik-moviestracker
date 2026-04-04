@@ -48,6 +48,9 @@
 - Grid-style collection sections should prefer `MediaGrid` in
   `src/components/media-grid.tsx` for a titled header plus responsive card
   grid, instead of open-coded route-level headings above standalone grids.
+- Horizontal collection sections should prefer `MediaCarousel` in
+  `src/components/media-carousel.tsx`; it provides the titled section header,
+  overflow controls, and accessible landmark wiring for reusable media rails.
 
 ## Styling Guidance
 

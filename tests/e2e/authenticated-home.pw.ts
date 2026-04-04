@@ -51,6 +51,21 @@ test.describe("authenticated home", () => {
       }),
     ).toBeVisible();
     await expect(
+      page.getByRole("region", {
+        name: /latest movies/i,
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("region", {
+        name: /trending movies/i,
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("region", {
+        name: /trending tv shows/i,
+      }),
+    ).toBeVisible();
+    await expect(
       page.getByRole("link", {
         name: /hydration station/i,
       }),

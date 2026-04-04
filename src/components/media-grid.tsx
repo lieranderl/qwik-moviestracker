@@ -1,4 +1,4 @@
-import { component$, Slot } from "@builder.io/qwik";
+import { component$, Slot, useId } from "@builder.io/qwik";
 
 interface MediaGridProps {
   description?: string;
@@ -9,8 +9,13 @@ interface MediaGridProps {
 
 export const MediaGrid = component$(
   ({ description, eyebrow, headerBadge, title }: MediaGridProps) => {
+    const titleId = useId();
+
     return (
-      <section class="my-6 space-y-4">
+      <section
+        aria-labelledby={title ? titleId : undefined}
+        class="my-6 space-y-4"
+      >
         {title && (
           <header class="rounded-box border-base-200 bg-base-100/88 flex flex-col gap-3 border p-4 shadow-sm backdrop-blur sm:flex-row sm:items-end sm:justify-between">
             <div class="space-y-2">
@@ -19,7 +24,10 @@ export const MediaGrid = component$(
                   {eyebrow}
                 </p>
               )}
-              <h2 class="text-left text-xl font-semibold text-balance md:text-2xl">
+              <h2
+                id={titleId}
+                class="text-left text-xl font-semibold text-balance md:text-2xl"
+              >
                 {title}
               </h2>
               {description && (

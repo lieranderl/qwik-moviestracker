@@ -2,8 +2,9 @@ import {
   $,
   component$,
   Slot,
+  useId,
   useSignal,
-  useVisibleTask$,
+  useTask$,
 } from "@builder.io/qwik";
 import {
   HiChevronLeftSolid,
@@ -31,11 +32,14 @@ export const MediaCarousel = component$(
     lang,
     sectionId,
   }: MediaCarouselProps) => {
+    const carouselId = useId();
     const trackRef = useSignal<HTMLDivElement>();
     const scrollRatio = useSignal(0);
     const hasOverflow = useSignal(false);
     const canScrollBackward = useSignal(false);
     const canScrollForward = useSignal(false);
+    const headingId = `${carouselId}-heading`;
+    const trackId = `${carouselId}-track`;
 
     const updateRailState = $(() => {
       const rail = trackRef.value;
@@ -62,32 +66,44 @@ export const MediaCarousel = component$(
       });
     });
 
-    // eslint-disable-next-line qwik/no-use-visible-task
-    useVisibleTask$(({ cleanup }) => {
-      const rail = trackRef.value;
-      if (!rail) {
+    useTask$(({ track, cleanup }) => {
+      const rail = track(() => trackRef.value);
+      if (!rail || typeof window === "undefined") {
         return;
       }
 
       const sync = () => {
         void updateRailState();
       };
+      const resizeObserver =
+        typeof ResizeObserver !== "undefined" ? new ResizeObserver(sync) : null;
 
       sync();
       rail.addEventListener("scroll", sync, { passive: true });
       window.addEventListener("resize", sync);
+      resizeObserver?.observe(rail);
+      if (rail.parentElement) {
+        resizeObserver?.observe(rail.parentElement);
+      }
 
       cleanup(() => {
         rail.removeEventListener("scroll", sync);
         window.removeEventListener("resize", sync);
+        resizeObserver?.disconnect();
       });
     });
 
     return (
-      <section id={sectionId} class="section-reveal my-6 scroll-mt-28">
+      <section
+        id={sectionId}
+        aria-labelledby={headingId}
+        class="section-reveal my-6 scroll-mt-28"
+      >
         <div class="mb-3 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div class="space-y-1">
-            <div class="text-base-content text-xl font-semibold">{title}</div>
+            <h2 id={headingId} class="text-base-content text-xl font-semibold">
+              {title}
+            </h2>
             {hintLabel && hasOverflow.value && (
               <p class="text-base-content/52 text-xs font-medium tracking-[0.08em] uppercase">
                 {hintLabel}
@@ -100,20 +116,22 @@ export const MediaCarousel = component$(
                 <button
                   type="button"
                   aria-label={`Scroll ${title} backward`}
+                  aria-controls={trackId}
                   class="btn btn-ghost btn-sm btn-circle hidden md:inline-flex"
                   disabled={!canScrollBackward.value}
                   onClick$={() => scrollRail("backward")}
                 >
-                  <HiChevronLeftSolid class="h-4 w-4" />
+                  <HiChevronLeftSolid aria-hidden="true" class="h-4 w-4" />
                 </button>
                 <button
                   type="button"
                   aria-label={`Scroll ${title} forward`}
+                  aria-controls={trackId}
                   class="btn btn-ghost btn-sm btn-circle hidden md:inline-flex"
                   disabled={!canScrollForward.value}
                   onClick$={() => scrollRail("forward")}
                 >
-                  <HiChevronRightSolid class="h-4 w-4" />
+                  <HiChevronRightSolid aria-hidden="true" class="h-4 w-4" />
                 </button>
               </>
             )}
@@ -132,17 +150,18 @@ export const MediaCarousel = component$(
         <div class="relative">
           <div
             class={[
-              "from-base-100 via-base-100/85 pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-12 bg-gradient-to-r to-transparent transition-opacity duration-200 md:block",
+              "from-base-100 via-base-100/85 pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-12 bg-linear-to-r to-transparent transition-opacity duration-200 md:block",
               canScrollBackward.value ? "opacity-100" : "opacity-0",
             ]}
           />
           <div
             class={[
-              "from-base-100 via-base-100/85 pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-12 bg-gradient-to-l to-transparent transition-opacity duration-200 md:block",
+              "from-base-100 via-base-100/85 pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-12 bg-linear-to-r to-transparent transition-opacity duration-200 md:block",
               canScrollForward.value ? "opacity-100" : "opacity-0",
             ]}
           />
           <div
+            id={trackId}
             ref={trackRef}
             class="carousel carousel-start motion-stagger no-scrollbar w-full items-start overflow-y-visible scroll-smooth py-2 ps-0 pe-0"
           >
@@ -151,6 +170,7 @@ export const MediaCarousel = component$(
         </div>
         {hasOverflow.value && (
           <progress
+            aria-hidden="true"
             class="progress progress-secondary mt-3 h-1 w-full"
             max={100}
             value={scrollRatio.value * 100}

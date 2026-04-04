@@ -4,22 +4,23 @@ import { RatingStar } from "~/components/rating-star";
 import { TMDB_IMAGE_BASE_URL } from "~/utils/constants";
 
 export type MediaCardVariant = "landscape" | "poster" | "person";
+export type MediaCardLayout = "carousel" | "grid";
 
 interface MediaCardProps {
   title: string;
   picfile: string | null | undefined;
-  width: number;
+  width?: number;
   metaLabel?: string;
   rating: number | string | null | undefined;
-  year: number;
+  year?: number | null | undefined;
   variant?: MediaCardVariant;
-  layout?: "carousel" | "grid";
+  layout?: MediaCardLayout;
 }
 
 const META_ROW_CLASS =
   "mb-1 flex h-5 items-center truncate text-xs font-medium tracking-wider uppercase";
 
-const getCardWidthClass = ({
+export const getCardWidthClass = ({
   layout,
   variant,
 }: Pick<MediaCardProps, "layout" | "variant">) => {
@@ -36,7 +37,23 @@ const getCardWidthClass = ({
     : "ms-2 w-[8.5rem] sm:w-[9rem] lg:w-[9.5rem]";
 };
 
-const getPlaceholderLabel = (title: string) => {
+export const getMediaCardImageWidth = ({
+  layout,
+  variant,
+  width,
+}: Pick<MediaCardProps, "layout" | "variant" | "width">) => {
+  if (typeof width === "number" && Number.isFinite(width) && width > 0) {
+    return width;
+  }
+
+  if (layout === "grid") {
+    return variant === "landscape" ? 500 : 300;
+  }
+
+  return variant === "landscape" ? 500 : 300;
+};
+
+export const getPlaceholderLabel = (title: string) => {
   const compactTitle = title.trim();
   if (!compactTitle) {
     return "NA";
@@ -50,7 +67,7 @@ const getPlaceholderLabel = (title: string) => {
   return `${words[0][0] ?? ""}${words[1][0] ?? ""}`.toUpperCase();
 };
 
-const getSafeRating = (rating: MediaCardProps["rating"]) => {
+export const getSafeRating = (rating: MediaCardProps["rating"]) => {
   const parsed =
     typeof rating === "number"
       ? rating
@@ -71,7 +88,16 @@ export const MediaCard = component$(
   }: MediaCardProps) => {
     const hasPoster = Boolean(picfile);
     const isLandscape = variant === "landscape";
-    const height = isLandscape ? (width * 9) / 16 : (width * 3) / 2;
+    const imageWidth = getMediaCardImageWidth({
+      layout,
+      variant,
+      width,
+    });
+    const safeYear =
+      typeof year === "number" && Number.isFinite(year) && year > 0 ? year : 0;
+    const height = isLandscape
+      ? (imageWidth * 9) / 16
+      : (imageWidth * 3) / 2;
     const cardWidthClass = getCardWidthClass({
       variant,
       layout,
@@ -90,26 +116,33 @@ export const MediaCard = component$(
       <div class={containerClass}>
         {metaLabel && (
           <span
+            title={metaLabel}
             class={`text-base-content/70 before:text-base-content/40 ${META_ROW_CLASS} before:mr-2 before:content-['•']`}
           >
             {metaLabel}
           </span>
         )}
         {!metaLabel && (
-          <span class={`text-base-content/0 ${META_ROW_CLASS}`}>&nbsp;</span>
+          <span aria-hidden="true" class={META_ROW_CLASS} />
         )}
         <div class={cardClass}>
           <figure class={`relative w-full overflow-hidden ${aspectClass}`}>
             {hasPoster ? (
               <Image
                 class="media-card-poster absolute inset-0 h-full w-full transform-gpu object-cover"
-                src={`${TMDB_IMAGE_BASE_URL}w${width}${picfile}`}
-                width={width}
+                src={`${TMDB_IMAGE_BASE_URL}w${imageWidth}${picfile}`}
+                width={imageWidth}
                 height={height}
-                alt={title}
+                alt=""
+                decoding="async"
+                draggable={false}
+                loading={layout === "grid" ? "lazy" : undefined}
               />
             ) : (
-              <div class="from-base-200 via-base-300/80 to-base-200 absolute inset-0 overflow-hidden bg-linear-to-br">
+              <div
+                aria-hidden="true"
+                class="from-base-200 via-base-300/80 to-base-200 absolute inset-0 overflow-hidden bg-linear-to-br"
+              >
                 <div class="bg-base-content/10 absolute -top-10 -right-8 h-28 w-28 rounded-full blur-xl" />
                 <div class="bg-base-content/10 absolute -bottom-12 -left-8 h-32 w-32 rounded-full blur-xl" />
                 <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center">
@@ -122,25 +155,39 @@ export const MediaCard = component$(
                 </div>
               </div>
             )}
-            <div class="media-card-overlay pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-20 bg-linear-to-t from-black/45 to-transparent opacity-75" />
+            <div
+              aria-hidden="true"
+              class="media-card-overlay pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-20 bg-linear-to-t from-black/45 to-transparent opacity-75"
+            />
             {safeRating > 0 && (
-              <div class="badge badge-warning badge-sm absolute bottom-3 left-3 z-20 inline-flex items-center justify-center gap-1 rounded-full px-3 py-3 font-bold shadow-sm">
+              <div
+                aria-label={`Rated ${safeRating.toFixed(1)} out of 10`}
+                class="badge badge-warning badge-sm absolute bottom-3 left-3 z-20 inline-flex items-center justify-center gap-1 rounded-full px-3 py-3 font-bold shadow-sm"
+                title={`Rating ${safeRating.toFixed(1)}`}
+              >
                 <RatingStar />
                 <span class="inline-flex items-center leading-none">
                   {safeRating.toFixed(1)}
                 </span>
               </div>
             )}
-            {year > 0 && (
-              <div class="badge badge-neutral badge-sm absolute right-3 bottom-3 z-20 rounded-full px-3 py-3 font-semibold shadow-sm">
-                {year}
+            {safeYear > 0 && (
+              <div
+                aria-label={`Released in ${safeYear}`}
+                class="badge badge-neutral badge-sm absolute right-3 bottom-3 z-20 rounded-full px-3 py-3 font-semibold shadow-sm"
+                title={`Released in ${safeYear}`}
+              >
+                {safeYear}
               </div>
             )}
           </figure>
           <div
             class={`media-card-body card-body bg-base-200/70 border-base-300/60 relative min-w-0 border-t px-3 py-2.5 ${bodyHeightClass}`}
           >
-            <span class="card-title text-base-content line-clamp-2 block text-sm leading-tight">
+            <span
+              class="card-title text-base-content line-clamp-2 block text-sm leading-tight"
+              title={title}
+            >
               {title}
             </span>
           </div>

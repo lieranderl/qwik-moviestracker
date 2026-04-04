@@ -1,55 +1,49 @@
 import type { ImdbRating, Torrent } from "./models";
+import { createJsonApiClient, getOptionalResult } from "./json-api";
 
 const baseCGURL = "https://moviestracker-gw-eu-w1-8vmmbwbl.ew.gateway.dev";
-const fetchAPI = async <T = unknown>(
-  path: string,
-  search: Record<string, string> = {},
-): Promise<T> => {
-  const params = new URLSearchParams({
-    ...search,
-    key: process.env.GC_API_KEY || "",
-  });
-  const url = `${baseCGURL}/${path}?${params}`;
-  const response = await fetch(url, {
-    headers: {
-      Origin: "https://moviestracker.net",
-      Referer: "https://moviestracker.net",
-    },
-  });
-  if (!response.ok) {
-    throw new Error(
-      `Cloud API request failed (${response.status}) for ${path}`,
-    );
-  }
-
-  return response.json() as T;
-};
+const cloudApiClient = createJsonApiClient({
+	baseUrl: baseCGURL,
+	defaultHeaders: {
+		Origin: "https://moviestracker.net",
+		Referer: "https://moviestracker.net",
+	},
+	name: "Cloud API",
+	auth: {
+		param: "key",
+		value: () => process.env.GC_API_KEY,
+	},
+});
 
 export const getImdbRating = (imdb_id: string) =>
-  fetchAPI<ImdbRating>("getimdb", { imdb_id });
+	cloudApiClient.request<ImdbRating>("getimdb", {
+		search: { imdb_id },
+	});
 
 export const getOptionalImdbRating = async (imdb_id?: null | string) => {
-  if (!imdb_id) {
-    return null;
-  }
+	if (!imdb_id) {
+		return null;
+	}
 
-  try {
-    return await getImdbRating(imdb_id);
-  } catch (error) {
-    console.error(`Unable to fetch IMDb rating for ${imdb_id}`, error);
-    return null;
-  }
+	return getOptionalResult(
+		() => getImdbRating(imdb_id),
+		(error) => {
+			console.error(`Unable to fetch IMDb rating for ${imdb_id}`, error);
+		},
+	);
 };
 
 export type getTorrentsType = {
-  name: string;
-  year: number;
-  isMovie: boolean;
+	name: string;
+	year: number;
+	isMovie: boolean;
 };
 export const getTorrents = ({ name, year, isMovie }: getTorrentsType) => {
-  return fetchAPI<Torrent[]>("gettorrents", {
-    MovieName: name,
-    Year: year.toString(),
-    isMovie: String(isMovie),
-  });
+	return cloudApiClient.request<Torrent[]>("gettorrents", {
+		search: {
+			MovieName: name,
+			Year: year,
+			isMovie,
+		},
+	});
 };

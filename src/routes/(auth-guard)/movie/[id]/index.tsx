@@ -26,6 +26,7 @@ import {
   resolveMovieCertification,
   resolveRegionalWatchProviders,
 } from "~/services/tmdb";
+import { langText } from "~/utils/languages";
 
 type MovieDetailData =
   | {
@@ -125,8 +126,16 @@ export default component$(() => {
   if (value.status !== "ready") {
     return (
       <ErrorState
-        title="Movie details are unavailable"
-        description="Please refresh the page or return to the previous screen."
+        title={langText(
+          value.lang,
+          "Movie details are unavailable",
+          "Детали фильма недоступны",
+        )}
+        description={langText(
+          value.lang,
+          "Please refresh the page or return to the previous screen.",
+          "Обновите страницу или вернитесь на предыдущий экран.",
+        )}
       />
     );
   }
@@ -146,12 +155,20 @@ export default component$(() => {
   );
 });
 
-export const head: DocumentHead = {
-  title: "Moviestracker",
-  meta: [
-    {
-      name: "description",
-      content: "Movie Details",
-    },
-  ],
+export const head: DocumentHead = ({ url }) => {
+  const lang = url.searchParams.get("lang") || "en-US";
+
+  return {
+    title: `Moviestracker | ${langText(
+      lang,
+      "Movie details",
+      "Детали фильма",
+    )}`,
+    meta: [
+      {
+        name: "description",
+        content: langText(lang, "Movie details", "Детали фильма"),
+      },
+    ],
+  };
 };

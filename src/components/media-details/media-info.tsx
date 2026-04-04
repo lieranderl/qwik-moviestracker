@@ -27,14 +27,17 @@ export const MediaInfo = component$<MediaInfoProps>(
 		production_companies,
 		original_language,
 		lang,
-		networks,
-	}) => {
-		return (
-			<section class="card border-base-200 bg-base-100/95 border shadow-sm">
-				<div class="card-body">
-					<h3 class="card-title text-base-content/80 text-lg">
-						Production Details
-					</h3>
+			networks,
+		}) => {
+			const detailsTitle =
+				lang === "en-US" ? "Production details" : "Детали производства";
+
+			return (
+				<section class="card border-base-200 bg-base-100/95 border shadow-sm">
+					<div class="card-body">
+						<h3 class="card-title text-base-content/80 text-lg">
+							{detailsTitle}
+						</h3>
 					<section class="my-1 grid grid-cols-1 gap-3 text-sm">
 						{release_date && (
 							<div class="flex items-center gap-2">

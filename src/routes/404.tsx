@@ -2,6 +2,10 @@ import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { useLocation } from "@builder.io/qwik-city";
 import { NotFoundPage } from "~/components/not-found-page";
+import {
+  langPageNotFound,
+  langPageNotFoundDescription,
+} from "~/utils/languages";
 
 export default component$(() => {
 	const location = useLocation();
@@ -9,12 +13,16 @@ export default component$(() => {
 	return <NotFoundPage lang={lang} />;
 });
 
-export const head: DocumentHead = {
-	title: "404 | Moviestracker",
-	meta: [
-		{
-			name: "description",
-			content: "Page not found",
-		},
-	],
+export const head: DocumentHead = ({ url }) => {
+	const lang = url.searchParams.get("lang") || "en-US";
+
+	return {
+		title: `404 | ${langPageNotFound(lang)}`,
+		meta: [
+			{
+				name: "description",
+				content: langPageNotFoundDescription(lang),
+			},
+		],
+	};
 };

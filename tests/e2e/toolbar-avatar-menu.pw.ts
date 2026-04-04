@@ -1,5 +1,12 @@
 import { expect, test } from "@playwright/test";
 import { addBypassCookie } from "./helpers/auth-bypass";
+import {
+  accountMenuPattern,
+  authHeadingPattern,
+  languagePattern,
+  openAccountMenuPattern,
+  signOutPattern,
+} from "./helpers/i18n";
 
 test.describe("toolbar avatar menu", () => {
   test.describe.configure({ mode: "serial" });
@@ -14,9 +21,9 @@ test.describe("toolbar avatar menu", () => {
     await page.goto("/search/?lang=en-US");
 
     const trigger = page.getByRole("button", {
-      name: /open account menu/i,
+      name: openAccountMenuPattern,
     });
-    const menu = page.getByRole("menu", { name: /account menu/i });
+    const menu = page.getByRole("menu", { name: accountMenuPattern });
 
     await trigger.focus();
     await page.keyboard.press("Enter");
@@ -24,8 +31,8 @@ test.describe("toolbar avatar menu", () => {
     await expect(menu).toBeVisible();
     await expect(menu.getByText("Playwright User")).toBeVisible();
     await expect(menu.getByText("playwright@local.test")).toBeVisible();
-    await expect(menu.getByRole("link", { name: /language/i })).toBeVisible();
-    await expect(menu.getByRole("button", { name: /sing out/i })).toBeVisible();
+    await expect(menu.getByRole("link", { name: languagePattern })).toBeVisible();
+    await expect(menu.getByRole("button", { name: signOutPattern })).toBeVisible();
   });
 
   test("switches language from the account menu and persists the choice", async ({
@@ -34,13 +41,13 @@ test.describe("toolbar avatar menu", () => {
     await page.goto("/search/?lang=en-US");
 
     const trigger = page.getByRole("button", {
-      name: /open account menu/i,
+      name: openAccountMenuPattern,
     });
-    const menu = page.getByRole("menu", { name: /account menu/i });
+    const menu = page.getByRole("menu", { name: accountMenuPattern });
 
     await trigger.click();
     await expect(menu).toBeVisible();
-    await menu.getByRole("link", { name: /language/i }).click();
+    await menu.getByRole("link", { name: languagePattern }).click();
 
     await expect(page).toHaveURL(/\/search\/?\?lang=ru-RU$/);
     await expect
@@ -52,18 +59,18 @@ test.describe("toolbar avatar menu", () => {
     await page.goto("/search/?lang=ru-RU");
 
     const trigger = page.getByRole("button", {
-      name: /open account menu/i,
+      name: openAccountMenuPattern,
     });
-    const menu = page.getByRole("menu", { name: /account menu/i });
+    const menu = page.getByRole("menu", { name: accountMenuPattern });
 
     await trigger.click();
     await expect(menu).toBeVisible();
-    await menu.getByRole("button", { name: /выйти/i }).click();
+    await menu.getByRole("button", { name: signOutPattern }).click();
 
     await expect(page).toHaveURL(/\/auth\/?\?lang=ru-RU$/);
     await expect(
       page.getByRole("heading", {
-        name: /track movies and tv shows/i,
+        name: authHeadingPattern,
       }),
     ).toBeVisible();
   });

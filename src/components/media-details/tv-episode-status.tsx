@@ -17,11 +17,14 @@ export type TvEpisodeStatusProps = {
 
 export const TvEpisodeStatus = component$<TvEpisodeStatusProps>(
 	({ lang, last_episode_to_air, next_episode_to_air, in_production }) => {
+		const episodeStatusTitle =
+			lang === "en-US" ? "Episode status" : "Статус эпизодов";
+
 		return (
 			<section class="card border-base-200 bg-base-100/95 border shadow-sm">
 				<div class="card-body">
 					<h3 class="card-title text-base-content/80 text-lg">
-						Episode Status
+						{episodeStatusTitle}
 					</h3>
 					{in_production && (
 						<table class="table-sm table w-full">

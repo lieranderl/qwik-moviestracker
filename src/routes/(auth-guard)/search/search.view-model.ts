@@ -5,6 +5,7 @@ import {
   langBrowseTv,
   langDiscoverMovies,
   langDiscoverTv,
+  langSearchTooShort,
 } from "~/utils/languages";
 import { formatYear } from "~/utils/format";
 import { paths } from "~/utils/paths";
@@ -61,6 +62,7 @@ const resolveSearchResultMediaType = (mediaType: SearchResultLike["media_type"])
 
 export const createSearchFormViewModel = (
   query: string,
+  lang = "en-US",
 ): SearchFormViewModel => {
   const normalizedQuery = normalizeSearchQuery(query);
   const searchPhrase = getSearchPhrase(normalizedQuery);
@@ -74,12 +76,15 @@ export const createSearchFormViewModel = (
   }
 
   const remainingCharacters = MIN_SEARCH_QUERY_LENGTH - normalizedQuery.length;
-  const characterLabel = remainingCharacters === 1 ? "character" : "characters";
 
   return {
     query: normalizedQuery,
     searchPhrase,
-    shortQueryMessage: `Search starts after ${MIN_SEARCH_QUERY_LENGTH} characters. Add ${remainingCharacters} more ${characterLabel} and submit again.`,
+    shortQueryMessage: langSearchTooShort(
+      lang,
+      remainingCharacters,
+      MIN_SEARCH_QUERY_LENGTH,
+    ),
   };
 };
 

@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { addBypassCookie } from "./helpers/auth-bypass";
+import { openImdbPagePattern } from "./helpers/i18n";
 import { DEV_MOVIE_DETAIL_ID } from "../../src/routes/dev-session";
 
 test.describe("authenticated movie detail", () => {
@@ -20,7 +21,7 @@ test.describe("authenticated movie detail", () => {
     ).toBeVisible();
     await expect(
       page.getByRole("link", {
-        name: /open imdb profile/i,
+        name: openImdbPagePattern,
       }),
     ).toBeVisible();
     await expect(page.getByText("PG-13 • US")).toBeVisible();

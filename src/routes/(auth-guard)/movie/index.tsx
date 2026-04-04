@@ -18,13 +18,16 @@ import {
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import {
+  langCountLabel,
   langDiscoverMovies,
   langLatestDolbyVisionMovies,
   langLatestHDR10Movies,
   langLatestMovies,
+  langMovies,
   langNowPlayingMovies,
   langPopularMovies,
   langQuickFilters,
+  langText,
   langTrendingMovies,
   langUpcomingMovies,
   langSwipeToBrowse,
@@ -151,8 +154,16 @@ export default component$(() => {
   if (value.status !== "ready") {
     return (
       <ErrorState
-        title="Movie collections are unavailable"
-        description="Please refresh the page or try again later."
+        title={langText(
+          lang,
+          "Movie collections are unavailable",
+          "Коллекции фильмов недоступны",
+        )}
+        description={langText(
+          lang,
+          "Please refresh the page or try again later.",
+          "Обновите страницу или попробуйте позже.",
+        )}
         compact={true}
       />
     );
@@ -161,23 +172,81 @@ export default component$(() => {
   return (
     <div class="space-y-6">
       <SectionHeading
-        eyebrow="Movies"
-        title="Browse movie collections"
-        description={`Move between local premium shelves and TMDB-powered discovery feeds without losing your language context. Now Playing and Upcoming shelves use ${getRegionFromLanguage(lang)} release windows.`}
+        eyebrow={langMovies(lang)}
+        title={langText(
+          lang,
+          "Browse movie collections",
+          "Просмотр коллекций фильмов",
+        )}
+        description={langText(
+          lang,
+          `Move between local premium shelves and TMDB-powered discovery feeds without losing your language context. Now Playing and Upcoming shelves use ${getRegionFromLanguage(lang)} release windows.`,
+          `Переключайтесь между локальными премиальными полками и подборками TMDB, не теряя текущий язык. Полки «Сейчас в кино» и «Скоро» используют регион ${getRegionFromLanguage(lang)} для окон релизов.`,
+        )}
         badges={[
-          `${value.torMovies.length} latest`,
-          `${value.popularMovies.length} popular`,
-          `${value.nowPlayingMovies.length} now playing`,
-          `${value.upcomingMovies.length} upcoming`,
-          `${value.hdrMovies.length} HDR10`,
-          `${value.dolbyMovies.length} Dolby Vision`,
+          langCountLabel(
+            lang,
+            value.torMovies.length,
+            "latest title",
+            "latest titles",
+            "последний релиз",
+            "последних релиза",
+            "последних релизов",
+          ),
+          langCountLabel(
+            lang,
+            value.popularMovies.length,
+            "popular movie",
+            "popular movies",
+            "популярный фильм",
+            "популярных фильма",
+            "популярных фильмов",
+          ),
+          langCountLabel(
+            lang,
+            value.nowPlayingMovies.length,
+            "now playing title",
+            "now playing titles",
+            "фильм в прокате",
+            "фильма в прокате",
+            "фильмов в прокате",
+          ),
+          langCountLabel(
+            lang,
+            value.upcomingMovies.length,
+            "upcoming title",
+            "upcoming titles",
+            "ожидаемый релиз",
+            "ожидаемых релиза",
+            "ожидаемых релизов",
+          ),
+          langCountLabel(
+            lang,
+            value.hdrMovies.length,
+            "HDR10 title",
+            "HDR10 titles",
+            "HDR10 релиз",
+            "HDR10 релиза",
+            "HDR10 релизов",
+          ),
+          langCountLabel(
+            lang,
+            value.dolbyMovies.length,
+            "Dolby Vision title",
+            "Dolby Vision titles",
+            "релиз Dolby Vision",
+            "релиза Dolby Vision",
+            "релизов Dolby Vision",
+          ),
         ]}
       />
       <section class="alert alert-info alert-soft section-reveal">
         <span class="text-sm leading-relaxed">
-          Trending reflects short weekly movement on TMDB. Popularity is a
-          longer-lived score. Use movie discover when you need provider,
-          certification, regional, year, and vote-count filters.
+          {langText(
+            lang,
+            "Trending reflects short weekly movement on TMDB. Popularity is a longer-lived score. Use movie discover when you need provider, certification, regional, year, and vote-count filters.",
+            "Trending показывает краткосрочное недельное движение на TMDB. Popularity отражает более устойчивый интерес. Используйте поиск фильмов, когда нужны фильтры по провайдеру, сертификату, региону, году и числу голосов.",
+          )}
         </span>
       </section>
       <QuickFilterStrip
@@ -402,12 +471,24 @@ export default component$(() => {
   );
 });
 
-export const head: DocumentHead = {
-  title: "Moviestracker",
-  meta: [
-    {
-      name: "description",
-      content: "Movies Collections",
-    },
-  ],
+export const head: DocumentHead = ({ url }) => {
+  const lang = url.searchParams.get("lang") || "en-US";
+
+  return {
+    title: `Moviestracker | ${langText(
+      lang,
+      "Movie collections",
+      "Коллекции фильмов",
+    )}`,
+    meta: [
+      {
+        name: "description",
+        content: langText(
+          lang,
+          "Browse movie collections",
+          "Просмотр коллекций фильмов",
+        ),
+      },
+    ],
+  };
 };

@@ -36,6 +36,11 @@ export type TorrentListProps = {
 
 export const TorrentList = component$(
   ({ torrents, isMovie, title, year, movie, lang }: TorrentListProps) => {
+    const titlePlaceholder = lang === "en-US" ? "title" : "название";
+    const yearPlaceholder = lang === "en-US" ? "year" : "год";
+    const resetFiltersLabel =
+      lang === "en-US" ? "Reset filters" : "Сбросить фильтры";
+
     const sortAttrib = [
       { value: "Date", text: langDate(lang) },
       { value: "Size", text: langSize(lang) },
@@ -167,7 +172,7 @@ export const TorrentList = component$(
                       <input
                         {...props}
                         type="text"
-                        placeholder="название"
+                        placeholder={titlePlaceholder}
                         class="input input-bordered input-sm join-item w-48"
                       />
                       {field.error && (
@@ -183,7 +188,7 @@ export const TorrentList = component$(
                         {...props}
                         type="number"
                         class="input input-bordered input-sm join-item w-20"
-                        placeholder="год"
+                        placeholder={yearPlaceholder}
                       />
                       {field.error && (
                         <div class="text-error text-xs">{field.error}</div>
@@ -225,7 +230,7 @@ export const TorrentList = component$(
               class="btn btn-square btn-sm"
               type="reset"
               value="×"
-              aria-label="Reset filters"
+              aria-label={resetFiltersLabel}
             />
           </form>
         )}

@@ -1,11 +1,22 @@
 import { component$, Slot } from "@builder.io/qwik";
 import { HiBars3Solid } from "@qwikest/icons/heroicons";
+import { langText } from "~/utils/languages";
 
-export const BurgerButton = component$(() => {
+type BurgerButtonProps = {
+  lang: string;
+};
+
+export const BurgerButton = component$<BurgerButtonProps>(({ lang }) => {
+  const openNavigationLabel = langText(
+    lang,
+    "Open navigation menu",
+    "Открыть меню навигации",
+  );
+
   return (
     <details class="dropdown dropdown-end dropdown-bottom md:hidden">
       <summary
-        aria-label="Open navigation menu"
+        aria-label={openNavigationLabel}
         class="btn btn-ghost btn-circle btn-sm text-base-content/80 list-none"
       >
         <HiBars3Solid aria-hidden="true" class="text-2xl" />

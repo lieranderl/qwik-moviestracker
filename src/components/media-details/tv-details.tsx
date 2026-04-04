@@ -18,6 +18,8 @@ import {
   langOverview,
   langQuickActions,
   langRecommendedTvShows,
+  langCountLabel,
+  langText,
   langSwipeToBrowse,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
@@ -56,11 +58,11 @@ export const TvDetails = component$(
     useVisibleTask$(() => {
       writeLastViewed({
         href: paths.media(MediaType.Tv, tv.id, lang),
-        title: tv.name ?? "TV details",
+        title: tv.name ?? langText(lang, "TV details", "Детали сериала"),
         kind: "tv",
         meta: tv.first_air_date
-          ? `${formatYear(tv.first_air_date)} • TV`
-          : "TV",
+          ? `${formatYear(tv.first_air_date)} • ${langText(lang, "TV", "Сериал")}`
+          : langText(lang, "TV", "Сериал"),
         imagePath: tv.poster_path ?? tv.backdrop_path,
       });
     });
@@ -83,7 +85,7 @@ export const TvDetails = component$(
 
             <div class="flex flex-wrap items-center gap-2 text-sm font-medium">
               <span class="badge badge-ghost">
-                {formatYear(tv.first_air_date) || "N/A"}
+                {formatYear(tv.first_air_date) || langText(lang, "N/A", "Нет данных")}
               </span>
               {certification && (
                 <span class="badge badge-ghost">
@@ -92,11 +94,27 @@ export const TvDetails = component$(
               )}
               <span class="badge badge-ghost gap-1">
                 <LuLayers3 class="text-sm" />
-                {tv.number_of_seasons} Seasons
+                {langCountLabel(
+                  lang,
+                  tv.number_of_seasons ?? 0,
+                  "Season",
+                  "Seasons",
+                  "сезон",
+                  "сезона",
+                  "сезонов",
+                )}
               </span>
               <span class="badge badge-ghost gap-1">
                 <LuDisc3 class="text-sm" />
-                {tv.number_of_episodes} Episodes
+                {langCountLabel(
+                  lang,
+                  tv.number_of_episodes ?? 0,
+                  "Episode",
+                  "Episodes",
+                  "серия",
+                  "серии",
+                  "серий",
+                )}
               </span>
               {tv.genres?.map((g) => (
                 <span key={g.id} class="badge badge-ghost">
@@ -138,18 +156,18 @@ export const TvDetails = component$(
                 />
               </div>
             </div>
-            <ExternalIds external_ids={tv.external_ids} type={"tv"} />
+            <ExternalIds external_ids={tv.external_ids} lang={lang} type={"tv"} />
           </div>
         </section>
 
         <section class="section-reveal card border-base-200 bg-base-100/95 relative z-0 mt-6 border shadow-sm">
-          <div class="card-body">
-            <h3 class="card-title text-xl">{langOverview(lang)}</h3>
-            <p class="leading-relaxed opacity-90">
-              {tv.overview || "No overview available."}
-            </p>
-          </div>
-        </section>
+            <div class="card-body">
+              <h3 class="card-title text-xl">{langOverview(lang)}</h3>
+              <p class="leading-relaxed opacity-90">
+                {tv.overview || langText(lang, "No overview available.", "Описание отсутствует.")}
+              </p>
+            </div>
+          </section>
 
         <div class="mt-6 grid gap-6 lg:grid-cols-[2fr_1fr]">
           <div class="space-y-6">
@@ -180,23 +198,23 @@ export const TvDetails = component$(
             <section class="section-reveal card border-base-200 bg-base-100/95 border shadow-sm">
               <div class="card-body">
                 <h3 class="card-title text-base-content/80 text-lg">
-                  Series Stats
+                  {langText(lang, "Series Stats", "Статистика сериала")}
                 </h3>
                 <div class="stats stats-vertical bg-transparent">
                   <div class="stat px-0 py-3">
-                    <div class="stat-title">Seasons</div>
+                    <div class="stat-title">{langText(lang, "Seasons", "Сезоны")}</div>
                     <div class="stat-value text-lg">{tv.number_of_seasons}</div>
                   </div>
                   <div class="stat px-0 py-3">
-                    <div class="stat-title">Episodes</div>
+                    <div class="stat-title">{langText(lang, "Episodes", "Серии")}</div>
                     <div class="stat-value text-lg">
                       {tv.number_of_episodes}
                     </div>
                   </div>
                   <div class="stat px-0 py-3">
-                    <div class="stat-title">Status</div>
+                    <div class="stat-title">{langText(lang, "Status", "Статус")}</div>
                     <div class="stat-value text-lg">
-                      {tv.status || "Unknown"}
+                      {tv.status || langText(lang, "Unknown", "Неизвестно")}
                     </div>
                   </div>
                 </div>

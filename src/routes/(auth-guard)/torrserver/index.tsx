@@ -8,11 +8,10 @@ import {
   useVisibleTask$,
 } from "@builder.io/qwik";
 import { setValue, useForm } from "@modular-forms/qwik";
+import type { PartialValues } from "@modular-forms/qwik";
 import { HiMinusSolid, HiPlusSolid } from "@qwikest/icons/heroicons";
 import { LuMagnet } from "@qwikest/icons/lucide";
 import { ToastManagerContext } from "qwik-toasts";
-import type { InferInput } from "valibot";
-import { object, pipe, string, url } from "valibot";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import {
@@ -36,9 +35,11 @@ import {
 } from "~/utils/browser";
 import { formatYear } from "~/utils/format";
 import {
+  langCountLabel,
   langAddNewTorrServerURL,
   langNoResults,
   langTorrServer,
+  langText,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
@@ -57,11 +58,9 @@ type ParsedTorrentMedia = {
   first_air_date?: string;
 };
 
-export const torrServerSchema = object({
-  ipaddress: pipe(string(), url("Please provide a valid URL!")),
-});
-
-export type torrServerForm = InferInput<typeof torrServerSchema>;
+export type torrServerForm = {
+  ipaddress: string;
+};
 
 function normalizeServer(value: string): string {
   return value.trim();
@@ -154,12 +153,12 @@ function getTorrentHref(
     : paths.media(MediaType.Movie, media.id, lang);
 }
 
-function formatTorrentSize(size?: number): string {
+function formatTorrentSize(size: number | undefined, lang: string): string {
   if (!size || size <= 0) {
-    return "Unknown size";
+    return langText(lang, "Unknown size", "Неизвестный размер");
   }
   const sizeInGb = size / 1024 ** 3;
-  return `${sizeInGb.toFixed(sizeInGb >= 100 ? 0 : 1)} GB`;
+  return `${sizeInGb.toFixed(sizeInGb >= 100 ? 0 : 1)} ${langText(lang, "GB", "ГБ")}`;
 }
 
 function formatStatusLabel(value?: string): string {
@@ -192,15 +191,46 @@ export default component$(() => {
   const lang = resource.value.lang;
   const selectedTorServer = useSignal("");
   const torrServerList = useSignal<string[]>([]);
+  const validateTorrServer = $((values: PartialValues<torrServerForm>) => {
+    const ipaddress = values.ipaddress?.trim() ?? "";
+    if (!ipaddress) {
+      return {
+        ipaddress: langText(
+          lang,
+          "Please provide a valid URL!",
+          "Укажите корректный URL!",
+        ),
+      };
+    }
+
+    try {
+      // URL parsing keeps the existing behavior while avoiding extra schema plumbing.
+      new URL(ipaddress);
+      return {};
+    } catch {
+      return {
+        ipaddress: langText(
+          lang,
+          "Please provide a valid URL!",
+          "Укажите корректный URL!",
+        ),
+      };
+    }
+  });
   const [newTorrServerForm, { Form, Field }] = useForm<torrServerForm>({
     loader: { value: { ipaddress: "" } },
+    validate: validateTorrServer,
   });
 
   const isCheckingTorrServer = useSignal(false);
   const torrentsSig = useSignal([] as TSResult[]);
   const connectionState = useSignal<ConnectionState>("idle");
   const connectionMessage = useSignal(
-    "Add a TorrServer URL to start managing your library.",
+    langText(
+      lang,
+      "Add a TorrServer URL to start managing your library.",
+      "Добавьте URL TorrServer, чтобы начать управлять библиотекой.",
+    ),
   );
   const serverVersion = useSignal("");
 
@@ -209,7 +239,11 @@ export default component$(() => {
     if (torrServerList.value.includes(newServer)) {
       setValue(newTorrServerForm, "ipaddress", "");
       toastManager.addToast({
-        message: `TorrServer ${newServer} is already in the list!`,
+        message: langText(
+          lang,
+          `TorrServer ${newServer} is already in the list!`,
+          `TorrServer ${newServer} уже есть в списке!`,
+        ),
         type: "error",
         autocloseTime: 5000,
       });
@@ -223,7 +257,11 @@ export default component$(() => {
     );
     persistServersStorage(nextState.list, nextState.selected);
     toastManager.addToast({
-      message: `TorrServer ${newServer} has been added.`,
+      message: langText(
+        lang,
+        `TorrServer ${newServer} has been added.`,
+        `TorrServer ${newServer} добавлен.`,
+      ),
       type: "success",
       autocloseTime: 5000,
     });
@@ -260,26 +298,46 @@ export default component$(() => {
       connectionState.value = "idle";
       connectionMessage.value =
         torrServerList.value.length > 0
-          ? "Select a saved server to inspect its library."
-          : "Add a TorrServer URL to start managing your library.";
+          ? langText(
+              lang,
+              "Select a saved server to inspect its library.",
+              "Выберите сохраненный сервер, чтобы открыть его библиотеку.",
+            )
+          : langText(
+              lang,
+              "Add a TorrServer URL to start managing your library.",
+              "Добавьте URL TorrServer, чтобы начать управлять библиотекой.",
+            );
       return;
     }
 
     try {
       isCheckingTorrServer.value = true;
       connectionState.value = "connecting";
-      connectionMessage.value = `Connecting to ${selectedTorServer.value}...`;
+      connectionMessage.value = langText(
+        lang,
+        `Connecting to ${selectedTorServer.value}...`,
+        `Подключение к ${selectedTorServer.value}...`,
+      );
 
       const version = await torrServerEcho(selectedTorServer.value);
       serverVersion.value = version;
       torrentsSig.value = await listTorrent(selectedTorServer.value);
 
       connectionState.value = "connected";
-      connectionMessage.value = `Connected to ${selectedTorServer.value}`;
+      connectionMessage.value = langText(
+        lang,
+        `Connected to ${selectedTorServer.value}`,
+        `Подключено к ${selectedTorServer.value}`,
+      );
     } catch (error) {
       console.error(error);
       connectionState.value = "error";
-      connectionMessage.value = `Failed to reach ${selectedTorServer.value}`;
+      connectionMessage.value = langText(
+        lang,
+        `Failed to reach ${selectedTorServer.value}`,
+        `Не удалось подключиться к ${selectedTorServer.value}`,
+      );
     } finally {
       isCheckingTorrServer.value = false;
     }
@@ -288,13 +346,20 @@ export default component$(() => {
   return (
     <div class="mx-auto w-full max-w-7xl px-4 pb-10">
       <SectionHeading
-        eyebrow="Tools"
+        eyebrow={langText(lang, "Tools", "Инструменты")}
         title={langTorrServer(lang)}
-        description="Connect TorrServer, inspect indexed items, and launch playback-ready actions from the same operational view."
+        description={langText(
+          lang,
+          "Connect TorrServer, inspect indexed items, and launch playback-ready actions from the same operational view.",
+          "Подключайте TorrServer, просматривайте индексированные элементы и запускайте действия для воспроизведения из единого рабочего экрана.",
+        )}
       />
       <p class="text-base-content/70 max-w-3xl text-sm leading-relaxed md:text-base">
-        Connect a TorrServer instance, manage saved endpoints, and review the
-        current library from one focused workspace.
+        {langText(
+          lang,
+          "Connect a TorrServer instance, manage saved endpoints, and review the current library from one focused workspace.",
+          "Подключите экземпляр TorrServer, управляйте сохраненными адресами и просматривайте текущую библиотеку в одном рабочем пространстве.",
+        )}
       </p>
 
       <section class="card border-base-200 bg-base-100/90 mt-6 border shadow-sm backdrop-blur">
@@ -302,10 +367,15 @@ export default component$(() => {
           <div class="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.85fr)]">
             <div class="space-y-5">
               <div class="space-y-1">
-                <h2 class="card-title text-xl">Connection workspace</h2>
+                <h2 class="card-title text-xl">
+                  {langText(lang, "Connection workspace", "Рабочая область подключения")}
+                </h2>
                 <p class="text-base-content/70 text-sm">
-                  Add a new endpoint, switch between saved servers, and keep the
-                  active library in view below.
+                  {langText(
+                    lang,
+                    "Add a new endpoint, switch between saved servers, and keep the active library in view below.",
+                    "Добавьте новый адрес, переключайтесь между сохраненными серверами и держите активную библиотеку внизу на виду.",
+                  )}
                 </p>
               </div>
 
@@ -319,7 +389,7 @@ export default component$(() => {
                           for="torrserver-url"
                         >
                           <span class="label text-base-content/65 shrink-0 text-xs font-medium tracking-[0.12em] uppercase">
-                            URL
+                            {langText(lang, "URL", "Адрес")}
                           </span>
                           <input
                             {...props}
@@ -335,7 +405,7 @@ export default component$(() => {
                           class="btn btn-primary join-item w-32 shrink-0 justify-center"
                         >
                           <HiPlusSolid class="text-lg" />
-                          Add
+                          {langText(lang, "Add", "Добавить")}
                         </button>
                       </div>
                       {field.error && (
@@ -348,7 +418,9 @@ export default component$(() => {
 
               <div class="space-y-2">
                 <label class="label pt-0" for="active-torrserver">
-                  <span class="label-text font-medium">Active server</span>
+                  <span class="label-text font-medium">
+                    {langText(lang, "Active server", "Активный сервер")}
+                  </span>
                 </label>
                 <div class="join w-full">
                   <select
@@ -364,7 +436,9 @@ export default component$(() => {
                     }}
                   >
                     {torrServerList.value.length === 0 && (
-                      <option value="">No TorrServer added</option>
+                      <option value="">
+                        {langText(lang, "No TorrServer added", "TorrServer не добавлен")}
+                      </option>
                     )}
                     {torrServerList.value.map((item) => (
                       <option value={item} key={item}>
@@ -396,7 +470,11 @@ export default component$(() => {
                           nextState.selected,
                         );
                         toastManager.addToast({
-                          message: `TorrServer ${currentServer} has been deleted.`,
+                          message: langText(
+                            lang,
+                            `TorrServer ${currentServer} has been deleted.`,
+                            `TorrServer ${currentServer} удален.`,
+                          ),
                           type: "success",
                           autocloseTime: 5000,
                         });
@@ -404,11 +482,15 @@ export default component$(() => {
                     }}
                   >
                     <HiMinusSolid class="text-lg" />
-                    Remove
+                    {langText(lang, "Remove", "Удалить")}
                   </button>
                 </div>
                 <p class="text-base-content/60 text-xs">
-                  Saved locally in this browser for quick switching.
+                  {langText(
+                    lang,
+                    "Saved locally in this browser for quick switching.",
+                    "Сохранено локально в этом браузере для быстрого переключения.",
+                  )}
                 </p>
               </div>
             </div>
@@ -416,28 +498,43 @@ export default component$(() => {
             <div class="space-y-4">
               <div class="stats stats-vertical bg-base-200/45 sm:stats-horizontal xl:stats-vertical shadow-none">
                 <div class="stat py-4">
-                  <div class="stat-title">Saved servers</div>
+                  <div class="stat-title">
+                    {langText(lang, "Saved servers", "Сохраненные серверы")}
+                  </div>
                   <div class="stat-value text-2xl">
                     {torrServerList.value.length}
                   </div>
-                  <div class="stat-desc">Available in this browser</div>
+                  <div class="stat-desc">
+                    {langText(lang, "Available in this browser", "Доступно в этом браузере")}
+                  </div>
                 </div>
                 <div class="stat py-4">
-                  <div class="stat-title">Library items</div>
+                  <div class="stat-title">
+                    {langText(lang, "Library items", "Элементы библиотеки")}
+                  </div>
                   <div class="stat-value text-2xl">
                     {isCheckingTorrServer.value
                       ? "..."
                       : torrentsSig.value.length}
                   </div>
-                  <div class="stat-desc">Loaded from the active server</div>
+                  <div class="stat-desc">
+                    {langText(lang, "Loaded from the active server", "Загружено с активного сервера")}
+                  </div>
                 </div>
                 <div class="stat py-4">
-                  <div class="stat-title">Server version</div>
+                  <div class="stat-title">
+                    {langText(lang, "Server version", "Версия сервера")}
+                  </div>
                   <div class="stat-value truncate text-base font-semibold">
-                    {serverVersion.value || "Not connected"}
+                    {serverVersion.value || langText(lang, "Not connected", "Не подключено")}
                   </div>
                   <div class="stat-desc truncate">
-                    {selectedTorServer.value || "No active server selected"}
+                    {selectedTorServer.value ||
+                      langText(
+                        lang,
+                        "No active server selected",
+                        "Не выбран активный сервер",
+                      )}
                   </div>
                 </div>
               </div>
@@ -449,12 +546,12 @@ export default component$(() => {
                 <div class="space-y-1">
                   <p class="font-semibold">
                     {connectionState.value === "connected"
-                      ? "Connection healthy"
+                      ? langText(lang, "Connection healthy", "Соединение установлено")
                       : connectionState.value === "connecting"
-                        ? "Checking server"
+                        ? langText(lang, "Checking server", "Проверка сервера")
                         : connectionState.value === "error"
-                          ? "Connection failed"
-                          : "Waiting for a server"}
+                          ? langText(lang, "Connection failed", "Ошибка подключения")
+                          : langText(lang, "Waiting for a server", "Ожидание сервера")}
                   </p>
                   <p class="text-sm">{connectionMessage.value}</p>
                 </div>
@@ -467,39 +564,87 @@ export default component$(() => {
       <section class="mt-8">
         {isCheckingTorrServer.value ? (
           <LoadingState
-            title="Syncing TorrServer library"
-            description="Fetching the current queue and matching media details."
+            title={langText(
+              lang,
+              "Syncing TorrServer library",
+              "Синхронизация библиотеки TorrServer",
+            )}
+            description={langText(
+              lang,
+              "Fetching the current queue and matching media details.",
+              "Получаем текущую очередь и сопоставляем данные медиа.",
+            )}
             compact={true}
           />
         ) : torrServerList.value.length === 0 ? (
           <EmptyState
-            title="No TorrServer configured yet"
-            description="Add your TorrServer URL above to connect and view the library."
+            title={langText(
+              lang,
+              "No TorrServer configured yet",
+              "TorrServer еще не настроен",
+            )}
+            description={langText(
+              lang,
+              "Add your TorrServer URL above to connect and view the library.",
+              "Добавьте URL TorrServer выше, чтобы подключиться и посмотреть библиотеку.",
+            )}
             compact={true}
           />
         ) : connectionState.value === "error" ? (
           <ErrorState
-            title="Unable to load the selected server"
-            description="Check the URL, make sure TorrServer is online, and try again."
+            title={langText(
+              lang,
+              "Unable to load the selected server",
+              "Не удалось загрузить выбранный сервер",
+            )}
+            description={langText(
+              lang,
+              "Check the URL, make sure TorrServer is online, and try again.",
+              "Проверьте URL, убедитесь, что TorrServer доступен, и попробуйте снова.",
+            )}
             compact={true}
           />
         ) : !selectedTorServer.value ? (
           <EmptyState
-            title="Select a saved server"
-            description="Choose one of your saved endpoints to load its active library."
+            title={langText(
+              lang,
+              "Select a saved server",
+              "Выберите сохраненный сервер",
+            )}
+            description={langText(
+              lang,
+              "Choose one of your saved endpoints to load its active library.",
+              "Выберите один из сохраненных адресов, чтобы загрузить его активную библиотеку.",
+            )}
             compact={true}
           />
         ) : torrentsSig.value.length === 0 ? (
           <EmptyState
             title={langNoResults(lang)}
-            description="Connected successfully, but this TorrServer instance does not have any torrents yet."
+            description={langText(
+              lang,
+              "Connected successfully, but this TorrServer instance does not have any torrents yet.",
+              "Подключение выполнено, но в этом экземпляре TorrServer пока нет торрентов.",
+            )}
             compact={true}
           />
         ) : (
           <MediaGrid
-            eyebrow="Library"
-            headerBadge={`${torrentsSig.value.length} items`}
-            title={`Library (${torrentsSig.value.length})`}
+            eyebrow={langText(lang, "Library", "Библиотека")}
+            headerBadge={langCountLabel(
+              lang,
+              torrentsSig.value.length,
+              "item",
+              "items",
+              "элемент",
+              "элемента",
+              "элементов",
+            )}
+            title={langText(
+              lang,
+              `Library (${torrentsSig.value.length})`,
+              `Библиотека (${torrentsSig.value.length})`,
+            )}
           >
             {torrentsSig.value.map((torrent) => {
               const media = parseTorrentMedia(torrent.data);
@@ -511,10 +656,10 @@ export default component$(() => {
                 : 0;
               const rating = media?.vote_average ?? null;
               const mediaKind = media?.seasons
-                ? "Series"
+                ? langText(lang, "Series", "Сериал")
                 : media
-                  ? "Movie"
-                  : "Torrent";
+                  ? langText(lang, "Movie", "Фильм")
+                  : langText(lang, "Torrent", "Торрент");
               const statusLabel = formatStatusLabel(torrent.stat_string);
 
               const actionCard = (
@@ -533,11 +678,15 @@ export default component$(() => {
                         </span>
                       )}
                       <span class="badge badge-outline badge-sm px-3 py-2 leading-tight">
-                        {formatTorrentSize(torrent.torrent_size)}
+                        {formatTorrentSize(torrent.torrent_size, lang)}
                       </span>
                       {typeof torrent.connected_seeders === "number" && (
                         <span class="badge badge-success badge-sm px-3 py-2 leading-tight">
-                          {torrent.connected_seeders} seeders
+                          {langText(
+                            lang,
+                            `${torrent.connected_seeders} seeders`,
+                            `${torrent.connected_seeders} сидеров`,
+                          )}
                         </span>
                       )}
                     </div>
@@ -550,7 +699,7 @@ export default component$(() => {
                         rel="noreferrer"
                       >
                         <LuMagnet class="text-base" />
-                        <span>Magnet</span>
+                        <span>{langText(lang, "Magnet", "Магнет")}</span>
                       </a>
                       <button
                         type="button"
@@ -558,7 +707,11 @@ export default component$(() => {
                           const torrserv = selectedTorServer.value;
                           if (torrserv === "") {
                             toastManager.addToast({
-                              message: "TorrServer has not been added!",
+                              message: langText(
+                                lang,
+                                "TorrServer has not been added!",
+                                "TorrServer не добавлен!",
+                              ),
                               type: "error",
                               autocloseTime: 5000,
                             });
@@ -572,7 +725,11 @@ export default component$(() => {
                             }
 
                             toastManager.addToast({
-                              message: "Torrent has been deleted!",
+                              message: langText(
+                                lang,
+                                "Torrent has been deleted!",
+                                "Торрент удален!",
+                              ),
                               type: "success",
                               autocloseTime: 5000,
                             });
@@ -584,7 +741,13 @@ export default component$(() => {
                             console.error(error);
                             const e = error as Error;
                             toastManager.addToast({
-                              message: e.message || "Unable to delete torrent!",
+                              message:
+                                e.message ||
+                                langText(
+                                  lang,
+                                  "Unable to delete torrent!",
+                                  "Не удалось удалить торрент!",
+                                ),
                               type: "error",
                               autocloseTime: 5000,
                             });
@@ -593,7 +756,7 @@ export default component$(() => {
                         class="btn btn-error btn-outline btn-sm join-item min-w-0 flex-1 justify-center"
                       >
                         <HiMinusSolid class="text-base" />
-                        <span>Remove</span>
+                        <span>{langText(lang, "Remove", "Удалить")}</span>
                       </button>
                     </div>
 
@@ -634,7 +797,11 @@ export default component$(() => {
                       </p>
                       {typeof torrent.total_peers === "number" && (
                         <p class="text-base-content/55">
-                          {torrent.total_peers} peers total
+                          {langText(
+                            lang,
+                            `${torrent.total_peers} peers total`,
+                            `всего ${torrent.total_peers} пиров`,
+                          )}
                         </p>
                       )}
                     </div>

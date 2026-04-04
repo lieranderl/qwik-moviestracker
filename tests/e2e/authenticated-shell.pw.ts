@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { addBypassCookie } from "./helpers/auth-bypass";
+import { openAccountMenuPattern } from "./helpers/i18n";
 
 test.describe("authenticated shell", () => {
   test("renders the protected search shell with the dev session bypass", async ({
@@ -16,7 +17,7 @@ test.describe("authenticated shell", () => {
     ).toBeVisible();
     await expect(
       page.getByRole("button", {
-        name: /open account menu/i,
+        name: openAccountMenuPattern,
       }),
     ).toBeVisible();
   });

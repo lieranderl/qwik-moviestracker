@@ -20,6 +20,7 @@ import {
   langQuickActions,
   langRecommendedMovies,
   langRevenue,
+  langText,
   langSwipeToBrowse,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
@@ -59,11 +60,11 @@ export const MovieDetails = component$(
     useVisibleTask$(() => {
       writeLastViewed({
         href: paths.media(MediaType.Movie, movie.id, lang),
-        title: movie.title ?? "Movie details",
+        title: movie.title ?? langText(lang, "Movie details", "Детали фильма"),
         kind: "movie",
         meta: movie.release_date
-          ? `${formatYear(movie.release_date)} • Movie`
-          : "Movie",
+          ? `${formatYear(movie.release_date)} • ${langText(lang, "Movie", "Фильм")}`
+          : langText(lang, "Movie", "Фильм"),
         imagePath: movie.poster_path ?? movie.backdrop_path,
       });
     });
@@ -86,7 +87,9 @@ export const MovieDetails = component$(
 
             <div class="flex flex-wrap items-center gap-2 text-sm font-medium">
               <span class="badge badge-ghost">
-                {movie.release_date ? formatYear(movie.release_date) : "N/A"}
+                {movie.release_date
+                  ? formatYear(movie.release_date)
+                  : langText(lang, "N/A", "Нет данных")}
               </span>
               {certification && (
                 <span class="badge badge-ghost">
@@ -94,7 +97,9 @@ export const MovieDetails = component$(
                 </span>
               )}
               {movie.runtime && movie.runtime > 0 && (
-                <span class="badge badge-ghost">{movie.runtime} min</span>
+                <span class="badge badge-ghost">
+                  {movie.runtime} {langText(lang, "min", "мин")}
+                </span>
               )}
               {movie.genres?.map((g) => (
                 <span key={g.id} class="badge badge-ghost">
@@ -136,18 +141,18 @@ export const MovieDetails = component$(
                 />
               </div>
             </div>
-            <ExternalIds external_ids={movie.external_ids} type={"movie"} />
+            <ExternalIds external_ids={movie.external_ids} lang={lang} type={"movie"} />
           </div>
         </section>
 
         <section class="section-reveal card border-base-200 bg-base-100/95 relative z-0 mt-6 border shadow-sm">
-          <div class="card-body">
-            <h3 class="card-title text-xl">{langOverview(lang)}</h3>
-            <p class="leading-relaxed opacity-90">
-              {movie.overview || "No overview available."}
-            </p>
-          </div>
-        </section>
+            <div class="card-body">
+              <h3 class="card-title text-xl">{langOverview(lang)}</h3>
+              <p class="leading-relaxed opacity-90">
+                {movie.overview || langText(lang, "No overview available.", "Описание отсутствует.")}
+              </p>
+            </div>
+          </section>
 
         <div class="mt-6 grid gap-6 lg:grid-cols-[2fr_1fr]">
           <div class="space-y-6">
@@ -171,7 +176,7 @@ export const MovieDetails = component$(
               <section class="section-reveal card border-base-200 bg-base-100/95 border shadow-sm">
                 <div class="card-body">
                   <h3 class="card-title text-base-content/80 text-lg">
-                    Box Office
+                    {langText(lang, "Box Office", "Кассовые сборы")}
                   </h3>
                   <div class="stats stats-vertical bg-transparent">
                     {movie.budget !== undefined && movie.budget > 0 && (

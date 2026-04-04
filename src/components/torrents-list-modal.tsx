@@ -7,7 +7,7 @@ import type { MediaDetails, Season, Torrent } from "~/services/models";
 import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
 import { showDialogById } from "~/utils/browser";
 import { formatYear } from "~/utils/format";
-import { langSeason, langTorrents } from "~/utils/languages";
+import { langSeason, langText, langTorrents } from "~/utils/languages";
 
 export interface TorModalPros {
   title: string;
@@ -113,7 +113,9 @@ export const TorrentsModal = component$(
             </div>
           </div>
           <form method="dialog" class="modal-backdrop">
-            <button type="submit">close</button>
+            <button type="submit">
+              {langText(lang, "close", "закрыть")}
+            </button>
           </form>
         </dialog>
       </>

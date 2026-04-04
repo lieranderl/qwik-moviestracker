@@ -1,15 +1,24 @@
 import type { QwikIntrinsicElements } from "@builder.io/qwik";
 import { $, component$, Slot, useSignal } from "@builder.io/qwik";
 import { useSignIn } from "~/routes/plugin@auth";
+import { langSignInWithProvider, langSigningIn } from "~/utils/languages";
 
 export type LoginButtonProps = QwikIntrinsicElements["button"] & {
+  lang?: string;
   providerName: string;
 };
 
 export const LoginButton = component$<LoginButtonProps>((props) => {
-  const { providerName = "google", class: className, ...buttonProps } = props;
+  const {
+    lang = "en-US",
+    providerName = "google",
+    class: className,
+    ...buttonProps
+  } = props;
   const signIn = useSignIn();
   const isloading = useSignal(false);
+  const providerLabel =
+    providerName.charAt(0).toUpperCase() + providerName.slice(1);
 
   return (
     <button
@@ -28,11 +37,11 @@ export const LoginButton = component$<LoginButtonProps>((props) => {
           providerId: providerName,
         });
       })}
-    >
+      >
       {isloading.value && (
         <span aria-live="polite" class="inline-flex items-center gap-2">
           <span class="loading loading-spinner loading-sm" />
-          <span>Signing in...</span>
+          <span>{langSigningIn(lang)}</span>
         </span>
       )}
       {!isloading.value && (
@@ -41,7 +50,7 @@ export const LoginButton = component$<LoginButtonProps>((props) => {
             <Slot />
           </span>
           <span>
-            Sign In with <span class="capitalize">{providerName}</span>
+            {langSignInWithProvider(lang, providerLabel)}
           </span>
         </span>
       )}

@@ -23,11 +23,16 @@ import { getTrendingMedia, withImages } from "~/services/tmdb";
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import {
+  langHome,
   langLatestMovies,
   langContinueBrowsing,
   langDiscoverMovies,
   langDiscoverTv,
   langFeaturedSpotlight,
+  langFeaturedSpotlightDescription,
+  langHomeDashboardDescription,
+  langHomeDashboardTitle,
+  langHomeFeedUnavailable,
   langJumpBackIn,
   langOpenDetails,
   langQuickFilters,
@@ -35,8 +40,12 @@ import {
   langResume,
   langStartExploring,
   langTrendingMovies,
+  langTrendingMoviesCount,
   langTrengingTVShows,
+  langTrendingSeriesCount,
   langSwipeToBrowse,
+  langPleaseRefreshOrTryAgain,
+  langLatestItemsCount,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
@@ -120,8 +129,8 @@ export default component$(() => {
   if (value.status !== "ready") {
     return (
       <ErrorState
-        title="Home feed is unavailable"
-        description="Please refresh the page or try again in a moment."
+        title={langHomeFeedUnavailable(lang)}
+        description={langPleaseRefreshOrTryAgain(lang)}
         compact={true}
       />
     );
@@ -130,17 +139,17 @@ export default component$(() => {
   const featuredMovie =
     value.movies[(new Date().getDate() - 1) % value.movies.length];
   const homeBadges = [
-    `${value.torMovies.length} latest`,
-    `${value.movies.length} trending movies`,
-    `${value.tv.length} trending series`,
+    langLatestItemsCount(lang, value.torMovies.length),
+    langTrendingMoviesCount(lang, value.movies.length),
+    langTrendingSeriesCount(lang, value.tv.length),
   ];
 
   return (
     <div class="space-y-6">
       <SectionHeading
-        eyebrow="Home"
-        title="Your movie and series dashboard"
-        description="Open a featured release, jump back into your last watched title, or move straight into the latest and trending collections without leaving the dashboard."
+        eyebrow={langHome(lang)}
+        title={langHomeDashboardTitle(lang)}
+        description={langHomeDashboardDescription(lang)}
         badges={homeBadges}
       />
       <QuickFilterStrip
@@ -176,7 +185,7 @@ export default component$(() => {
           ctaLabel={langOpenDetails(lang)}
           description={
             featuredMovie.overview ||
-            "Open the latest featured title and jump straight into cast, ratings, and related picks."
+            langFeaturedSpotlightDescription(lang)
           }
           href={paths.media(MediaType.Movie, featuredMovie.id, lang)}
           imagePath={featuredMovie.backdrop_path}
@@ -278,12 +287,16 @@ export default component$(() => {
   );
 });
 
-export const head: DocumentHead = {
-  title: "Moviestracker",
-  meta: [
-    {
-      name: "description",
-      content: "Moviestracker",
-    },
-  ],
+export const head: DocumentHead = ({ url }) => {
+  const lang = url.searchParams.get("lang") || "en-US";
+
+  return {
+    title: `Moviestracker | ${langHomeDashboardTitle(lang)}`,
+    meta: [
+      {
+        name: "description",
+        content: langHomeDashboardDescription(lang),
+      },
+    ],
+  };
 };

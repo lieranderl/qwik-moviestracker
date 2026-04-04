@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { authHeadingPattern, signInWithGooglePattern } from "./helpers/i18n";
 
 test.describe("auth guard redirects", () => {
   test("redirects the home route to auth while preserving lang", async ({
@@ -9,7 +10,7 @@ test.describe("auth guard redirects", () => {
     await expect(page).toHaveURL(/\/auth\/?\?lang=uk-UA$/);
     await expect(
       page.getByRole("button", {
-        name: /sign in with google/i,
+        name: signInWithGooglePattern,
       }),
     ).toBeVisible();
   });
@@ -22,7 +23,7 @@ test.describe("auth guard redirects", () => {
     await expect(page).toHaveURL(/\/auth\/?\?lang=de-DE$/);
     await expect(
       page.getByRole("heading", {
-        name: /track movies and tv shows/i,
+        name: authHeadingPattern,
       }),
     ).toBeVisible();
   });

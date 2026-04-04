@@ -11,10 +11,12 @@ import { getMedias, getTrendingMedia } from "~/services/tmdb";
 import { formatYear } from "~/utils/format";
 import {
   langAiringTodayTvShows,
+  langCountLabel,
   langDiscoverTv,
   langOnTheAirTvShows,
   langPopularTvShows,
   langQuickFilters,
+  langText,
   langSwipeToBrowse,
   langTopRatedTvShows,
   langTrengingTVShows,
@@ -80,22 +82,72 @@ export default component$(() => {
   return (
     <div class="space-y-6">
       <SectionHeading
-        eyebrow="TV Shows"
-        title="Browse TV collections"
-        description="Switch between TMDB discovery feeds for trending, popular, top-rated, and currently airing series."
+        eyebrow={langText(resource.value.lang, "TV shows", "Сериалы")}
+        title={langText(
+          resource.value.lang,
+          "Browse TV collections",
+          "Просмотр коллекций сериалов",
+        )}
+        description={langText(
+          resource.value.lang,
+          "Switch between TMDB discovery feeds for trending, popular, top-rated, and currently airing series.",
+          "Переключайтесь между подборками TMDB для трендовых, популярных, высокооцененных и текущих сериалов.",
+        )}
         badges={[
-          `${resource.value.tvtrend.length} trending`,
-          `${resource.value.tvpopular.length} popular`,
-          `${resource.value.tvtoprated.length} top rated`,
-          `${resource.value.tvairingtoday.length} airing today`,
-          `${resource.value.tvontheair.length} on the air`,
+          langCountLabel(
+            resource.value.lang,
+            resource.value.tvtrend.length,
+            "trending show",
+            "trending shows",
+            "трендовый сериал",
+            "трендовых сериала",
+            "трендовых сериалов",
+          ),
+          langCountLabel(
+            resource.value.lang,
+            resource.value.tvpopular.length,
+            "popular show",
+            "popular shows",
+            "популярный сериал",
+            "популярных сериала",
+            "популярных сериалов",
+          ),
+          langCountLabel(
+            resource.value.lang,
+            resource.value.tvtoprated.length,
+            "top rated show",
+            "top rated shows",
+            "сериал с высоким рейтингом",
+            "сериала с высоким рейтингом",
+            "сериалов с высоким рейтингом",
+          ),
+          langCountLabel(
+            resource.value.lang,
+            resource.value.tvairingtoday.length,
+            "airing today",
+            "airing today",
+            "выходит сегодня",
+            "выходят сегодня",
+            "выходят сегодня",
+          ),
+          langCountLabel(
+            resource.value.lang,
+            resource.value.tvontheair.length,
+            "on the air",
+            "on the air",
+            "в эфире",
+            "в эфире",
+            "в эфире",
+          ),
         ]}
       />
       <section class="alert alert-info alert-soft section-reveal">
         <span class="text-sm leading-relaxed">
-          Trending surfaces short-window movement on TMDB, while Popular and
-          Discover rely on broader popularity and vote history. Use TV discover
-          when you want provider, regional, year, and vote-count filters.
+          {langText(
+            resource.value.lang,
+            "Trending surfaces short-window movement on TMDB, while Popular and Discover rely on broader popularity and vote history. Use TV discover when you want provider, regional, year, and vote-count filters.",
+            "Trending показывает краткосрочное движение на TMDB, а Popular и Discover опираются на более широкую историю популярности и голосов. Используйте поиск сериалов, когда нужны фильтры по провайдеру, региону, году и числу голосов.",
+          )}
         </span>
       </section>
       <QuickFilterStrip
@@ -266,12 +318,24 @@ export default component$(() => {
   );
 });
 
-export const head: DocumentHead = {
-  title: "Moviestracker",
-  meta: [
-    {
-      name: "description",
-      content: "Tv Shows",
-    },
-  ],
+export const head: DocumentHead = ({ url }) => {
+  const lang = url.searchParams.get("lang") || "en-US";
+
+  return {
+    title: `Moviestracker | ${langText(
+      lang,
+      "TV collections",
+      "Коллекции сериалов",
+    )}`,
+    meta: [
+      {
+        name: "description",
+        content: langText(
+          lang,
+          "Browse TV collections",
+          "Просмотр коллекций сериалов",
+        ),
+      },
+    ],
+  };
 };

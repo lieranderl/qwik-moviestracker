@@ -3,7 +3,7 @@ import { Image } from "@unpic/qwik";
 import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
 import type { VideoResult } from "~/services/models";
 import { showDialogById } from "~/utils/browser";
-import { langTrailers } from "~/utils/languages";
+import { langText, langTrailers } from "~/utils/languages";
 
 export interface TorModalPros {
   videos?: VideoResult[];
@@ -69,13 +69,15 @@ export const TrailersModal = component$(({ videos }: TorModalPros) => {
               </section>
             ) : (
               <div class="text-base-content/70 rounded-box border-base-200 bg-base-200/40 border p-4 text-sm">
-                No trailers found.
+                {langText(resource.value.lang, "No trailers found.", "Трейлеры не найдены.")}
               </div>
             )}
           </div>
         </div>
         <form method="dialog" class="modal-backdrop">
-          <button type="submit">close</button>
+          <button type="submit">
+            {langText(resource.value.lang, "close", "закрыть")}
+          </button>
         </form>
       </dialog>
     </>

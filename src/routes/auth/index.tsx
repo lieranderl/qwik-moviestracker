@@ -1,32 +1,52 @@
 import { component$ } from "@builder.io/qwik";
+import { useLocation } from "@builder.io/qwik-city";
 import { HiFilmOutline } from "@qwikest/icons/heroicons";
 import { LoginButton } from "~/components/login-button";
-
-const authFeatureCards = [
-  {
-    copy: "Instant discovery with clean results across movies and series.",
-    index: "01",
-    title: "Fast search",
-    toneClass:
-      "bg-[color:var(--auth-feature-one-bg)] text-[color:var(--auth-feature-one-fg)]",
-  },
-  {
-    copy: "Get key info quickly without heavy UI clutter or noise.",
-    index: "02",
-    title: "Clear details",
-    toneClass:
-      "bg-[color:var(--auth-feature-two-bg)] text-[color:var(--auth-feature-two-fg)]",
-  },
-  {
-    copy: "Keep everything you plan to watch in a single personal queue.",
-    index: "03",
-    title: "One watchlist",
-    toneClass:
-      "bg-[color:var(--auth-feature-three-bg)] text-[color:var(--auth-feature-three-fg)]",
-  },
-] as const;
+import {
+  langClearDetails,
+  langClearDetailsDescription,
+  langFastSearch,
+  langFastSearchDescription,
+  langNew,
+  langOneWatchlist,
+  langOneWatchlistDescription,
+  langPersonalWatchlist,
+  langPrivateCatalogAccessForSignedInUsers,
+  langPrivateMovieHub,
+  langSimplePlaceToDiscoverTitles,
+  langTrackMoviesAndTvShowsAccent,
+  langTrackMoviesAndTvShowsPrefix,
+  langWhyPeopleUseIt,
+  langGoogleLogo,
+} from "~/utils/languages";
 
 export default component$(() => {
+  const location = useLocation();
+  const lang = location.url.searchParams.get("lang") || "en-US";
+  const authFeatureCards = [
+    {
+      copy: langFastSearchDescription(lang),
+      index: "01",
+      title: langFastSearch(lang),
+      toneClass:
+        "bg-[color:var(--auth-feature-one-bg)] text-[color:var(--auth-feature-one-fg)]",
+    },
+    {
+      copy: langClearDetailsDescription(lang),
+      index: "02",
+      title: langClearDetails(lang),
+      toneClass:
+        "bg-[color:var(--auth-feature-two-bg)] text-[color:var(--auth-feature-two-fg)]",
+    },
+    {
+      copy: langOneWatchlistDescription(lang),
+      index: "03",
+      title: langOneWatchlist(lang),
+      toneClass:
+        "bg-[color:var(--auth-feature-three-bg)] text-[color:var(--auth-feature-three-fg)]",
+    },
+  ] as const;
+
   return (
     <div class="bg-base-100 page-enter relative min-h-screen overflow-hidden">
       <div
@@ -54,7 +74,7 @@ export default component$(() => {
             </span>
           </div>
           <span class="badge border-base-300/80 bg-base-100/85 h-9 rounded-xl px-4 text-[0.8rem] font-medium backdrop-blur-sm">
-            Personal Watchlist
+            {langPersonalWatchlist(lang)}
           </span>
         </header>
 
@@ -64,35 +84,35 @@ export default component$(() => {
         >
           <section class="space-y-7">
             <div class="section-reveal badge bg-base-200/80 h-9 rounded-xl border-0 px-4 text-xs font-semibold tracking-[0.08em] uppercase">
-              Private movie hub
+              {langPrivateMovieHub(lang)}
             </div>
             <h1
               class="section-reveal text-base-content text-4xl leading-[1.04] font-black tracking-tight md:text-6xl xl:text-7xl"
               style={{ "--motion-delay": "80ms" }}
             >
-              Track movies and TV shows
-              <br class="hidden lg:block" /> with{" "}
+              {langTrackMoviesAndTvShowsPrefix(lang)}
+              <br class="hidden lg:block" />{" "}
               <span class="bg-gradient-to-r from-[color:var(--auth-accent-from)] via-[color:var(--auth-accent-via)] to-[color:var(--auth-accent-to)] bg-clip-text text-transparent">
-                clarity.
+                {langTrackMoviesAndTvShowsAccent(lang)}
               </span>
             </h1>
             <p
               class="section-reveal text-base-content/70 max-w-2xl text-lg leading-relaxed md:text-xl"
               style={{ "--motion-delay": "140ms" }}
             >
-              A simple place to discover titles, open details, and keep your
-              watchlist organized across every screen.
+              {langSimplePlaceToDiscoverTitles(lang)}
             </p>
             <div
               class="section-reveal flex flex-wrap items-center gap-3 pt-2"
               style={{ "--motion-delay": "180ms" }}
             >
               <LoginButton
+                lang={lang}
                 providerName="google"
                 class="h-14 rounded-2xl border-0 bg-gradient-to-r from-[color:var(--auth-primary-from)] to-[color:var(--auth-primary-to)] px-7 text-base font-semibold text-white shadow-[0_18px_42px_var(--auth-primary-shadow)] hover:from-[color:var(--auth-primary-from-hover)] hover:to-[color:var(--auth-primary-to-hover)]"
               >
                 <svg
-                  aria-label="Google logo"
+                  aria-label={langGoogleLogo(lang)}
                   width="24"
                   height="24"
                   xmlns="http://www.w3.org/2000/svg"
@@ -128,10 +148,10 @@ export default component$(() => {
           >
             <div class="mb-6 flex items-center justify-between">
               <div class="text-base-content text-lg font-bold tracking-tight">
-                Why people use it
+                {langWhyPeopleUseIt(lang)}
               </div>
               <span class="badge border-0 bg-[color:var(--auth-badge-bg)] text-[0.7rem] font-semibold text-white uppercase">
-                New
+                {langNew(lang)}
               </span>
             </div>
 
@@ -166,7 +186,7 @@ export default component$(() => {
         <footer class="border-base-200/70 bg-base-100/70 border-t backdrop-blur-sm">
           <div class="text-base-content/65 mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-4 text-sm">
             <p>© 2026 Moviestracker</p>
-            <p>Private catalog access for signed-in users.</p>
+            <p>{langPrivateCatalogAccessForSignedInUsers(lang)}</p>
           </div>
         </footer>
       </div>

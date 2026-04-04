@@ -1,4 +1,10 @@
 import { expect, test } from "@playwright/test";
+import {
+  authHeadingPattern,
+  privateMovieHubPattern,
+  signInWithGooglePattern,
+  whyPeopleUseItPattern,
+} from "./helpers/i18n";
 
 test.describe("auth page smoke", () => {
   test("renders the landing content and sign-in CTA", async ({ page }) => {
@@ -6,18 +12,18 @@ test.describe("auth page smoke", () => {
 
     await expect(
       page.getByRole("heading", {
-        name: /track movies and tv shows/i,
+        name: authHeadingPattern,
       }),
     ).toBeVisible();
 
     await expect(
       page.getByRole("button", {
-        name: /sign in with google/i,
+        name: signInWithGooglePattern,
       }),
     ).toBeVisible();
 
-    await expect(page.getByText(/private movie hub/i)).toBeVisible();
-    await expect(page.getByText(/why people use it/i)).toBeVisible();
+    await expect(page.getByText(privateMovieHubPattern)).toBeVisible();
+    await expect(page.getByText(whyPeopleUseItPattern)).toBeVisible();
   });
 
   test("restores the lang query from localStorage when missing", async ({
@@ -32,7 +38,7 @@ test.describe("auth page smoke", () => {
     await expect(page).toHaveURL(/\/auth\/?\?lang=fr-FR$/);
     await expect(
       page.getByRole("button", {
-        name: /sign in with google/i,
+        name: signInWithGooglePattern,
       }),
     ).toBeVisible();
   });

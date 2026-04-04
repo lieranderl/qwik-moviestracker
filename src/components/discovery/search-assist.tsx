@@ -1,11 +1,16 @@
 import { component$ } from "@builder.io/qwik";
 import { HiClockSolid, HiSparklesSolid } from "@qwikest/icons/heroicons";
 import type { RecentSearch } from "~/utils/recent-activity";
+import {
+  langNoRecentSearches,
+  langRecentSearchesCount,
+} from "~/utils/languages";
 
 type SearchAssistProps = {
   categoryLinks: ReadonlyArray<{ href: string; label: string }>;
   discoveryDescription: string;
   emptyRecentSearchesMessage: string;
+  lang: string;
   recentSearches: ReadonlyArray<RecentSearch>;
   recentSearchesLabel: string;
   searchTipsLabel: string;
@@ -16,14 +21,15 @@ export const SearchAssist = component$<SearchAssistProps>(
     categoryLinks,
     discoveryDescription,
     emptyRecentSearchesMessage,
+    lang,
     recentSearches,
     recentSearchesLabel,
     searchTipsLabel,
   }) => {
     const recentCountLabel =
       recentSearches.length > 0
-        ? `${recentSearches.length} recent`
-        : "No recent searches";
+        ? langRecentSearchesCount(lang, recentSearches.length)
+        : langNoRecentSearches(lang);
 
     return (
       <section class="section-reveal grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">

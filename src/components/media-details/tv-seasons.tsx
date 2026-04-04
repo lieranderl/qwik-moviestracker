@@ -7,6 +7,7 @@ import {
   langEpisodesCount,
   langOverview,
   langSeasons,
+  langText,
   langSwipeToBrowse,
 } from "~/utils/languages";
 import { MediaCard } from "../media-card";
@@ -72,7 +73,9 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
                       </div>
                     </div>
                     <form method="dialog" class="modal-backdrop">
-                      <button type="submit">close</button>
+                      <button type="submit">
+                        {langText(lang, "close", "закрыть")}
+                      </button>
                     </form>
                   </dialog>
                 )}

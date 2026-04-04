@@ -27,13 +27,18 @@ import { formatYear } from "~/utils/format";
 import {
   langAllProviders,
   langApplyFilters,
+  langCountLabel,
   langDiscoverTv,
   langFirstAirYear,
   langMinimumVotes,
   langRegion,
   langResetFilters,
+  langResults,
   langSortBy,
   langStreamingProvider,
+  langText,
+  langSearchMatchesCount,
+  langTvDiscoverSortLabel,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
@@ -127,17 +132,22 @@ export default component$(() => {
   if (value.status !== "ready") {
     return (
       <ErrorState
-        title="TV discover is unavailable"
-        description="Please refresh the page or try again later."
+        title={langText(
+          value.lang,
+          "TV discover is unavailable",
+          "Поиск сериалов недоступен",
+        )}
+        description={langText(
+          value.lang,
+          "Please refresh the page or try again later.",
+          "Обновите страницу или попробуйте позже.",
+        )}
         compact={true}
       />
     );
   }
 
-  const sortLabel =
-    TV_DISCOVER_SORT_OPTIONS.find(
-      (option) => option.value === value.filters.sortBy,
-    )?.label ?? "Popularity";
+  const sortLabel = langTvDiscoverSortLabel(value.lang, value.filters.sortBy);
   const selectedProvider = value.providerOptions.find(
     (option) => option.value === value.filters.providerId,
   );
@@ -154,21 +164,35 @@ export default component$(() => {
   return (
     <div class="space-y-6">
       <SectionHeading
-        eyebrow="Discovery"
+        eyebrow={langText(value.lang, "Discovery", "Подбор")}
         title={langDiscoverTv(value.lang)}
-        description={`Filter TMDB TV results by region, provider, first-air year, vote floor, and sort order. Provider filtering and regional validation use ${value.filters.region} as the active market.`}
+        description={langText(
+          value.lang,
+          `Filter TMDB TV results by region, provider, first-air year, vote floor, and sort order. Provider filtering and regional validation use ${value.filters.region} as the active market.`,
+          `Фильтруйте результаты сериалов TMDB по региону, провайдеру, году первого выхода, минимальному числу голосов и сортировке. Фильтрация по провайдерам и региональная проверка используют регион ${value.filters.region} как активный рынок.`,
+        )}
         badges={[
-          `${value.results.total_results} matches`,
-          `${value.results.total_pages} pages`,
-          `${value.filters.region} region`,
+          langSearchMatchesCount(value.lang, value.results.total_results),
+          langCountLabel(
+            value.lang,
+            value.results.total_pages,
+            "page",
+            "pages",
+            "страница",
+            "страницы",
+            "страниц",
+          ),
+          `${value.filters.region} ${langText(value.lang, "region", "регион")}`,
         ]}
       />
 
       <section class="alert alert-info alert-soft section-reveal">
         <span class="text-sm leading-relaxed">
-          TMDB trending surfaces what is spiking right now. Discover sorting
-          leans on broader popularity and vote signals, which is better when you
-          want reusable filters instead of the short-window trending feed.
+          {langText(
+            value.lang,
+            "TMDB trending surfaces what is spiking right now. Discover sorting leans on broader popularity and vote signals, which is better when you want reusable filters instead of the short-window trending feed.",
+            "Trending TMDB показывает то, что растет прямо сейчас. Сортировка Discover опирается на более широкие сигналы популярности и голосов, поэтому лучше подходит для повторно используемых фильтров, чем краткосрочная лента трендов.",
+          )}
         </span>
       </section>
 
@@ -253,7 +277,7 @@ export default component$(() => {
               >
                 {TV_DISCOVER_SORT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
-                    {option.label}
+                    {langTvDiscoverSortLabel(value.lang, option.value)}
                   </option>
                 ))}
               </select>
@@ -267,7 +291,11 @@ export default component$(() => {
                 {langResetFilters(value.lang)}
               </a>
               <a href={paths.tv(value.lang)} class="btn btn-outline">
-                Browse TV shelves
+                {langText(
+                  value.lang,
+                  "Browse TV shelves",
+                  "Открыть полки сериалов",
+                )}
               </a>
             </div>
           </form>
@@ -282,8 +310,11 @@ export default component$(() => {
             ))}
           </div>
           <p class="text-base-content/62 text-sm leading-relaxed">
-            Region choices come from TMDB’s certification coverage, which keeps
-            the selected market aligned with provider and discover filters.
+            {langText(
+              value.lang,
+              "Region choices come from TMDB’s certification coverage, which keeps the selected market aligned with provider and discover filters.",
+              "Список регионов берется из покрытия сертификатов TMDB, что удерживает выбранный рынок согласованным с провайдерами и фильтрами поиска.",
+            )}
           </p>
         </div>
       </section>
@@ -291,10 +322,22 @@ export default component$(() => {
       {value.results.total_results > 0 ? (
         <>
           <MediaGrid
-            description="Use the form above to refine the TMDB series catalog without leaving the current route."
-            eyebrow="Results"
-            headerBadge={`Page ${value.results.page} of ${value.results.total_pages}`}
-            title={`Discover results (${value.results.total_results})`}
+            description={langText(
+              value.lang,
+              "Use the form above to refine the TMDB series catalog without leaving the current route.",
+              "Используйте форму выше, чтобы уточнить каталог сериалов TMDB, не покидая текущий маршрут.",
+            )}
+            eyebrow={langResults(value.lang)}
+            headerBadge={langText(
+              value.lang,
+              `Page ${value.results.page} of ${value.results.total_pages}`,
+              `Страница ${value.results.page} из ${value.results.total_pages}`,
+            )}
+            title={langText(
+              value.lang,
+              `Discover results (${value.results.total_results})`,
+              `Результаты подбора (${value.results.total_results})`,
+            )}
           >
             {value.results.results.map((tvShow) => (
               <a
@@ -326,10 +369,14 @@ export default component$(() => {
                   value.filters.page <= 1 && "btn-disabled pointer-events-none",
                 ]}
               >
-                Previous page
+                {langText(value.lang, "Previous page", "Предыдущая страница")}
               </a>
               <span class="text-base-content/60 text-sm">
-                Page {value.results.page} of {value.results.total_pages}
+                {langText(
+                  value.lang,
+                  `Page ${value.results.page} of ${value.results.total_pages}`,
+                  `Страница ${value.results.page} из ${value.results.total_pages}`,
+                )}
               </span>
               <a
                 href={buildTvDiscoverHref(value.lang, value.filters, {
@@ -344,15 +391,23 @@ export default component$(() => {
                     "btn-disabled pointer-events-none",
                 ]}
               >
-                Next page
+                {langText(value.lang, "Next page", "Следующая страница")}
               </a>
             </div>
           )}
         </>
       ) : (
         <EmptyState
-          title="No series match for these filters"
-          description="Try a broader provider, reset the year, or lower the vote threshold."
+          title={langText(
+            value.lang,
+            "No series match for these filters",
+            "По этим фильтрам сериалы не найдены",
+          )}
+          description={langText(
+            value.lang,
+            "Try a broader provider, reset the year, or lower the vote threshold.",
+            "Попробуйте более широкий выбор провайдера, сбросьте год или снизьте порог голосов.",
+          )}
           compact={true}
         />
       )}
@@ -360,12 +415,24 @@ export default component$(() => {
   );
 });
 
-export const head: DocumentHead = {
-  title: "Moviestracker",
-  meta: [
-    {
-      name: "description",
-      content: "TV discovery with TMDB filters",
-    },
-  ],
+export const head: DocumentHead = ({ url }) => {
+  const lang = url.searchParams.get("lang") || "en-US";
+
+  return {
+    title: `Moviestracker | ${langText(
+      lang,
+      "TV discovery",
+      "Поиск сериалов",
+    )}`,
+    meta: [
+      {
+        name: "description",
+        content: langText(
+          lang,
+          "TV discovery with TMDB filters",
+          "Поиск сериалов с фильтрами TMDB",
+        ),
+      },
+    ],
+  };
 };

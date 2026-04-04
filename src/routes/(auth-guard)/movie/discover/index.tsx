@@ -30,13 +30,18 @@ import {
   langAllProviders,
   langApplyFilters,
   langCertification,
+  langCountLabel,
   langDiscoverMovies,
   langMinimumVotes,
   langRegion,
   langResetFilters,
+  langResults,
   langSortBy,
   langStreamingProvider,
+  langText,
   langReleaseYear,
+  langSearchMatchesCount,
+  langMovieDiscoverSortLabel,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
@@ -141,17 +146,22 @@ export default component$(() => {
   if (value.status !== "ready") {
     return (
       <ErrorState
-        title="Movie discover is unavailable"
-        description="Please refresh the page or try again later."
+        title={langText(
+          value.lang,
+          "Movie discover is unavailable",
+          "Поиск фильмов недоступен",
+        )}
+        description={langText(
+          value.lang,
+          "Please refresh the page or try again later.",
+          "Обновите страницу или попробуйте позже.",
+        )}
         compact={true}
       />
     );
   }
 
-  const sortLabel =
-    MOVIE_DISCOVER_SORT_OPTIONS.find(
-      (option) => option.value === value.filters.sortBy,
-    )?.label ?? "Popularity";
+  const sortLabel = langMovieDiscoverSortLabel(value.lang, value.filters.sortBy);
   const selectedProvider = value.providerOptions.find(
     (option) => option.value === value.filters.providerId,
   );
@@ -171,21 +181,35 @@ export default component$(() => {
   return (
     <div class="space-y-6">
       <SectionHeading
-        eyebrow="Discovery"
+        eyebrow={langText(value.lang, "Discovery", "Подбор")}
         title={langDiscoverMovies(value.lang)}
-        description={`Filter TMDB movie results by region, certification, provider, release year, vote floor, and sort order. Release-driven results use ${value.filters.region} as the active regional context.`}
+        description={langText(
+          value.lang,
+          `Filter TMDB movie results by region, certification, provider, release year, vote floor, and sort order. Release-driven results use ${value.filters.region} as the active regional context.`,
+          `Фильтруйте результаты фильмов TMDB по региону, сертификату, провайдеру, году релиза, минимальному числу голосов и сортировке. Релизные результаты используют регион ${value.filters.region} как активный контекст.`,
+        )}
         badges={[
-          `${value.results.total_results} matches`,
-          `${value.results.total_pages} pages`,
-          `${value.filters.region} region`,
+          langSearchMatchesCount(value.lang, value.results.total_results),
+          langCountLabel(
+            value.lang,
+            value.results.total_pages,
+            "page",
+            "pages",
+            "страница",
+            "страницы",
+            "страниц",
+          ),
+          `${value.filters.region} ${langText(value.lang, "region", "регион")}`,
         ]}
       />
 
       <section class="alert alert-info alert-soft section-reveal">
         <span class="text-sm leading-relaxed">
-          TMDB trending highlights short daily or weekly movement. Discover
-          sorting uses the longer-lived popularity and vote signals, which makes
-          this page better for stable browsing and precise filtering.
+          {langText(
+            value.lang,
+            "TMDB trending highlights short daily or weekly movement. Discover sorting uses the longer-lived popularity and vote signals, which makes this page better for stable browsing and precise filtering.",
+            "Trending TMDB показывает краткосрочное дневное и недельное движение. Сортировка Discover использует более устойчивые сигналы популярности и голосов, поэтому эта страница лучше подходит для стабильного просмотра и точной фильтрации.",
+          )}
         </span>
       </section>
 
@@ -290,7 +314,7 @@ export default component$(() => {
               >
                 {MOVIE_DISCOVER_SORT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
-                    {option.label}
+                    {langMovieDiscoverSortLabel(value.lang, option.value)}
                   </option>
                 ))}
               </select>
@@ -304,7 +328,11 @@ export default component$(() => {
                 {langResetFilters(value.lang)}
               </a>
               <a href={paths.movie(value.lang)} class="btn btn-outline">
-                Browse movie shelves
+                {langText(
+                  value.lang,
+                  "Browse movie shelves",
+                  "Открыть полки фильмов",
+                )}
               </a>
             </div>
           </form>
@@ -312,7 +340,11 @@ export default component$(() => {
           {value.certificationOptions.length > 0 && (
             <div class="space-y-2">
               <p class="text-base-content/60 text-xs font-semibold tracking-[0.08em] uppercase">
-                TMDB certification chips
+                {langText(
+                  value.lang,
+                  "TMDB certification chips",
+                  "Метки сертификатов TMDB",
+                )}
               </p>
               <div class="flex flex-wrap gap-2">
                 <a
@@ -361,8 +393,11 @@ export default component$(() => {
             ))}
           </div>
           <p class="text-base-content/62 text-sm leading-relaxed">
-            Certification and region validation come from TMDB reference lists,
-            so only supported values for the current region are submitted.
+            {langText(
+              value.lang,
+              "Certification and region validation come from TMDB reference lists, so only supported values for the current region are submitted.",
+              "Проверка сертификатов и регионов опирается на справочники TMDB, поэтому отправляются только поддерживаемые значения для текущего региона.",
+            )}
           </p>
         </div>
       </section>
@@ -370,10 +405,22 @@ export default component$(() => {
       {value.results.total_results > 0 ? (
         <>
           <MediaGrid
-            description="Use the form above to refine the TMDB catalog without leaving the current route."
-            eyebrow="Results"
-            headerBadge={`Page ${value.results.page} of ${value.results.total_pages}`}
-            title={`Discover results (${value.results.total_results})`}
+            description={langText(
+              value.lang,
+              "Use the form above to refine the TMDB catalog without leaving the current route.",
+              "Используйте форму выше, чтобы уточнить каталог TMDB, не покидая текущий маршрут.",
+            )}
+            eyebrow={langResults(value.lang)}
+            headerBadge={langText(
+              value.lang,
+              `Page ${value.results.page} of ${value.results.total_pages}`,
+              `Страница ${value.results.page} из ${value.results.total_pages}`,
+            )}
+            title={langText(
+              value.lang,
+              `Discover results (${value.results.total_results})`,
+              `Результаты подбора (${value.results.total_results})`,
+            )}
           >
             {value.results.results.map((movie) => (
               <a
@@ -405,10 +452,14 @@ export default component$(() => {
                   value.filters.page <= 1 && "btn-disabled pointer-events-none",
                 ]}
               >
-                Previous page
+                {langText(value.lang, "Previous page", "Предыдущая страница")}
               </a>
               <span class="text-base-content/60 text-sm">
-                Page {value.results.page} of {value.results.total_pages}
+                {langText(
+                  value.lang,
+                  `Page ${value.results.page} of ${value.results.total_pages}`,
+                  `Страница ${value.results.page} из ${value.results.total_pages}`,
+                )}
               </span>
               <a
                 href={buildMovieDiscoverHref(value.lang, value.filters, {
@@ -423,15 +474,23 @@ export default component$(() => {
                     "btn-disabled pointer-events-none",
                 ]}
               >
-                Next page
+                {langText(value.lang, "Next page", "Следующая страница")}
               </a>
             </div>
           )}
         </>
       ) : (
         <EmptyState
-          title="No movie matches for these filters"
-          description="Try a broader provider, remove the certification, or lower the vote threshold."
+          title={langText(
+            value.lang,
+            "No movie matches for these filters",
+            "По этим фильтрам фильмы не найдены",
+          )}
+          description={langText(
+            value.lang,
+            "Try a broader provider, remove the certification, or lower the vote threshold.",
+            "Попробуйте более широкий выбор провайдера, уберите сертификат или снизьте порог голосов.",
+          )}
           compact={true}
         />
       )}
@@ -439,12 +498,24 @@ export default component$(() => {
   );
 });
 
-export const head: DocumentHead = {
-  title: "Moviestracker",
-  meta: [
-    {
-      name: "description",
-      content: "Movie discovery with TMDB filters",
-    },
-  ],
+export const head: DocumentHead = ({ url }) => {
+  const lang = url.searchParams.get("lang") || "en-US";
+
+  return {
+    title: `Moviestracker | ${langText(
+      lang,
+      "Movie discovery",
+      "Поиск фильмов",
+    )}`,
+    meta: [
+      {
+        name: "description",
+        content: langText(
+          lang,
+          "Movie discovery with TMDB filters",
+          "Поиск фильмов с фильтрами TMDB",
+        ),
+      },
+    ],
+  };
 };

@@ -1,7 +1,14 @@
 import { $, component$ } from "@builder.io/qwik";
 import { Image } from "@unpic/qwik";
 import { useSession, useSignOut } from "~/routes/plugin@auth";
-import { langSingOut } from "~/utils/languages";
+import {
+  langAccount,
+  langAccountMenu,
+  langAvatar,
+  langOpenAccountMenu,
+  langPreferences,
+  langSingOut,
+} from "~/utils/languages";
 import { LangButton } from "./lang-button";
 import type { ToolbarProps } from "./toolbar";
 
@@ -12,7 +19,7 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
   const userName = user?.name?.trim() ?? "";
   const userEmail = user?.email?.trim() ?? "";
   const userImage = user?.image?.trim() ?? "";
-  const userLabel = userName || userEmail || "Account";
+  const userLabel = userName || userEmail || langAccount(lang);
   const userSecondaryLabel = userName && userEmail ? userEmail : "";
   const userInitial = userLabel.charAt(0).toUpperCase();
   const authRedirectHref = lang
@@ -38,7 +45,7 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
         <summary
           aria-controls="toolbar-account-menu"
           aria-haspopup="menu"
-          aria-label="Open account menu"
+          aria-label={langOpenAccountMenu(lang)}
           role="button"
           class="btn btn-ghost btn-circle avatar border-none bg-transparent p-0 shadow-none list-none transition-transform duration-200 hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden"
         >
@@ -46,7 +53,7 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
             <div class="border-base-200 bg-base-100 h-10 w-10 overflow-hidden rounded-full border shadow-sm">
               <Image
                 src={userImage}
-                alt={`${userLabel} avatar`}
+                alt={`${userLabel} ${langAvatar(lang)}`}
                 class="h-full w-full object-cover"
               />
             </div>
@@ -62,7 +69,7 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
           id="toolbar-account-menu"
           tabIndex={0}
           role="menu"
-          aria-label="Account menu"
+          aria-label={langAccountMenu(lang)}
           class="menu menu-sm dropdown-content rounded-box border-base-200 bg-base-100/95 text-base-content z-[80] mt-3 w-72 border p-2 shadow-xl backdrop-blur-md"
         >
           <li class="pointer-events-none mb-1 px-3 py-3">
@@ -72,7 +79,7 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
                   <div class="h-11 w-11 overflow-hidden rounded-full">
                     <Image
                       src={userImage}
-                      alt={`${userLabel} avatar`}
+                      alt={`${userLabel} ${langAvatar(lang)}`}
                       class="h-full w-full object-cover"
                     />
                   </div>
@@ -97,7 +104,7 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
             </div>
           </li>
           <li class="menu-title px-3 pt-1 pb-1 text-[10px] tracking-[0.2em] uppercase opacity-60">
-            <span>Preferences</span>
+            <span>{langPreferences(lang)}</span>
           </li>
           <LangButton />
           <li class="px-2 py-1">

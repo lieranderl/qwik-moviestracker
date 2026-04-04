@@ -9,6 +9,7 @@ import { getMedias, getTrendingMedia } from "~/services/tmdb";
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import { createInfiniteScrollObserver } from "~/utils/infinite-scroll";
+import { langText } from "~/utils/languages";
 import { categoryToTitle, paths } from "~/utils/paths";
 
 type FetchTvCategoryPageArgs = {
@@ -146,9 +147,17 @@ export default component$(() => {
   return (
     <div class="pt-4 pb-10">
       <MediaGrid
-        description="Scroll down to keep loading more results from this TV shelf."
-        eyebrow="Catalog"
-        headerBadge={`${tvItemsSig.value.length} loaded`}
+        description={langText(
+          resource.value.lang,
+          "Scroll down to keep loading more results from this TV shelf.",
+          "Прокручивайте вниз, чтобы загружать больше результатов с этой полки сериалов.",
+        )}
+        eyebrow={langText(resource.value.lang, "Catalog", "Каталог")}
+        headerBadge={langText(
+          resource.value.lang,
+          `${tvItemsSig.value.length} loaded`,
+          `${tvItemsSig.value.length} загружено`,
+        )}
         title={categoryToTitle(
           resource.value.category,
           MediaType.Tv,
@@ -179,7 +188,13 @@ export default component$(() => {
         {isLoadingTv.value && (
           <div class="border-base-200 bg-base-100/88 flex items-center gap-3 rounded-full border px-4 py-2 text-sm shadow-sm">
             <span class="loading loading-ring loading-sm" />
-            <span>Loading more series…</span>
+            <span>
+              {langText(
+                resource.value.lang,
+                "Loading more series…",
+                "Загружаем еще сериалы…",
+              )}
+            </span>
           </div>
         )}
       </div>
@@ -187,12 +202,20 @@ export default component$(() => {
   );
 });
 
-export const head: DocumentHead = {
-  title: "Moviestracker",
-  meta: [
-    {
-      name: "description",
-      content: "Catalog of Tv Shows",
-    },
-  ],
+export const head: DocumentHead = ({ url }) => {
+  const lang = url.searchParams.get("lang") || "en-US";
+
+  return {
+    title: `Moviestracker | ${langText(
+      lang,
+      "TV catalog",
+      "Каталог сериалов",
+    )}`,
+    meta: [
+      {
+        name: "description",
+        content: langText(lang, "Catalog of TV shows", "Каталог сериалов"),
+      },
+    ],
+  };
 };

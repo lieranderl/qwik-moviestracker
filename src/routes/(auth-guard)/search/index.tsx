@@ -26,11 +26,32 @@ import {
   type RecentSearch,
 } from "~/utils/recent-activity";
 import {
+  langDiscovery,
+  langFetchingMatchingTitlesAndPeople,
+  langJumpBackIntoDiscoveryWhenYouWantBroaderBrowsing,
+  langLoadingSearchResults,
+  langMovies,
   langNoResults,
+  langPeople,
   langRecentSearches,
+  langResults,
+  langResultsCombineMoviesTvSeriesAndPeopleInOneGrid,
+  langResultsUpdateWhenYouSubmit,
   langSearch,
   langSearchAssist,
+  langSearchBecomesAvailableAfterCharacters,
+  langSearchMatchesCount,
   langSearchResults,
+  langSearchForATitleOnceAndItWillShowUpHere,
+  langSearchStartsAfterCharacters,
+  langSearchTitlesCastCrew,
+  langSearchesMoviesTvAndPeople,
+  langSearchMoviesSeriesPeople,
+  langSearchUnavailableRightNow,
+  langStartWithATitleActorOrDirector,
+  langSubmitAtLeastCharactersToLoadResults,
+  langTryABroaderTitleAPersonNameOrDifferentSpelling,
+  langSeries,
 } from "~/utils/languages";
 import {
   MIN_SEARCH_QUERY_LENGTH,
@@ -56,6 +77,7 @@ export default component$(() => {
   const loc = useLocation();
   const formModel = createSearchFormViewModel(
     loc.url.searchParams.get("q") ?? "",
+    resource.value.lang,
   );
   const recentSearches = useSignal<RecentSearch[]>([]);
   const assistLinks = createSearchAssistLinks(resource.value.lang);
@@ -86,17 +108,21 @@ export default component$(() => {
       });
     } catch (error) {
       console.error(error);
-      throw new Error("Search results could not be loaded.");
+      throw new Error(langSearchUnavailableRightNow(resource.value.lang));
     }
   });
 
   return (
     <div class="mx-auto w-full max-w-7xl pb-8">
       <SectionHeading
-        eyebrow="Discovery"
+        eyebrow={langDiscovery(resource.value.lang)}
         title={langSearch(resource.value.lang)}
-        description="Search movies, TV series, and people with a plain GET flow that keeps the current language in the URL and restores recent activity from browser storage."
-        badges={["Movies", "TV series", "People"]}
+        description={langSearchMoviesSeriesPeople(resource.value.lang)}
+        badges={[
+          langMovies(resource.value.lang),
+          langSeries(resource.value.lang),
+          langPeople(resource.value.lang),
+        ]}
       />
 
       <section class="card border-base-200 bg-base-100/90 mb-6 border shadow-sm backdrop-blur">
@@ -108,7 +134,7 @@ export default component$(() => {
             <input type="hidden" name="lang" value={resource.value.lang} />
             <label class="form-control flex-1 gap-2" for="search-query">
               <span class="label-text text-sm font-medium">
-                Search movies, series, and people
+                {langSearchMoviesSeriesPeople(resource.value.lang)}
               </span>
               <input
                 id="search-query"
@@ -119,7 +145,7 @@ export default component$(() => {
                 spellcheck={false}
                 aria-describedby="search-query-help"
                 aria-invalid={Boolean(formModel.shortQueryMessage)}
-                placeholder="Search titles, cast, and crew..."
+                placeholder={langSearchTitlesCastCrew(resource.value.lang)}
                 class="input input-bordered focus-ringable w-full"
                 value={formModel.query}
               />
@@ -127,13 +153,15 @@ export default component$(() => {
 
             <button type="submit" class="btn btn-primary gap-2 md:min-w-40">
               <HiMagnifyingGlassOutline aria-hidden="true" class="h-5 w-5" />
-              Search
+              {langSearch(resource.value.lang)}
             </button>
           </form>
 
           <p id="search-query-help" class="text-base-content/65 text-sm">
-            Search starts after {MIN_SEARCH_QUERY_LENGTH} characters and keeps
-            your current language in the URL.
+            {langSearchStartsAfterCharacters(
+              resource.value.lang,
+              MIN_SEARCH_QUERY_LENGTH,
+            )}
           </p>
 
           {formModel.shortQueryMessage && (
@@ -148,14 +176,21 @@ export default component$(() => {
 
           <div class="space-y-2">
             <p class="text-base-content/60 text-xs font-semibold tracking-[0.08em] uppercase">
-              Search tips
+              {langSearchAssist(resource.value.lang)}
             </p>
             <InlineFilterGroup>
               <FilterChip
-                label={`Submit ${MIN_SEARCH_QUERY_LENGTH}+ characters to load results`}
+                label={langSubmitAtLeastCharactersToLoadResults(
+                  resource.value.lang,
+                  MIN_SEARCH_QUERY_LENGTH,
+                )}
               />
-              <FilterChip label="Searches movies, TV, and people" />
-              <FilterChip label="Results update when you submit" />
+              <FilterChip
+                label={langSearchesMoviesTvAndPeople(resource.value.lang)}
+              />
+              <FilterChip
+                label={langResultsUpdateWhenYouSubmit(resource.value.lang)}
+              />
             </InlineFilterGroup>
           </div>
         </div>
@@ -163,8 +198,13 @@ export default component$(() => {
 
       <SearchAssist
         categoryLinks={assistLinks}
-        discoveryDescription="Jump back into discovery when you want broader browsing instead of a direct query."
-        emptyRecentSearchesMessage="Search for a title once and it will show up here."
+        discoveryDescription={langJumpBackIntoDiscoveryWhenYouWantBroaderBrowsing(
+          resource.value.lang,
+        )}
+        emptyRecentSearchesMessage={langSearchForATitleOnceAndItWillShowUpHere(
+          resource.value.lang,
+        )}
+        lang={resource.value.lang}
         recentSearches={recentSearches.value}
         recentSearchesLabel={langRecentSearches(resource.value.lang)}
         searchTipsLabel={langSearchAssist(resource.value.lang)}
@@ -174,14 +214,14 @@ export default component$(() => {
         value={searchResource}
         onPending={() => (
           <LoadingState
-            title="Loading search results"
-            description="We are fetching matching titles and people."
+            title={langLoadingSearchResults(resource.value.lang)}
+            description={langFetchingMatchingTitlesAndPeople(resource.value.lang)}
             compact={true}
           />
         )}
         onRejected={(error) => (
           <ErrorState
-            title="Search is unavailable right now"
+            title={langSearchUnavailableRightNow(resource.value.lang)}
             description={error.message}
             compact={true}
           />
@@ -190,8 +230,11 @@ export default component$(() => {
           if (!movies) {
             return (
               <EmptyState
-                title="Start with a title, actor, or director"
-                description="Search becomes available after 3 or more characters."
+                title={langStartWithATitleActorOrDirector(resource.value.lang)}
+                description={langSearchBecomesAvailableAfterCharacters(
+                  resource.value.lang,
+                  MIN_SEARCH_QUERY_LENGTH,
+                )}
                 compact={true}
               />
             );
@@ -205,9 +248,14 @@ export default component$(() => {
           if (normalizedResults.length > 0) {
             return (
               <MediaGrid
-                description="Results combine movies, TV series, and people in one grid so you can jump straight into the right detail page."
-                eyebrow="Results"
-                headerBadge={`${movies.total_results} matches`}
+                description={langResultsCombineMoviesTvSeriesAndPeopleInOneGrid(
+                  resource.value.lang,
+                )}
+                eyebrow={langResults(resource.value.lang)}
+                headerBadge={langSearchMatchesCount(
+                  resource.value.lang,
+                  movies.total_results,
+                )}
                 title={`${langSearchResults(resource.value.lang)} (${movies.total_results})`}
               >
                 {normalizedResults.map((result) => (
@@ -234,7 +282,9 @@ export default component$(() => {
           return (
             <EmptyState
               title={langNoResults(resource.value.lang)}
-              description="Try a broader title, a person name, or different spelling."
+              description={langTryABroaderTitleAPersonNameOrDifferentSpelling(
+                resource.value.lang,
+              )}
               compact={true}
             />
           );

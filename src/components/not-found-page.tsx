@@ -1,6 +1,11 @@
 import { component$ } from "@builder.io/qwik";
 import { HiExclamationTriangleSolid } from "@qwikest/icons/heroicons";
-import { langNotFound, langSearch } from "~/utils/languages";
+import {
+  langHome,
+  langNotFound,
+  langPageNotFoundDescription,
+  langSearch,
+} from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
 type NotFoundPageProps = {
@@ -15,12 +20,10 @@ export const NotFoundPage = component$<NotFoundPageProps>(({ lang }) => {
 					<HiExclamationTriangleSolid class="text-warning h-14 w-14" />
 					<h1 class="text-3xl font-bold">404</h1>
 					<h2 class="text-xl font-semibold">{langNotFound(lang)}</h2>
-					<p class="text-base-content/70">
-						The page you requested does not exist.
-					</p>
+					<p class="text-base-content/70">{langPageNotFoundDescription(lang)}</p>
 					<div class="mt-3 flex gap-3">
 						<a href={paths.index(lang)} class="btn btn-primary">
-							Home
+							{langHome(lang)}
 						</a>
 						<a href={paths.search(lang)} class="btn btn-ghost">
 							{langSearch(lang)}

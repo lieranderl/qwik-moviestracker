@@ -58,9 +58,9 @@ export default component$(() => {
         }}
       />
       <div class="pointer-events-none absolute inset-0">
-        <div class="absolute -top-40 -left-32 h-112 w-md rounded-full bg-[color:var(--auth-blob-one)] blur-[120px]" />
-        <div class="absolute top-[24%] -right-32 h-96 w-96 rounded-full bg-[color:var(--auth-blob-two)] blur-[120px]" />
-        <div class="absolute -bottom-48 left-[30%] h-96 w-96 rounded-full bg-[color:var(--auth-blob-three)] blur-[130px]" />
+        <div class="absolute -top-40 -left-32 h-112 w-md rounded-full bg-(--auth-blob-one) blur-[120px]" />
+        <div class="absolute top-[24%] -right-32 h-96 w-96 rounded-full bg-(--auth-blob-two) blur-[120px]" />
+        <div class="absolute -bottom-48 left-[30%] h-96 w-96 rounded-full bg-(--auth-blob-three) blur-[130px]" />
       </div>
 
       <div class="relative z-10 flex min-h-screen flex-col">
@@ -92,7 +92,7 @@ export default component$(() => {
             >
               {langTrackMoviesAndTvShowsPrefix(lang)}
               <br class="hidden lg:block" />{" "}
-              <span class="bg-gradient-to-r from-[color:var(--auth-accent-from)] via-[color:var(--auth-accent-via)] to-[color:var(--auth-accent-to)] bg-clip-text text-transparent">
+              <span class="from-(--auth-accent-from)via-[color:var(--auth-accent-via)] bg-linear-to-r to-(--auth-accent-to) bg-clip-text text-transparent">
                 {langTrackMoviesAndTvShowsAccent(lang)}
               </span>
             </h1>
@@ -109,7 +109,7 @@ export default component$(() => {
               <LoginButton
                 lang={lang}
                 providerName="google"
-                class="h-14 rounded-2xl border-0 bg-gradient-to-r from-[color:var(--auth-primary-from)] to-[color:var(--auth-primary-to)] px-7 text-base font-semibold text-white shadow-[0_18px_42px_var(--auth-primary-shadow)] hover:from-[color:var(--auth-primary-from-hover)] hover:to-[color:var(--auth-primary-to-hover)]"
+                class="h-14 rounded-2xl border-0 bg-linear-to-r from-(--auth-primary-from) to-(--auth-primary-to) px-7 text-base font-semibold text-white shadow-[0_18px_42px_var(--auth-primary-shadow)] hover:from-(--auth-primary-from-hover) hover:to-(--auth-primary-to-hover)"
               >
                 <svg
                   aria-label={langGoogleLogo(lang)}
@@ -150,7 +150,7 @@ export default component$(() => {
               <div class="text-base-content text-lg font-bold tracking-tight">
                 {langWhyPeopleUseIt(lang)}
               </div>
-              <span class="badge border-0 bg-[color:var(--auth-badge-bg)] text-[0.7rem] font-semibold text-white uppercase">
+              <span class="badge border-0 bg-(--auth-badge-bg) text-[0.7rem] font-semibold text-white uppercase">
                 {langNew(lang)}
               </span>
             </div>

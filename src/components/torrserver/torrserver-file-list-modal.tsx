@@ -6,7 +6,6 @@ import {
   getToneSurfaceClass,
 } from "./torrserver-utils";
 
-
 export type TorrServerFileEntry = {
   description?: string;
   id: number;
@@ -74,7 +73,11 @@ export const TorrServerFileListModal = component$(
             <span class="loading loading-spinner loading-lg text-primary" />
             <p class="text-base-content/70 text-sm">{loadingLabel}</p>
             {typeof loadingProgress === "number" && (
-              <progress class="progress progress-primary w-48" max={100} value={loadingProgress} />
+              <progress
+                class="progress progress-primary w-48"
+                max={100}
+                value={loadingProgress}
+              />
             )}
           </div>
         ) : files.length === 0 ? (
@@ -107,11 +110,11 @@ export const TorrServerFileListModal = component$(
                       </div>
 
                       <div class="space-y-1">
-                        <h4 class="min-w-0 break-words text-base font-semibold md:text-lg">
+                        <h4 class="min-w-0 text-base font-semibold wrap-break-word md:text-lg">
                           {titleLabel}
                         </h4>
                         {file.path && file.path !== titleLabel && (
-                          <p class="text-base-content/65 break-all text-xs leading-relaxed">
+                          <p class="text-base-content/65 text-xs leading-relaxed break-all">
                             {file.path}
                           </p>
                         )}

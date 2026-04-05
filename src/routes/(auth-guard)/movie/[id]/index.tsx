@@ -8,9 +8,7 @@ import {
   createDevMovieDetail,
   DEV_SESSION_BYPASS_COOKIE,
 } from "~/routes/dev-session";
-import { getOptionalImdbRating } from "~/services/cloud-func-api";
 import type {
-  ImdbRating,
   LocalizedCertification,
   MovieFull,
   MovieShort,
@@ -35,7 +33,6 @@ type MovieDetailData =
       movie: MovieFull;
       recMovies: MovieShort[];
       colMovies: MovieShort[];
-      imdb: ImdbRating | null;
       certification: LocalizedCertification | null;
       watchProviders: RegionalWatchProviders | null;
     }
@@ -77,7 +74,7 @@ export const useMovieDetailLoader = routeLoader$(async (event) => {
     });
     const region = getRegionFromLanguage(lang);
 
-    const [recMovies, colMovies, imdb, watchProviderResults] =
+    const [recMovies, colMovies, watchProviderResults] =
       await Promise.all([
         getMediaRecom({
           id,
@@ -91,7 +88,6 @@ export const useMovieDetailLoader = routeLoader$(async (event) => {
               language: lang,
             })
           : Promise.resolve([] as MovieShort[]),
-        getOptionalImdbRating(movie.imdb_id),
         getOptionalWatchProviders({
           id,
           type: MediaType.Movie,
@@ -104,7 +100,6 @@ export const useMovieDetailLoader = routeLoader$(async (event) => {
       movie,
       recMovies,
       colMovies,
-      imdb,
       certification: resolveMovieCertification(movie.release_dates, region),
       watchProviders: resolveRegionalWatchProviders(
         watchProviderResults,
@@ -146,7 +141,7 @@ export default component$(() => {
         movie={value.movie}
         recMovies={value.recMovies}
         colMovies={value.colMovies}
-        imdb={value.imdb}
+        imdbId={value.movie.imdb_id}
         certification={value.certification}
         watchProviders={value.watchProviders}
         lang={value.lang}

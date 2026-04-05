@@ -4,7 +4,6 @@ import { LuDisc3, LuLayers3 } from "@qwikest/icons/lucide";
 import { DetailPageContainer } from "~/components/detail-page-layout";
 import {
   MediaType,
-  type ImdbRating,
   type LocalizedCertification,
   type RegionalWatchProviders,
   type TvFull,
@@ -39,7 +38,7 @@ import { TvSeasons } from "./tv-seasons";
 interface TvDetailsProps {
   tv: TvFull;
   recTv: TvShort[];
-  imdb: ImdbRating | null;
+  imdbId?: string | null;
   certification: LocalizedCertification | null;
   watchProviders: RegionalWatchProviders | null;
   lang: string;
@@ -49,7 +48,7 @@ export const TvDetails = component$(
   ({
     tv,
     recTv,
-    imdb,
+    imdbId,
     certification,
     watchProviders,
     lang,
@@ -128,7 +127,7 @@ export const TvDetails = component$(
               <MediaRating
                 vote_average={tv.vote_average}
                 vote_count={tv.vote_count}
-                imdb={imdb}
+                imdbId={imdbId}
               />
             </div>
           </div>

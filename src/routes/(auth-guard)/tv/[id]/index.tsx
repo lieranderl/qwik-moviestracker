@@ -8,9 +8,7 @@ import {
   createDevTvDetail,
   DEV_SESSION_BYPASS_COOKIE,
 } from "~/routes/dev-session";
-import { getOptionalImdbRating } from "~/services/cloud-func-api";
 import type {
-  ImdbRating,
   LocalizedCertification,
   RegionalWatchProviders,
   TvFull,
@@ -33,7 +31,6 @@ type TvDetailData =
       lang: string;
       tv: TvFull;
       recTv: TvShort[];
-      imdb: ImdbRating | null;
       certification: LocalizedCertification | null;
       watchProviders: RegionalWatchProviders | null;
     }
@@ -75,14 +72,13 @@ export const useTvDetailLoader = routeLoader$(async (event) => {
     });
     const region = getRegionFromLanguage(lang);
 
-    const [recTv, imdb, watchProviderResults] = await Promise.all([
+    const [recTv, watchProviderResults] = await Promise.all([
       getMediaRecom({
         id,
         language: lang,
         type: MediaType.Tv,
         query: "recommendations",
       }) as Promise<TvShort[]>,
-      getOptionalImdbRating(tv.external_ids.imdb_id),
       getOptionalWatchProviders({
         id,
         type: MediaType.Tv,
@@ -94,7 +90,6 @@ export const useTvDetailLoader = routeLoader$(async (event) => {
       lang,
       tv,
       recTv,
-      imdb,
       certification: resolveTvCertification(tv.content_ratings, region),
       watchProviders: resolveRegionalWatchProviders(
         watchProviderResults,
@@ -135,7 +130,7 @@ export default component$(() => {
       <TvDetails
         tv={value.tv}
         recTv={value.recTv}
-        imdb={value.imdb}
+        imdbId={value.tv.external_ids.imdb_id}
         certification={value.certification}
         watchProviders={value.watchProviders}
         lang={value.lang}

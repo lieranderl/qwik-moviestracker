@@ -3,7 +3,6 @@ import { component$, useVisibleTask$ } from "@builder.io/qwik";
 import { DetailPageContainer } from "~/components/detail-page-layout";
 import {
   MediaType,
-  type ImdbRating,
   type LocalizedCertification,
   type MovieFull,
   type MovieShort,
@@ -40,7 +39,7 @@ interface MovieDetailsProps {
   movie: MovieFull;
   recMovies: MovieShort[];
   colMovies: MovieShort[];
-  imdb: ImdbRating | null;
+  imdbId?: string | null;
   certification: LocalizedCertification | null;
   watchProviders: RegionalWatchProviders | null;
   lang: string;
@@ -51,7 +50,7 @@ export const MovieDetails = component$(
     movie,
     recMovies,
     colMovies,
-    imdb,
+    imdbId,
     certification,
     watchProviders,
     lang,
@@ -112,7 +111,7 @@ export const MovieDetails = component$(
               <MediaRating
                 vote_average={movie.vote_average}
                 vote_count={movie.vote_count}
-                imdb={imdb}
+                imdbId={imdbId}
               />
             </div>
           </div>

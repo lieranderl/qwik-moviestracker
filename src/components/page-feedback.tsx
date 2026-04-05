@@ -20,10 +20,7 @@ type FeedbackPanelProps = FeedbackCardProps & {
 
 const FEEDBACK_SECTION_BASE_CLASS = "overlay-enter container mx-auto px-4";
 
-const getFeedbackSectionClass = (
-  compact: boolean,
-  minHeightClass: string,
-) => [
+const getFeedbackSectionClass = (compact: boolean, minHeightClass: string) => [
   FEEDBACK_SECTION_BASE_CLASS,
   compact ? "py-6" : `flex ${minHeightClass} items-center justify-center py-8`,
 ];
@@ -133,11 +130,11 @@ export const SectionHeading = component$<{
           {eyebrow}
         </p>
       )}
-      <h1 class="text-3xl font-bold tracking-tight text-balance md:text-4xl">
+      <h1 class="text-xl font-bold tracking-tight text-balance md:text-2xl">
         {title}
       </h1>
       {description && (
-        <p class="text-base-content/70 max-w-3xl text-sm leading-relaxed md:text-base">
+        <p class="text-base-content/70 max-w-3xl text-sm leading-relaxed md:text-sm">
           {description}
         </p>
       )}
@@ -146,7 +143,7 @@ export const SectionHeading = component$<{
           {badges.map((badge) => (
             <span
               key={badge}
-              class="badge border-base-300/80 bg-base-200/65 text-base-content/75 rounded-full px-3 py-3 font-medium shadow-none"
+              class="badge badge-sm border-base-300/80 bg-base-200/65 text-base-content/75 rounded-full px-3 py-3 font-medium shadow-none"
             >
               {badge}
             </span>

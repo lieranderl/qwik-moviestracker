@@ -499,20 +499,28 @@ export type ImdbRating = {
 export type TSResult = {
 	title: string;
 	poster: string;
+	category?: string;
 	data?: string;
 	timestamp: number;
 	name: string;
 	hash: string;
+	torrs_hash?: string;
 	stat: number;
 	stat_string: string;
+	bit_rate?: string;
+	duration_seconds?: number;
 	loaded_size?: number;
+	preload_size?: number;
 	torrent_size: number;
 	preloaded_bytes?: number;
 	total_peers?: number;
 	pending_peers?: number;
 	active_peers?: number;
 	connected_seeders?: number;
+	download_speed?: number;
+	upload_speed?: number;
 	bytes_written?: number;
+	bytes_written_data?: number;
 	bytes_read?: number;
 	bytes_read_data?: number;
 	bytes_read_useful_data?: number;

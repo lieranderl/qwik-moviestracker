@@ -92,10 +92,10 @@ export const MediaAvailability = component$<MediaAvailabilityProps>(
                 {langCertification(lang)}
               </div>
               <div class="mt-2 flex flex-wrap items-center gap-2">
-                <span class="badge badge-primary badge-lg">
+                <span class="badge badge-secondary">
                   {certification.rating}
                 </span>
-                <span class="badge badge-ghost badge-md h-auto max-w-full gap-1 px-3 py-2 text-center leading-tight whitespace-normal">
+                <span class="badge badge-ghost h-auto max-w-full gap-1 px-3 py-2 text-center leading-tight whitespace-normal">
                   {langRegion(lang)} {certification.region}
                 </span>
               </div>
@@ -113,7 +113,7 @@ export const MediaAvailability = component$<MediaAvailabilityProps>(
                     {group.providers.map((provider) => (
                       <span
                         key={provider.provider_id}
-                        class="badge badge-outline badge-sm sm:badge-md h-auto max-w-full px-3 py-2 text-center leading-tight whitespace-normal"
+                        class="badge badge-soft badge-sm h-auto max-w-full px-3 py-2 text-center leading-tight whitespace-normal"
                       >
                         {provider.provider_name}
                       </span>

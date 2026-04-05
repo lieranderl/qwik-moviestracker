@@ -141,20 +141,29 @@ export const MovieDetails = component$(
                 />
               </div>
             </div>
-            <ExternalIds external_ids={movie.external_ids} lang={lang} type={"movie"} />
+            <ExternalIds
+              external_ids={movie.external_ids}
+              lang={lang}
+              type={"movie"}
+            />
           </div>
         </section>
 
         <section class="section-reveal card border-base-200 bg-base-100/95 relative z-0 mt-6 border shadow-sm">
-            <div class="card-body">
-              <h3 class="card-title text-xl">{langOverview(lang)}</h3>
-              <p class="leading-relaxed opacity-90">
-                {movie.overview || langText(lang, "No overview available.", "Описание отсутствует.")}
-              </p>
-            </div>
-          </section>
+          <div class="card-body">
+            <h3 class="card-title text-xl">{langOverview(lang)}</h3>
+            <p class="leading-relaxed opacity-90">
+              {movie.overview ||
+                langText(
+                  lang,
+                  "No overview available.",
+                  "Описание отсутствует.",
+                )}
+            </p>
+          </div>
+        </section>
 
-        <div class="mt-6 grid gap-6 lg:grid-cols-[2fr_1fr]">
+        <div class="mt-6 grid gap-6">
           <div class="space-y-6">
             <MediaInfo
               release_date={movie.release_date}

@@ -88,7 +88,7 @@ export const TorrentCard = component$(
               href={href}
               target="_blank"
               rel="noreferrer"
-              class="block min-w-0"
+              class="mb-4 block min-w-0"
             >
               <MediaCard
                 title={title}
@@ -101,7 +101,7 @@ export const TorrentCard = component$(
               />
             </a>
           ) : (
-            <div class="block min-w-0">
+            <div class="mb-4 block min-w-0">
               <MediaCard
                 title={title}
                 width={300}
@@ -121,10 +121,6 @@ export const TorrentCard = component$(
                   {langText(lang, "Peers", "Пиры")}
                 </div>
                 <div class="stat-value text-sm">{torrent.total_peers || 0}</div>
-                <div class="stat-desc truncate">
-                  {torrent.connected_seeders || 0}{" "}
-                  {langText(lang, "seeders", "сидеров")}
-                </div>
               </div>
               <div class="stat min-w-0 overflow-hidden px-3 py-2">
                 <div class="stat-title text-xs">

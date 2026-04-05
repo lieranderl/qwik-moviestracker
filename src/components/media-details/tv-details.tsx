@@ -85,7 +85,8 @@ export const TvDetails = component$(
 
             <div class="flex flex-wrap items-center gap-2 text-sm font-medium">
               <span class="badge badge-ghost">
-                {formatYear(tv.first_air_date) || langText(lang, "N/A", "Нет данных")}
+                {formatYear(tv.first_air_date) ||
+                  langText(lang, "N/A", "Нет данных")}
               </span>
               {certification && (
                 <span class="badge badge-ghost">
@@ -156,20 +157,29 @@ export const TvDetails = component$(
                 />
               </div>
             </div>
-            <ExternalIds external_ids={tv.external_ids} lang={lang} type={"tv"} />
+            <ExternalIds
+              external_ids={tv.external_ids}
+              lang={lang}
+              type={"tv"}
+            />
           </div>
         </section>
 
         <section class="section-reveal card border-base-200 bg-base-100/95 relative z-0 mt-6 border shadow-sm">
-            <div class="card-body">
-              <h3 class="card-title text-xl">{langOverview(lang)}</h3>
-              <p class="leading-relaxed opacity-90">
-                {tv.overview || langText(lang, "No overview available.", "Описание отсутствует.")}
-              </p>
-            </div>
-          </section>
+          <div class="card-body">
+            <h3 class="card-title text-xl">{langOverview(lang)}</h3>
+            <p class="leading-relaxed opacity-90">
+              {tv.overview ||
+                langText(
+                  lang,
+                  "No overview available.",
+                  "Описание отсутствует.",
+                )}
+            </p>
+          </div>
+        </section>
 
-        <div class="mt-6 grid gap-6 lg:grid-cols-[2fr_1fr]">
+        <div class="mt-6 grid gap-6">
           <div class="space-y-6">
             <MediaInfo
               release_date={tv.first_air_date}
@@ -202,17 +212,23 @@ export const TvDetails = component$(
                 </h3>
                 <div class="stats stats-vertical bg-transparent">
                   <div class="stat px-0 py-3">
-                    <div class="stat-title">{langText(lang, "Seasons", "Сезоны")}</div>
+                    <div class="stat-title">
+                      {langText(lang, "Seasons", "Сезоны")}
+                    </div>
                     <div class="stat-value text-lg">{tv.number_of_seasons}</div>
                   </div>
                   <div class="stat px-0 py-3">
-                    <div class="stat-title">{langText(lang, "Episodes", "Серии")}</div>
+                    <div class="stat-title">
+                      {langText(lang, "Episodes", "Серии")}
+                    </div>
                     <div class="stat-value text-lg">
                       {tv.number_of_episodes}
                     </div>
                   </div>
                   <div class="stat px-0 py-3">
-                    <div class="stat-title">{langText(lang, "Status", "Статус")}</div>
+                    <div class="stat-title">
+                      {langText(lang, "Status", "Статус")}
+                    </div>
                     <div class="stat-value text-lg">
                       {tv.status || langText(lang, "Unknown", "Неизвестно")}
                     </div>

@@ -19,7 +19,7 @@ describe("detail route server data boundaries", () => {
     }
   });
 
-  it("renders IMDb data from loader results instead of a client-triggered fetch", async () => {
+  it("loads IMDb ratings lazily via server$ so detail pages render without blocking", async () => {
     const movieRouteSource = await readFile(
       join(import.meta.dir, "movie/[id]/index.tsx"),
       "utf8",
@@ -28,18 +28,15 @@ describe("detail route server data boundaries", () => {
       join(import.meta.dir, "tv/[id]/index.tsx"),
       "utf8",
     );
-    const imdbComponentSource = await readFile(
-      join(import.meta.dir, "../../components/imdb.tsx"),
+    const ratingComponentSource = await readFile(
+      join(import.meta.dir, "../../components/media-details/media-rating.tsx"),
       "utf8",
     );
 
-    expect(movieRouteSource).toContain("getOptionalImdbRating(movie.imdb_id)");
-    expect(tvRouteSource).toContain(
-      "getOptionalImdbRating(tv.external_ids.imdb_id)",
-    );
-    expect(imdbComponentSource).not.toContain("useOnDocument");
-    expect(imdbComponentSource).not.toContain("server$");
-    expect(imdbComponentSource).not.toContain("getImdbRating");
+    expect(movieRouteSource).not.toContain("getOptionalImdbRating");
+    expect(tvRouteSource).not.toContain("getOptionalImdbRating");
+    expect(ratingComponentSource).toContain("server$");
+    expect(ratingComponentSource).toContain("getOptionalImdbRating");
   });
 
   it("writes recent activity from browser-only visible tasks after resume", async () => {

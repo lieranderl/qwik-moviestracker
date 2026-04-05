@@ -92,7 +92,6 @@ describe("dev session bypass", () => {
     expect(fixture?.movie.title).toBe("Playwright in Paris");
     expect(fixture?.lang).toBe("en-US");
     expect(fixture?.recMovies).toHaveLength(1);
-    expect(fixture?.imdb?.Id).toBe("tt9900010");
     expect(fixture?.certification?.rating).toBe("PG-13");
     expect(fixture?.watchProviders?.flatrate[0]?.provider_name).toBe("Netflix");
   });
@@ -133,7 +132,6 @@ describe("dev session bypass", () => {
 
     expect(fixture?.tv.name).toBe("Selectors");
     expect(fixture?.recTv[0]?.name).toBe("State Machines");
-    expect(fixture?.imdb?.Id).toBe("tt9901010");
     expect(fixture?.certification?.rating).toBe("TV-14");
     expect(fixture?.watchProviders?.flatrate[0]?.provider_name).toBe("Hulu");
   });

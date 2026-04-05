@@ -2,7 +2,6 @@ import type { Session } from "@auth/core/types";
 import {
   type LocalizedCertification,
   MediaType,
-  type ImdbRating,
   type MovieFull,
   type MovieMongo,
   type MovieShort,
@@ -94,7 +93,6 @@ type DevMovieDetailFixture = {
   movie: MovieFull;
   recMovies: MovieShort[];
   colMovies: MovieShort[];
-  imdb: ImdbRating | null;
   certification: LocalizedCertification | null;
   watchProviders: RegionalWatchProviders | null;
 };
@@ -110,7 +108,6 @@ type DevTvDetailFixture = {
   lang: string;
   tv: TvFull;
   recTv: TvShort[];
-  imdb: ImdbRating | null;
   certification: LocalizedCertification | null;
   watchProviders: RegionalWatchProviders | null;
 };
@@ -187,12 +184,6 @@ const DEV_MOVIE_RECOMMENDATIONS = [
     vote_average: 7.1,
   },
 ] satisfies MovieShort[];
-
-const DEV_MOVIE_IMDB = {
-  Id: "tt9900010",
-  Rating: "7.9",
-  Votes: "128,400",
-} satisfies ImdbRating;
 
 const DEV_MOVIE_CERTIFICATION = {
   rating: "PG-13",
@@ -357,12 +348,6 @@ const DEV_TV_RECOMMENDATIONS = [
   },
 ] satisfies TvShort[];
 
-const DEV_TV_IMDB = {
-  Id: "tt9901010",
-  Rating: "7.7",
-  Votes: "94,000",
-} satisfies ImdbRating;
-
 const DEV_TV_CERTIFICATION = {
   rating: "TV-14",
   region: "US",
@@ -485,7 +470,6 @@ export const createDevMovieDetail = ({
     movie: DEV_MOVIE_DETAIL,
     recMovies: DEV_MOVIE_RECOMMENDATIONS,
     colMovies: [],
-    imdb: DEV_MOVIE_IMDB,
     certification: DEV_MOVIE_CERTIFICATION,
     watchProviders: DEV_MOVIE_WATCH_PROVIDERS,
   };
@@ -540,7 +524,6 @@ export const createDevTvDetail = ({
     lang,
     tv: DEV_TV_DETAIL,
     recTv: DEV_TV_RECOMMENDATIONS,
-    imdb: DEV_TV_IMDB,
     certification: DEV_TV_CERTIFICATION,
     watchProviders: DEV_TV_WATCH_PROVIDERS,
   };

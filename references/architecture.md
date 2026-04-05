@@ -27,6 +27,17 @@
   - `person`
   - `search`
   - `torrserver`
+- The TorrServer route now behaves as an operational streaming workspace rather
+  than a simple connection form: the page keeps local endpoint selection,
+  server snapshot data, torrent filtering, file-level playback actions, and the
+  embedded browser player coordinated from
+  `src/routes/(auth-guard)/torrserver/index.tsx` with presentational helpers in
+  `src/components/torrserver/**`.
+- The workspace now also exposes API tooling for `/search`,
+  `/torznab/search`, `/torrent/upload`, `/storage/settings` update, `/viewed`
+  set/remove, `/download/{size}`, `/cache`, and `/ffp/{hash}/{id}`.
+- Browser playback now primes each selected file with `/play/{hash}/{id}`
+  before opening `/stream` so TorrServer starts torrent reading first.
 - Discovery landing pages under `movie/` and `tv/` blend TMDB shelves with the
   existing localized routing pattern (`?lang=...`).
 - Dedicated TMDB discover routes now live at `movie/discover/` and

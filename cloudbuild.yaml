@@ -1,18 +1,7 @@
 steps:
   - name: gcr.io/cloud-builders/docker
-    env:
-      - "TMDB_API_KEY=$_TMDB_API_KEY"
-      - "GC_API_KEY=$_GC_API_KEY"
-    secretEnv:
-      ["VITE_FIREBASE_CONFIG", "GOOGLE_SECRET", "AUTH_SECRET", "MONGO_URI"]
     args:
       - build
-      - "--build-arg=TMDB_API_KEY=$$TMDB_API_KEY"
-      - "--build-arg=GC_API_KEY=$$GC_API_KEY"
-      - "--build-arg=VITE_FIREBASE_CONFIG=$$VITE_FIREBASE_CONFIG"
-      - "--build-arg=GOOGLE_SECRET=$$GOOGLE_SECRET"
-      - "--build-arg=AUTH_SECRET=$$AUTH_SECRET"
-      - "--build-arg=MONGO_URI=$$MONGO_URI"
       - "--tag=$_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA"
       - "--file=Dockerfile"
       - "."
@@ -34,6 +23,10 @@ steps:
         --image=$_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
       - >-
         --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID
+      - >-
+        --update-secrets=TMDB_API_KEY=TMDB_API_KEY:latest,GC_API_KEY=GC_API_KEY:latest,VITE_FIREBASE_CONFIG=VITE_FIREBASE_CONFIG:latest,GOOGLE_SECRET=GOOGLE_SECRET:latest,AUTH_SECRET=AUTH_SECRET:latest,MONGO_URI=MONGO_URI:latest
+      - >-
+        --update-env-vars=AUTH_URL=$_AUTH_URL,NODE_ENV=production
       - "--region=$_DEPLOY_REGION"
       - "--quiet"
     id: Deploy
@@ -49,17 +42,8 @@ substitutions:
   _TRIGGER_ID: 75183935-e398-4011-a333-87b836491409
   _PLATFORM: managed
   _SERVICE_NAME: moviestracker-app
+  _AUTH_URL: https://moviestracker.net
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
   - moviestracker-app
-availableSecrets:
-  secretManager:
-    - versionName: projects/695761327713/secrets/VITE_FIREBASE_CONFIG/versions/1
-      env: "VITE_FIREBASE_CONFIG"
-    - versionName: projects/695761327713/secrets/GOOGLE_SECRET/versions/2
-      env: "GOOGLE_SECRET"
-    - versionName: projects/695761327713/secrets/AUTH_SECRET/versions/1
-      env: "AUTH_SECRET"
-    - versionName: projects/695761327713/secrets/MONGO_URI/versions/1
-      env: "MONGO_URI"

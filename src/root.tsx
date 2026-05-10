@@ -1,4 +1,4 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useServerData } from "@builder.io/qwik";
 import { isDev } from "@builder.io/qwik/build";
 import {
   QwikCityProvider,
@@ -8,11 +8,58 @@ import {
 import { RouterHead } from "./components/router-head/router-head";
 
 import "./global.css";
-import { ThemeScript } from "qwik-theme-toggle";
 import { ToastStack } from "qwik-toasts";
 import { ParamsLauncher } from "./utils/param-launcher";
 
+const THEME_LAUNCHER_SCRIPT = `
+(() => {
+  const key = "themePref";
+  const lightTheme = "latte";
+  const darkTheme = "mocha";
+  const queryKey = undefined;
+  const params = new URLSearchParams(location.search);
+  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+  const applyTheme = () => {
+    let theme = localStorage.getItem(key);
+
+    if (!theme) {
+      theme = "auto";
+      localStorage.setItem(key, theme);
+    }
+
+    if (queryKey && queryKey !== "undefined") {
+      const queryTheme = params.get(queryKey);
+      if (queryTheme) {
+        theme = queryTheme;
+        localStorage.setItem(key, theme);
+      }
+    }
+
+    const cssTheme =
+      theme === "auto" ? (mediaQuery.matches ? darkTheme : lightTheme) : theme;
+    const iconTheme =
+      theme === "auto" ? "auto" : cssTheme === lightTheme ? "light" : "dark";
+
+    document.documentElement.classList.remove(lightTheme, darkTheme);
+    document.documentElement.classList.add(cssTheme);
+    document.documentElement.setAttribute("data-theme", cssTheme);
+    document.documentElement.setAttribute("icon-theme", iconTheme);
+
+    if (queryKey && queryKey !== "undefined") {
+      params.set(queryKey, theme);
+      history.replaceState({}, "", location.pathname + "?" + params.toString());
+    }
+  };
+
+  applyTheme();
+  mediaQuery.addEventListener("change", applyTheme);
+})();
+`;
+
 export default component$(() => {
+  const scriptNonce = useServerData<string>("nonce");
+
   /**
    * The root of a QwikCity site always start with the <QwikCityProvider> component,
    * immediately followed by the document's <head> and <body>.
@@ -31,13 +78,9 @@ export default component$(() => {
           />
         )}
         <RouterHead />
-        <ParamsLauncher />
-        <ThemeScript
-          themeStorageKey="themePref"
-          lightTheme="latte"
-          darkTheme="mocha"
-        />
-        {!isDev && <ServiceWorkerRegister />}
+        <ParamsLauncher nonce={scriptNonce} />
+        <script nonce={scriptNonce} dangerouslySetInnerHTML={THEME_LAUNCHER_SCRIPT} />
+        {!isDev && <ServiceWorkerRegister nonce={scriptNonce} />}
       </head>
       <body class="font-montserrat antialiased" lang="en-US">
         <a
@@ -48,7 +91,7 @@ export default component$(() => {
         </a>
         <ToastStack>
           <RouterOutlet />
-          <ServiceWorkerRegister />
+          <ServiceWorkerRegister nonce={scriptNonce} />
         </ToastStack>
       </body>
     </QwikCityProvider>

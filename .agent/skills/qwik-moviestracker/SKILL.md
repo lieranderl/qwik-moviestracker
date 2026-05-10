@@ -55,5 +55,8 @@ repeating obvious facts in every prompt.
 5. Reuse the project’s shared UI primitives before inventing new ones.
 6. Follow Qwik / Qwik City 1.x patterns and daisyUI 5 guidance from
    `references/ui-system.md` for UI work.
-7. Keep behavior, verification, and documentation aligned in the same task.
-8. Update the relevant Markdown reference when project truth changes.
+7. For monetization or public-commercial changes, apply the commercial boundary
+   in `references/guardrails.md` before adding paid access, ads, affiliate
+   links, or public SEO surfaces.
+8. Keep behavior, verification, and documentation aligned in the same task.
+9. Update the relevant Markdown reference when project truth changes.

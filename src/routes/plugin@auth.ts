@@ -5,6 +5,7 @@ import Google from "@auth/core/providers/google";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import { QwikAuth$ } from "@auth/qwik";
 import {
+  resolveAuthTrustHost,
   resolveDatabaseAuthSecret,
   resolveFallbackJwtSecret,
 } from "./auth-config";
@@ -15,6 +16,12 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
     const authSecret = env.get("AUTH_SECRET")?.trim();
     const lifecycleEvent = process.env.npm_lifecycle_event;
     const nodeEnv = env.get("NODE_ENV")?.trim() || process.env.NODE_ENV;
+    const authUrl = env.get("AUTH_URL")?.trim();
+    const trustHost = resolveAuthTrustHost({
+      authUrl,
+      lifecycleEvent,
+      nodeEnv,
+    });
     const googleId = env.get("GOOGLE_ID") ?? "";
     const googleSecret = env.get("GOOGLE_SECRET") ?? "";
     const providers: Provider[] =
@@ -47,7 +54,7 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
           lifecycleEvent,
           nodeEnv,
         }),
-        trustHost: true,
+        trustHost,
         session: {
           strategy: "jwt",
           maxAge: 60 * 60 * 24 * 7, // 1 week
@@ -67,7 +74,7 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
         databaseName: "movies",
       }) as Adapter,
       secret: resolveDatabaseAuthSecret({ authSecret }),
-      trustHost: true,
+      trustHost,
       providers,
       callbacks: {
         async session({ session, user }) {

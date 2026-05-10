@@ -54,6 +54,17 @@ Do not move server-side env reads into browser-only code.
 - Keep external API access centralized in `src/services/**`.
 - Prefer GET-friendly search/query flows when the URL should reflect state.
 
+## Commercial Boundary
+
+- Do not add subscriptions, ads, affiliate links, sponsored content, public SEO
+  catalog pages, or other revenue flows around TMDB-derived data until the
+  project has an explicit commercial TMDB agreement and required attribution.
+- Do not monetize torrent, magnet-link, or TorrServer flows. If the app becomes
+  public or paid, keep those features private/self-hosted, remove them from the
+  commercial surface, or gate them behind a documented legal/compliance decision.
+- Prefer legal watch-provider, user-owned library, personalization, deployment,
+  and support value propositions over access to copyrighted media files.
+
 ## UI/System Invariants
 
 - Keep daisyUI as the primary component vocabulary.

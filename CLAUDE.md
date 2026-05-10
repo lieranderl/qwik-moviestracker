@@ -30,6 +30,9 @@ Read in this order:
 - Preserve the `lang` query parameter flow unless the task intentionally
   changes it.
 - Keep integration logic in `src/services/**`.
+- For monetization or public-commercial changes, check the commercial boundary
+  in `references/guardrails.md` before adding paid access, ads, affiliate
+  links, or public SEO surfaces.
 - Prefer Bun commands.
 - Follow the Qwik and daisyUI 5 rules in `references/ui-system.md` for all UI
   work.

@@ -123,6 +123,7 @@ const UploadSection = component$(
     serverUrl,
     uploadBusy,
     uploadFileName,
+    uploadValidationMessage,
   }: {
     downloadSize: Signal<string>;
     downloadTestUrl?: string;
@@ -132,6 +133,7 @@ const UploadSection = component$(
     serverUrl: string;
     uploadBusy: boolean;
     uploadFileName: string;
+    uploadValidationMessage?: string;
   }) => (
     <div class="rounded-box border-base-200 bg-base-200/40 border p-4">
       <p class="mb-3 text-sm font-semibold">
@@ -139,19 +141,27 @@ const UploadSection = component$(
       </p>
       <input
         type="file"
-        accept=".torrent,application/x-bittorrent"
+        accept=".torrent"
         class="file-input file-input-bordered w-full"
         onChange$={(_, element) => {
           onUploadFileChange$(element.files?.[0] ?? null);
         }}
       />
-      <p class="text-base-content/60 mt-2 text-xs">
-        {uploadFileName || lt(lang, "No file selected", "Файл не выбран")}
+      <p
+        class={`mt-2 text-xs ${
+          uploadValidationMessage ? "text-error" : "text-base-content/60"
+        }`}
+      >
+        {uploadValidationMessage ||
+          uploadFileName ||
+          lt(lang, "No file selected", "Файл не выбран")}
       </p>
       <button
         type="button"
         class="btn btn-secondary btn-sm mt-3 w-full"
-        disabled={!serverUrl || !uploadFileName || uploadBusy}
+        disabled={
+          !serverUrl || !uploadFileName || Boolean(uploadValidationMessage) || uploadBusy
+        }
         onClick$={onUpload$}
       >
         {uploadBusy
@@ -506,6 +516,7 @@ export interface TorrServerApiToolsModalProps {
   titleValue: Signal<string>;
   uploadBusy: boolean;
   uploadFileName: string;
+  uploadValidationMessage?: string;
   viewedActionBusy: boolean;
   viewedIsMarked: boolean;
 }
@@ -548,6 +559,7 @@ export const TorrServerApiToolsModal = component$(
             serverUrl={props.serverUrl}
             uploadBusy={props.uploadBusy}
             uploadFileName={props.uploadFileName}
+            uploadValidationMessage={props.uploadValidationMessage}
           />
 
           <SearchSection

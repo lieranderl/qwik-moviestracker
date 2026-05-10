@@ -8,6 +8,20 @@ type AuthSecretContext = {
 
 const normalizeValue = (value?: string | null) => value?.trim() || "";
 
+const normalizeOrigin = (value?: string | null) => {
+  const rawValue = normalizeValue(value);
+  if (!rawValue) {
+    return "";
+  }
+
+  const url = new URL(rawValue);
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    throw new Error("AUTH_URL must use http or https.");
+  }
+
+  return url.origin;
+};
+
 const isBuildSafeAuthContext = ({
   lifecycleEvent,
   nodeEnv,
@@ -17,9 +31,20 @@ const isBuildSafeAuthContext = ({
 
   return (
     normalizedEvent === "build" ||
+    normalizedEvent.startsWith("build.") ||
     normalizedEvent === "test" ||
     normalizedNodeEnv === "test"
   );
+};
+
+const isLocalAuthContext = ({
+  lifecycleEvent,
+  nodeEnv,
+}: Omit<AuthSecretContext, "authSecret">) => {
+  const normalizedEvent = normalizeValue(lifecycleEvent).toLowerCase();
+  const normalizedNodeEnv = normalizeValue(nodeEnv).toLowerCase();
+
+  return normalizedEvent === "dev" || normalizedNodeEnv === "development";
 };
 
 export const resolveFallbackJwtSecret = (context: AuthSecretContext) => {
@@ -46,4 +71,24 @@ export const resolveDatabaseAuthSecret = ({
   }
 
   throw new Error("AUTH_SECRET is required for MongoDB-backed auth.");
+};
+
+export const resolveAuthTrustHost = ({
+  authUrl,
+  lifecycleEvent,
+  nodeEnv,
+}: Omit<AuthSecretContext, "authSecret"> & { authUrl?: string | null }) => {
+  if (normalizeOrigin(authUrl)) {
+    return false;
+  }
+
+  if (isBuildSafeAuthContext({ lifecycleEvent, nodeEnv })) {
+    return true;
+  }
+
+  if (isLocalAuthContext({ lifecycleEvent, nodeEnv })) {
+    return true;
+  }
+
+  throw new Error("AUTH_URL is required for production auth host validation.");
 };

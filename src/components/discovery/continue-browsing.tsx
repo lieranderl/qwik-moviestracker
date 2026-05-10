@@ -38,14 +38,14 @@ export const ContinueBrowsingWidget = component$<ContinueBrowsingWidgetProps>(
 
     return (
       <section id="continue-browsing" class="section-reveal">
-        <div class="card rounded-box border-base-200 bg-base-100/92 shadow-base-content/7 border shadow-sm backdrop-blur">
-          <div class="card-body gap-5">
+        <div class="rounded-box border-base-200 bg-base-100/90 border shadow-sm backdrop-blur">
+          <div class="grid gap-4 p-4 md:p-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)]">
             <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
               <div class="space-y-2">
                 <p class="text-base-content/55 text-xs font-semibold tracking-[0.14em] uppercase">
                   {label}
                 </p>
-                <h2 class="text-2xl font-bold tracking-tight">
+                <h2 class="text-xl font-semibold tracking-tight md:text-2xl">
                   {lastViewedLabel}
                 </h2>
               </div>
@@ -56,62 +56,59 @@ export const ContinueBrowsingWidget = component$<ContinueBrowsingWidgetProps>(
                 </div>
               )}
             </div>
-
-            <div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-              {lastViewed.value ? (
-                <a
-                  href={lastViewed.value.href}
-                  class="media-card-link rounded-box border-base-200 bg-base-200/45 flex items-center gap-4 border p-4 shadow-sm backdrop-blur"
-                >
-                  <div class="bg-primary/12 text-primary flex h-12 w-12 items-center justify-center rounded-full">
-                    <HiPlaySolid class="h-5 w-5" />
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <p class="text-base-content/50 text-xs font-semibold tracking-[0.12em] uppercase">
-                      {lastViewed.value.kind}
-                    </p>
-                    <p class="truncate text-base font-semibold">
-                      {lastViewed.value.title}
-                    </p>
-                    {lastViewed.value.meta && (
-                      <p class="text-base-content/65 truncate text-sm">
-                        {lastViewed.value.meta}
-                      </p>
-                    )}
-                  </div>
-                  <span class="btn btn-primary btn-sm rounded-full text-sm font-medium normal-case shadow-none">
-                    {resumeLabel}
-                  </span>
-                </a>
-              ) : (
-                <div class="rounded-box border-base-200 bg-base-200/35 text-base-content/65 flex items-center gap-3 border p-4 text-sm shadow-sm backdrop-blur">
-                  <HiArrowTrendingUpSolid class="text-primary h-5 w-5" />
-                  <span>{emptyDescription}</span>
+            {lastViewed.value ? (
+              <a
+                href={lastViewed.value.href}
+                class="media-card-link rounded-box border-base-200 bg-base-200/40 flex items-center gap-4 border p-4 shadow-sm backdrop-blur"
+              >
+                <div class="bg-primary/12 text-primary flex h-12 w-12 items-center justify-center rounded-full">
+                  <HiPlaySolid class="h-5 w-5" />
                 </div>
-              )}
-
-              <div class="rounded-box border-base-200 bg-base-200/30 border p-4 shadow-sm backdrop-blur">
-                <div class="mb-3 flex items-center gap-2 text-sm font-semibold">
-                  <HiMagnifyingGlassSolid class="text-primary h-4 w-4" />
-                  <span>{recentSearchesLabel}</span>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                  {recentSearches.value.length > 0 ? (
-                    recentSearches.value.map((search) => (
-                      <a
-                        key={search.href}
-                        href={search.href}
-                        class="btn btn-ghost btn-sm border-base-200 bg-base-100/70 rounded-full border text-sm font-medium normal-case shadow-none"
-                      >
-                        {search.query}
-                      </a>
-                    ))
-                  ) : (
-                    <span class="text-base-content/60 text-sm">
-                      {emptyDescription}
-                    </span>
+                <div class="min-w-0 flex-1">
+                  <p class="text-base-content/50 text-xs font-semibold tracking-[0.12em] uppercase">
+                    {lastViewed.value.kind}
+                  </p>
+                  <p class="truncate text-base font-semibold">
+                    {lastViewed.value.title}
+                  </p>
+                  {lastViewed.value.meta && (
+                    <p class="text-base-content/65 truncate text-sm">
+                      {lastViewed.value.meta}
+                    </p>
                   )}
                 </div>
+                <span class="btn btn-primary btn-sm rounded-full text-sm font-medium normal-case shadow-none">
+                  {resumeLabel}
+                </span>
+              </a>
+            ) : (
+              <div class="rounded-box border-base-200 bg-base-200/35 text-base-content/65 flex items-center gap-3 border p-4 text-sm shadow-sm backdrop-blur">
+                <HiArrowTrendingUpSolid class="text-primary h-5 w-5" />
+                <span>{emptyDescription}</span>
+              </div>
+            )}
+
+            <div class="rounded-box border-base-200 bg-base-200/28 border p-4 shadow-sm backdrop-blur">
+              <div class="mb-3 flex items-center gap-2 text-sm font-semibold">
+                <HiMagnifyingGlassSolid class="text-primary h-4 w-4" />
+                <span>{recentSearchesLabel}</span>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                {recentSearches.value.length > 0 ? (
+                  recentSearches.value.map((search) => (
+                    <a
+                      key={search.href}
+                      href={search.href}
+                      class="btn btn-ghost btn-sm border-base-200 bg-base-100/70 rounded-full border text-sm font-medium normal-case shadow-none"
+                    >
+                      {search.query}
+                    </a>
+                  ))
+                ) : (
+                  <span class="text-base-content/60 text-sm">
+                    {emptyDescription}
+                  </span>
+                )}
               </div>
             </div>
           </div>

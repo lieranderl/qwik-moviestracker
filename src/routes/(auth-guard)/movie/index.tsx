@@ -180,8 +180,8 @@ export default component$(() => {
         )}
         description={langText(
           lang,
-          `Move between local premium shelves and TMDB-powered discovery feeds without losing your language context. Now Playing and Upcoming shelves use ${getRegionFromLanguage(lang)} release windows.`,
-          `Переключайтесь между локальными премиальными полками и подборками TMDB, не теряя текущий язык. Полки «Сейчас в кино» и «Скоро» используют регион ${getRegionFromLanguage(lang)} для окон релизов.`,
+          `Local shelves and TMDB collections, kept in your current language and region ${getRegionFromLanguage(lang)}.`,
+          `Локальные полки и подборки TMDB в текущем языке и регионе ${getRegionFromLanguage(lang)}.`,
         )}
         badges={[
           langCountLabel(
@@ -240,15 +240,6 @@ export default component$(() => {
           ),
         ]}
       />
-      <section class="alert alert-info alert-soft section-reveal">
-        <span class="text-sm leading-relaxed">
-          {langText(
-            lang,
-            "Trending reflects short weekly movement on TMDB. Popularity is a longer-lived score. Use movie discover when you need provider, certification, regional, year, and vote-count filters.",
-            "Trending показывает краткосрочное недельное движение на TMDB. Popularity отражает более устойчивый интерес. Используйте поиск фильмов, когда нужны фильтры по провайдеру, сертификату, региону, году и числу голосов.",
-          )}
-        </span>
-      </section>
       <QuickFilterStrip
         label={langQuickFilters(lang)}
         items={[
@@ -271,7 +262,7 @@ export default component$(() => {
           },
         ]}
       />
-      <div class="flex flex-wrap items-center gap-2">
+      <div class="section-reveal flex flex-wrap items-center gap-2">
         <a
           href={paths.movieDiscover(lang)}
           class="btn btn-primary rounded-full"

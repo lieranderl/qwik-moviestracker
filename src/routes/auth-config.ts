@@ -79,7 +79,7 @@ export const resolveAuthTrustHost = ({
   nodeEnv,
 }: Omit<AuthSecretContext, "authSecret"> & { authUrl?: string | null }) => {
   if (normalizeOrigin(authUrl)) {
-    return false;
+    return true;
   }
 
   if (isBuildSafeAuthContext({ lifecycleEvent, nodeEnv })) {

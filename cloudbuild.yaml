@@ -24,7 +24,7 @@ steps:
       - >-
         --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID
       - >-
-        --update-secrets=TMDB_API_KEY=TMDB_API_KEY:latest,GC_API_KEY=GC_API_KEY:latest,VITE_FIREBASE_CONFIG=VITE_FIREBASE_CONFIG:latest,GOOGLE_SECRET=GOOGLE_SECRET:latest,AUTH_SECRET=AUTH_SECRET:latest,MONGO_URI=MONGO_URI:latest
+        --update-secrets=TMDB_API_KEY=TMDBAPIKEY:latest,GC_API_KEY=GC_API_KEY:latest,VITE_FIREBASE_CONFIG=VITE_FIREBASE_CONFIG:latest,GOOGLE_SECRET=GOOGLE_SECRET:latest,AUTH_SECRET=AUTH_SECRET:latest,MONGO_URI=MONGO_URI:latest
       - >-
         --update-env-vars=AUTH_URL=$_AUTH_URL,NODE_ENV=production
       - "--region=$_DEPLOY_REGION"

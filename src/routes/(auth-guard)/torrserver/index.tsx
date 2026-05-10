@@ -638,7 +638,7 @@ export default component$(() => {
             eyebrow={langText(lang, "Library", "Библиотека")}
             title={langText(lang, "TorrServer library workspace", "Рабочее пространство библиотеки TorrServer")}
             description={langText(lang, "Inspect torrent activity and jump back into the app's media pages without leaving the server context.", "Следите за активностью торрентов и возвращайтесь к карточкам медиа в приложении, не теряя контекст сервера.")}
-            maxColumns={3}
+            maxColumns={4}
             headerBadge={langCountLabel(lang, visibleCount, "item", "items", "элемент", "элемента", "элементов")}
           >
             {filteredTorrentsSig.value.map((torrent) => (

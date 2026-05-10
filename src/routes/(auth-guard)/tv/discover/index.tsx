@@ -168,8 +168,8 @@ export default component$(() => {
         title={langDiscoverTv(value.lang)}
         description={langText(
           value.lang,
-          `Filter TMDB TV results by region, provider, first-air year, vote floor, and sort order. Provider filtering and regional validation use ${value.filters.region} as the active market.`,
-          `Фильтруйте результаты сериалов TMDB по региону, провайдеру, году первого выхода, минимальному числу голосов и сортировке. Фильтрация по провайдерам и региональная проверка используют регион ${value.filters.region} как активный рынок.`,
+          `TMDB series filtered for region ${value.filters.region}.`,
+          `Сериалы TMDB с фильтрами для региона ${value.filters.region}.`,
         )}
         badges={[
           langSearchMatchesCount(value.lang, value.results.total_results),
@@ -185,16 +185,6 @@ export default component$(() => {
           `${value.filters.region} ${langText(value.lang, "region", "регион")}`,
         ]}
       />
-
-      <section class="alert alert-info alert-soft section-reveal">
-        <span class="text-sm leading-relaxed">
-          {langText(
-            value.lang,
-            "TMDB trending surfaces what is spiking right now. Discover sorting leans on broader popularity and vote signals, which is better when you want reusable filters instead of the short-window trending feed.",
-            "Trending TMDB показывает то, что растет прямо сейчас. Сортировка Discover опирается на более широкие сигналы популярности и голосов, поэтому лучше подходит для повторно используемых фильтров, чем краткосрочная лента трендов.",
-          )}
-        </span>
-      </section>
 
       <section class="card rounded-box border-base-200 bg-base-100/90 border shadow-sm backdrop-blur">
         <div class="card-body gap-4">
@@ -309,24 +299,12 @@ export default component$(() => {
               <FilterChip key={filterLabel} label={filterLabel} />
             ))}
           </div>
-          <p class="text-base-content/62 text-sm leading-relaxed">
-            {langText(
-              value.lang,
-              "Region choices come from TMDB’s certification coverage, which keeps the selected market aligned with provider and discover filters.",
-              "Список регионов берется из покрытия сертификатов TMDB, что удерживает выбранный рынок согласованным с провайдерами и фильтрами поиска.",
-            )}
-          </p>
         </div>
       </section>
 
       {value.results.total_results > 0 ? (
         <>
           <MediaGrid
-            description={langText(
-              value.lang,
-              "Use the form above to refine the TMDB series catalog without leaving the current route.",
-              "Используйте форму выше, чтобы уточнить каталог сериалов TMDB, не покидая текущий маршрут.",
-            )}
             eyebrow={langResults(value.lang)}
             headerBadge={langText(
               value.lang,

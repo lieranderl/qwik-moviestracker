@@ -11,8 +11,6 @@ import { SearchAssist } from "~/components/discovery/search-assist";
 import {
   EmptyState,
   ErrorState,
-  FilterChip,
-  InlineFilterGroup,
   LoadingState,
   SectionHeading,
 } from "~/components/page-feedback";
@@ -35,8 +33,6 @@ import {
   langPeople,
   langRecentSearches,
   langResults,
-  langResultsCombineMoviesTvSeriesAndPeopleInOneGrid,
-  langResultsUpdateWhenYouSubmit,
   langSearch,
   langSearchAssist,
   langSearchBecomesAvailableAfterCharacters,
@@ -45,11 +41,9 @@ import {
   langSearchForATitleOnceAndItWillShowUpHere,
   langSearchStartsAfterCharacters,
   langSearchTitlesCastCrew,
-  langSearchesMoviesTvAndPeople,
   langSearchMoviesSeriesPeople,
   langSearchUnavailableRightNow,
   langStartWithATitleActorOrDirector,
-  langSubmitAtLeastCharactersToLoadResults,
   langTryABroaderTitleAPersonNameOrDifferentSpelling,
   langSeries,
 } from "~/utils/languages";
@@ -117,7 +111,6 @@ export default component$(() => {
       <SectionHeading
         eyebrow={langDiscovery(resource.value.lang)}
         title={langSearch(resource.value.lang)}
-        description={langSearchMoviesSeriesPeople(resource.value.lang)}
         badges={[
           langMovies(resource.value.lang),
           langSeries(resource.value.lang),
@@ -173,26 +166,6 @@ export default component$(() => {
               <span>{formModel.shortQueryMessage}</span>
             </div>
           )}
-
-          <div class="space-y-2">
-            <p class="text-base-content/60 text-xs font-semibold tracking-[0.08em] uppercase">
-              {langSearchAssist(resource.value.lang)}
-            </p>
-            <InlineFilterGroup>
-              <FilterChip
-                label={langSubmitAtLeastCharactersToLoadResults(
-                  resource.value.lang,
-                  MIN_SEARCH_QUERY_LENGTH,
-                )}
-              />
-              <FilterChip
-                label={langSearchesMoviesTvAndPeople(resource.value.lang)}
-              />
-              <FilterChip
-                label={langResultsUpdateWhenYouSubmit(resource.value.lang)}
-              />
-            </InlineFilterGroup>
-          </div>
         </div>
       </section>
 
@@ -248,9 +221,6 @@ export default component$(() => {
           if (normalizedResults.length > 0) {
             return (
               <MediaGrid
-                description={langResultsCombineMoviesTvSeriesAndPeopleInOneGrid(
-                  resource.value.lang,
-                )}
                 eyebrow={langResults(resource.value.lang)}
                 headerBadge={langSearchMatchesCount(
                   resource.value.lang,

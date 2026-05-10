@@ -149,7 +149,6 @@ export default component$(() => {
       <SectionHeading
         eyebrow={langHome(lang)}
         title={langHomeDashboardTitle(lang)}
-        description={langHomeDashboardDescription(lang)}
         badges={homeBadges}
       />
       <QuickFilterStrip
@@ -169,7 +168,7 @@ export default component$(() => {
           { href: "#trending-tv", label: langTrengingTVShows(lang) },
         ]}
       />
-      <div class="flex flex-wrap items-center gap-2">
+      <div class="section-reveal flex flex-wrap items-center gap-2">
         <a
           href={paths.movieDiscover(lang)}
           class="btn btn-primary rounded-full"

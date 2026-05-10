@@ -90,8 +90,8 @@
 
 ## Typography And Motion
 
-- Current repo baseline: body and heading typography should both use
-  `font-montserrat` until a dedicated display font is added to the codebase.
+- Current repo baseline: body and heading typography should both use the shared
+  `font-montserrat` token, which now maps to Outfit in `src/global.css`.
 - Current repo reality: shared motion uses utility classes and keyframes in
   `src/global.css`.
 - New design-system preference: if a shared `FadeUp` component is introduced,

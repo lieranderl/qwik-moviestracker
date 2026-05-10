@@ -90,8 +90,8 @@ export default component$(() => {
         )}
         description={langText(
           resource.value.lang,
-          "Switch between TMDB discovery feeds for trending, popular, top-rated, and currently airing series.",
-          "Переключайтесь между подборками TMDB для трендовых, популярных, высокооцененных и текущих сериалов.",
+          "Trending, popular, top-rated, and airing now in one streamlined view.",
+          "Трендовые, популярные, высокооцененные и текущие сериалы в одном экране.",
         )}
         badges={[
           langCountLabel(
@@ -141,15 +141,6 @@ export default component$(() => {
           ),
         ]}
       />
-      <section class="alert alert-info alert-soft section-reveal">
-        <span class="text-sm leading-relaxed">
-          {langText(
-            resource.value.lang,
-            "Trending surfaces short-window movement on TMDB, while Popular and Discover rely on broader popularity and vote history. Use TV discover when you want provider, regional, year, and vote-count filters.",
-            "Trending показывает краткосрочное движение на TMDB, а Popular и Discover опираются на более широкую историю популярности и голосов. Используйте поиск сериалов, когда нужны фильтры по провайдеру, региону, году и числу голосов.",
-          )}
-        </span>
-      </section>
       <QuickFilterStrip
         label={langQuickFilters(resource.value.lang)}
         items={[
@@ -176,7 +167,7 @@ export default component$(() => {
           },
         ]}
       />
-      <div class="flex flex-wrap items-center gap-2">
+      <div class="section-reveal flex flex-wrap items-center gap-2">
         <a
           href={paths.tvDiscover(resource.value.lang)}
           class="btn btn-primary rounded-full"

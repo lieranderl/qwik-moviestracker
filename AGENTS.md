@@ -36,6 +36,9 @@ Do not load every reference by default. Open only what the task needs.
   behavior on purpose.
 - Keep TMDB, MongoDB, Cloud gateway, and TorrServer integration logic in
   `src/services/**`.
+- For monetization or public-commercial work, apply the commercial boundary in
+  `references/guardrails.md` before adding paid access, ads, affiliate links,
+  or public SEO surfaces.
 - Prefer Bun commands over npm when both are possible.
 - Follow Qwik patterns and daisyUI 5 rules in `references/ui-system.md` for
   all component and styling work.

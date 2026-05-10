@@ -58,6 +58,7 @@ import {
   type TorrServerTorrentStatus,
   type TorrServerViewedItem,
   uploadTorrentFile,
+  validateTorrServerUploadFile,
 } from "~/services/torrserver";
 import { readStorageString } from "~/utils/browser";
 import {
@@ -132,6 +133,7 @@ export default component$(() => {
   const addLinkBusySig = useSignal(false);
   const uploadBusySig = useSignal(false);
   const uploadFileSig = useSignal<File | null>(null);
+  const uploadValidationMessageSig = useSignal("");
   const searchBusySig = useSignal(false);
   const searchSourceSig = useSignal<"rutor" | "torznab" | null>(null);
   const searchResultsSig = useSignal<TorrServerSearchResult[]>([]);
@@ -328,11 +330,18 @@ export default component$(() => {
 
   const uploadTorrentToServer = $(async () => {
     if (!selectedTorServer.value || !uploadFileSig.value) return;
+    const validation = validateTorrServerUploadFile(uploadFileSig.value, uploadFileSig.value.name);
+    if (!validation.ok) {
+      uploadValidationMessageSig.value = validation.message;
+      toastManager.addToast({ message: validation.message, type: "error", autocloseTime: 5000 });
+      return;
+    }
     uploadBusySig.value = true;
     try {
-      await uploadTorrentFile(selectedTorServer.value, { category: "other", file: uploadFileSig.value, fileName: uploadFileSig.value.name, saveToDb: true, title: uploadFileSig.value.name });
+      await uploadTorrentFile(selectedTorServer.value, { category: "other", file: uploadFileSig.value, fileName: validation.fileName, saveToDb: true, title: validation.fileName });
       toastManager.addToast({ message: langText(lang, "Torrent file uploaded successfully.", "Файл торрента успешно загружен."), type: "success", autocloseTime: 5000 });
       uploadFileSig.value = null;
+      uploadValidationMessageSig.value = "";
       await loadServerSnapshot(selectedTorServer.value);
     } catch (error) { console.error(error); toastManager.addToast({ message: langText(lang, "Upload failed. Check TorrServer permissions.", "Загрузка не удалась. Проверьте права в TorrServer."), type: "error", autocloseTime: 5000 }); }
     finally { uploadBusySig.value = false; }
@@ -669,7 +678,22 @@ export default component$(() => {
         addLinkBusy={addLinkBusySig.value} linkValue={addLinkSig} titleValue={addTitleSig}
         categoryValue={addCategorySig} saveToDbValue={addSaveToDbSig} onAddLink$={addLinkToServer}
         uploadBusy={uploadBusySig.value} uploadFileName={uploadFileSig.value?.name ?? ""}
-        onUploadFileChange$={$((file: File | null) => { uploadFileSig.value = file; })}
+        uploadValidationMessage={uploadValidationMessageSig.value}
+        onUploadFileChange$={$((file: File | null) => {
+          if (!file) {
+            uploadFileSig.value = null;
+            uploadValidationMessageSig.value = "";
+            return;
+          }
+          const validation = validateTorrServerUploadFile(file, file.name);
+          if (!validation.ok) {
+            uploadFileSig.value = null;
+            uploadValidationMessageSig.value = validation.message;
+            return;
+          }
+          uploadFileSig.value = file;
+          uploadValidationMessageSig.value = "";
+        })}
         onUpload$={uploadTorrentToServer} downloadSize={downloadSizeSig}
         downloadTestUrl={selectedTorServer.value ? buildTorrServerDownloadTestUrl(selectedTorServer.value, Number(downloadSizeSig.value || "1")) : undefined}
         apiQuery={apiQuerySig} searchBusy={searchBusySig.value} searchSource={searchSourceSig.value}

@@ -34,6 +34,6 @@ export const PARAM_LAUNCHER_SCRIPT = `
 })();
 `;
 
-export const ParamsLauncher = () => (
-  <script dangerouslySetInnerHTML={PARAM_LAUNCHER_SCRIPT} />
+export const ParamsLauncher = ({ nonce }: { nonce?: string }) => (
+  <script nonce={nonce} dangerouslySetInnerHTML={PARAM_LAUNCHER_SCRIPT} />
 );

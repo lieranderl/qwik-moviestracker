@@ -8,6 +8,8 @@ import {
   getDefaultPlayableFile,
   isBrowserLikelyToPlayVideo,
   primeTorrentPlayback,
+  TORR_SERVER_UPLOAD_MAX_BYTES,
+  validateTorrServerUploadFile,
 } from "./torrserver";
 
 describe("torrserver helpers", () => {
@@ -62,6 +64,39 @@ describe("torrserver helpers", () => {
     expect(buildTorrServerDownloadTestUrl("http://192.168.0.109:8090", 64)).toBe(
       "http://192.168.0.109:8090/download/64",
     );
+  });
+
+  it("accepts a clean .torrent upload with bittorrent MIME", () => {
+    const file = new Blob(["d8:announce"], {
+      type: "application/x-bittorrent",
+    });
+
+    expect(validateTorrServerUploadFile(file, "movie.torrent")).toEqual({
+      fileName: "movie.torrent",
+      ok: true,
+    });
+  });
+
+  it("rejects uploads without a .torrent filename", () => {
+    const file = new Blob(["not a torrent"], { type: "text/plain" });
+
+    expect(validateTorrServerUploadFile(file, "movie.torrent.exe").ok).toBe(
+      false,
+    );
+  });
+
+  it("rejects oversized torrent uploads before forwarding", () => {
+    const file = new Blob([new Uint8Array(TORR_SERVER_UPLOAD_MAX_BYTES + 1)], {
+      type: "application/x-bittorrent",
+    });
+
+    expect(validateTorrServerUploadFile(file, "huge.torrent").ok).toBe(false);
+  });
+
+  it("rejects unexpected MIME types for torrent uploads", () => {
+    const file = new Blob(["<html></html>"], { type: "text/html" });
+
+    expect(validateTorrServerUploadFile(file, "page.torrent").ok).toBe(false);
   });
 
   it("uses ranged request when priming playback", async () => {

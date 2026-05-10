@@ -8,6 +8,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { type UserConfig, defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import pkg from "./package.json";
+import { getSecurityHeaders } from "./src/utils/security-headers";
 
 type PkgDep = Record<string, string>;
 const { dependencies = {}, devDependencies = {} } = pkg as any as {
@@ -54,12 +55,14 @@ export default defineConfig(({ command, mode }): UserConfig => {
 			headers: {
 				// Don't cache the server response in dev mode
 				"Cache-Control": "public, max-age=0",
+				...getSecurityHeaders({ includeContentSecurityPolicy: false }),
 			},
 		},
 		preview: {
 			headers: {
 				// Do cache the server response in preview (non-adapter production build)
 				"Cache-Control": "public, max-age=600",
+				...getSecurityHeaders({ includeContentSecurityPolicy: false }),
 			},
 		},
 	};

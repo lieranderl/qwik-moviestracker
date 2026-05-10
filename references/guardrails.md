@@ -25,6 +25,17 @@
   `src/services/**`.
 - Route files should compose data, not create duplicate clients.
 
+## Commercial Boundary
+
+- Do not add subscriptions, ads, affiliate links, sponsored content, public SEO
+  catalog pages, or other revenue flows around TMDB-derived data until the
+  project has an explicit commercial TMDB agreement and required attribution.
+- Do not monetize torrent, magnet-link, or TorrServer flows. If the app becomes
+  public or paid, keep those features private/self-hosted, remove them from the
+  commercial surface, or gate them behind a documented legal/compliance decision.
+- Prefer legal watch-provider, user-owned library, personalization, deployment,
+  and support value propositions over access to copyrighted media files.
+
 ## Secrets
 
 - Treat `.env`, `.env.*`, and `adminSDK.json` as sensitive.
@@ -46,6 +57,12 @@
 - Runtime auth must fail closed without a real `AUTH_SECRET`; do not allow a
   predictable placeholder secret in normal dev, preview, or deployed auth
   flows.
+- Production auth/origin handling must pin the public origin with `AUTH_URL`;
+  add preview/custom hosts with `TRUSTED_ORIGINS` instead of trusting arbitrary
+  `Host` or `x-forwarded-proto` headers.
+- Do not statically generate auth or other nonce-sensitive HTML routes. CSP
+  nonces must be generated per request and match the inline Qwik scripts in the
+  served response.
 - The Playwright browser suite may use a dev-only session bypass, but it must
   stay behind an explicit server env flag plus a dedicated browser cookie.
   Never enable that bypass by default or in production.

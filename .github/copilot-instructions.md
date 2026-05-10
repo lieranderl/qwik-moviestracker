@@ -10,6 +10,9 @@ Working defaults:
 - Preserve the auth boundary in `src/routes/(auth-guard)/`.
 - Preserve the `lang` query-param flow unless the task explicitly changes it.
 - Keep external API logic in `src/services/**`.
+- For monetization or public-commercial work, follow the commercial boundary in
+  `references/guardrails.md` before adding paid access, ads, affiliate links, or
+  public SEO surfaces.
 - Treat env values and `.env` contents as sensitive.
 - Prefer Bun commands.
 - Open only the one matching file in `references/**` for the task instead of

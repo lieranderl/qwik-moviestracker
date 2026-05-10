@@ -1,5 +1,21 @@
 import { component$, Slot } from "@builder.io/qwik";
 import type { RequestHandler } from "@builder.io/qwik-city";
+import {
+	CSP_NONCE_HEADER,
+	createScriptNonce,
+	getContentSecurityPolicy,
+	QWIK_CSP_NONCE_KEY,
+} from "../utils/security-headers";
+
+export const onRequest: RequestHandler = ({ headers, sharedMap }) => {
+	const scriptNonce = createScriptNonce();
+	sharedMap.set(QWIK_CSP_NONCE_KEY, scriptNonce);
+	headers.set(CSP_NONCE_HEADER, scriptNonce);
+	headers.set(
+		"Content-Security-Policy",
+		getContentSecurityPolicy({ scriptNonce }),
+	);
+};
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
 	// Control caching for this request for best performance and to reduce hosting costs:

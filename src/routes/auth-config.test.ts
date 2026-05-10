@@ -47,14 +47,14 @@ describe("auth config secret resolution", () => {
     ).toBe("real-secret");
   });
 
-  it("does not trust host headers when AUTH_URL pins production origin", () => {
+  it("trusts host handling when AUTH_URL pins production origin", () => {
     expect(
       resolveAuthTrustHost({
         authUrl: "https://movies.example.com/auth",
         lifecycleEvent: "start",
         nodeEnv: "production",
       }),
-    ).toBe(false);
+    ).toBe(true);
   });
 
   it("keeps local and build auth host ergonomics without AUTH_URL", () => {

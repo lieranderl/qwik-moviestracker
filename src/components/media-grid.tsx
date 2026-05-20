@@ -3,9 +3,9 @@ import { component$, Slot, useId } from "@builder.io/qwik";
 type GridColumns = 3 | 4 | 5;
 
 const GRID_CLASSES: Record<GridColumns, string> = {
-  3: "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3",
-  4: "grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4",
-  5: "grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5",
+  3: "grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3",
+  4: "grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
+  5: "grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
 };
 
 interface MediaGridProps {
@@ -17,7 +17,13 @@ interface MediaGridProps {
 }
 
 export const MediaGrid = component$(
-  ({ description, eyebrow, headerBadge, maxColumns, title }: MediaGridProps) => {
+  ({
+    description,
+    eyebrow,
+    headerBadge,
+    maxColumns,
+    title,
+  }: MediaGridProps) => {
     const titleId = useId();
 
     return (
@@ -52,7 +58,7 @@ export const MediaGrid = component$(
             )}
           </header>
         )}
-        <div class={GRID_CLASSES[maxColumns ?? 4] ?? GRID_CLASSES[4]}>
+        <div class={GRID_CLASSES[maxColumns ?? 5] ?? GRID_CLASSES[5]}>
           <Slot />
         </div>
       </section>

@@ -488,6 +488,18 @@ export type Torrent = {
 	Seeds: number;
 	Leeches: number;
 	Hash: string;
+	AvailabilityScore?: number;
+	Categories?: string[];
+	CategoryLabels?: string[];
+	Peers?: number;
+	Quality?: number;
+	QualityLabel?: string;
+	Seasons?: number[];
+	SizeName?: string;
+	Tracker?: string;
+	UpdatedDate?: string;
+	VideoType?: string;
+	Voices?: string[];
 };
 
 export type ImdbRating = {

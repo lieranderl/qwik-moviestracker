@@ -2,8 +2,11 @@ import { $, component$, useStore } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
 import { HiChevronDownSolid } from "@qwikest/icons/heroicons";
 import { TorrentList } from "~/components/torrent-list";
-import { getTorrents } from "~/services/cloud-func-api";
 import type { MediaDetails, Season, Torrent } from "~/services/models";
+import {
+  getTorrentSearch,
+  type getTorrentsType,
+} from "~/services/torrent-search";
 import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
 import { showDialogById } from "~/utils/browser";
 import { formatYear } from "~/utils/format";
@@ -22,19 +25,33 @@ export const TorrentsModal = component$(
   ({ title, year, isMovie, seasons, media, lang }: TorModalPros) => {
     const resource = useQueryParamsLoader();
     const torrentsStore = useStore({
+      loaded: 0,
+      season: undefined as number | undefined,
+      total: 0,
       torrents: null as Torrent[] | null,
       year,
     });
     const getTorrentsToggle = $(
-      async (name: string, year: number, isMovie: boolean) => {
+      async (
+        name: string,
+        year: number,
+        isMovie: boolean,
+        season?: number,
+      ) => {
         torrentsStore.torrents = null;
+        torrentsStore.season = season;
+        torrentsStore.loaded = 0;
+        torrentsStore.total = 0;
         torrentsStore.year = year;
         const torrModal = showDialogById("torrentsModal");
         if (torrModal) {
           try {
-            torrentsStore.torrents = await server$(() => {
-              return getTorrents({ name: name, year: year, isMovie: isMovie });
-            })();
+            const result = await server$((request: getTorrentsType) =>
+              getTorrentSearch(request),
+            )({ isMovie, name, season, year });
+            torrentsStore.loaded = result.loaded;
+            torrentsStore.total = result.total;
+            torrentsStore.torrents = result.torrents;
           } catch (error) {
             torrentsStore.torrents = [];
             console.error(error);
@@ -73,7 +90,12 @@ export const TorrentsModal = component$(
                       class="text-left"
                       onClick$={() => {
                         const updatedYear = formatYear(s.air_date);
-                        getTorrentsToggle(title, updatedYear, isMovie);
+                        getTorrentsToggle(
+                          title,
+                          updatedYear,
+                          isMovie,
+                          s.season_number,
+                        );
                       }}
                     >
                       {langSeason(lang)}
@@ -109,6 +131,9 @@ export const TorrentsModal = component$(
                 isMovie={isMovie}
                 movie={media}
                 lang={lang}
+                season={torrentsStore.season}
+                sourceLoaded={torrentsStore.loaded}
+                sourceTotal={torrentsStore.total}
               />
             </div>
           </div>

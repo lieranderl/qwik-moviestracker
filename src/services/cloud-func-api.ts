@@ -1,4 +1,4 @@
-import type { ImdbRating, Torrent } from "./models";
+import type { ImdbRating } from "./models";
 import { createJsonApiClient, getOptionalResult } from "./json-api";
 
 const baseCGURL = "https://moviestracker-gw-eu-w1-8vmmbwbl.ew.gateway.dev";
@@ -31,19 +31,4 @@ export const getOptionalImdbRating = async (imdb_id?: null | string) => {
 			console.error(`Unable to fetch IMDb rating for ${imdb_id}`, error);
 		},
 	);
-};
-
-export type getTorrentsType = {
-	name: string;
-	year: number;
-	isMovie: boolean;
-};
-export const getTorrents = ({ name, year, isMovie }: getTorrentsType) => {
-	return cloudApiClient.request<Torrent[]>("gettorrents", {
-		search: {
-			MovieName: name,
-			Year: year,
-			isMovie,
-		},
-	});
 };

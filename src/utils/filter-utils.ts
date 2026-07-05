@@ -1,12 +1,15 @@
 import type { Torrent } from "~/services/models";
+import { getTorrentDynamicRangeValue } from "~/utils/torrent-format";
 
 interface FilterState {
-  k4: boolean;
-  hdr: boolean;
-  hdr10: boolean;
-  hdr10plus: boolean;
-  dv: boolean;
+  category: string;
+  dynamicRange: string;
+  quality: string;
+  season: string;
   selectedSort: string;
+  tracker: string;
+  videoType: string;
+  voice: string;
 }
 
 export const filterAndSortTorrents = (
@@ -15,15 +18,44 @@ export const filterAndSortTorrents = (
 ): Torrent[] => {
   let filtered = [...torrents];
 
-  if (filterState.k4) filtered = filtered.filter((t) => t.K4);
-  if (filterState.hdr) filtered = filtered.filter((t) => t.HDR);
-  if (filterState.hdr10) filtered = filtered.filter((t) => t.HDR10);
-  if (filterState.hdr10plus) filtered = filtered.filter((t) => t.HDR10plus);
-  if (filterState.dv) filtered = filtered.filter((t) => t.DV);
+  if (filterState.tracker) {
+    filtered = filtered.filter((t) => t.Tracker === filterState.tracker);
+  }
+  if (filterState.quality) {
+    filtered = filtered.filter((t) => {
+      if (filterState.quality === "2160") {
+        return t.Quality === 2160 || t.K4;
+      }
+      if (filterState.quality === "1080") {
+        return t.Quality === 1080 || t.FHD;
+      }
+
+      return String(t.Quality ?? "") === filterState.quality;
+    });
+  }
+  if (filterState.dynamicRange) {
+    filtered = filtered.filter(
+      (t) => getTorrentDynamicRangeValue(t) === filterState.dynamicRange,
+    );
+  }
+  if (filterState.videoType) {
+    filtered = filtered.filter((t) => t.VideoType === filterState.videoType);
+  }
+  if (filterState.voice) {
+    filtered = filtered.filter((t) => t.Voices?.includes(filterState.voice));
+  }
+  if (filterState.category) {
+    filtered = filtered.filter((t) => t.Categories?.includes(filterState.category));
+  }
+  if (filterState.season) {
+    filtered = filtered.filter((t) =>
+      t.Seasons?.some((season) => String(season) === filterState.season),
+    );
+  }
 
   return filtered.sort((a, b) => {
-    const valA = a[filterState.selectedSort as keyof Torrent];
-    const valB = b[filterState.selectedSort as keyof Torrent];
+    const valA = a[filterState.selectedSort as keyof Torrent] ?? "";
+    const valB = b[filterState.selectedSort as keyof Torrent] ?? "";
 
     if (valA > valB) return -1;
     if (valA < valB) return 1;

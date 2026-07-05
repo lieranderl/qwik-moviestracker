@@ -66,6 +66,7 @@
 
 - TMDB client: `src/services/tmdb.ts`
 - Cloud gateway client: `src/services/cloud-func-api.ts`
+- JacRed torrent-search adapter: `src/services/torrent-search.ts`
 - MongoDB Atlas reads: `src/services/mongoatlas.ts`
 - TorrServer client: `src/services/torrserver.ts`
 - Mongo client init and reuse: `src/utils/mongodbinit.ts`

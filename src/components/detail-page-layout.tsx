@@ -7,14 +7,14 @@ type DetailPageShellProps = {
 export const DetailPageShell = component$<DetailPageShellProps>(
   ({ backdropPath }) => {
     const backgroundImage = backdropPath
-      ? `url(https://image.tmdb.org/t/p/original${backdropPath})`
+      ? `url(https://image.tmdb.org/t/p/w1280${backdropPath})`
       : undefined;
 
     return (
       <div class="relative min-h-screen w-full">
         {backgroundImage && (
           <div
-            class="ambient-backdrop fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-32 blur-[1px]"
+            class="ambient-backdrop absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-24 md:fixed md:opacity-32 md:blur-[1px]"
             style={{ backgroundImage }}
           />
         )}

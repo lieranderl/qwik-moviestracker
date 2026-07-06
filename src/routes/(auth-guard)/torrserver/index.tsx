@@ -308,6 +308,14 @@ export default component$(() => {
   const removeActiveServer = $(async () => {
     const cur = selectedTorServer.value;
     if (!cur) return;
+    const confirmed = globalThis.confirm(
+      langText(
+        lang,
+        `Remove TorrServer ${cur} from this browser?`,
+        `Удалить TorrServer ${cur} из этого браузера?`,
+      ),
+    );
+    if (!confirmed) return;
     const next = torrServerList.value.filter((s) => s !== cur);
     const ns = applyServersState(next, next[0] || "", torrServerList, selectedTorServer);
     persistServersStorage(ns);
@@ -445,6 +453,14 @@ export default component$(() => {
 
   const dropTorrentFromServer = $(async (torrent: TorrServerTorrentStatus) => {
     if (!selectedTorServer.value) return;
+    const confirmed = globalThis.confirm(
+      langText(
+        lang,
+        `Drop "${torrent.title || torrent.name}" from active playback?`,
+        `Остановить "${torrent.title || torrent.name}" в активном воспроизведении?`,
+      ),
+    );
+    if (!confirmed) return;
     try {
       await dropTorrent(selectedTorServer.value, torrent.hash);
       toastManager.addToast({ message: langText(lang, "Torrent dropped.", "Торрент остановлен."), type: "success", autocloseTime: 4000 });
@@ -453,6 +469,14 @@ export default component$(() => {
 
   const removeTorrentFromLibrary = $(async (torrent: TorrServerTorrentStatus) => {
     if (!selectedTorServer.value) return;
+    const confirmed = globalThis.confirm(
+      langText(
+        lang,
+        `Remove "${torrent.title || torrent.name}" from TorrServer?`,
+        `Удалить "${torrent.title || torrent.name}" из TorrServer?`,
+      ),
+    );
+    if (!confirmed) return;
     try {
       await removeTorrent(selectedTorServer.value, torrent.hash);
       toastManager.addToast({ message: langText(lang, "Torrent has been deleted!", "Торрент удален!"), type: "success", autocloseTime: 5000 });
@@ -512,7 +536,7 @@ export default component$(() => {
   /* ── Render ────────────────────────────────────────────── */
 
   return (
-    <div class="mx-auto w-full max-w-7xl px-4 pb-10">
+    <div class="mx-auto w-full max-w-7xl pb-10">
       <SectionHeading
         eyebrow={langText(lang, "Tools", "Инструменты")}
         title={langTorrServer(lang)}
@@ -523,7 +547,7 @@ export default component$(() => {
         ]}
       />
 
-      <div class="mt-6 grid gap-6">
+      <div class="mt-6 grid min-w-0 gap-6">
         {/* ── Connection workspace ─────────────────────────── */}
         <section class="card border-base-200 bg-base-100/90 border shadow-sm backdrop-blur">
           <div class="card-body gap-6">
@@ -536,12 +560,12 @@ export default component$(() => {
               <Field name="ipaddress">
                 {(field, props) => (
                   <div class="space-y-2">
-                    <div class="join w-full">
-                      <label class="input input-bordered join-item flex w-full items-center gap-2" for="torrserver-url">
+                    <div class="join join-vertical w-full sm:join-horizontal">
+                      <label class="input input-bordered join-item flex w-full min-w-0 items-center gap-2 text-base" for="torrserver-url">
                         <span class="label text-base-content/65 shrink-0 text-xs font-medium tracking-[0.12em] uppercase">{langText(lang, "URL", "Адрес")}</span>
-                        <input {...props} id="torrserver-url" type="url" placeholder={langAddNewTorrServerURL(lang)} class="grow" />
+                        <input {...props} id="torrserver-url" type="url" placeholder={langAddNewTorrServerURL(lang)} class="h-11 min-w-0 grow" />
                       </label>
-                      <button type="submit" disabled={newTorrServerForm.invalid} class="btn btn-primary join-item w-32 shrink-0 justify-center">
+                      <button type="submit" disabled={newTorrServerForm.invalid} class="btn btn-primary join-item min-h-11 w-full justify-center sm:w-32 sm:shrink-0">
                         <HiPlusSolid class="text-lg" />{langText(lang, "Add", "Добавить")}
                       </button>
                     </div>
@@ -553,13 +577,13 @@ export default component$(() => {
 
             <div class="space-y-2">
               <label class="label pt-0" for="active-torrserver"><span class="label-text font-medium">{langText(lang, "Active server", "Активный сервер")}</span></label>
-              <div class="join w-full">
-                <select id="active-torrserver" value={selectedTorServer.value} class="select select-bordered join-item w-full" onChange$={(_, el) => { selectedTorServer.value = normalizeServer(el.value); persistServersStorage({ list: torrServerList.value, selected: selectedTorServer.value }); }}>
+              <div class="join join-vertical w-full md:join-horizontal">
+                <select id="active-torrserver" value={selectedTorServer.value} class="select select-bordered join-item h-11 min-h-11 w-full min-w-0 text-base" onChange$={(_, el) => { selectedTorServer.value = normalizeServer(el.value); persistServersStorage({ list: torrServerList.value, selected: selectedTorServer.value }); }}>
                   {torrServerList.value.length === 0 && <option value="">{langText(lang, "No TorrServer added", "TorrServer не добавлен")}</option>}
                   {torrServerList.value.map((item) => <option value={item} key={item}>{item}</option>)}
                 </select>
-                <button type="button" disabled={!selectedTorServer.value || isCheckingTorrServer.value} class="btn btn-outline join-item w-28 shrink-0 justify-center" onClick$={() => loadServerSnapshot(selectedTorServer.value)}>{langText(lang, "Refresh", "Обновить")}</button>
-                <button type="button" disabled={!selectedTorServer.value} class="btn btn-error btn-outline join-item w-32 shrink-0 justify-center" onClick$={removeActiveServer}><HiMinusSolid class="text-lg" />{langText(lang, "Remove", "Удалить")}</button>
+                <button type="button" disabled={!selectedTorServer.value || isCheckingTorrServer.value} class="btn btn-outline join-item min-h-11 w-full justify-center md:w-28 md:shrink-0" onClick$={() => loadServerSnapshot(selectedTorServer.value)}>{langText(lang, "Refresh", "Обновить")}</button>
+                <button type="button" disabled={!selectedTorServer.value} class="btn btn-error btn-outline join-item min-h-11 w-full justify-center md:w-32 md:shrink-0" onClick$={removeActiveServer}><HiMinusSolid class="text-lg" />{langText(lang, "Remove", "Удалить")}</button>
               </div>
               <p class="text-base-content/60 text-xs">{langText(lang, "Saved locally in this browser for quick switching.", "Сохранено локально в этом браузере для быстрого переключения.")}</p>
             </div>
@@ -589,7 +613,7 @@ export default component$(() => {
           metrics={summaryMetrics.value}
           badges={summaryBadges.value}
         >
-          <div class="grid gap-3 md:grid-cols-2">
+          <div class="grid min-w-0 gap-3 md:grid-cols-2">
             <div class="rounded-box border-base-200 bg-base-200/40 border p-4 text-sm">
               <p class="font-semibold">{langText(lang, "Streaming profile", "Профиль стриминга")}</p>
               <p class="text-base-content/70 mt-2 leading-relaxed">
@@ -608,14 +632,14 @@ export default component$(() => {
             </div>
           </div>
           <div class="flex flex-wrap gap-2">
-            {selectedTorServer.value && <a href={buildTorrentPlaylistUrl(selectedTorServer.value, selectedTorrentSig.value?.hash || "", {})} target="_blank" rel="noreferrer" class="btn btn-sm btn-outline">{langText(lang, "Playlist for selected", "Плейлист для выбранного")}</a>}
-            {selectedTorServer.value && <a href={`${selectedTorServer.value}/playlistall/all.m3u`} target="_blank" rel="noreferrer" class="btn btn-sm btn-ghost">{langText(lang, "Full library M3U", "M3U всей библиотеки")}</a>}
+            {selectedTorServer.value && <a href={buildTorrentPlaylistUrl(selectedTorServer.value, selectedTorrentSig.value?.hash || "", {})} target="_blank" rel="noreferrer" class="btn btn-outline min-h-11 rounded-full md:btn-sm">{langText(lang, "Playlist for selected", "Плейлист для выбранного")}</a>}
+            {selectedTorServer.value && <a href={`${selectedTorServer.value}/playlistall/all.m3u`} target="_blank" rel="noreferrer" class="btn btn-ghost min-h-11 rounded-full md:btn-sm">{langText(lang, "Full library M3U", "M3U всей библиотеки")}</a>}
           </div>
         </TorrServerSummaryCard>
       </div>
 
       <div class="mt-6 flex justify-end">
-        <button type="button" class="btn btn-outline btn-sm" disabled={!selectedTorServer.value} onClick$={() => { apiToolsModalOpen.value = true; }}>{langText(lang, "API tools", "API-инструменты")}</button>
+        <button type="button" class="btn btn-outline min-h-11 rounded-full md:btn-sm" disabled={!selectedTorServer.value} onClick$={() => { apiToolsModalOpen.value = true; }}>{langText(lang, "API tools", "API-инструменты")}</button>
       </div>
 
       {/* ── Filters ──────────────────────────────────────── */}

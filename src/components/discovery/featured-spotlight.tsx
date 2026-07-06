@@ -30,7 +30,7 @@ export const FeaturedSpotlight = component$<FeaturedSpotlightProps>(
       : undefined;
 
     return (
-      <section id="featured-spotlight" class="section-reveal">
+      <section id="featured-spotlight" class="section-reveal scroll-mt-28">
         <div class="rounded-box border-base-200 bg-base-100/90 relative overflow-hidden border shadow-sm backdrop-blur">
           {backgroundImage && (
             <div

@@ -18,7 +18,10 @@ export const Toolbar = component$<ToolbarProps>(({ lang }) => {
       class="navbar toolbar-shell bg-base-100/82 border-base-200/70 text-base-content fixed top-0 left-0 z-[60] min-h-16 w-full border-b px-4 backdrop-blur-xl md:px-6"
     >
       <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-0">
-        <a href={paths.index(lang)} class="group flex items-center gap-3">
+        <a
+          href={paths.index(lang)}
+          class="group flex min-h-11 items-center gap-3"
+        >
           <div class="border-base-200 bg-base-200/80 group-hover:bg-base-200 grid h-10 w-10 place-items-center rounded-full border text-2xl shadow-sm transition-colors duration-200">
             <HiFilmOutline />
           </div>
@@ -38,7 +41,7 @@ export const Toolbar = component$<ToolbarProps>(({ lang }) => {
           </ul>
 
           <div class="flex items-center gap-2">
-            <div class="btn btn-ghost btn-circle btn-sm btn-square justify-center border border-transparent shadow-none hover:border-base-200/80 hover:bg-base-200/65">
+            <div class="btn btn-ghost btn-circle min-h-11 w-11 justify-center border border-transparent p-0 shadow-none hover:border-base-200/80 hover:bg-base-200/65">
               <ThemeToggle
                 themeStorageKey="themePref"
                 textSize="text-xl"

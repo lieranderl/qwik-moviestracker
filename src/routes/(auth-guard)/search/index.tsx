@@ -102,7 +102,9 @@ export default component$(() => {
       });
     } catch (error) {
       console.error(error);
-      throw new Error(langSearchUnavailableRightNow(resource.value.lang));
+      throw new Error(langSearchUnavailableRightNow(resource.value.lang), {
+        cause: error,
+      });
     }
   });
 

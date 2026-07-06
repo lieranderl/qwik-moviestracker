@@ -552,7 +552,7 @@ export const TorrentList = component$(
                     </span>
                   </div>
                   <select
-                  class="select select-bordered min-h-11 w-full text-base md:select-sm"
+                    class="select select-bordered min-h-11 w-full text-base md:select-sm"
                     value={sortFilterStore.tracker}
                     onChange$={(_, element) => {
                       setSelectFilter("tracker", element.value);

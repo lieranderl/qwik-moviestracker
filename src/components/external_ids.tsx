@@ -41,7 +41,7 @@ export const ExternalIds = component$(
           };
 
     const iconClass =
-      "btn btn-circle btn-ghost btn-sm border border-transparent text-base-content/80 shadow-none hover:border-base-300 hover:bg-base-200/80 hover:text-base-content sm:btn-md";
+      "btn btn-circle btn-ghost min-h-11 w-11 border border-transparent text-base-content/80 shadow-none hover:border-base-300 hover:bg-base-200/80 hover:text-base-content sm:btn-md";
 
     return (
       <>

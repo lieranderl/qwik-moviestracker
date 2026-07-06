@@ -25,7 +25,9 @@ test.describe("authenticated movie detail", () => {
       }),
     ).toBeVisible();
     await expect(page.getByText("PG-13 • US")).toBeVisible();
-    await expect(page.getByText("Netflix")).toBeVisible();
+    await expect(
+      page.locator("span:not([aria-hidden])").filter({ hasText: /^Netflix$/ }),
+    ).toBeVisible();
     await expect(
       page.getByRole("link", {
         name: /assertions at dawn/i,

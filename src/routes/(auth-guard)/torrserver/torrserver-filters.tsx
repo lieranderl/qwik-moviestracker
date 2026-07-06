@@ -63,8 +63,8 @@ export const TorrServerFilters = component$(
           </p>
         </div>
 
-        <div class="grid gap-3 md:grid-cols-[minmax(0,18rem)_minmax(0,12rem)]">
-          <label class="input input-bordered flex items-center gap-2">
+        <div class="grid min-w-0 gap-3 md:grid-cols-[minmax(0,18rem)_minmax(0,12rem)]">
+          <label class="input input-bordered flex min-w-0 items-center gap-2 text-base">
             <span class="text-base-content/60 text-xs font-medium tracking-[0.12em] uppercase">
               {langText(lang, "Search", "Поиск")}
             </span>
@@ -76,7 +76,7 @@ export const TorrServerFilters = component$(
                 "Search title, hash, category",
                 "Поиск по названию, hash, категории",
               )}
-              class="grow"
+              class="h-11 min-w-0 grow"
               onInput$={(_, element) => {
                 querySig.value = element.value;
               }}
@@ -85,7 +85,8 @@ export const TorrServerFilters = component$(
 
           <select
             value={sortKeySig.value}
-            class="select select-bordered"
+            aria-label={langText(lang, "Sort TorrServer torrents", "Сортировать торренты TorrServer")}
+            class="select select-bordered h-11 min-h-11 text-base"
             onChange$={(_, element) => {
               sortKeySig.value = element.value as TorrServerSortKey;
             }}
@@ -106,7 +107,7 @@ export const TorrServerFilters = component$(
           <button
             type="button"
             key={filter}
-            class={`btn btn-sm rounded-full normal-case ${
+            class={`btn min-h-11 rounded-full normal-case md:btn-sm ${
               statusFilterSig.value === filter ? "btn-primary" : "btn-ghost"
             }`}
             onClick$={() => {

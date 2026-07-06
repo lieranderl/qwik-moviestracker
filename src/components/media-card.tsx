@@ -9,6 +9,7 @@ export type MediaCardLayout = "carousel" | "grid";
 interface MediaCardProps {
   title: string;
   picfile: string | null | undefined;
+  loading?: "eager" | "lazy";
   width?: number;
   metaLabel?: string;
   rating: number | string | null | undefined;
@@ -75,10 +76,15 @@ export const getSafeRating = (rating: MediaCardProps["rating"]) => {
   return Number.isFinite(parsed) ? parsed : 0;
 };
 
+export const getDefaultMediaCardLoading = (
+  loading?: MediaCardProps["loading"],
+) => loading ?? "lazy";
+
 export const MediaCard = component$(
   ({
     title,
     picfile,
+    loading,
     width,
     metaLabel,
     rating,
@@ -111,6 +117,7 @@ export const MediaCard = component$(
     }`;
     const placeholderLabel = getPlaceholderLabel(title);
     const safeRating = getSafeRating(rating);
+    const imageLoading = getDefaultMediaCardLoading(loading);
 
     return (
       <div class={containerClass}>
@@ -136,7 +143,7 @@ export const MediaCard = component$(
                 alt=""
                 decoding="async"
                 draggable={false}
-                loading={layout === "grid" ? "lazy" : undefined}
+                loading={imageLoading}
               />
             ) : (
               <div

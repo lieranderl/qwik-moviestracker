@@ -20,14 +20,14 @@ export const QuickFilterStrip = component$<QuickFilterStripProps>(
             <div class="text-base-content/55 px-2 text-xs font-semibold tracking-[0.12em] uppercase">
               {label}
             </div>
-            <div class="no-scrollbar overflow-x-auto">
+            <div class="no-scrollbar min-w-0 overflow-x-auto">
               <div class="flex min-w-max items-center gap-2">
                 {items.map((item) => (
                   <a
                     key={item.href}
                     href={item.href}
                     class={[
-                      "btn btn-sm rounded-full border text-sm font-medium normal-case shadow-none",
+                      "btn min-h-11 rounded-full border text-sm font-medium normal-case shadow-none md:btn-sm",
                       item.active
                         ? "btn-primary border-transparent"
                         : "btn-ghost border-base-200/80 bg-base-200/55 hover:bg-base-200/85",

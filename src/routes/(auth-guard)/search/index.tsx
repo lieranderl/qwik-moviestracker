@@ -139,12 +139,12 @@ export default component$(() => {
                 aria-describedby="search-query-help"
                 aria-invalid={Boolean(formModel.shortQueryMessage)}
                 placeholder={langSearchTitlesCastCrew(resource.value.lang)}
-                class="input input-bordered focus-ringable w-full"
+                class="input input-bordered focus-ringable h-11 min-h-11 w-full text-base"
                 value={formModel.query}
               />
             </label>
 
-            <button type="submit" class="btn btn-primary gap-2 md:min-w-40">
+            <button type="submit" class="btn btn-primary h-11 min-h-11 gap-2 md:min-w-40">
               <HiMagnifyingGlassOutline aria-hidden="true" class="h-5 w-5" />
               {langSearch(resource.value.lang)}
             </button>

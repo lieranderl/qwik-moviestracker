@@ -65,7 +65,7 @@ export const TorrentsModal = component$(
         {seasons.length === 0 && (
           <button
             type="button"
-            class="btn btn-outline btn-primary"
+            class="btn btn-outline btn-primary h-11 min-h-11"
             onClick$={() => getTorrentsToggle(title, year, isMovie)}
           >
             {langTorrents(resource.value.lang)}
@@ -74,7 +74,7 @@ export const TorrentsModal = component$(
 
         {seasons.length > 0 && (
           <div class="dropdown dropdown-end relative z-30">
-            <button type="button" class="btn btn-outline btn-primary">
+            <button type="button" class="btn btn-outline btn-primary h-11 min-h-11">
               {langTorrents(resource.value.lang)}
               <HiChevronDownSolid />
             </button>
@@ -112,18 +112,22 @@ export const TorrentsModal = component$(
         )}
 
         <dialog id="torrentsModal" class="modal">
-          <div class="modal-box overlay-enter border-base-200 bg-base-100 max-h-[85vh] w-11/12 max-w-5xl overflow-y-auto border p-0 shadow-xl">
+          <div class="modal-box overlay-enter border-base-200 bg-base-100 max-h-[calc(100dvh-2rem)] w-11/12 max-w-5xl overflow-y-auto border p-0 shadow-xl">
             <div class="border-base-200 bg-base-100/95 sticky top-0 z-20 flex items-center justify-between border-b px-5 py-4 backdrop-blur">
               <h3 class="text-xl font-semibold">
                 {langTorrents(resource.value.lang)}
               </h3>
               <form method="dialog">
-                <button type="submit" class="btn btn-ghost btn-circle btn-sm">
+                <button
+                  type="submit"
+                  aria-label={langText(lang, "Close torrents", "Закрыть торренты")}
+                  class="btn btn-ghost btn-circle min-h-11 w-11 p-0"
+                >
                   ✕
                 </button>
               </form>
             </div>
-            <div class="p-5">
+            <div class="px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:p-5 sm:pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
               <TorrentList
                 torrents={torrentsStore.torrents}
                 title={title}

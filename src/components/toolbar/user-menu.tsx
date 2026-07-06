@@ -47,7 +47,7 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
           aria-haspopup="menu"
           aria-label={langOpenAccountMenu(lang)}
           role="button"
-          class="btn btn-ghost btn-circle avatar border-none bg-transparent p-0 shadow-none list-none transition-transform duration-200 hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden"
+          class="btn btn-ghost btn-circle avatar min-h-11 w-11 border-none bg-transparent p-0 shadow-none list-none transition-transform duration-200 hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden"
         >
           {userImage ? (
             <div class="border-base-200 bg-base-100 h-10 w-10 overflow-hidden rounded-full border shadow-sm">
@@ -113,7 +113,7 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
           <li>
             <button
               type="button"
-              class="btn btn-ghost text-error hover:bg-error/10 active:bg-error/15 h-auto min-h-0 w-full justify-start rounded-full px-3 py-2.5 text-sm font-medium normal-case shadow-none"
+              class="btn btn-ghost text-error hover:bg-error/10 active:bg-error/15 !h-[46px] !min-h-[46px] w-full justify-start rounded-full px-3 text-sm font-medium normal-case shadow-none"
               onClick$={submitSignOut}
             >
               {langSingOut(lang)}

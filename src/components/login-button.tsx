@@ -2,6 +2,7 @@ import type { QwikIntrinsicElements } from "@builder.io/qwik";
 import { $, component$, Slot, useSignal } from "@builder.io/qwik";
 import { useSignIn } from "~/routes/plugin@auth";
 import { langSignInWithProvider, langSigningIn } from "~/utils/languages";
+import { paths } from "~/utils/paths";
 
 export type LoginButtonProps = QwikIntrinsicElements["button"] & {
   lang?: string;
@@ -33,7 +34,7 @@ export const LoginButton = component$<LoginButtonProps>((props) => {
       onClick$={$(() => {
         isloading.value = true;
         signIn.submit({
-          redirectTo: "/",
+          redirectTo: paths.index(lang),
           providerId: providerName,
         });
       })}

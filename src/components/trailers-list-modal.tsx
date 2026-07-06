@@ -24,19 +24,23 @@ export const TrailersModal = component$(({ videos }: TorModalPros) => {
         {langTrailers(resource.value.lang)}
       </button>
       <dialog id="trailersModal" class="modal">
-        <div class="modal-box overlay-enter border-base-200 bg-base-100 max-h-[85vh] max-w-4xl overflow-y-auto border p-0 shadow-xl">
+        <div class="modal-box overlay-enter border-base-200 bg-base-100 max-h-[calc(100dvh-2rem)] max-w-4xl overflow-y-auto border p-0 shadow-xl">
           <div class="border-base-200 bg-base-100/95 sticky top-0 z-20 flex items-center justify-between border-b px-5 py-4 backdrop-blur">
             <h3 class="text-lg font-bold">
               {langTrailers(resource.value.lang)}
             </h3>
             <form method="dialog">
-              <button type="submit" class="btn btn-ghost btn-circle btn-sm">
+              <button
+                type="submit"
+                aria-label={langText(resource.value.lang, "Close trailers", "Закрыть трейлеры")}
+                class="btn btn-ghost btn-circle min-h-11 w-11 p-0"
+              >
                 ✕
               </button>
             </form>
           </div>
 
-          <div class="space-y-4 p-5">
+          <div class="space-y-4 px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:p-5 sm:pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
             {videos && videos.length > 0 ? (
               <section class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {videos.map((video) => (

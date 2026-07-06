@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import {
   getCardWidthClass,
+  getDefaultMediaCardLoading,
   getMediaCardImageWidth,
   getPlaceholderLabel,
   getSafeRating,
@@ -64,5 +65,10 @@ describe("media card helpers", () => {
     expect(getSafeRating("8.1")).toBe(8.1);
     expect(getSafeRating(null)).toBe(0);
     expect(getSafeRating("nope")).toBe(0);
+  });
+
+  it("defaults image loading to lazy", () => {
+    expect(getDefaultMediaCardLoading()).toBe("lazy");
+    expect(getDefaultMediaCardLoading("eager")).toBe("eager");
   });
 });

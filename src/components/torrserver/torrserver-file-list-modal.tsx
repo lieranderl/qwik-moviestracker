@@ -66,6 +66,7 @@ export const TorrServerFileListModal = component$(
         open={open}
         title={title}
         subtitle={subtitle}
+        closeLabel="Close torrent files"
         onClose$={onClose$}
       >
         {loading ? (
@@ -131,11 +132,11 @@ export const TorrServerFileListModal = component$(
                       </div>
                     </div>
 
-                    <div class="flex shrink-0 flex-wrap gap-2">
+                    <div class="grid shrink-0 gap-2 sm:flex sm:flex-wrap">
                       {onPlayFile$ && (
                         <button
                           type="button"
-                          class="btn btn-sm btn-primary"
+                          class="btn btn-primary min-h-11 w-full rounded-full sm:w-auto md:btn-sm"
                           onClick$={async () => onPlayFile$(file)}
                         >
                           {playActionLabel}
@@ -144,7 +145,7 @@ export const TorrServerFileListModal = component$(
                       {file.streamUrl && onOpenStream$ && (
                         <a
                           href={file.streamUrl}
-                          class="btn btn-sm btn-outline tooltip tooltip-bottom"
+                          class="btn btn-outline min-h-11 w-full rounded-full sm:w-auto md:btn-sm"
                           data-tip={streamTooltip}
                           rel="noreferrer"
                           target="_blank"
@@ -155,7 +156,7 @@ export const TorrServerFileListModal = component$(
                       {file.streamUrl && onCopyStreamUrl$ && (
                         <button
                           type="button"
-                          class="btn btn-sm btn-ghost"
+                          class="btn btn-ghost min-h-11 w-full rounded-full sm:w-auto md:btn-sm"
                           onClick$={async () => onCopyStreamUrl$(file)}
                         >
                           {copyActionLabel}

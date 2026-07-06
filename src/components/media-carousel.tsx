@@ -141,7 +141,7 @@ export const MediaCarousel = component$(
                 category && (
                   <a
                     href={paths.category(type, category, lang)}
-                    class="btn btn-ghost btn-sm text-base-content/70 rounded-full"
+                    class="btn btn-ghost text-base-content/70 min-h-11 rounded-full md:btn-sm"
                   >
                     {langExploreAll(lang)}
                   </a>
@@ -157,7 +157,7 @@ export const MediaCarousel = component$(
           />
           <div
             class={[
-              "from-base-100 via-base-100/85 pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-12 bg-linear-to-r to-transparent transition-opacity duration-200 md:block",
+              "from-base-100 via-base-100/85 pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-12 bg-linear-to-l to-transparent transition-opacity duration-200 md:block",
               canScrollForward.value ? "opacity-100" : "opacity-0",
             ]}
           />

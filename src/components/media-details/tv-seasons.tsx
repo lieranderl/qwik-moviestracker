@@ -30,11 +30,21 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
           {seasons
             .filter((s) => s.season_number !== 0)
             .map((s) => (
-              <>
-                <div
+              <div class="carousel-item" key={s.id}>
+                <button
+                  type="button"
+                  aria-haspopup={s.overview ? "dialog" : undefined}
+                  aria-controls={
+                    s.overview ? `season-modal-${s.id.toString()}` : undefined
+                  }
+                  disabled={!s.overview}
                   key={s.id}
-                  class={s.overview ? "cursor-pointer" : ""}
+                  class={[
+                    "media-card-link block text-left",
+                    !s.overview && "pointer-events-none cursor-default",
+                  ]}
                   onClick$={() => {
+                    if (!s.overview) return;
                     showDialogById(`season-modal-${s.id.toString()}`);
                   }}
                 >
@@ -51,22 +61,23 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
                     picfile={s.poster_path}
                     variant="poster"
                   />
-                </div>
+                </button>
                 {s.overview && (
                   <dialog id={`season-modal-${s.id.toString()}`} class="modal">
-                    <div class="modal-box overlay-enter border-base-200 bg-base-100 max-w-2xl border p-0 shadow-xl">
-                      <div class="border-base-200 bg-base-100/95 sticky top-0 z-20 flex items-start justify-between gap-4 border-b px-6 py-4 backdrop-blur">
+                    <div class="modal-box overlay-enter border-base-200 bg-base-100 max-h-[calc(100dvh-2rem)] max-w-2xl overflow-y-auto border p-0 shadow-xl">
+                      <div class="border-base-200 bg-base-100/95 sticky top-0 z-20 flex items-start justify-between gap-4 border-b px-4 py-4 backdrop-blur sm:px-6">
                         <h3 class="text-lg font-bold">{langOverview(lang)}</h3>
                         <form method="dialog">
                           <button
                             type="submit"
-                            class="btn btn-ghost btn-circle btn-sm"
+                            aria-label={langText(lang, "Close season overview", "Закрыть описание сезона")}
+                            class="btn btn-ghost btn-circle min-h-11 w-11 p-0"
                           >
                             ✕
                           </button>
                         </form>
                       </div>
-                      <div class="p-6">
+                      <div class="px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
                         <p class="text-base-content/80 leading-relaxed">
                           {s.overview}
                         </p>
@@ -79,7 +90,7 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
                     </form>
                   </dialog>
                 )}
-              </>
+              </div>
             ))}
         </MediaCarousel>
       )}

@@ -42,6 +42,12 @@ Do not load every reference by default. Open only what the task needs.
 - Prefer Bun commands over npm when both are possible.
 - Follow Qwik patterns and daisyUI 5 rules in `references/ui-system.md` for
   all component and styling work.
+- For mobile UI work, check 320px, 390px, and 430px widths. Verify touch
+  targets, page overflow, sticky chrome, modals, safe areas, and Playwright
+  auth bypass when protected pages are involved. Prefer daisyUI/Tailwind
+  classes such as `min-h-11`, `min-w-11`, sensible padding, and accessible
+  labels. Avoid `btn-sm`, `btn-xs`, and `min-h-0` on touch-first mobile
+  controls.
 - For Claude Code, keep project automation in `.claude/**` and keep the root
   `CLAUDE.md` concise. Put durable detail in `references/**`. Project-scoped
   MCP config lives in `.mcp.json`.

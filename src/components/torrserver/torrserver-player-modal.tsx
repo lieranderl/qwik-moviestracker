@@ -41,6 +41,7 @@ export const TorrServerPlayerModal = component$(
         title={title}
         subtitle={sourceLabel}
         maxWidth="max-w-6xl"
+        closeLabel="Close player"
         onClose$={onClose$}
       >
         <div class="rounded-box border-base-200 bg-base-100 overflow-hidden border shadow-sm">
@@ -83,11 +84,11 @@ export const TorrServerPlayerModal = component$(
           <div
             class={`rounded-box border p-4 ${getToneSurfaceClass("neutral")}`}
           >
-            <div class="flex flex-wrap gap-2">
+            <div class="grid gap-2 sm:flex sm:flex-wrap">
               {actions.map((action) =>
                 action.href ? (
                   <a
-                    class={`btn btn-sm ${getToneBtnClass(action.tone ?? "info")}`}
+                    class={`btn min-h-11 w-full rounded-full sm:w-auto md:btn-sm ${getToneBtnClass(action.tone ?? "info")}`}
                     href={action.href}
                     key={action.label}
                     rel="noreferrer"
@@ -99,7 +100,7 @@ export const TorrServerPlayerModal = component$(
                   <button
                     key={action.label}
                     type="button"
-                    class={`btn btn-sm ${getToneBtnClass(action.tone ?? "info")}`}
+                    class={`btn min-h-11 w-full rounded-full sm:w-auto md:btn-sm ${getToneBtnClass(action.tone ?? "info")}`}
                     onClick$={async () => action.onClick$?.()}
                   >
                     {action.label}

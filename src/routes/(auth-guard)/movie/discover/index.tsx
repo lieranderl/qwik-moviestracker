@@ -212,7 +212,7 @@ export default component$(() => {
                 {langRegion(value.lang)}
               </span>
               <select
-                class="select select-bordered"
+                class="select select-bordered h-11 min-h-11 text-base"
                 name="region"
                 value={value.filters.region}
               >
@@ -229,7 +229,7 @@ export default component$(() => {
                 {langCertification(value.lang)}
               </span>
               <select
-                class="select select-bordered"
+                class="select select-bordered h-11 min-h-11 text-base"
                 name="certification"
                 value={value.filters.certification ?? ""}
               >
@@ -249,7 +249,7 @@ export default component$(() => {
                 {langStreamingProvider(value.lang)}
               </span>
               <select
-                class="select select-bordered"
+                class="select select-bordered h-11 min-h-11 text-base"
                 name="provider"
                 value={
                   value.filters.providerId
@@ -271,7 +271,7 @@ export default component$(() => {
                 {langReleaseYear(value.lang)}
               </span>
               <input
-                class="input input-bordered"
+                class="input input-bordered h-11 min-h-11 text-base"
                 max="2100"
                 min="1888"
                 name="year"
@@ -285,7 +285,7 @@ export default component$(() => {
                 {langMinimumVotes(value.lang)}
               </span>
               <input
-                class="input input-bordered"
+                class="input input-bordered h-11 min-h-11 text-base"
                 min="0"
                 name="minVotes"
                 type="number"
@@ -298,7 +298,7 @@ export default component$(() => {
                 {langSortBy(value.lang)}
               </span>
               <select
-                class="select select-bordered"
+                class="select select-bordered h-11 min-h-11 text-base"
                 name="sortBy"
                 value={value.filters.sortBy}
               >
@@ -311,13 +311,13 @@ export default component$(() => {
             </label>
 
             <div class="flex flex-wrap items-center gap-2 lg:col-span-3">
-              <button type="submit" class="btn btn-primary">
+              <button type="submit" class="btn btn-primary h-11 min-h-11">
                 {langApplyFilters(value.lang)}
               </button>
-              <a href={paths.movieDiscover(value.lang)} class="btn btn-ghost">
+              <a href={paths.movieDiscover(value.lang)} class="btn btn-ghost h-11 min-h-11">
                 {langResetFilters(value.lang)}
               </a>
-              <a href={paths.movie(value.lang)} class="btn btn-outline">
+              <a href={paths.movie(value.lang)} class="btn btn-outline h-11 min-h-11">
                 {langText(
                   value.lang,
                   "Browse movie shelves",
@@ -343,7 +343,7 @@ export default component$(() => {
                     page: 1,
                   })}
                   class={[
-                    "btn btn-sm rounded-full normal-case shadow-none",
+                    "btn h-11 min-h-11 min-w-11 rounded-full normal-case shadow-none md:btn-sm",
                     value.filters.certification
                       ? "btn-ghost"
                       : "btn-primary btn-soft",
@@ -359,7 +359,7 @@ export default component$(() => {
                       page: 1,
                     })}
                     class={[
-                      "btn btn-sm rounded-full normal-case shadow-none",
+                      "btn h-11 min-h-11 min-w-11 rounded-full normal-case shadow-none md:btn-sm",
                       value.filters.certification === option.value
                         ? "btn-primary btn-soft"
                         : "btn-ghost",
@@ -421,17 +421,23 @@ export default component$(() => {
 
           {value.results.total_pages > 1 && (
             <div class="flex flex-wrap items-center justify-between gap-3">
-              <a
-                href={buildMovieDiscoverHref(value.lang, value.filters, {
-                  page: Math.max(1, value.filters.page - 1),
-                })}
-                class={[
-                  "btn btn-outline rounded-full",
-                  value.filters.page <= 1 && "btn-disabled pointer-events-none",
-                ]}
-              >
-                {langText(value.lang, "Previous page", "Предыдущая страница")}
-              </a>
+              {value.filters.page <= 1 ? (
+                <span
+                  aria-disabled="true"
+                  class="btn btn-outline btn-disabled rounded-full"
+                >
+                  {langText(value.lang, "Previous page", "Предыдущая страница")}
+                </span>
+              ) : (
+                <a
+                  href={buildMovieDiscoverHref(value.lang, value.filters, {
+                    page: value.filters.page - 1,
+                  })}
+                  class="btn btn-outline h-11 min-h-11 rounded-full"
+                >
+                  {langText(value.lang, "Previous page", "Предыдущая страница")}
+                </a>
+              )}
               <span class="text-base-content/60 text-sm">
                 {langText(
                   value.lang,
@@ -439,21 +445,23 @@ export default component$(() => {
                   `Страница ${value.results.page} из ${value.results.total_pages}`,
                 )}
               </span>
-              <a
-                href={buildMovieDiscoverHref(value.lang, value.filters, {
-                  page: Math.min(
-                    value.results.total_pages,
-                    value.filters.page + 1,
-                  ),
-                })}
-                class={[
-                  "btn btn-outline rounded-full",
-                  value.filters.page >= value.results.total_pages &&
-                    "btn-disabled pointer-events-none",
-                ]}
-              >
-                {langText(value.lang, "Next page", "Следующая страница")}
-              </a>
+              {value.filters.page >= value.results.total_pages ? (
+                <span
+                  aria-disabled="true"
+                  class="btn btn-outline btn-disabled rounded-full"
+                >
+                  {langText(value.lang, "Next page", "Следующая страница")}
+                </span>
+              ) : (
+                <a
+                  href={buildMovieDiscoverHref(value.lang, value.filters, {
+                    page: value.filters.page + 1,
+                  })}
+                  class="btn btn-outline h-11 min-h-11 rounded-full"
+                >
+                  {langText(value.lang, "Next page", "Следующая страница")}
+                </a>
+              )}
             </div>
           )}
         </>

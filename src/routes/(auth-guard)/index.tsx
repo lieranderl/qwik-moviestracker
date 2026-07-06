@@ -171,11 +171,14 @@ export default component$(() => {
       <div class="section-reveal flex flex-wrap items-center gap-2">
         <a
           href={paths.movieDiscover(lang)}
-          class="btn btn-primary rounded-full"
+          class="btn btn-primary h-11 min-h-11 rounded-full"
         >
           {langDiscoverMovies(lang)}
         </a>
-        <a href={paths.tvDiscover(lang)} class="btn btn-outline rounded-full">
+        <a
+          href={paths.tvDiscover(lang)}
+          class="btn btn-outline h-11 min-h-11 rounded-full"
+        >
           {langDiscoverTv(lang)}
         </a>
       </div>

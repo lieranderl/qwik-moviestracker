@@ -398,7 +398,7 @@ export const TorrentList = component$(
     return (
       <>
         {sortedTorrents.value !== null && (
-          <div class="mb-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div class="mb-4 flex min-w-0 flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <label class="form-control">
               <div class="label px-0 pt-0 pb-1">
                 <span class="label-text font-medium">{langSortOn(lang)}</span>
@@ -408,7 +408,7 @@ export const TorrentList = component$(
                 onChange$={(_, element) => {
                   setSort(element.value);
                 }}
-                class="select select-bordered select-sm min-w-40"
+                class="select select-bordered min-h-11 min-w-40 text-base md:select-sm"
               >
                 {sortAttrib.map((attrib) => (
                   <option value={attrib.value} key={attrib.value}>
@@ -420,37 +420,39 @@ export const TorrentList = component$(
 
             <Form
               onSubmit$={handleSubmit}
-              class="flex flex-wrap items-start gap-2"
+              class="flex min-w-0 flex-col items-stretch gap-2 sm:flex-row sm:items-start"
             >
-              <div class="join">
+              <div class="join join-vertical w-full min-w-0 sm:join-horizontal sm:w-auto">
                 <Field name="name">
                   {(field, props) => (
-                    <div>
+                    <label class="form-control min-w-0">
+                      <span class="sr-only">{titlePlaceholder}</span>
                       <input
                         {...props}
                         type="text"
                         placeholder={titlePlaceholder}
-                        class="input input-bordered input-sm join-item w-48"
+                        class="input input-bordered join-item w-full min-w-0 text-base sm:w-48 md:input-sm"
                       />
                       {field.error && (
                         <div class="text-error text-xs">{field.error}</div>
                       )}
-                    </div>
+                    </label>
                   )}
                 </Field>
                 <Field name="year" type="number">
                   {(field, props) => (
-                    <div>
+                    <label class="form-control">
+                      <span class="sr-only">{yearPlaceholder}</span>
                       <input
                         {...props}
                         type="number"
-                        class="input input-bordered input-sm join-item w-20"
+                        class="input input-bordered join-item w-full text-base sm:w-24 md:input-sm"
                         placeholder={yearPlaceholder}
                       />
                       {field.error && (
                         <div class="text-error text-xs">{field.error}</div>
                       )}
-                    </div>
+                    </label>
                   )}
                 </Field>
               </div>
@@ -458,7 +460,8 @@ export const TorrentList = component$(
               <button
                 type="submit"
                 disabled={searchTorrForm.invalid}
-                class="btn btn-primary btn-sm btn-square"
+                aria-label={langText(lang, "Search torrents", "Искать торренты")}
+                class="btn btn-primary min-h-11 w-full sm:w-11 md:btn-sm md:btn-square"
               >
                 <HiMagnifyingGlassOutline class="h-5 w-5" />
               </button>
@@ -474,12 +477,12 @@ export const TorrentList = component$(
                   class="dropdown dropdown-bottom"
                   ref={formatDropdownRef}
                 >
-                  <summary class="btn btn-outline btn-sm min-w-36 justify-between">
+                  <summary class="btn btn-outline min-h-11 min-w-36 justify-between rounded-full md:btn-sm">
                     {formatLabelParts.length > 0
                       ? `${langText(lang, "Format", "Формат")}: ${formatLabelParts.join(" + ")}`
                       : langText(lang, "Format", "Формат")}
                   </summary>
-                  <div class="dropdown-content card card-border border-base-300 bg-base-100 z-20 mt-2 w-72 shadow-lg">
+                  <div class="dropdown-content card card-border border-base-300 bg-base-100 z-20 mt-2 w-[min(18rem,calc(100vw-2rem))] shadow-lg">
                     <div class="card-body gap-3 p-4">
                       {qualityOptions.length > 0 && (
                         <label class="form-control">
@@ -489,7 +492,7 @@ export const TorrentList = component$(
                             </span>
                           </div>
                           <select
-                            class="select select-bordered select-sm w-full"
+                            class="select select-bordered min-h-11 w-full text-base md:select-sm"
                             value={sortFilterStore.quality}
                             onChange$={(_, element) => {
                               setSelectFilter("quality", element.value);
@@ -519,7 +522,7 @@ export const TorrentList = component$(
                             </span>
                           </div>
                           <select
-                            class="select select-bordered select-sm w-full"
+                            class="select select-bordered min-h-11 w-full text-base md:select-sm"
                             value={sortFilterStore.dynamicRange}
                             onChange$={(_, element) => {
                               setSelectFilter("dynamicRange", element.value);
@@ -549,7 +552,7 @@ export const TorrentList = component$(
                     </span>
                   </div>
                   <select
-                    class="select select-bordered select-sm w-full"
+                  class="select select-bordered min-h-11 w-full text-base md:select-sm"
                     value={sortFilterStore.tracker}
                     onChange$={(_, element) => {
                       setSelectFilter("tracker", element.value);
@@ -566,7 +569,7 @@ export const TorrentList = component$(
               )}
 
               <input
-                class="btn btn-ghost btn-sm"
+                class="btn btn-ghost min-h-11 rounded-full md:btn-sm"
                 type="reset"
                 value={langText(lang, "Reset", "Сброс")}
                 aria-label={resetFiltersLabel}
@@ -575,7 +578,7 @@ export const TorrentList = component$(
 
             {advancedFilterGroups.length > 0 && (
               <details class="collapse-arrow border-base-300 bg-base-100 collapse border">
-                <summary class="collapse-title min-h-0 py-3 text-sm font-medium">
+                <summary class="collapse-title min-h-11 py-3 text-sm font-medium">
                   {langText(lang, "Advanced filters", "Расширенные фильтры")}
                 </summary>
                 <div class="collapse-content">
@@ -588,7 +591,7 @@ export const TorrentList = component$(
                           </span>
                         </div>
                         <select
-                          class="select select-bordered select-sm w-full"
+                          class="select select-bordered min-h-11 w-full text-base md:select-sm"
                           value={value}
                           onChange$={(_, element) => {
                             setSelectFilter(key, element.value);
@@ -640,7 +643,7 @@ export const TorrentList = component$(
                   {chip.label}
                   <button
                     type="button"
-                    class="btn btn-ghost btn-circle h-4 min-h-0 w-4 p-0 text-xs"
+                    class="btn btn-ghost btn-circle min-h-8 w-8 p-0 text-xs"
                     aria-label={`${resetFiltersLabel}: ${chip.label}`}
                     onClick$={() => clearSelectFilter(chip.key)}
                   >

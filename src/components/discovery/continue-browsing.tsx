@@ -37,7 +37,7 @@ export const ContinueBrowsingWidget = component$<ContinueBrowsingWidgetProps>(
     }, { strategy: "document-ready" });
 
     return (
-      <section id="continue-browsing" class="section-reveal">
+      <section id="continue-browsing" class="section-reveal scroll-mt-28">
         <div class="rounded-box border-base-200 bg-base-100/90 border shadow-sm backdrop-blur">
           <div class="grid gap-4 p-4 md:p-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)]">
             <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
@@ -59,7 +59,7 @@ export const ContinueBrowsingWidget = component$<ContinueBrowsingWidgetProps>(
             {lastViewed.value ? (
               <a
                 href={lastViewed.value.href}
-                class="media-card-link rounded-box border-base-200 bg-base-200/40 flex items-center gap-4 border p-4 shadow-sm backdrop-blur"
+                class="media-card-link rounded-box border-base-200 bg-base-200/40 flex min-w-0 items-center gap-4 border p-4 shadow-sm backdrop-blur"
               >
                 <div class="bg-primary/12 text-primary flex h-12 w-12 items-center justify-center rounded-full">
                   <HiPlaySolid class="h-5 w-5" />
@@ -77,7 +77,7 @@ export const ContinueBrowsingWidget = component$<ContinueBrowsingWidgetProps>(
                     </p>
                   )}
                 </div>
-                <span class="btn btn-primary btn-sm rounded-full text-sm font-medium normal-case shadow-none">
+                <span class="btn btn-primary min-h-11 rounded-full text-sm font-medium normal-case shadow-none md:btn-sm">
                   {resumeLabel}
                 </span>
               </a>
@@ -99,9 +99,9 @@ export const ContinueBrowsingWidget = component$<ContinueBrowsingWidgetProps>(
                     <a
                       key={search.href}
                       href={search.href}
-                      class="btn btn-ghost btn-sm border-base-200 bg-base-100/70 rounded-full border text-sm font-medium normal-case shadow-none"
+                      class="btn btn-ghost border-base-200 bg-base-100/70 min-h-11 max-w-full rounded-full border text-sm font-medium normal-case shadow-none md:btn-sm"
                     >
-                      {search.query}
+                      <span class="truncate">{search.query}</span>
                     </a>
                   ))
                 ) : (

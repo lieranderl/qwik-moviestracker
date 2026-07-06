@@ -243,10 +243,13 @@ export const MediaAvailability = component$<MediaAvailabilityProps>(
                     return iconKey ? (
                       <div
                         key={provider.provider_id}
-                        class="tooltip text-base-content/70 text-3xl"
+                        class="tooltip badge badge-outline text-base-content/70 h-auto min-h-8 gap-2 rounded-full px-3 py-2 text-sm font-medium"
                         data-tip={provider.provider_name}
                       >
-                        <ProviderIcon iconKey={iconKey} />
+                        <span aria-hidden="true" class="text-xl">
+                          <ProviderIcon iconKey={iconKey} />
+                        </span>
+                        <span>{provider.provider_name}</span>
                       </div>
                     ) : (
                       <span

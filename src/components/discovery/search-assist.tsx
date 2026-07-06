@@ -50,9 +50,9 @@ export const SearchAssist = component$<SearchAssistProps>(
                   <a
                     key={search.href}
                     href={search.href}
-                    class="btn btn-ghost btn-sm border-base-200 bg-base-200/60 rounded-full border text-sm font-medium normal-case shadow-none"
+                    class="btn btn-ghost border-base-200 bg-base-200/60 min-h-11 max-w-full rounded-full border text-sm font-medium normal-case shadow-none md:btn-sm"
                   >
-                    {search.query}
+                    <span class="truncate">{search.query}</span>
                   </a>
                 ))
               ) : (
@@ -80,9 +80,9 @@ export const SearchAssist = component$<SearchAssistProps>(
                 <a
                   key={link.href}
                   href={link.href}
-                  class="btn btn-outline btn-sm rounded-full text-sm font-medium normal-case shadow-none"
+                  class="btn btn-outline min-h-11 max-w-full rounded-full text-sm font-medium normal-case shadow-none md:btn-sm"
                 >
-                  {link.label}
+                  <span class="truncate">{link.label}</span>
                 </a>
               ))}
             </div>

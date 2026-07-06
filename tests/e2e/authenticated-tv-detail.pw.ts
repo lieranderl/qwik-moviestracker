@@ -21,7 +21,9 @@ test.describe("authenticated tv detail", () => {
       page.getByRole("link", { name: openImdbPagePattern }),
     ).toBeVisible();
     await expect(page.getByText("TV-14 • US")).toBeVisible();
-    await expect(page.getByText("Hulu")).toBeVisible();
+    await expect(
+      page.locator("span:not([aria-hidden])").filter({ hasText: /^Hulu$/ }),
+    ).toBeVisible();
     await expect(page.getByText("Returning Series")).toBeVisible();
     await expect(
       page.getByRole("link", { name: /state machines/i }),

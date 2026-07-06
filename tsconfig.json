@@ -5,6 +5,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "jsx": "react-jsx",
+    "types": ["bun"],
     "moduleDetection": "force",
     "jsxImportSource": "@builder.io/qwik",
     "strict": true,

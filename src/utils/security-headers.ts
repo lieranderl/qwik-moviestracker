@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
-import { PARAM_LAUNCHER_SCRIPT } from "./param-launcher";
+import { PARAM_LAUNCHER_SCRIPT } from "./param-launcher-script";
 
 export const HSTS_HEADER_VALUE = "max-age=31536000; includeSubDomains";
 export const CSP_NONCE_HEADER = "x-csp-nonce";

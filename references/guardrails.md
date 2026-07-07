@@ -60,6 +60,8 @@
 - Keep MongoDB and Auth Mongo adapter runtime imports behind request-time
   guards. Bun SSG may run without `MONGO_URI`, and MongoDB 7/BSON imports
   Node APIs that can break Linux Cloud Build if loaded during SSG.
+- Keep the MongoDB driver on the Bun-compatible 6.x line until Bun supports the
+  `node:v8` startup snapshot APIs used by MongoDB 7/BSON.
 - Production auth/origin handling must pin the public origin with `AUTH_URL`;
   add preview/custom hosts with `TRUSTED_ORIGINS` instead of trusting arbitrary
   `Host` or `x-forwarded-proto` headers.

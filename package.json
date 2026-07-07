@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.11.2",
-    "mongodb": "^7.4.0",
+    "mongodb": "6.21.0",
     "undici": "8.7.0",
     "valibot": "1.4.2"
   },

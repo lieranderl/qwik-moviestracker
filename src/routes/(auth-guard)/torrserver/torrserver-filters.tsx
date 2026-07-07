@@ -46,13 +46,11 @@ export interface TorrServerFiltersProps {
 export const TorrServerFilters = component$(
   ({ lang, querySig, sortKeySig, statusFilterSig }: TorrServerFiltersProps) => (
     <section class="card border-base-200 bg-base-100 border shadow-sm">
-      <div class="card-body gap-4 p-4 md:p-6">
+      <div class="card-body gap-4 p-4 md:gap-5 md:p-6">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <h2 class="card-title">
-            {langText(lang, "Filters", "Фильтры")}
-          </h2>
+          <h2 class="card-title">{langText(lang, "Filters", "Фильтры")}</h2>
 
-          <div class="grid min-w-0 gap-3 md:grid-cols-[minmax(0,18rem)_minmax(0,12rem)]">
+          <div class="grid w-full min-w-0 gap-3 md:grid-cols-[minmax(0,18rem)_minmax(0,12rem)] lg:w-auto">
             <label class="input input-bordered flex min-w-0 items-center gap-2 text-base">
               <span class="text-base-content/60 text-xs font-medium tracking-[0.12em] uppercase">
                 {langText(lang, "Search", "Поиск")}
@@ -74,7 +72,11 @@ export const TorrServerFilters = component$(
 
             <select
               value={sortKeySig.value}
-              aria-label={langText(lang, "Sort TorrServer torrents", "Сортировать торренты TorrServer")}
+              aria-label={langText(
+                lang,
+                "Sort TorrServer torrents",
+                "Сортировать торренты TorrServer",
+              )}
               class="select select-bordered h-11 min-h-11 text-base"
               onChange$={(_, element) => {
                 sortKeySig.value = element.value as TorrServerSortKey;
@@ -91,12 +93,12 @@ export const TorrServerFilters = component$(
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="grid gap-2 sm:flex sm:flex-wrap">
           {STATUS_FILTERS.map((filter) => (
             <button
               type="button"
               key={filter}
-              class={`btn min-h-11 md:btn-sm ${
+              class={`btn md:btn-sm min-h-11 w-full sm:w-auto ${
                 statusFilterSig.value === filter ? "btn-primary" : "btn-ghost"
               }`}
               onClick$={() => {

@@ -1,8 +1,4 @@
-import {
-  component$,
-  type PropFunction,
-  type Signal,
-} from "@builder.io/qwik";
+import { component$, type PropFunction, type Signal } from "@builder.io/qwik";
 import { TorrServerModal } from "./torrserver-modal";
 
 export type TorrServerApiSearchResult = {
@@ -42,86 +38,92 @@ const AddLinkSection = component$(
     serverUrl: string;
     titleValue: Signal<string>;
   }) => (
-    <div class="rounded-box border-base-200 bg-base-200/40 border p-4">
-      <p class="mb-3 text-sm font-semibold">
-        {lt(lang, "Add torrent by link", "Добавить торрент по ссылке")}
-      </p>
-      <form preventdefault:submit onSubmit$={onAddLink$} class="space-y-3">
-        <label class="form-control">
-          <span class="label label-text px-0 pb-1 text-xs">
-            {lt(lang, "Torrent or magnet link", "Torrent или magnet ссылка")}
-          </span>
-        <input
-          type="text"
-          class="input input-bordered w-full text-base"
-          placeholder={lt(
-            lang,
-            "magnet:?xt=... or http(s)://...",
-            "magnet:?xt=... или http(s)://...",
-          )}
-          value={linkValue.value}
-          onInput$={(_, el) => {
-            linkValue.value = el.value;
-          }}
-        />
-        </label>
-        <label class="form-control">
-          <span class="label label-text px-0 pb-1 text-xs">
-            {lt(lang, "Title", "Заголовок")}
-          </span>
-        <input
-          type="text"
-          class="input input-bordered w-full text-base"
-          placeholder={lt(lang, "Optional title", "Необязательный заголовок")}
-          value={titleValue.value}
-          onInput$={(_, el) => {
-            titleValue.value = el.value;
-          }}
-        />
-        </label>
-        <div class="grid gap-2 sm:grid-cols-2">
+    <section class="card border-base-200 bg-base-200/40 border shadow-none">
+      <div class="card-body gap-3 p-4">
+        <h3 class="font-semibold">
+          {lt(lang, "Add torrent by link", "Добавить торрент по ссылке")}
+        </h3>
+        <form preventdefault:submit onSubmit$={onAddLink$} class="grid gap-3">
           <label class="form-control">
-          <span class="label label-text px-0 pb-1 text-xs">
-            {lt(lang, "Category", "Категория")}
-          </span>
-          <select
-            class="select select-bordered w-full text-base"
-            value={categoryValue.value}
-            onChange$={(_, el) => {
-              categoryValue.value = el.value;
-            }}
-          >
-            <option value="other">{lt(lang, "Other", "Другое")}</option>
-            <option value="movie">{lt(lang, "Movie", "Фильм")}</option>
-            <option value="tv">{lt(lang, "TV", "Сериал")}</option>
-            <option value="music">{lt(lang, "Music", "Музыка")}</option>
-          </select>
-          </label>
-          <label class="label rounded-box border-base-200 min-h-11 cursor-pointer justify-start gap-2 border px-3">
+            <span class="label label-text px-0 pb-1 text-xs">
+              {lt(lang, "Torrent or magnet link", "Torrent или magnet ссылка")}
+            </span>
             <input
-              type="checkbox"
-              class="checkbox checkbox-sm"
-              checked={saveToDbValue.value}
-              onChange$={(_, el) => {
-                saveToDbValue.value = el.checked;
+              type="text"
+              class="input input-bordered min-h-11 w-full text-base"
+              placeholder={lt(
+                lang,
+                "magnet:?xt=... or http(s)://...",
+                "magnet:?xt=... или http(s)://...",
+              )}
+              value={linkValue.value}
+              onInput$={(_, el) => {
+                linkValue.value = el.value;
               }}
             />
-            <span class="label-text text-sm">
-              {lt(lang, "Save in DB", "Сохранить в БД")}
-            </span>
           </label>
-        </div>
-        <button
-          type="submit"
-          class="btn btn-primary min-h-11 w-full"
-          disabled={!serverUrl || addLinkBusy}
-        >
-          {addLinkBusy
-            ? lt(lang, "Adding...", "Добавление...")
-            : lt(lang, "Add link", "Добавить ссылку")}
-        </button>
-      </form>
-    </div>
+          <label class="form-control">
+            <span class="label label-text px-0 pb-1 text-xs">
+              {lt(lang, "Title", "Заголовок")}
+            </span>
+            <input
+              type="text"
+              class="input input-bordered min-h-11 w-full text-base"
+              placeholder={lt(
+                lang,
+                "Optional title",
+                "Необязательный заголовок",
+              )}
+              value={titleValue.value}
+              onInput$={(_, el) => {
+                titleValue.value = el.value;
+              }}
+            />
+          </label>
+          <div class="grid gap-2 sm:grid-cols-2">
+            <label class="form-control">
+              <span class="label label-text px-0 pb-1 text-xs">
+                {lt(lang, "Category", "Категория")}
+              </span>
+              <select
+                class="select select-bordered min-h-11 w-full text-base"
+                value={categoryValue.value}
+                onChange$={(_, el) => {
+                  categoryValue.value = el.value;
+                }}
+              >
+                <option value="other">{lt(lang, "Other", "Другое")}</option>
+                <option value="movie">{lt(lang, "Movie", "Фильм")}</option>
+                <option value="tv">{lt(lang, "TV", "Сериал")}</option>
+                <option value="music">{lt(lang, "Music", "Музыка")}</option>
+              </select>
+            </label>
+            <label class="label rounded-box border-base-200 min-h-11 cursor-pointer justify-start gap-2 border px-3">
+              <input
+                type="checkbox"
+                class="checkbox checkbox-sm"
+                checked={saveToDbValue.value}
+                onChange$={(_, el) => {
+                  saveToDbValue.value = el.checked;
+                }}
+              />
+              <span class="label-text text-sm">
+                {lt(lang, "Save in DB", "Сохранить в БД")}
+              </span>
+            </label>
+          </div>
+          <button
+            type="submit"
+            class="btn btn-primary min-h-11 w-full"
+            disabled={!serverUrl || addLinkBusy}
+          >
+            {addLinkBusy
+              ? lt(lang, "Adding...", "Добавление...")
+              : lt(lang, "Add link", "Добавить ссылку")}
+          </button>
+        </form>
+      </div>
+    </section>
   ),
 );
 
@@ -149,77 +151,82 @@ const UploadSection = component$(
     uploadFileName: string;
     uploadValidationMessage?: string;
   }) => (
-    <div class="rounded-box border-base-200 bg-base-200/40 border p-4">
-      <p class="mb-3 text-sm font-semibold">
-        {lt(lang, "Upload .torrent file", "Загрузить .torrent файл")}
-      </p>
-      <label class="form-control">
-        <span class="label label-text px-0 pb-1 text-xs">
-          {lt(lang, ".torrent file", ".torrent файл")}
-        </span>
-        <input
-          type="file"
-          accept=".torrent"
-          class="file-input file-input-bordered w-full text-base"
-          onChange$={(_, element) => {
-            onUploadFileChange$(element.files?.[0] ?? null);
-          }}
-        />
-      </label>
-      <p
-        class={`mt-2 text-xs ${
-          uploadValidationMessage ? "text-error" : "text-base-content/60"
-        }`}
-      >
-        {uploadValidationMessage ||
-          uploadFileName ||
-          lt(lang, "No file selected", "Файл не выбран")}
-      </p>
-      <button
-        type="button"
-        class="btn btn-secondary mt-3 min-h-11 w-full"
-        disabled={
-          !serverUrl || !uploadFileName || Boolean(uploadValidationMessage) || uploadBusy
-        }
-        onClick$={onUpload$}
-      >
-        {uploadBusy
-          ? lt(lang, "Uploading...", "Загрузка...")
-          : lt(lang, "Upload", "Загрузить")}
-      </button>
-      <div class="border-base-300 mt-4 space-y-2 border-t pt-3">
-        <p class="text-sm font-semibold">
-          {lt(lang, "Download speed test", "Тест скорости скачивания")}
-        </p>
+    <section class="card border-base-200 bg-base-200/40 border shadow-none">
+      <div class="card-body gap-3 p-4">
+        <h3 class="font-semibold">
+          {lt(lang, "Upload .torrent file", "Загрузить .torrent файл")}
+        </h3>
         <label class="form-control">
           <span class="label label-text px-0 pb-1 text-xs">
-            {lt(lang, "Download size in MB", "Размер скачивания в MB")}
+            {lt(lang, ".torrent file", ".torrent файл")}
           </span>
-          <span class="input input-bordered flex items-center gap-2 text-base">
-          <span class="text-base-content/70 text-xs">MB</span>
           <input
-            type="number"
-            min={1}
-            class="min-w-0 grow"
-            value={downloadSize.value}
-            onInput$={(_, element) => {
-              downloadSize.value = element.value;
+            type="file"
+            accept=".torrent"
+            class="file-input file-input-bordered min-h-11 w-full text-base"
+            onChange$={(_, element) => {
+              onUploadFileChange$(element.files?.[0] ?? null);
             }}
           />
-          </span>
         </label>
-        {downloadTestUrl && (
-          <a
-            href={downloadTestUrl}
-            target="_blank"
-            rel="noreferrer"
-            class="btn btn-outline min-h-11 w-full"
-          >
-            /download
-          </a>
-        )}
+        <p
+          class={`text-xs ${
+            uploadValidationMessage ? "text-error" : "text-base-content/60"
+          }`}
+        >
+          {uploadValidationMessage ||
+            uploadFileName ||
+            lt(lang, "No file selected", "Файл не выбран")}
+        </p>
+        <button
+          type="button"
+          class="btn btn-secondary min-h-11 w-full"
+          disabled={
+            !serverUrl ||
+            !uploadFileName ||
+            Boolean(uploadValidationMessage) ||
+            uploadBusy
+          }
+          onClick$={onUpload$}
+        >
+          {uploadBusy
+            ? lt(lang, "Uploading...", "Загрузка...")
+            : lt(lang, "Upload", "Загрузить")}
+        </button>
+        <div class="border-base-300 grid gap-3 border-t pt-3">
+          <p class="text-sm font-semibold">
+            {lt(lang, "Download speed test", "Тест скорости скачивания")}
+          </p>
+          <label class="form-control">
+            <span class="label label-text px-0 pb-1 text-xs">
+              {lt(lang, "Download size in MB", "Размер скачивания в MB")}
+            </span>
+            <span class="input input-bordered flex min-h-11 items-center gap-2 text-base">
+              <span class="text-base-content/70 text-xs">MB</span>
+              <input
+                type="number"
+                min={1}
+                class="min-w-0 grow"
+                value={downloadSize.value}
+                onInput$={(_, element) => {
+                  downloadSize.value = element.value;
+                }}
+              />
+            </span>
+          </label>
+          {downloadTestUrl && (
+            <a
+              href={downloadTestUrl}
+              target="_blank"
+              rel="noreferrer"
+              class="btn btn-outline min-h-11 w-full"
+            >
+              /download
+            </a>
+          )}
+        </div>
       </div>
-    </div>
+    </section>
   ),
 );
 
@@ -249,130 +256,132 @@ const SearchSection = component$(
     serverUrl: string;
     statsText: string;
   }) => (
-    <div class="rounded-box border-base-200 bg-base-200/40 border p-4">
-      <p class="mb-3 text-sm font-semibold">
-        {lt(lang, "Search and diagnostics", "Поиск и диагностика")}
-      </p>
-      <label class="form-control">
-        <span class="label label-text px-0 pb-1 text-xs">
-          {lt(lang, "Search query", "Поисковый запрос")}
-        </span>
-        <input
-          type="text"
-          class="input input-bordered w-full text-base"
-          value={apiQuery.value}
-          placeholder={lt(lang, "Search query", "Поисковый запрос")}
-          onInput$={(_, element) => {
-            apiQuery.value = element.value;
-          }}
-        />
-      </label>
-      <div class="mt-3 grid gap-2 sm:grid-cols-2">
-        <button
-          type="button"
-          class="btn btn-outline min-h-11"
-          disabled={!serverUrl || !apiQuery.value.trim()}
-          onClick$={async () => {
-            await onSearch$("rutor");
-          }}
-        >
-          /search
-        </button>
-        <button
-          type="button"
-          class="btn btn-outline min-h-11"
-          disabled={!serverUrl || !apiQuery.value.trim()}
-          onClick$={async () => {
-            await onSearch$("torznab");
-          }}
-        >
-          /torznab
-        </button>
-      </div>
-      <p class="text-base-content/60 mt-2 text-xs">
-        {searchBusy
-          ? lt(lang, "Searching...", "Поиск...")
-          : searchSource
-            ? lt(
-                lang,
-                `Results from ${searchSource}: ${searchResults.length}`,
-                `Результаты из ${searchSource}: ${searchResults.length}`,
-              )
-            : lt(
-                lang,
-                "Run /search or /torznab to load results here.",
-                "Запустите /search или /torznab, чтобы увидеть результаты здесь.",
-              )}
-      </p>
-      <div class="mt-2 max-h-48 space-y-1 overflow-auto">
-        {searchResults.slice(0, 12).map((result, index) => (
-          <div
-            key={`${result.link || result.magnet || result.torrent || "result"}-${index}`}
-            class="rounded-box bg-base-100 border-base-300 border px-2 py-2"
+    <section class="card border-base-200 bg-base-200/40 border shadow-none">
+      <div class="card-body gap-3 p-4">
+        <h3 class="font-semibold">
+          {lt(lang, "Search and diagnostics", "Поиск и диагностика")}
+        </h3>
+        <label class="form-control">
+          <span class="label label-text px-0 pb-1 text-xs">
+            {lt(lang, "Search query", "Поисковый запрос")}
+          </span>
+          <input
+            type="text"
+            class="input input-bordered min-h-11 w-full text-base"
+            value={apiQuery.value}
+            placeholder={lt(lang, "Search query", "Поисковый запрос")}
+            onInput$={(_, element) => {
+              apiQuery.value = element.value;
+            }}
+          />
+        </label>
+        <div class="grid gap-2 sm:grid-cols-2">
+          <button
+            type="button"
+            class="btn btn-outline min-h-11"
+            disabled={!serverUrl || !apiQuery.value.trim()}
+            onClick$={async () => {
+              await onSearch$("rutor");
+            }}
           >
-            <p class="truncate text-xs font-medium">
-              {result.name || result.link || result.magnet || result.torrent}
-            </p>
-            <div class="mt-1 flex items-center justify-between gap-2">
-              <span class="text-base-content/60 text-[11px]">
-                {result.seed || result.seeders || result.peer || 0}{" "}
-                {lt(lang, "seeders", "сидеров")}
-              </span>
-              <button
-                type="button"
-                class="btn btn-primary min-h-11 rounded-full md:btn-sm"
-                disabled={!serverUrl || addLinkBusy}
-                onClick$={async () => {
-                  await onAddSearchResult$(result);
-                }}
-              >
-                {lt(lang, "Add", "Добавить")}
-              </button>
+            /search
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline min-h-11"
+            disabled={!serverUrl || !apiQuery.value.trim()}
+            onClick$={async () => {
+              await onSearch$("torznab");
+            }}
+          >
+            /torznab
+          </button>
+        </div>
+        <p class="text-base-content/60 text-xs">
+          {searchBusy
+            ? lt(lang, "Searching...", "Поиск...")
+            : searchSource
+              ? lt(
+                  lang,
+                  `Results from ${searchSource}: ${searchResults.length}`,
+                  `Результаты из ${searchSource}: ${searchResults.length}`,
+                )
+              : lt(
+                  lang,
+                  "Run /search or /torznab to load results here.",
+                  "Запустите /search или /torznab, чтобы увидеть результаты здесь.",
+                )}
+        </p>
+        <div class="max-h-48 space-y-2 overflow-auto">
+          {searchResults.slice(0, 12).map((result, index) => (
+            <div
+              key={`${result.link || result.magnet || result.torrent || "result"}-${index}`}
+              class="rounded-box bg-base-100 border-base-300 border p-3"
+            >
+              <p class="truncate text-xs font-medium">
+                {result.name || result.link || result.magnet || result.torrent}
+              </p>
+              <div class="mt-2 grid gap-2 sm:flex sm:items-center sm:justify-between">
+                <span class="text-base-content/60 text-[11px]">
+                  {result.seed || result.seeders || result.peer || 0}{" "}
+                  {lt(lang, "seeders", "сидеров")}
+                </span>
+                <button
+                  type="button"
+                  class="btn btn-primary md:btn-sm min-h-11 w-full rounded-full sm:w-auto"
+                  disabled={!serverUrl || addLinkBusy}
+                  onClick$={async () => {
+                    await onAddSearchResult$(result);
+                  }}
+                >
+                  {lt(lang, "Add", "Добавить")}
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-      <div class="mt-3 flex flex-wrap gap-2">
-        {serverUrl && (
-          <a
-            href={`${serverUrl}/magnets`}
-            target="_blank"
-            rel="noreferrer"
-            class="btn btn-ghost min-h-11 rounded-full md:btn-sm"
-          >
-            /magnets
-          </a>
-        )}
-        {serverUrl && (
-          <a
-            href={`${serverUrl}/stat`}
-            target="_blank"
-            rel="noreferrer"
-            class="btn btn-ghost min-h-11 rounded-full md:btn-sm"
-          >
-            /stat
-          </a>
-        )}
-        {serverUrl && (
-          <a
-            href={`${serverUrl}/playlistall/all.m3u`}
-            target="_blank"
-            rel="noreferrer"
-            class="btn btn-ghost min-h-11 rounded-full md:btn-sm"
-          >
-            /playlistall
-          </a>
-        )}
-      </div>
-      <p class="text-base-content/60 mt-3 line-clamp-4 text-xs leading-relaxed">
-        {(statsText || "").slice(0, 420) ||
-          lt(
-            lang,
-            "Statistics text from /stat will appear here after connection.",
-            "Текст статистики из /stat появится здесь после подключения.",
+          ))}
+        </div>
+        <div class="grid gap-2 sm:flex sm:flex-wrap">
+          {serverUrl && (
+            <a
+              href={`${serverUrl}/magnets`}
+              target="_blank"
+              rel="noreferrer"
+              class="btn btn-ghost md:btn-sm min-h-11 w-full rounded-full sm:w-auto"
+            >
+              /magnets
+            </a>
           )}
-      </p>
-    </div>
+          {serverUrl && (
+            <a
+              href={`${serverUrl}/stat`}
+              target="_blank"
+              rel="noreferrer"
+              class="btn btn-ghost md:btn-sm min-h-11 w-full rounded-full sm:w-auto"
+            >
+              /stat
+            </a>
+          )}
+          {serverUrl && (
+            <a
+              href={`${serverUrl}/playlistall/all.m3u`}
+              target="_blank"
+              rel="noreferrer"
+              class="btn btn-ghost md:btn-sm min-h-11 w-full rounded-full sm:w-auto"
+            >
+              /playlistall
+            </a>
+          )}
+        </div>
+        <p class="text-base-content/60 line-clamp-4 text-xs leading-relaxed">
+          {(statsText || "").slice(0, 420) ||
+            lt(
+              lang,
+              "Statistics text from /stat will appear here after connection.",
+              "Текст статистики из /stat появится здесь после подключения.",
+            )}
+        </p>
+      </div>
+    </section>
   ),
 );
 
@@ -404,109 +413,111 @@ const StorageSection = component$(
     viewedActionBusy: boolean;
     viewedIsMarked: boolean;
   }) => (
-    <div class="rounded-box border-base-200 bg-base-200/40 border p-4">
-      <p class="mb-3 text-sm font-semibold">
-        {lt(
-          lang,
-          "Storage and viewed tools",
-          "Инструменты хранилища и просмотренного",
-        )}
-      </p>
-      <div class="space-y-2">
-        <label class="label pb-0" for="modal-storage-settings-mode">
-          <span class="label-text text-xs">
-            {lt(lang, "Settings storage", "Хранилище настроек")}
-          </span>
-        </label>
-        <select
-          id="modal-storage-settings-mode"
-          class="select select-bordered w-full text-base"
-          value={storageDraftSettings.value}
-          onChange$={(_, element) => {
-            storageDraftSettings.value =
-              element.value === "bbolt" ? "bbolt" : "json";
-          }}
-        >
-          <option value="json">json</option>
-          <option value="bbolt">bbolt</option>
-        </select>
-        <label class="label pb-0" for="modal-storage-viewed-mode">
-          <span class="label-text text-xs">
-            {lt(lang, "Viewed storage", "Хранилище просмотренного")}
-          </span>
-        </label>
-        <select
-          id="modal-storage-viewed-mode"
-          class="select select-bordered w-full text-base"
-          value={storageDraftViewed.value}
-          onChange$={(_, element) => {
-            storageDraftViewed.value =
-              element.value === "bbolt" ? "bbolt" : "json";
-          }}
-        >
-          <option value="json">json</option>
-          <option value="bbolt">bbolt</option>
-        </select>
-        <button
-          type="button"
-          class="btn btn-outline mt-1 min-h-11 w-full"
-          disabled={!serverUrl || storageUpdateBusy}
-          onClick$={onApplyStorage$}
-        >
-          {storageUpdateBusy
-            ? lt(lang, "Applying...", "Применение...")
-            : lt(lang, "Apply storage mode", "Применить режим хранилища")}
-        </button>
-        <p class="text-base-content/60 text-xs">
+    <section class="card border-base-200 bg-base-200/40 border shadow-none">
+      <div class="card-body gap-3 p-4">
+        <h3 class="font-semibold">
           {lt(
             lang,
-            "TorrServer restart may be required after changing storage backend.",
-            "После смены хранилища может потребоваться перезапуск TorrServer.",
+            "Storage and viewed tools",
+            "Инструменты хранилища и просмотренного",
           )}
-        </p>
-      </div>
+        </h3>
+        <div class="grid gap-3">
+          <label class="form-control">
+            <span class="label label-text px-0 pb-1 text-xs">
+              {lt(lang, "Settings storage", "Хранилище настроек")}
+            </span>
+            <select
+              id="modal-storage-settings-mode"
+              class="select select-bordered min-h-11 w-full text-base"
+              value={storageDraftSettings.value}
+              onChange$={(_, element) => {
+                storageDraftSettings.value =
+                  element.value === "bbolt" ? "bbolt" : "json";
+              }}
+            >
+              <option value="json">json</option>
+              <option value="bbolt">bbolt</option>
+            </select>
+          </label>
+          <label class="form-control">
+            <span class="label label-text px-0 pb-1 text-xs">
+              {lt(lang, "Viewed storage", "Хранилище просмотренного")}
+            </span>
+            <select
+              id="modal-storage-viewed-mode"
+              class="select select-bordered min-h-11 w-full text-base"
+              value={storageDraftViewed.value}
+              onChange$={(_, element) => {
+                storageDraftViewed.value =
+                  element.value === "bbolt" ? "bbolt" : "json";
+              }}
+            >
+              <option value="json">json</option>
+              <option value="bbolt">bbolt</option>
+            </select>
+          </label>
+          <button
+            type="button"
+            class="btn btn-outline min-h-11 w-full"
+            disabled={!serverUrl || storageUpdateBusy}
+            onClick$={onApplyStorage$}
+          >
+            {storageUpdateBusy
+              ? lt(lang, "Applying...", "Применение...")
+              : lt(lang, "Apply storage mode", "Применить режим хранилища")}
+          </button>
+          <p class="text-base-content/60 text-xs">
+            {lt(
+              lang,
+              "TorrServer restart may be required after changing storage backend.",
+              "После смены хранилища может потребоваться перезапуск TorrServer.",
+            )}
+          </p>
+        </div>
 
-      <div class="border-base-300 mt-4 space-y-2 border-t pt-3">
-        <p class="text-sm font-semibold">
-          {lt(lang, "Viewed actions", "Действия просмотренного")}
-        </p>
-        <p class="text-base-content/70 text-xs">
-          {selectedTorrentLabel
-            ? lt(
-                lang,
-                viewedIsMarked
-                  ? "Selected torrent/file is currently marked as viewed."
-                  : "Selected torrent/file is not marked as viewed.",
-                viewedIsMarked
-                  ? "Выбранный торрент/файл отмечен как просмотренный."
-                  : "Выбранный торрент/файл не отмечен как просмотренный.",
-              )
-            : lt(
-                lang,
-                "Select a torrent to set or remove viewed state.",
-                "Выберите торрент, чтобы установить или убрать статус просмотренного.",
-              )}
-        </p>
-        <div class="grid gap-2 sm:grid-cols-2">
-          <button
-            type="button"
-            class="btn btn-primary min-h-11"
-            disabled={!serverUrl || !selectedTorrentLabel || viewedActionBusy}
-            onClick$={onMarkViewed$}
-          >
-            {lt(lang, "Set viewed", "Отметить")}
-          </button>
-          <button
-            type="button"
-            class="btn btn-outline min-h-11"
-            disabled={!serverUrl || !selectedTorrentLabel || viewedActionBusy}
-            onClick$={onRemoveViewed$}
-          >
-            {lt(lang, "Remove viewed", "Убрать отметку")}
-          </button>
+        <div class="border-base-300 grid gap-3 border-t pt-3">
+          <p class="text-sm font-semibold">
+            {lt(lang, "Viewed actions", "Действия просмотренного")}
+          </p>
+          <p class="text-base-content/70 text-xs">
+            {selectedTorrentLabel
+              ? lt(
+                  lang,
+                  viewedIsMarked
+                    ? "Selected torrent/file is currently marked as viewed."
+                    : "Selected torrent/file is not marked as viewed.",
+                  viewedIsMarked
+                    ? "Выбранный торрент/файл отмечен как просмотренный."
+                    : "Выбранный торрент/файл не отмечен как просмотренный.",
+                )
+              : lt(
+                  lang,
+                  "Select a torrent to set or remove viewed state.",
+                  "Выберите торрент, чтобы установить или убрать статус просмотренного.",
+                )}
+          </p>
+          <div class="grid gap-2 sm:grid-cols-2">
+            <button
+              type="button"
+              class="btn btn-primary min-h-11"
+              disabled={!serverUrl || !selectedTorrentLabel || viewedActionBusy}
+              onClick$={onMarkViewed$}
+            >
+              {lt(lang, "Set viewed", "Отметить")}
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline min-h-11"
+              disabled={!serverUrl || !selectedTorrentLabel || viewedActionBusy}
+              onClick$={onRemoveViewed$}
+            >
+              {lt(lang, "Remove viewed", "Убрать отметку")}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   ),
 );
 
@@ -521,9 +532,7 @@ export interface TorrServerApiToolsModalProps {
   lang: string;
   linkValue: Signal<string>;
   onAddLink$: PropFunction<() => void>;
-  onAddSearchResult$: PropFunction<
-    (result: TorrServerApiSearchResult) => void
-  >;
+  onAddSearchResult$: PropFunction<(result: TorrServerApiSearchResult) => void>;
   onApplyStorage$: PropFunction<() => void>;
   onClose$: PropFunction<() => void>;
   onMarkViewed$: PropFunction<() => void>;
@@ -555,12 +564,12 @@ export const TorrServerApiToolsModal = component$(
     return (
       <TorrServerModal
         open={props.open}
-        closeLabel={lt(props.lang, "Close API tools", "Закрыть API-инструменты")}
-        title={lt(
+        closeLabel={lt(
           props.lang,
-          "Tools",
-          "Инструменты",
+          "Close API tools",
+          "Закрыть API-инструменты",
         )}
+        title={lt(props.lang, "Tools", "Инструменты")}
         subtitle={lt(
           props.lang,
           "Add torrents, search, and update storage.",

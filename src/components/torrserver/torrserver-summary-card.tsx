@@ -55,18 +55,18 @@ export const TorrServerSummaryCard = component$(
             <div class="flex flex-wrap items-center gap-2">
               <span
                 title={endpoint}
-                class="badge badge-outline max-w-full truncate rounded-full px-3 py-3 font-medium"
+                class="badge badge-outline max-w-full truncate rounded-full font-medium"
               >
                 {endpoint}
               </span>
               {version && (
-                <span class="badge badge-neutral rounded-full px-3 py-3 font-medium">
+                <span class="badge badge-neutral rounded-full font-medium">
                   {version}
                 </span>
               )}
               {connectionLabel && (
                 <span
-                  class={`badge rounded-full px-3 py-3 font-medium ${getToneBadgeClass(statusTone)}`}
+                  class={`badge rounded-full font-medium ${getToneBadgeClass(statusTone)}`}
                 >
                   {connectionLabel}
                 </span>
@@ -96,13 +96,10 @@ export const TorrServerSummaryCard = component$(
                 const tone = metric.tone ?? "neutral";
 
                 return (
-                  <div
-                    class="stat min-w-0 overflow-hidden px-4 py-3"
-                    key={metric.label}
-                  >
+                  <div class="stat min-w-0 overflow-hidden" key={metric.label}>
                     <p class="stat-title truncate text-xs">{metric.label}</p>
                     <p
-                      class={`stat-value truncate text-xl ${getToneStatValueClass(tone)}`}
+                      class={`stat-value truncate text-lg ${getToneStatValueClass(tone)}`}
                     >
                       {metric.value}
                     </p>
@@ -123,7 +120,7 @@ export const TorrServerSummaryCard = component$(
                 return (
                   <span
                     key={badge.label}
-                    class={`badge rounded-full px-3 py-3 font-medium ${getToneBadgeClass(tone)}`}
+                    class={`badge rounded-full font-medium ${getToneBadgeClass(tone)}`}
                   >
                     {badge.label}
                   </span>

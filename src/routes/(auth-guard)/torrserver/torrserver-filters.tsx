@@ -46,13 +46,13 @@ export interface TorrServerFiltersProps {
 export const TorrServerFilters = component$(
   ({ lang, querySig, sortKeySig, statusFilterSig }: TorrServerFiltersProps) => (
     <section class="card border-base-200 bg-base-100 border shadow-sm">
-      <div class="card-body gap-4 p-4 md:gap-5 md:p-6">
+      <div class="card-body gap-5 p-4 md:p-6">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <h2 class="card-title">{langText(lang, "Filters", "Фильтры")}</h2>
 
           <div class="grid w-full min-w-0 gap-3 md:grid-cols-[minmax(0,18rem)_minmax(0,12rem)] lg:w-auto">
-            <label class="input input-bordered flex min-w-0 items-center gap-2 text-base">
-              <span class="text-base-content/60 text-xs font-medium tracking-[0.12em] uppercase">
+            <label class="input input-bordered flex min-w-0 items-center gap-2">
+              <span class="text-base-content/60 shrink-0 text-xs font-medium tracking-[0.12em] uppercase">
                 {langText(lang, "Search", "Поиск")}
               </span>
               <input
@@ -63,7 +63,7 @@ export const TorrServerFilters = component$(
                   "Search title, hash, category",
                   "Поиск по названию, hash, категории",
                 )}
-                class="h-11 min-w-0 grow"
+                class="min-w-0 grow"
                 onInput$={(_, element) => {
                   querySig.value = element.value;
                 }}
@@ -77,7 +77,7 @@ export const TorrServerFilters = component$(
                 "Sort TorrServer torrents",
                 "Сортировать торренты TorrServer",
               )}
-              class="select select-bordered h-11 min-h-11 text-base"
+              class="select select-bordered"
               onChange$={(_, element) => {
                 sortKeySig.value = element.value as TorrServerSortKey;
               }}
@@ -93,12 +93,12 @@ export const TorrServerFilters = component$(
           </div>
         </div>
 
-        <div class="grid gap-2 sm:flex sm:flex-wrap">
+        <div class="flex flex-wrap gap-2">
           {STATUS_FILTERS.map((filter) => (
             <button
               type="button"
               key={filter}
-              class={`btn md:btn-sm min-h-11 w-full sm:w-auto ${
+              class={`btn btn-sm flex-1 sm:flex-none ${
                 statusFilterSig.value === filter ? "btn-primary" : "btn-ghost"
               }`}
               onClick$={() => {

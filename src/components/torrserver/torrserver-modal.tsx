@@ -77,14 +77,14 @@ export const TorrServerModal = component$(
               <button
                 type="submit"
                 aria-label={closeLabel}
-                class="btn btn-ghost btn-circle min-h-11 w-11 p-0"
+                class="btn btn-ghost btn-circle btn-sm"
               >
                 ✕
               </button>
             </form>
           </div>
 
-          <div class="space-y-4 px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:p-5 sm:pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
+          <div class="px-4 py-4 sm:p-5">
             <Slot />
           </div>
         </div>

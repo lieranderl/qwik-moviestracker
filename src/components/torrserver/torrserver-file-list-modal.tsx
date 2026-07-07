@@ -1,10 +1,6 @@
 import { component$, type PropFunction } from "@builder.io/qwik";
 import { TorrServerModal } from "./torrserver-modal";
-import {
-  formatBytes,
-  getFileTitle,
-  getToneSurfaceClass,
-} from "./torrserver-utils";
+import { formatBytes, getFileTitle } from "./torrserver-utils";
 
 export type TorrServerFileEntry = {
   description?: string;
@@ -82,16 +78,16 @@ export const TorrServerFileListModal = component$(
             )}
           </div>
         ) : files.length === 0 ? (
-          <div
-            class={`rounded-box border p-5 text-sm shadow-none ${getToneSurfaceClass("neutral")}`}
-          >
-            <p class="font-semibold">{emptyTitle}</p>
-            <p class="text-base-content/70 mt-1 leading-relaxed">
-              {emptyDescription}
-            </p>
+          <div class="alert border-base-200 bg-base-200/40 shadow-none">
+            <div>
+              <p class="font-semibold">{emptyTitle}</p>
+              <p class="text-base-content/70 text-sm leading-relaxed">
+                {emptyDescription}
+              </p>
+            </div>
           </div>
         ) : (
-          <section class="space-y-3">
+          <div class="space-y-3">
             {files.map((file) => {
               const sizeLabel =
                 file.sizeLabel ?? formatBytes(file.size ?? null);
@@ -100,74 +96,74 @@ export const TorrServerFileListModal = component$(
               return (
                 <article
                   key={file.id}
-                  class="rounded-box border-base-200 bg-base-100 border p-4 shadow-sm"
+                  class="card border-base-200 bg-base-100 border shadow-sm"
                 >
-                  <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                    <div class="min-w-0 space-y-3">
-                      <div class="flex flex-wrap items-center gap-2">
-                        <span class="badge badge-outline rounded-full px-3 py-3 font-medium">
+                  <div class="card-body gap-4 p-4">
+                    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                      <div class="min-w-0 space-y-3">
+                        <span class="badge badge-outline rounded-full font-medium">
                           {sizeLabel}
                         </span>
+
+                        <div class="space-y-1">
+                          <h4 class="min-w-0 text-base font-semibold break-words md:text-lg">
+                            {titleLabel}
+                          </h4>
+                          {file.path && file.path !== titleLabel && (
+                            <p class="text-base-content/65 text-xs leading-relaxed break-all">
+                              {file.path}
+                            </p>
+                          )}
+                          {file.note && (
+                            <p class="text-base-content/70 text-sm leading-relaxed">
+                              {file.note}
+                            </p>
+                          )}
+                          {file.description && (
+                            <p class="text-base-content/60 text-xs leading-relaxed">
+                              {file.description}
+                            </p>
+                          )}
+                        </div>
                       </div>
 
-                      <div class="space-y-1">
-                        <h4 class="min-w-0 text-base font-semibold wrap-break-word md:text-lg">
-                          {titleLabel}
-                        </h4>
-                        {file.path && file.path !== titleLabel && (
-                          <p class="text-base-content/65 text-xs leading-relaxed break-all">
-                            {file.path}
-                          </p>
+                      <div class="flex flex-wrap gap-2">
+                        {onPlayFile$ && (
+                          <button
+                            type="button"
+                            class="btn btn-primary btn-sm flex-1 sm:flex-none"
+                            onClick$={async () => onPlayFile$(file)}
+                          >
+                            {playActionLabel}
+                          </button>
                         )}
-                        {file.note && (
-                          <p class="text-base-content/70 text-sm leading-relaxed">
-                            {file.note}
-                          </p>
+                        {file.streamUrl && onOpenStream$ && (
+                          <a
+                            href={file.streamUrl}
+                            class="btn btn-outline btn-sm flex-1 sm:flex-none"
+                            data-tip={streamTooltip}
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            {streamActionLabel}
+                          </a>
                         )}
-                        {file.description && (
-                          <p class="text-base-content/60 text-xs leading-relaxed">
-                            {file.description}
-                          </p>
+                        {file.streamUrl && onCopyStreamUrl$ && (
+                          <button
+                            type="button"
+                            class="btn btn-ghost btn-sm flex-1 sm:flex-none"
+                            onClick$={async () => onCopyStreamUrl$(file)}
+                          >
+                            {copyActionLabel}
+                          </button>
                         )}
                       </div>
-                    </div>
-
-                    <div class="grid shrink-0 gap-2 sm:flex sm:flex-wrap">
-                      {onPlayFile$ && (
-                        <button
-                          type="button"
-                          class="btn btn-primary min-h-11 w-full rounded-full sm:w-auto md:btn-sm"
-                          onClick$={async () => onPlayFile$(file)}
-                        >
-                          {playActionLabel}
-                        </button>
-                      )}
-                      {file.streamUrl && onOpenStream$ && (
-                        <a
-                          href={file.streamUrl}
-                          class="btn btn-outline min-h-11 w-full rounded-full sm:w-auto md:btn-sm"
-                          data-tip={streamTooltip}
-                          rel="noreferrer"
-                          target="_blank"
-                        >
-                          {streamActionLabel}
-                        </a>
-                      )}
-                      {file.streamUrl && onCopyStreamUrl$ && (
-                        <button
-                          type="button"
-                          class="btn btn-ghost min-h-11 w-full rounded-full sm:w-auto md:btn-sm"
-                          onClick$={async () => onCopyStreamUrl$(file)}
-                        >
-                          {copyActionLabel}
-                        </button>
-                      )}
                     </div>
                   </div>
                 </article>
               );
             })}
-          </section>
+          </div>
         )}
       </TorrServerModal>
     );

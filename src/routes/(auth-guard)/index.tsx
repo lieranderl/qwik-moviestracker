@@ -23,7 +23,6 @@ import { getTrendingMedia, withImages } from "~/services/tmdb";
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import {
-  langHome,
   langLatestMovies,
   langContinueBrowsing,
   langDiscoverMovies,
@@ -38,14 +37,9 @@ import {
   langQuickFilters,
   langRecentSearches,
   langResume,
-  langStartExploring,
   langTrendingMovies,
-  langTrendingMoviesCount,
   langTrengingTVShows,
-  langTrendingSeriesCount,
-  langSwipeToBrowse,
   langPleaseRefreshOrTryAgain,
-  langLatestItemsCount,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
@@ -138,19 +132,9 @@ export default component$(() => {
 
   const featuredMovie =
     value.movies[(new Date().getDate() - 1) % value.movies.length];
-  const homeBadges = [
-    langLatestItemsCount(lang, value.torMovies.length),
-    langTrendingMoviesCount(lang, value.movies.length),
-    langTrendingSeriesCount(lang, value.tv.length),
-  ];
-
   return (
     <div class="space-y-6">
-      <SectionHeading
-        eyebrow={langHome(lang)}
-        title={langHomeDashboardTitle(lang)}
-        badges={homeBadges}
-      />
+      <SectionHeading title={langHomeDashboardTitle(lang)} />
       <QuickFilterStrip
         label={langQuickFilters(lang)}
         items={[
@@ -201,14 +185,12 @@ export default component$(() => {
         />
       )}
       <ContinueBrowsingWidget
-        emptyDescription={langStartExploring(lang)}
-        label={langContinueBrowsing(lang)}
+        lang={lang}
         lastViewedLabel={langJumpBackIn(lang)}
         recentSearchesLabel={langRecentSearches(lang)}
         resumeLabel={langResume(lang)}
       />
       <MediaCarousel
-        hintLabel={langSwipeToBrowse(lang)}
         sectionId="latest-movies"
         title={langLatestMovies(lang)}
         type={MediaType.Movie}
@@ -234,7 +216,6 @@ export default component$(() => {
         ))}
       </MediaCarousel>
       <MediaCarousel
-        hintLabel={langSwipeToBrowse(lang)}
         sectionId="trending-movies"
         title={langTrendingMovies(lang)}
         type={MediaType.Movie}
@@ -260,7 +241,6 @@ export default component$(() => {
         ))}
       </MediaCarousel>
       <MediaCarousel
-        hintLabel={langSwipeToBrowse(lang)}
         sectionId="trending-tv"
         title={langTrengingTVShows(lang)}
         type={MediaType.Tv}

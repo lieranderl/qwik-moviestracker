@@ -14,13 +14,11 @@ import {
   langBudget,
   langCollectionMovies,
   langCrew,
-  langExternalLinks,
   langOverview,
   langQuickActions,
   langRecommendedMovies,
   langRevenue,
   langText,
-  langSwipeToBrowse,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 import { writeLastViewed } from "~/utils/recent-activity";
@@ -71,7 +69,7 @@ export const MovieDetails = component$(
     return (
       <DetailPageContainer>
         <section class="card border-base-200 bg-base-100/95 border shadow-sm">
-          <div class="card-body gap-6">
+          <div class="card-body gap-5 p-4 md:p-6">
             <div class="space-y-2">
               <MediaTitle
                 name={movie.title ?? ""}
@@ -117,16 +115,13 @@ export const MovieDetails = component$(
           </div>
         </section>
 
-        <section class="section-reveal card border-base-200 bg-base-100/95 relative z-20 mt-6 border shadow-sm">
-          <div class="card-body gap-4">
+        <section class="section-reveal card border-base-200 bg-base-100/95 relative z-20 border shadow-sm">
+          <div class="card-body gap-4 p-4 md:p-6">
             <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div>
-                <p class="text-base-content/55 text-xs font-semibold tracking-[0.14em] uppercase">
-                  {langQuickActions(lang)}
-                </p>
-                <h3 class="text-xl font-semibold">{langExternalLinks(lang)}</h3>
+                <h3 class="text-xl font-semibold">{langQuickActions(lang)}</h3>
               </div>
-              <div class="flex flex-wrap gap-3">
+              <div class="flex flex-wrap items-center gap-3">
                 {movie.videos && movie.videos.results.length > 0 && (
                   <TrailersModal videos={movie.videos.results} />
                 )}
@@ -148,8 +143,8 @@ export const MovieDetails = component$(
           </div>
         </section>
 
-        <section class="section-reveal card border-base-200 bg-base-100/95 relative z-0 mt-6 border shadow-sm">
-          <div class="card-body">
+        <section class="section-reveal card border-base-200 bg-base-100/95 relative z-0 border shadow-sm">
+          <div class="card-body gap-4 p-4 md:p-6">
             <h3 class="card-title text-xl">{langOverview(lang)}</h3>
             <p class="leading-relaxed opacity-90">
               {movie.overview ||
@@ -162,7 +157,7 @@ export const MovieDetails = component$(
           </div>
         </section>
 
-        <div class="mt-6 grid gap-6">
+        <div class="grid gap-6">
           <div class="space-y-6">
             <MediaInfo
               release_date={movie.release_date}
@@ -182,7 +177,7 @@ export const MovieDetails = component$(
                 lang={lang}
               />
               <section class="section-reveal card border-base-200 bg-base-100/95 border shadow-sm">
-                <div class="card-body">
+                <div class="card-body gap-4 p-4 md:p-6">
                   <h3 class="card-title text-base-content/80 text-lg">
                     {langText(lang, "Box Office", "Кассовые сборы")}
                   </h3>
@@ -216,9 +211,8 @@ export const MovieDetails = component$(
           )}
         </div>
 
-        <div class="mt-10 space-y-10">
+        <div class="space-y-6">
           <MediaCarousel
-            hintLabel={langSwipeToBrowse(lang)}
             title={langActors(lang)}
             type={MediaType.Person}
             lang={lang}
@@ -245,7 +239,6 @@ export const MovieDetails = component$(
 
           {movie.credits !== undefined && movie.credits.crew.length > 0 && (
             <MediaCarousel
-              hintLabel={langSwipeToBrowse(lang)}
               title={langCrew(lang)}
               type={MediaType.Person}
               lang={lang}
@@ -275,7 +268,6 @@ export const MovieDetails = component$(
 
           {colMovies.length > 0 && (
             <MediaCarousel
-              hintLabel={langSwipeToBrowse(lang)}
               title={langCollectionMovies(lang)}
               type={MediaType.Person}
               category="updated"
@@ -303,7 +295,6 @@ export const MovieDetails = component$(
 
           {recMovies.length > 0 && (
             <MediaCarousel
-              hintLabel={langSwipeToBrowse(lang)}
               title={langRecommendedMovies(lang)}
               type={MediaType.Person}
               category="updated"

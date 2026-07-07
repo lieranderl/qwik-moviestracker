@@ -8,7 +8,6 @@ import {
   langOverview,
   langSeasons,
   langText,
-  langSwipeToBrowse,
 } from "~/utils/languages";
 import { MediaCard } from "../media-card";
 import { MediaCarousel } from "../media-carousel";
@@ -22,7 +21,6 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
     <section class="my-6">
       {seasons.length > 0 && (
         <MediaCarousel
-          hintLabel={langSwipeToBrowse(lang)}
           title={langSeasons(lang)}
           type={MediaType.Seasons}
           lang={lang}

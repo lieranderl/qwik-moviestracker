@@ -41,7 +41,7 @@ export const PersonDetails = component$(
     return (
       <DetailPageContainer>
         <section class="card border-base-200 bg-base-100/95 border shadow-sm">
-          <div class="card-body">
+          <div class="card-body p-4 md:p-6">
             <div class="grid grid-cols-1 gap-6 md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr]">
               <div class="flex justify-center md:justify-start">
                 {person.profile_path ? (
@@ -93,8 +93,8 @@ export const PersonDetails = component$(
           </div>
         </section>
 
-        <section class="section-reveal card border-base-200 bg-base-100/95 mt-6 border shadow-sm">
-          <div class="card-body gap-3">
+        <section class="section-reveal card border-base-200 bg-base-100/95 border shadow-sm">
+          <div class="card-body gap-3 p-4 md:p-6">
             <h3 class="text-xl font-semibold">
               {langText(lang, "Quick links", "Быстрые ссылки")}
             </h3>
@@ -106,8 +106,8 @@ export const PersonDetails = component$(
           </div>
         </section>
 
-        <section class="section-reveal card border-base-200 bg-base-100/95 mt-6 border shadow-sm">
-          <div class="card-body">
+        <section class="section-reveal card border-base-200 bg-base-100/95 border shadow-sm">
+          <div class="card-body gap-4 p-4 md:p-6">
             <h3 class="card-title text-lg">
               {langText(lang, "Biography", "Биография")}
             </h3>
@@ -115,7 +115,7 @@ export const PersonDetails = component$(
           </div>
         </section>
 
-        <section class="mt-10 space-y-10">
+        <section class="space-y-6">
           {perMovies.cast.length > 0 && (
             <MediaCarousel
               title={langText(lang, "Actor in movies", "Актер в фильмах")}

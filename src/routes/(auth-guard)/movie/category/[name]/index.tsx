@@ -178,14 +178,8 @@ export default component$(() => {
   });
 
   return (
-    <div class="pt-4 pb-10">
+    <div class="space-y-6 pb-10">
       <MediaGrid
-        description={langText(
-          resource.value.lang,
-          "Scroll down to keep loading more results from this movie shelf.",
-          "Прокручивайте вниз, чтобы загружать больше результатов с этой полки фильмов.",
-        )}
-        eyebrow={langText(resource.value.lang, "Catalog", "Каталог")}
         headerBadge={langText(
           resource.value.lang,
           `${movieItemsSig.value.length} loaded`,
@@ -216,7 +210,7 @@ export default component$(() => {
             </a>
           ))}
       </MediaGrid>
-      <div class="my-4 flex justify-center">
+      <div class="flex justify-center">
         <div ref={sentinelRef} class="h-8 w-full" />
         {isLoadingMovies.value && (
           <div class="border-base-200 bg-base-100/88 flex items-center gap-3 rounded-full border px-4 py-2 text-sm shadow-sm">

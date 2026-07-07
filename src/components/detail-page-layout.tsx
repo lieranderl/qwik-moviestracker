@@ -20,7 +20,7 @@ export const DetailPageShell = component$<DetailPageShellProps>(
         )}
         <div class="from-base-100/45 via-base-100/70 to-base-100 fixed inset-0 -z-10 bg-linear-to-b" />
 
-        <div class="relative z-10 px-2 md:px-4">
+        <div class="relative z-10">
           <Slot />
         </div>
       </div>
@@ -30,7 +30,7 @@ export const DetailPageShell = component$<DetailPageShellProps>(
 
 export const DetailPageContainer = component$(() => {
   return (
-    <div class="container mx-auto min-h-screen max-w-7xl px-2 pt-6 pb-8 md:px-4 md:pt-8">
+    <div class="min-h-screen space-y-6">
       <Slot />
     </div>
   );

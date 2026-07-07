@@ -24,13 +24,9 @@ import {
   type RecentSearch,
 } from "~/utils/recent-activity";
 import {
-  langDiscovery,
   langFetchingMatchingTitlesAndPeople,
-  langJumpBackIntoDiscoveryWhenYouWantBroaderBrowsing,
   langLoadingSearchResults,
-  langMovies,
   langNoResults,
-  langPeople,
   langRecentSearches,
   langResults,
   langSearch,
@@ -45,7 +41,6 @@ import {
   langSearchUnavailableRightNow,
   langStartWithATitleActorOrDirector,
   langTryABroaderTitleAPersonNameOrDifferentSpelling,
-  langSeries,
 } from "~/utils/languages";
 import {
   MIN_SEARCH_QUERY_LENGTH,
@@ -109,19 +104,11 @@ export default component$(() => {
   });
 
   return (
-    <div class="mx-auto w-full max-w-7xl pb-8">
-      <SectionHeading
-        eyebrow={langDiscovery(resource.value.lang)}
-        title={langSearch(resource.value.lang)}
-        badges={[
-          langMovies(resource.value.lang),
-          langSeries(resource.value.lang),
-          langPeople(resource.value.lang),
-        ]}
-      />
+    <div class="space-y-6 pb-8">
+      <SectionHeading title={langSearch(resource.value.lang)} />
 
-      <section class="card border-base-200 bg-base-100/90 mb-6 border shadow-sm backdrop-blur">
-        <div class="card-body gap-4">
+      <section class="card border-base-200 bg-base-100 border shadow-sm">
+        <div class="card-body gap-4 p-4 md:p-6">
           <form
             class="flex flex-col gap-3 md:flex-row md:items-end"
             method="get"
@@ -173,9 +160,6 @@ export default component$(() => {
 
       <SearchAssist
         categoryLinks={assistLinks}
-        discoveryDescription={langJumpBackIntoDiscoveryWhenYouWantBroaderBrowsing(
-          resource.value.lang,
-        )}
         emptyRecentSearchesMessage={langSearchForATitleOnceAndItWillShowUpHere(
           resource.value.lang,
         )}
@@ -228,7 +212,7 @@ export default component$(() => {
                   resource.value.lang,
                   movies.total_results,
                 )}
-                title={`${langSearchResults(resource.value.lang)} (${movies.total_results})`}
+                title={langSearchResults(resource.value.lang)}
               >
                 {normalizedResults.map((result) => (
                   <a

@@ -356,18 +356,18 @@ export const langTorrServer = (lang: string) => {
 export const langExploreAll = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Explore All";
+      return "All";
     case "ru-RU":
-      return "Показать все";
+      return "Все";
     default:
-      return "Показать все";
+      return "Все";
   }
 };
 
 export const langLatestMovies = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Latest Movies";
+      return "Latest movies";
     case "ru-RU":
       return "Последние Фильмы";
     default:
@@ -378,7 +378,7 @@ export const langLatestMovies = (lang: string) => {
 export const langTrendingMovies = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Trending Movies";
+      return "Trending movies";
     case "ru-RU":
       return "Популярные Фильмы";
     default:
@@ -400,7 +400,7 @@ export const langNowPlayingMovies = (lang: string) => {
 export const langUpcomingMovies = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Upcoming Movies";
+      return "Upcoming";
     case "ru-RU":
       return "Скоро в кино";
     default:
@@ -411,7 +411,7 @@ export const langUpcomingMovies = (lang: string) => {
 export const langPopularMovies = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Popular Movies";
+      return "Popular";
     case "ru-RU":
       return "Популярные фильмы";
     default:
@@ -422,7 +422,7 @@ export const langPopularMovies = (lang: string) => {
 export const langTrengingTVShows = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Trending TV Shows";
+      return "Trending series";
     case "ru-RU":
       return "Популярные Сериалы";
     default:
@@ -444,7 +444,7 @@ export const langAiringTodayTvShows = (lang: string) => {
 export const langOnTheAirTvShows = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "On The Air";
+      return "On the air";
     case "ru-RU":
       return "Сейчас выходят";
     default:
@@ -455,7 +455,7 @@ export const langOnTheAirTvShows = (lang: string) => {
 export const langPopularTvShows = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Popular TV Shows";
+      return "Popular";
     case "ru-RU":
       return "Популярные сериалы";
     default:
@@ -466,7 +466,7 @@ export const langPopularTvShows = (lang: string) => {
 export const langLatestHDR10Movies = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Latest HDR10 Movies";
+      return "HDR10";
     case "ru-RU":
       return "Последние HDR10 Фильмы";
     default:
@@ -477,7 +477,7 @@ export const langLatestHDR10Movies = (lang: string) => {
 export const langLatestDolbyVisionMovies = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Latest Dolby Vision Movies";
+      return "Dolby Vision";
     case "ru-RU":
       return "Последние Dolby Vision Фильмы";
     default:
@@ -488,7 +488,7 @@ export const langLatestDolbyVisionMovies = (lang: string) => {
 export const langTopRatedTvShows = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Top Rated Tv Shows";
+      return "Top rated";
     case "ru-RU":
       return "Лучшие Сериалы";
     default:
@@ -521,7 +521,7 @@ export const langNoResults = (lang: string) => {
 export const langSearchResults = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Search Results";
+      return "Results";
     case "ru-RU":
       return "Результаты поиска";
     default:
@@ -554,7 +554,7 @@ export const langSingOut = (lang: string) => {
 export const langAddNewTorrServerURL = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Add New TorrServer URL...";
+      return "TorrServer URL";
     case "ru-RU":
       return "Добавить URL ТоррСервера...";
     default:
@@ -1011,7 +1011,7 @@ export const langQuickFilters = (lang: string) => {
 export const langDiscoverMovies = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Discover Movies";
+      return "Discover movies";
     case "ru-RU":
       return "Подбор фильмов";
     default:
@@ -1022,7 +1022,7 @@ export const langDiscoverMovies = (lang: string) => {
 export const langDiscoverTv = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Discover TV";
+      return "Discover series";
     case "ru-RU":
       return "Подбор сериалов";
     default:
@@ -1132,7 +1132,7 @@ export const langAllCertifications = (lang: string) => {
 export const langFeaturedSpotlight = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Featured spotlight";
+      return "Featured";
     case "ru-RU":
       return "Главный релиз";
     default:
@@ -1154,22 +1154,22 @@ export const langOpenDetails = (lang: string) => {
 export const langContinueBrowsing = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Continue browsing";
+      return "Recent";
     case "ru-RU":
-      return "Продолжить просмотр";
+      return "Недавнее";
     default:
-      return "Продолжить просмотр";
+      return "Недавнее";
   }
 };
 
 export const langJumpBackIn = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Jump back in";
+      return "Last viewed";
     case "ru-RU":
-      return "Вернуться";
+      return "Последний просмотр";
     default:
-      return "Вернуться";
+      return "Последний просмотр";
   }
 };
 
@@ -1198,22 +1198,11 @@ export const langRecentSearches = (lang: string) => {
 export const langSearchAssist = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Search assist";
+      return "Browse instead";
     case "ru-RU":
-      return "Помощь в поиске";
+      return "Открыть подборки";
     default:
-      return "Помощь в поиске";
-  }
-};
-
-export const langStartExploring = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Start exploring and your recent activity will appear here.";
-    case "ru-RU":
-      return "Начните просмотр, и ваша недавняя активность появится здесь.";
-    default:
-      return "Начните просмотр, и ваша недавняя активность появится здесь.";
+      return "Открыть подборки";
   }
 };
 
@@ -1269,17 +1258,6 @@ export const langExternalLinks = (lang: string) => {
       return "Внешние ссылки";
     default:
       return "Внешние ссылки";
-  }
-};
-
-export const langSwipeToBrowse = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Swipe or scroll to browse";
-    case "ru-RU":
-      return "Листайте или прокручивайте";
-    default:
-      return "Листайте или прокручивайте";
   }
 };
 
@@ -1435,7 +1413,7 @@ export const langPersonalWatchlist = (lang: string) => {
 export const langPrivateMovieHub = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Private movie hub";
+      return "Private catalog";
     case "ru-RU":
       return "Личный кинохаб";
     default:
@@ -1446,7 +1424,7 @@ export const langPrivateMovieHub = (lang: string) => {
 export const langTrackMoviesAndTvShowsPrefix = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Track movies and TV shows";
+      return "Movies and series";
     case "ru-RU":
       return "Отслеживайте фильмы и сериалы";
     default:
@@ -1457,7 +1435,7 @@ export const langTrackMoviesAndTvShowsPrefix = (lang: string) => {
 export const langTrackMoviesAndTvShowsAccent = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "with clarity.";
+      return "made simple.";
     case "ru-RU":
       return "без лишнего шума.";
     default:
@@ -1468,7 +1446,7 @@ export const langTrackMoviesAndTvShowsAccent = (lang: string) => {
 export const langSimplePlaceToDiscoverTitles = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "A simple place to discover titles, open details, and keep your watchlist organized across every screen.";
+      return "Find a title, open the details, and keep watching.";
     case "ru-RU":
       return "Простое место, где можно находить тайтлы, открывать детали и держать список просмотра в порядке на любом экране.";
     default:
@@ -1479,7 +1457,7 @@ export const langSimplePlaceToDiscoverTitles = (lang: string) => {
 export const langWhyPeopleUseIt = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Why people use it";
+      return "What it keeps clear";
     case "ru-RU":
       return "Почему это удобно";
     default:
@@ -1501,7 +1479,7 @@ export const langFastSearch = (lang: string) => {
 export const langFastSearchDescription = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Instant discovery with clean results across movies and series.";
+      return "Movies, series, and people in one search.";
     case "ru-RU":
       return "Мгновенный поиск с чистыми результатами по фильмам и сериалам.";
     default:
@@ -1523,7 +1501,7 @@ export const langClearDetails = (lang: string) => {
 export const langClearDetailsDescription = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Get key info quickly without heavy UI clutter or noise.";
+      return "Ratings, cast, trailers, and torrents stay easy to scan.";
     case "ru-RU":
       return "Быстро получайте ключевую информацию без лишнего шума и перегруза интерфейса.";
     default:
@@ -1545,7 +1523,7 @@ export const langOneWatchlist = (lang: string) => {
 export const langOneWatchlistDescription = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Keep everything you plan to watch in a single personal queue.";
+      return "Recent activity and saved context stay close.";
     case "ru-RU":
       return "Собирайте все, что хотите посмотреть, в одном личном списке.";
     default:
@@ -1578,7 +1556,7 @@ export const langDiscovery = (lang: string) => {
 export const langSearchMoviesSeriesPeople = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Search movies, TV series, and people";
+      return "Search";
     case "ru-RU":
       return "Ищите фильмы, сериалы и людей";
     default:
@@ -1589,7 +1567,7 @@ export const langSearchMoviesSeriesPeople = (lang: string) => {
 export const langSearchTitlesCastCrew = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Search titles, cast, and crew...";
+      return "Title, actor, or director";
     case "ru-RU":
       return "Ищите названия, актеров и съемочную группу...";
     default:
@@ -1603,7 +1581,7 @@ export const langSearchStartsAfterCharacters = (
 ) => {
   switch (lang) {
     case "en-US":
-      return `Search starts after ${minimumCharacters} characters and keeps your current language in the URL.`;
+      return `Use at least ${minimumCharacters} characters.`;
     case "ru-RU":
       return `Поиск доступен после ${minimumCharacters} символов и сохраняет текущий язык в URL.`;
     default:
@@ -1658,23 +1636,10 @@ export const langResultsUpdateWhenYouSubmit = (lang: string) => {
   }
 };
 
-export const langJumpBackIntoDiscoveryWhenYouWantBroaderBrowsing = (
-  lang: string,
-) => {
-  switch (lang) {
-    case "en-US":
-      return "Jump back into discovery when you want broader browsing instead of a direct query.";
-    case "ru-RU":
-      return "Возвращайтесь к подбору, когда нужен более широкий просмотр вместо точного запроса.";
-    default:
-      return "Возвращайтесь к подбору, когда нужен более широкий просмотр вместо точного запроса.";
-  }
-};
-
 export const langSearchForATitleOnceAndItWillShowUpHere = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Search for a title once and it will show up here.";
+      return "Your searches will appear here.";
     case "ru-RU":
       return "Найдите любой тайтл один раз, и он появится здесь.";
     default:
@@ -1696,7 +1661,7 @@ export const langHomeFeedUnavailable = (lang: string) => {
 export const langPleaseRefreshOrTryAgain = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Please refresh the page or try again in a moment.";
+      return "Refresh the page or try again soon.";
     case "ru-RU":
       return "Обновите страницу или попробуйте еще раз через минуту.";
     default:
@@ -1707,7 +1672,7 @@ export const langPleaseRefreshOrTryAgain = (lang: string) => {
 export const langLoadingSearchResults = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Loading search results";
+      return "Searching";
     case "ru-RU":
       return "Загружаем результаты поиска";
     default:
@@ -1718,7 +1683,7 @@ export const langLoadingSearchResults = (lang: string) => {
 export const langFetchingMatchingTitlesAndPeople = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "We are fetching matching titles and people.";
+      return "Looking for matching titles and people.";
     case "ru-RU":
       return "Ищем подходящие фильмы, сериалы и людей.";
     default:
@@ -1740,7 +1705,7 @@ export const langSearchUnavailableRightNow = (lang: string) => {
 export const langStartWithATitleActorOrDirector = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Start with a title, actor, or director";
+      return "Start with a title or name";
     case "ru-RU":
       return "Начните с названия, актера или режиссера";
     default:
@@ -1754,24 +1719,11 @@ export const langSearchBecomesAvailableAfterCharacters = (
 ) => {
   switch (lang) {
     case "en-US":
-      return `Search becomes available after ${minimumCharacters} or more characters.`;
+      return `Enter at least ${minimumCharacters} characters.`;
     case "ru-RU":
       return `Поиск становится доступен после ${minimumCharacters} и более символов.`;
     default:
       return `Поиск становится доступен после ${minimumCharacters} и более символов.`;
-  }
-};
-
-export const langResultsCombineMoviesTvSeriesAndPeopleInOneGrid = (
-  lang: string,
-) => {
-  switch (lang) {
-    case "en-US":
-      return "Results combine movies, TV series, and people in one grid so you can jump straight into the right detail page.";
-    case "ru-RU":
-      return "Результаты объединяют фильмы, сериалы и людей в одной сетке, чтобы вы сразу переходили к нужной странице.";
-    default:
-      return "Результаты объединяют фильмы, сериалы и людей в одной сетке, чтобы вы сразу переходили к нужной странице.";
   }
 };
 
@@ -1780,7 +1732,7 @@ export const langTryABroaderTitleAPersonNameOrDifferentSpelling = (
 ) => {
   switch (lang) {
     case "en-US":
-      return "Try a broader title, a person name, or different spelling.";
+      return "Try a broader title, name, or spelling.";
     case "ru-RU":
       return "Попробуйте более общее название, имя человека или другое написание.";
     default:
@@ -1841,18 +1793,18 @@ export const langSearchMatchesCount = (lang: string, count: number) =>
 export const langHomeDashboardTitle = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Your movie and series dashboard";
+      return "Home";
     case "ru-RU":
-      return "Ваша панель фильмов и сериалов";
+      return "Главная";
     default:
-      return "Ваша панель фильмов и сериалов";
+      return "Главная";
   }
 };
 
 export const langHomeDashboardDescription = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Open a featured release, jump back into your last watched title, or move straight into the latest and trending collections without leaving the dashboard.";
+      return "Featured, recent, and trending titles in one place.";
     case "ru-RU":
       return "Откройте избранный релиз, вернитесь к последнему просмотру или сразу переходите к последним и популярным подборкам, не покидая панель.";
     default:
@@ -1863,18 +1815,18 @@ export const langHomeDashboardDescription = (lang: string) => {
 export const langFeaturedSpotlightDescription = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Open the latest featured title and jump straight into cast, ratings, and related picks.";
+      return "A title worth opening now.";
     case "ru-RU":
-      return "Откройте последний избранный тайтл и сразу переходите к актерам, оценкам и похожим подборкам.";
+      return "Тайтл, который стоит открыть сейчас.";
     default:
-      return "Откройте последний избранный тайтл и сразу переходите к актерам, оценкам и похожим подборкам.";
+      return "Тайтл, который стоит открыть сейчас.";
   }
 };
 
 export const langPrivateCatalogAccessForSignedInUsers = (lang: string) => {
   switch (lang) {
     case "en-US":
-      return "Private catalog access for signed-in users.";
+      return "Private catalog for signed-in users.";
     case "ru-RU":
       return "Доступ к приватному каталогу только для вошедших пользователей.";
     default:

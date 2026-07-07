@@ -11,13 +11,11 @@ import { getMedias, getTrendingMedia } from "~/services/tmdb";
 import { formatYear } from "~/utils/format";
 import {
   langAiringTodayTvShows,
-  langCountLabel,
   langDiscoverTv,
   langOnTheAirTvShows,
   langPopularTvShows,
   langQuickFilters,
   langText,
-  langSwipeToBrowse,
   langTopRatedTvShows,
   langTrengingTVShows,
 } from "~/utils/languages";
@@ -82,64 +80,7 @@ export default component$(() => {
   return (
     <div class="space-y-6">
       <SectionHeading
-        eyebrow={langText(resource.value.lang, "TV shows", "Сериалы")}
-        title={langText(
-          resource.value.lang,
-          "Browse TV collections",
-          "Просмотр коллекций сериалов",
-        )}
-        description={langText(
-          resource.value.lang,
-          "Trending, popular, top-rated, and airing now in one streamlined view.",
-          "Трендовые, популярные, высокооцененные и текущие сериалы в одном экране.",
-        )}
-        badges={[
-          langCountLabel(
-            resource.value.lang,
-            resource.value.tvtrend.length,
-            "trending show",
-            "trending shows",
-            "трендовый сериал",
-            "трендовых сериала",
-            "трендовых сериалов",
-          ),
-          langCountLabel(
-            resource.value.lang,
-            resource.value.tvpopular.length,
-            "popular show",
-            "popular shows",
-            "популярный сериал",
-            "популярных сериала",
-            "популярных сериалов",
-          ),
-          langCountLabel(
-            resource.value.lang,
-            resource.value.tvtoprated.length,
-            "top rated show",
-            "top rated shows",
-            "сериал с высоким рейтингом",
-            "сериала с высоким рейтингом",
-            "сериалов с высоким рейтингом",
-          ),
-          langCountLabel(
-            resource.value.lang,
-            resource.value.tvairingtoday.length,
-            "airing today",
-            "airing today",
-            "выходит сегодня",
-            "выходят сегодня",
-            "выходят сегодня",
-          ),
-          langCountLabel(
-            resource.value.lang,
-            resource.value.tvontheair.length,
-            "on the air",
-            "on the air",
-            "в эфире",
-            "в эфире",
-            "в эфире",
-          ),
-        ]}
+        title={langText(resource.value.lang, "Series", "Сериалы")}
       />
       <QuickFilterStrip
         label={langQuickFilters(resource.value.lang)}
@@ -176,7 +117,6 @@ export default component$(() => {
         </a>
       </div>
       <MediaCarousel
-        hintLabel={langSwipeToBrowse(resource.value.lang)}
         sectionId="trending-tv"
         title={langTrengingTVShows(resource.value.lang)}
         type={MediaType.Tv}
@@ -202,7 +142,6 @@ export default component$(() => {
         ))}
       </MediaCarousel>
       <MediaCarousel
-        hintLabel={langSwipeToBrowse(resource.value.lang)}
         sectionId="popular-tv"
         title={langPopularTvShows(resource.value.lang)}
         type={MediaType.Tv}
@@ -228,7 +167,6 @@ export default component$(() => {
         ))}
       </MediaCarousel>
       <MediaCarousel
-        hintLabel={langSwipeToBrowse(resource.value.lang)}
         sectionId="top-rated-tv"
         title={langTopRatedTvShows(resource.value.lang)}
         type={MediaType.Tv}
@@ -254,7 +192,6 @@ export default component$(() => {
         ))}
       </MediaCarousel>
       <MediaCarousel
-        hintLabel={langSwipeToBrowse(resource.value.lang)}
         sectionId="airing-today-tv"
         title={langAiringTodayTvShows(resource.value.lang)}
         type={MediaType.Tv}
@@ -280,7 +217,6 @@ export default component$(() => {
         ))}
       </MediaCarousel>
       <MediaCarousel
-        hintLabel={langSwipeToBrowse(resource.value.lang)}
         sectionId="on-the-air-tv"
         title={langOnTheAirTvShows(resource.value.lang)}
         type={MediaType.Tv}

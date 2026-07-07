@@ -27,17 +27,14 @@ import { formatYear } from "~/utils/format";
 import {
   langAllProviders,
   langApplyFilters,
-  langCountLabel,
   langDiscoverTv,
   langFirstAirYear,
   langMinimumVotes,
   langRegion,
   langResetFilters,
-  langResults,
   langSortBy,
   langStreamingProvider,
   langText,
-  langSearchMatchesCount,
   langTvDiscoverSortLabel,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
@@ -163,149 +160,147 @@ export default component$(() => {
 
   return (
     <div class="space-y-6">
-      <SectionHeading
-        eyebrow={langText(value.lang, "Discovery", "Подбор")}
-        title={langDiscoverTv(value.lang)}
-        description={langText(
-          value.lang,
-          `TMDB series filtered for region ${value.filters.region}.`,
-          `Сериалы TMDB с фильтрами для региона ${value.filters.region}.`,
-        )}
-        badges={[
-          langSearchMatchesCount(value.lang, value.results.total_results),
-          langCountLabel(
-            value.lang,
-            value.results.total_pages,
-            "page",
-            "pages",
-            "страница",
-            "страницы",
-            "страниц",
-          ),
-          `${value.filters.region} ${langText(value.lang, "region", "регион")}`,
-        ]}
-      />
+      <SectionHeading title={langDiscoverTv(value.lang)} />
 
-      <section class="card rounded-box border-base-200 bg-base-100/90 border shadow-sm backdrop-blur">
-        <div class="card-body gap-4">
-          <form class="grid gap-4 lg:grid-cols-3" method="get">
+      <section class="card border-base-200 bg-base-100 border shadow-sm">
+        <div class="card-body gap-5">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div class="space-y-1">
+              <h2 class="text-base font-semibold">
+                {langText(value.lang, "Filters", "Фильтры")}
+              </h2>
+            </div>
+            <div class="badge badge-outline min-h-8 shrink-0 px-3">
+              {langText(
+                value.lang,
+                `${value.results.total_results} matches`,
+                `${value.results.total_results} совпадений`,
+              )}
+            </div>
+          </div>
+
+          <form class="space-y-5" method="get">
             <input type="hidden" name="lang" value={value.lang} />
-            <label class="form-control gap-2">
-              <span class="label-text text-sm font-medium">
-                {langRegion(value.lang)}
-              </span>
-              <select
-                class="select select-bordered h-11 min-h-11 text-base"
-                name="region"
-                value={value.filters.region}
-              >
-                {value.regionOptions.map((region) => (
-                  <option key={region} value={region}>
-                    {region}
-                  </option>
+
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              <label class="form-control w-full gap-2">
+                <span class="label-text text-sm font-medium">
+                  {langRegion(value.lang)}
+                </span>
+                <select
+                  class="select select-bordered h-11 min-h-11 w-full text-base"
+                  name="region"
+                  value={value.filters.region}
+                >
+                  {value.regionOptions.map((region) => (
+                    <option key={region} value={region}>
+                      {region}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label class="form-control w-full gap-2">
+                <span class="label-text text-sm font-medium">
+                  {langStreamingProvider(value.lang)}
+                </span>
+                <select
+                  class="select select-bordered h-11 min-h-11 w-full text-base"
+                  name="provider"
+                  value={
+                    value.filters.providerId
+                      ? String(value.filters.providerId)
+                      : ""
+                  }
+                >
+                  <option value="">{langAllProviders(value.lang)}</option>
+                  {value.providerOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label class="form-control w-full gap-2">
+                <span class="label-text text-sm font-medium">
+                  {langFirstAirYear(value.lang)}
+                </span>
+                <input
+                  class="input input-bordered h-11 min-h-11 w-full text-base"
+                  max="2100"
+                  min="1888"
+                  name="year"
+                  type="number"
+                  value={value.filters.year ? String(value.filters.year) : ""}
+                />
+              </label>
+
+              <label class="form-control w-full gap-2">
+                <span class="label-text text-sm font-medium">
+                  {langMinimumVotes(value.lang)}
+                </span>
+                <input
+                  class="input input-bordered h-11 min-h-11 w-full text-base"
+                  min="0"
+                  name="minVotes"
+                  type="number"
+                  value={String(value.filters.minVotes)}
+                />
+              </label>
+
+              <label class="form-control w-full gap-2">
+                <span class="label-text text-sm font-medium">
+                  {langSortBy(value.lang)}
+                </span>
+                <select
+                  class="select select-bordered h-11 min-h-11 w-full text-base"
+                  name="sortBy"
+                  value={value.filters.sortBy}
+                >
+                  {TV_DISCOVER_SORT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {langTvDiscoverSortLabel(value.lang, option.value)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div class="border-base-200 flex flex-col gap-4 border-t pt-4 lg:flex-row lg:items-center lg:justify-between">
+              <div class="flex flex-wrap items-center gap-2">
+                {activeFilters.map((filterLabel) => (
+                  <FilterChip key={filterLabel} label={filterLabel} />
                 ))}
-              </select>
-            </label>
-
-            <label class="form-control gap-2">
-              <span class="label-text text-sm font-medium">
-                {langStreamingProvider(value.lang)}
-              </span>
-              <select
-                class="select select-bordered h-11 min-h-11 text-base"
-                name="provider"
-                value={
-                  value.filters.providerId
-                    ? String(value.filters.providerId)
-                    : ""
-                }
-              >
-                <option value="">{langAllProviders(value.lang)}</option>
-                {value.providerOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label class="form-control gap-2">
-              <span class="label-text text-sm font-medium">
-                {langFirstAirYear(value.lang)}
-              </span>
-              <input
-                class="input input-bordered h-11 min-h-11 text-base"
-                max="2100"
-                min="1888"
-                name="year"
-                type="number"
-                value={value.filters.year ? String(value.filters.year) : ""}
-              />
-            </label>
-
-            <label class="form-control gap-2">
-              <span class="label-text text-sm font-medium">
-                {langMinimumVotes(value.lang)}
-              </span>
-              <input
-                class="input input-bordered h-11 min-h-11 text-base"
-                min="0"
-                name="minVotes"
-                type="number"
-                value={String(value.filters.minVotes)}
-              />
-            </label>
-
-            <label class="form-control gap-2">
-              <span class="label-text text-sm font-medium">
-                {langSortBy(value.lang)}
-              </span>
-              <select
-                class="select select-bordered h-11 min-h-11 text-base"
-                name="sortBy"
-                value={value.filters.sortBy}
-              >
-                {TV_DISCOVER_SORT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {langTvDiscoverSortLabel(value.lang, option.value)}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <div class="flex flex-wrap items-center gap-2 lg:col-span-3">
-              <button type="submit" class="btn btn-primary h-11 min-h-11">
-                {langApplyFilters(value.lang)}
-              </button>
-              <a href={paths.tvDiscover(value.lang)} class="btn btn-ghost h-11 min-h-11">
-                {langResetFilters(value.lang)}
-              </a>
-              <a href={paths.tv(value.lang)} class="btn btn-outline h-11 min-h-11">
-                {langText(
-                  value.lang,
-                  "Browse TV shelves",
-                  "Открыть полки сериалов",
-                )}
-              </a>
+              </div>
+              <div class="flex flex-col gap-2 sm:flex-row sm:items-center lg:shrink-0">
+                <button
+                  type="submit"
+                  class="btn btn-primary h-11 min-h-11 w-full sm:w-auto"
+                >
+                  {langApplyFilters(value.lang)}
+                </button>
+                <a
+                  href={paths.tvDiscover(value.lang)}
+                  class="btn btn-ghost h-11 min-h-11 w-full sm:w-auto"
+                >
+                  {langResetFilters(value.lang)}
+                </a>
+                <a
+                  href={paths.tv(value.lang)}
+                  class="btn btn-outline h-11 min-h-11 w-full sm:w-auto"
+                >
+                  {langText(value.lang, "Series", "Сериалы")}
+                </a>
+              </div>
             </div>
           </form>
-        </div>
-      </section>
-
-      <section class="card rounded-box border-base-200 bg-base-100/88 border shadow-sm backdrop-blur">
-        <div class="card-body gap-3">
-          <div class="flex flex-wrap items-center gap-2">
-            {activeFilters.map((filterLabel) => (
-              <FilterChip key={filterLabel} label={filterLabel} />
-            ))}
-          </div>
         </div>
       </section>
 
       {value.results.total_results > 0 ? (
         <>
           <MediaGrid
-            eyebrow={langResults(value.lang)}
             headerBadge={langText(
               value.lang,
               `Page ${value.results.page} of ${value.results.total_pages}`,
@@ -313,8 +308,8 @@ export default component$(() => {
             )}
             title={langText(
               value.lang,
-              `Discover results (${value.results.total_results})`,
-              `Результаты подбора (${value.results.total_results})`,
+              `Series (${value.results.total_results})`,
+              `Сериалы (${value.results.total_results})`,
             )}
           >
             {value.results.results.map((tvShow) => (
@@ -341,7 +336,7 @@ export default component$(() => {
               {value.filters.page <= 1 ? (
                 <span
                   aria-disabled="true"
-                  class="btn btn-outline btn-disabled rounded-full"
+                  class="btn btn-outline btn-disabled"
                 >
                   {langText(value.lang, "Previous page", "Предыдущая страница")}
                 </span>
@@ -350,7 +345,7 @@ export default component$(() => {
                   href={buildTvDiscoverHref(value.lang, value.filters, {
                     page: value.filters.page - 1,
                   })}
-                  class="btn btn-outline h-11 min-h-11 rounded-full"
+                  class="btn btn-outline h-11 min-h-11"
                 >
                   {langText(value.lang, "Previous page", "Предыдущая страница")}
                 </a>
@@ -365,7 +360,7 @@ export default component$(() => {
               {value.filters.page >= value.results.total_pages ? (
                 <span
                   aria-disabled="true"
-                  class="btn btn-outline btn-disabled rounded-full"
+                  class="btn btn-outline btn-disabled"
                 >
                   {langText(value.lang, "Next page", "Следующая страница")}
                 </span>
@@ -374,7 +369,7 @@ export default component$(() => {
                   href={buildTvDiscoverHref(value.lang, value.filters, {
                     page: value.filters.page + 1,
                   })}
-                  class="btn btn-outline h-11 min-h-11 rounded-full"
+                  class="btn btn-outline h-11 min-h-11"
                 >
                   {langText(value.lang, "Next page", "Следующая страница")}
                 </a>

@@ -30,17 +30,14 @@ import {
   langAllProviders,
   langApplyFilters,
   langCertification,
-  langCountLabel,
   langDiscoverMovies,
   langMinimumVotes,
   langRegion,
   langResetFilters,
-  langResults,
   langSortBy,
   langStreamingProvider,
   langText,
   langReleaseYear,
-  langSearchMatchesCount,
   langMovieDiscoverSortLabel,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
@@ -180,215 +177,209 @@ export default component$(() => {
 
   return (
     <div class="space-y-6">
-      <SectionHeading
-        eyebrow={langText(value.lang, "Discovery", "Подбор")}
-        title={langDiscoverMovies(value.lang)}
-        description={langText(
-          value.lang,
-          `TMDB movies filtered for region ${value.filters.region}.`,
-          `Фильмы TMDB с фильтрами для региона ${value.filters.region}.`,
-        )}
-        badges={[
-          langSearchMatchesCount(value.lang, value.results.total_results),
-          langCountLabel(
-            value.lang,
-            value.results.total_pages,
-            "page",
-            "pages",
-            "страница",
-            "страницы",
-            "страниц",
-          ),
-          `${value.filters.region} ${langText(value.lang, "region", "регион")}`,
-        ]}
-      />
+      <SectionHeading title={langDiscoverMovies(value.lang)} />
 
-      <section class="card rounded-box border-base-200 bg-base-100/90 border shadow-sm backdrop-blur">
-        <div class="card-body gap-4">
-          <form class="grid gap-4 lg:grid-cols-3" method="get">
-            <input type="hidden" name="lang" value={value.lang} />
-            <label class="form-control gap-2">
-              <span class="label-text text-sm font-medium">
-                {langRegion(value.lang)}
-              </span>
-              <select
-                class="select select-bordered h-11 min-h-11 text-base"
-                name="region"
-                value={value.filters.region}
-              >
-                {value.regionOptions.map((region) => (
-                  <option key={region} value={region}>
-                    {region}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label class="form-control gap-2">
-              <span class="label-text text-sm font-medium">
-                {langCertification(value.lang)}
-              </span>
-              <select
-                class="select select-bordered h-11 min-h-11 text-base"
-                name="certification"
-                value={value.filters.certification ?? ""}
-              >
-                <option value="">{langAllCertifications(value.lang)}</option>
-                {value.certificationOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.meaning
-                      ? `${option.label} · ${option.meaning}`
-                      : option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label class="form-control gap-2">
-              <span class="label-text text-sm font-medium">
-                {langStreamingProvider(value.lang)}
-              </span>
-              <select
-                class="select select-bordered h-11 min-h-11 text-base"
-                name="provider"
-                value={
-                  value.filters.providerId
-                    ? String(value.filters.providerId)
-                    : ""
-                }
-              >
-                <option value="">{langAllProviders(value.lang)}</option>
-                {value.providerOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label class="form-control gap-2">
-              <span class="label-text text-sm font-medium">
-                {langReleaseYear(value.lang)}
-              </span>
-              <input
-                class="input input-bordered h-11 min-h-11 text-base"
-                max="2100"
-                min="1888"
-                name="year"
-                type="number"
-                value={value.filters.year ? String(value.filters.year) : ""}
-              />
-            </label>
-
-            <label class="form-control gap-2">
-              <span class="label-text text-sm font-medium">
-                {langMinimumVotes(value.lang)}
-              </span>
-              <input
-                class="input input-bordered h-11 min-h-11 text-base"
-                min="0"
-                name="minVotes"
-                type="number"
-                value={String(value.filters.minVotes)}
-              />
-            </label>
-
-            <label class="form-control gap-2">
-              <span class="label-text text-sm font-medium">
-                {langSortBy(value.lang)}
-              </span>
-              <select
-                class="select select-bordered h-11 min-h-11 text-base"
-                name="sortBy"
-                value={value.filters.sortBy}
-              >
-                {MOVIE_DISCOVER_SORT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {langMovieDiscoverSortLabel(value.lang, option.value)}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <div class="flex flex-wrap items-center gap-2 lg:col-span-3">
-              <button type="submit" class="btn btn-primary h-11 min-h-11">
-                {langApplyFilters(value.lang)}
-              </button>
-              <a href={paths.movieDiscover(value.lang)} class="btn btn-ghost h-11 min-h-11">
-                {langResetFilters(value.lang)}
-              </a>
-              <a href={paths.movie(value.lang)} class="btn btn-outline h-11 min-h-11">
-                {langText(
-                  value.lang,
-                  "Browse movie shelves",
-                  "Открыть полки фильмов",
-                )}
-              </a>
+      <section class="card border-base-200 bg-base-100 border shadow-sm">
+        <div class="card-body gap-5">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div class="space-y-1">
+              <h2 class="text-base font-semibold">
+                {langText(value.lang, "Filters", "Фильтры")}
+              </h2>
             </div>
-          </form>
+            <div class="badge badge-outline min-h-8 shrink-0 px-3">
+              {langText(
+                value.lang,
+                `${value.results.total_results} matches`,
+                `${value.results.total_results} совпадений`,
+              )}
+            </div>
+          </div>
 
-          {value.certificationOptions.length > 0 && (
-            <div class="space-y-2">
-              <p class="text-base-content/60 text-xs font-semibold tracking-[0.08em] uppercase">
-                {langText(
-                  value.lang,
-                  "TMDB certification chips",
-                  "Метки сертификатов TMDB",
-                )}
-              </p>
-              <div class="flex flex-wrap gap-2">
-                <a
-                  href={buildMovieDiscoverHref(value.lang, value.filters, {
-                    certification: undefined,
-                    page: 1,
-                  })}
-                  class={[
-                    "btn h-11 min-h-11 min-w-11 rounded-full normal-case shadow-none md:btn-sm",
-                    value.filters.certification
-                      ? "btn-ghost"
-                      : "btn-primary btn-soft",
-                  ]}
+          <form class="space-y-5" method="get">
+            <input type="hidden" name="lang" value={value.lang} />
+
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              <label class="form-control w-full gap-2">
+                <span class="label-text text-sm font-medium">
+                  {langRegion(value.lang)}
+                </span>
+                <select
+                  class="select select-bordered h-11 min-h-11 w-full text-base"
+                  name="region"
+                  value={value.filters.region}
                 >
-                  {langAllCertifications(value.lang)}
-                </a>
-                {value.certificationOptions.map((option) => (
+                  {value.regionOptions.map((region) => (
+                    <option key={region} value={region}>
+                      {region}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label class="form-control w-full gap-2">
+                <span class="label-text text-sm font-medium">
+                  {langCertification(value.lang)}
+                </span>
+                <select
+                  class="select select-bordered h-11 min-h-11 w-full text-base"
+                  name="certification"
+                  value={value.filters.certification ?? ""}
+                >
+                  <option value="">{langAllCertifications(value.lang)}</option>
+                  {value.certificationOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.meaning
+                        ? `${option.label} · ${option.meaning}`
+                        : option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label class="form-control w-full gap-2">
+                <span class="label-text text-sm font-medium">
+                  {langStreamingProvider(value.lang)}
+                </span>
+                <select
+                  class="select select-bordered h-11 min-h-11 w-full text-base"
+                  name="provider"
+                  value={
+                    value.filters.providerId
+                      ? String(value.filters.providerId)
+                      : ""
+                  }
+                >
+                  <option value="">{langAllProviders(value.lang)}</option>
+                  {value.providerOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label class="form-control w-full gap-2">
+                <span class="label-text text-sm font-medium">
+                  {langReleaseYear(value.lang)}
+                </span>
+                <input
+                  class="input input-bordered h-11 min-h-11 w-full text-base"
+                  max="2100"
+                  min="1888"
+                  name="year"
+                  type="number"
+                  value={value.filters.year ? String(value.filters.year) : ""}
+                />
+              </label>
+
+              <label class="form-control w-full gap-2">
+                <span class="label-text text-sm font-medium">
+                  {langMinimumVotes(value.lang)}
+                </span>
+                <input
+                  class="input input-bordered h-11 min-h-11 w-full text-base"
+                  min="0"
+                  name="minVotes"
+                  type="number"
+                  value={String(value.filters.minVotes)}
+                />
+              </label>
+
+              <label class="form-control w-full gap-2">
+                <span class="label-text text-sm font-medium">
+                  {langSortBy(value.lang)}
+                </span>
+                <select
+                  class="select select-bordered h-11 min-h-11 w-full text-base"
+                  name="sortBy"
+                  value={value.filters.sortBy}
+                >
+                  {MOVIE_DISCOVER_SORT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {langMovieDiscoverSortLabel(value.lang, option.value)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            {value.certificationOptions.length > 0 && (
+              <div class="bg-base-200/45 rounded-box space-y-3 p-3">
+                <p class="text-base-content/60 text-xs font-semibold tracking-[0.08em] uppercase">
+                  {langText(value.lang, "Ratings", "Рейтинги")}
+                </p>
+                <div class="flex flex-wrap gap-2">
                   <a
-                    key={option.value}
                     href={buildMovieDiscoverHref(value.lang, value.filters, {
-                      certification: option.value,
+                      certification: undefined,
                       page: 1,
                     })}
                     class={[
-                      "btn h-11 min-h-11 min-w-11 rounded-full normal-case shadow-none md:btn-sm",
-                      value.filters.certification === option.value
-                        ? "btn-primary btn-soft"
-                        : "btn-ghost",
+                      "btn min-h-11 min-w-11 rounded-full md:btn-sm",
+                      value.filters.certification
+                        ? "btn-ghost"
+                        : "btn-primary btn-soft",
                     ]}
-                    title={option.meaning}
                   >
-                    {option.label}
+                    {langAllCertifications(value.lang)}
                   </a>
+                  {value.certificationOptions.map((option) => (
+                    <a
+                      key={option.value}
+                      href={buildMovieDiscoverHref(value.lang, value.filters, {
+                        certification: option.value,
+                        page: 1,
+                      })}
+                      class={[
+                        "btn min-h-11 min-w-11 rounded-full md:btn-sm",
+                        value.filters.certification === option.value
+                          ? "btn-primary btn-soft"
+                          : "btn-ghost",
+                      ]}
+                      title={option.meaning}
+                    >
+                      {option.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div class="border-base-200 flex flex-col gap-4 border-t pt-4 lg:flex-row lg:items-center lg:justify-between">
+              <div class="flex flex-wrap items-center gap-2">
+                {activeFilters.map((filterLabel) => (
+                  <FilterChip key={filterLabel} label={filterLabel} />
                 ))}
               </div>
+              <div class="flex flex-col gap-2 sm:flex-row sm:items-center lg:shrink-0">
+                <button
+                  type="submit"
+                  class="btn btn-primary h-11 min-h-11 w-full sm:w-auto"
+                >
+                  {langApplyFilters(value.lang)}
+                </button>
+                <a
+                  href={paths.movieDiscover(value.lang)}
+                  class="btn btn-ghost h-11 min-h-11 w-full sm:w-auto"
+                >
+                  {langResetFilters(value.lang)}
+                </a>
+                <a
+                  href={paths.movie(value.lang)}
+                  class="btn btn-outline h-11 min-h-11 w-full sm:w-auto"
+                >
+                  {langText(value.lang, "Movies", "Фильмы")}
+                </a>
+              </div>
             </div>
-          )}
-        </div>
-      </section>
-
-      <section class="card rounded-box border-base-200 bg-base-100/88 border shadow-sm backdrop-blur">
-        <div class="card-body gap-3">
-          <div class="flex flex-wrap items-center gap-2">
-            {activeFilters.map((filterLabel) => (
-              <FilterChip key={filterLabel} label={filterLabel} />
-            ))}
-          </div>
+          </form>
         </div>
       </section>
 
       {value.results.total_results > 0 ? (
         <>
           <MediaGrid
-            eyebrow={langResults(value.lang)}
             headerBadge={langText(
               value.lang,
               `Page ${value.results.page} of ${value.results.total_pages}`,
@@ -396,8 +387,8 @@ export default component$(() => {
             )}
             title={langText(
               value.lang,
-              `Discover results (${value.results.total_results})`,
-              `Результаты подбора (${value.results.total_results})`,
+              `Movies (${value.results.total_results})`,
+              `Фильмы (${value.results.total_results})`,
             )}
           >
             {value.results.results.map((movie) => (
@@ -424,7 +415,7 @@ export default component$(() => {
               {value.filters.page <= 1 ? (
                 <span
                   aria-disabled="true"
-                  class="btn btn-outline btn-disabled rounded-full"
+                  class="btn btn-outline btn-disabled"
                 >
                   {langText(value.lang, "Previous page", "Предыдущая страница")}
                 </span>
@@ -433,7 +424,7 @@ export default component$(() => {
                   href={buildMovieDiscoverHref(value.lang, value.filters, {
                     page: value.filters.page - 1,
                   })}
-                  class="btn btn-outline h-11 min-h-11 rounded-full"
+                  class="btn btn-outline h-11 min-h-11"
                 >
                   {langText(value.lang, "Previous page", "Предыдущая страница")}
                 </a>
@@ -448,7 +439,7 @@ export default component$(() => {
               {value.filters.page >= value.results.total_pages ? (
                 <span
                   aria-disabled="true"
-                  class="btn btn-outline btn-disabled rounded-full"
+                  class="btn btn-outline btn-disabled"
                 >
                   {langText(value.lang, "Next page", "Следующая страница")}
                 </span>
@@ -457,7 +448,7 @@ export default component$(() => {
                   href={buildMovieDiscoverHref(value.lang, value.filters, {
                     page: value.filters.page + 1,
                   })}
-                  class="btn btn-outline h-11 min-h-11 rounded-full"
+                  class="btn btn-outline h-11 min-h-11"
                 >
                   {langText(value.lang, "Next page", "Следующая страница")}
                 </a>

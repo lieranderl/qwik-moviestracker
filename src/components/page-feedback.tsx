@@ -18,7 +18,7 @@ type FeedbackPanelProps = FeedbackCardProps & {
   role?: "alert" | "status";
 };
 
-const FEEDBACK_SECTION_BASE_CLASS = "overlay-enter container mx-auto px-4";
+const FEEDBACK_SECTION_BASE_CLASS = "overlay-enter";
 
 const getFeedbackSectionClass = (compact: boolean, minHeightClass: string) => [
   FEEDBACK_SECTION_BASE_CLASS,
@@ -124,8 +124,8 @@ export const SectionHeading = component$<{
   title: string;
 }>(({ badges, description, eyebrow, title }) => {
   return (
-    <header class="section-reveal mb-5 rounded-box border-base-200/75 bg-base-100/82 space-y-4 border p-5 text-left shadow-sm backdrop-blur md:p-6">
-      <div class="space-y-2">
+    <header class="section-reveal card border-base-200 bg-base-100 border shadow-sm">
+      <div class="card-body gap-3 p-4 md:p-6">
         {eyebrow && (
           <p class="text-base-content/55 text-xs font-semibold tracking-[0.16em] uppercase">
             {eyebrow}
@@ -139,19 +139,16 @@ export const SectionHeading = component$<{
             {description}
           </p>
         )}
+        {badges && badges.length > 0 && (
+          <div class="flex flex-wrap items-center gap-2">
+            {badges.map((badge) => (
+              <span key={badge} class="badge badge-ghost">
+                {badge}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
-      {badges && badges.length > 0 && (
-        <div class="flex flex-wrap items-center gap-2">
-          {badges.map((badge) => (
-            <span
-              key={badge}
-              class="badge badge-sm border-base-300/80 bg-base-200/60 text-base-content/70 rounded-full px-3 py-3 font-medium shadow-none"
-            >
-              {badge}
-            </span>
-          ))}
-        </div>
-      )}
     </header>
   );
 });
@@ -166,7 +163,7 @@ export const InlineFilterGroup = component$(() => {
 
 export const FilterChip = component$<{ label: string }>(({ label }) => {
   return (
-    <span class="badge border-base-300/80 bg-base-200/60 text-base-content/70 pointer-events-none h-8 rounded-full px-3 py-3 font-medium shadow-none">
+    <span class="badge badge-ghost pointer-events-none">
       {label}
     </span>
   );

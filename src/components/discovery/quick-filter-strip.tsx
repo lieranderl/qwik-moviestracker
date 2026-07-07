@@ -1,4 +1,4 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 
 type QuickFilterItem = {
   active?: boolean;
@@ -11,34 +11,55 @@ type QuickFilterStripProps = {
   label: string;
 };
 
+const getHrefHash = (href: string) => {
+  const hashIndex = href.indexOf("#");
+  return hashIndex === -1 ? "" : href.slice(hashIndex);
+};
+
 export const QuickFilterStrip = component$<QuickFilterStripProps>(
   ({ items, label }) => {
+    const activeHashSig = useSignal("");
+    const fallbackActiveHref = items.find((item) => item.active)?.href;
+    const selectedHash =
+      activeHashSig.value &&
+      items.some((item) => getHrefHash(item.href) === activeHashSig.value)
+        ? activeHashSig.value
+        : "";
+
+    // eslint-disable-next-line qwik/no-use-visible-task
+    useVisibleTask$(({ cleanup }) => {
+      const syncActiveHash = () => {
+        activeHashSig.value = window.location.hash;
+      };
+
+      syncActiveHash();
+      window.addEventListener("hashchange", syncActiveHash);
+      cleanup(() => window.removeEventListener("hashchange", syncActiveHash));
+    });
+
     return (
-      <section class="section-reveal -mt-2 mb-6 md:sticky md:top-[4.1rem] md:z-30 md:-mt-4">
-        <div class="rounded-box border-base-200/80 bg-base-100/90 border px-2 py-2 shadow-sm backdrop-blur">
-          <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-            <div class="text-base-content/55 px-2 text-xs font-semibold tracking-[0.12em] uppercase">
-              {label}
-            </div>
-            <div class="no-scrollbar min-w-0 overflow-x-auto">
-              <div class="flex min-w-max items-center gap-2">
-                {items.map((item) => (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    class={[
-                      "btn min-h-11 rounded-full border text-sm font-medium normal-case shadow-none md:btn-sm",
-                      item.active
-                        ? "btn-primary border-transparent"
-                        : "btn-ghost border-base-200/80 bg-base-200/55 hover:bg-base-200/85",
-                    ]}
-                  >
-                    {item.label}
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
+      <section
+        aria-label={label}
+        class="section-reveal sticky top-[4.1rem] z-30"
+      >
+        <div class="tabs tabs-box w-full overflow-x-auto whitespace-nowrap">
+          {items.map((item, index) => {
+            const isActive = selectedHash
+              ? getHrefHash(item.href) === selectedHash
+              : item.href === fallbackActiveHref ||
+                (!fallbackActiveHref && index === 0);
+
+            return (
+              <a
+                key={item.href}
+                href={item.href}
+                aria-current={isActive ? "location" : "false"}
+                class={["tab min-h-11", isActive && "tab-active"]}
+              >
+                {item.label}
+              </a>
+            );
+          })}
         </div>
       </section>
     );

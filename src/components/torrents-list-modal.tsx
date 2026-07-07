@@ -32,12 +32,7 @@ export const TorrentsModal = component$(
       year,
     });
     const getTorrentsToggle = $(
-      async (
-        name: string,
-        year: number,
-        isMovie: boolean,
-        season?: number,
-      ) => {
+      async (name: string, year: number, isMovie: boolean, season?: number) => {
         torrentsStore.torrents = null;
         torrentsStore.season = season;
         torrentsStore.loaded = 0;
@@ -65,7 +60,7 @@ export const TorrentsModal = component$(
         {seasons.length === 0 && (
           <button
             type="button"
-            class="btn btn-outline btn-primary h-11 min-h-11"
+            class="btn btn-outline btn-primary"
             onClick$={() => getTorrentsToggle(title, year, isMovie)}
           >
             {langTorrents(resource.value.lang)}
@@ -74,7 +69,7 @@ export const TorrentsModal = component$(
 
         {seasons.length > 0 && (
           <div class="dropdown dropdown-end relative z-30">
-            <button type="button" class="btn btn-outline btn-primary h-11 min-h-11">
+            <button type="button" class="btn btn-outline btn-primary">
               {langTorrents(resource.value.lang)}
               <HiChevronDownSolid />
             </button>
@@ -120,8 +115,12 @@ export const TorrentsModal = component$(
               <form method="dialog">
                 <button
                   type="submit"
-                  aria-label={langText(lang, "Close torrents", "Закрыть торренты")}
-                  class="btn btn-ghost btn-circle min-h-11 w-11 p-0"
+                  aria-label={langText(
+                    lang,
+                    "Close torrents",
+                    "Закрыть торренты",
+                  )}
+                  class="btn btn-ghost btn-circle p-0"
                 >
                   ✕
                 </button>
@@ -142,9 +141,7 @@ export const TorrentsModal = component$(
             </div>
           </div>
           <form method="dialog" class="modal-backdrop">
-            <button type="submit">
-              {langText(lang, "close", "закрыть")}
-            </button>
+            <button type="submit">{langText(lang, "close", "закрыть")}</button>
           </form>
         </dialog>
       </>

@@ -19,7 +19,6 @@ interface MediaCarouselProps {
   category?: string;
   type: MediaType;
   lang: string;
-  hintLabel?: string;
   sectionId?: string;
 }
 
@@ -28,7 +27,6 @@ export const MediaCarousel = component$(
     title,
     type,
     category,
-    hintLabel,
     lang,
     sectionId,
   }: MediaCarouselProps) => {
@@ -97,86 +95,81 @@ export const MediaCarousel = component$(
       <section
         id={sectionId}
         aria-labelledby={headingId}
-        class="section-reveal my-6 scroll-mt-28"
+        class="section-reveal scroll-mt-28"
       >
-        <div class="rounded-box border-base-200/75 bg-base-100/72 border p-4 shadow-sm backdrop-blur md:p-5">
-          <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div class="space-y-1">
-              <h2 id={headingId} class="text-base-content text-xl font-semibold">
+        <div class="card border-base-200 bg-base-100 border shadow-sm">
+          <div class="card-body gap-4 p-4 md:p-6">
+            <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+              <h2 id={headingId} class="card-title">
                 {title}
               </h2>
-              {hintLabel && hasOverflow.value && (
-                <p class="text-base-content/52 text-xs font-medium tracking-[0.08em] uppercase">
-                  {hintLabel}
-                </p>
-              )}
-            </div>
-            <div class="flex items-center gap-2">
-              {hasOverflow.value && (
-                <>
-                  <button
-                    type="button"
-                    aria-label={`Scroll ${title} backward`}
-                    aria-controls={trackId}
-                    class="btn btn-ghost btn-sm btn-circle hidden md:inline-flex"
-                    disabled={!canScrollBackward.value}
-                    onClick$={() => scrollRail("backward")}
-                  >
-                    <HiChevronLeftSolid aria-hidden="true" class="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={`Scroll ${title} forward`}
-                    aria-controls={trackId}
-                    class="btn btn-ghost btn-sm btn-circle hidden md:inline-flex"
-                    disabled={!canScrollForward.value}
-                    onClick$={() => scrollRail("forward")}
-                  >
-                    <HiChevronRightSolid aria-hidden="true" class="h-4 w-4" />
-                  </button>
-                </>
-              )}
-              {type !== MediaType.Person &&
-                type !== MediaType.Seasons &&
-                category && (
-                  <a
-                    href={paths.category(type, category, lang)}
-                    class="btn btn-ghost text-base-content/70 min-h-11 rounded-full md:btn-sm"
-                  >
-                    {langExploreAll(lang)}
-                  </a>
+              <div class="flex items-center gap-2">
+                {hasOverflow.value && (
+                  <>
+                    <button
+                      type="button"
+                      aria-label={`Scroll ${title} backward`}
+                      aria-controls={trackId}
+                      class="btn btn-ghost btn-sm btn-circle hidden md:inline-flex"
+                      disabled={!canScrollBackward.value}
+                      onClick$={() => scrollRail("backward")}
+                    >
+                      <HiChevronLeftSolid aria-hidden="true" class="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`Scroll ${title} forward`}
+                      aria-controls={trackId}
+                      class="btn btn-ghost btn-sm btn-circle hidden md:inline-flex"
+                      disabled={!canScrollForward.value}
+                      onClick$={() => scrollRail("forward")}
+                    >
+                      <HiChevronRightSolid aria-hidden="true" class="h-4 w-4" />
+                    </button>
+                  </>
                 )}
+                {type !== MediaType.Person &&
+                  type !== MediaType.Seasons &&
+                  category && (
+                    <a
+                      href={paths.category(type, category, lang)}
+                      class="btn btn-ghost btn-sm min-h-11"
+                    >
+                      {langExploreAll(lang)}
+                    </a>
+                  )}
+              </div>
             </div>
+            <div class="relative">
+              <div
+                class={[
+                  "from-base-100 via-base-100/85 pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-12 bg-linear-to-r to-transparent transition-opacity duration-200 md:block",
+                  canScrollBackward.value ? "opacity-100" : "opacity-0",
+                ]}
+              />
+              <div
+                class={[
+                  "from-base-100 via-base-100/85 pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-12 bg-linear-to-l to-transparent transition-opacity duration-200 md:block",
+                  canScrollForward.value ? "opacity-100" : "opacity-0",
+                ]}
+              />
+              <div
+                id={trackId}
+                ref={trackRef}
+                class="carousel carousel-start motion-stagger no-scrollbar w-full items-start overflow-y-visible scroll-smooth py-1 ps-0 pe-0"
+              >
+                <Slot />
+              </div>
+            </div>
+            {hasOverflow.value && (
+              <progress
+                aria-hidden="true"
+                class="progress progress-secondary h-1 w-full"
+                max={100}
+                value={scrollRatio.value * 100}
+              />
+            )}
           </div>
-          <div class="relative">
-          <div
-            class={[
-              "from-base-100 via-base-100/85 pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-12 bg-linear-to-r to-transparent transition-opacity duration-200 md:block",
-              canScrollBackward.value ? "opacity-100" : "opacity-0",
-            ]}
-          />
-          <div
-            class={[
-              "from-base-100 via-base-100/85 pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-12 bg-linear-to-l to-transparent transition-opacity duration-200 md:block",
-              canScrollForward.value ? "opacity-100" : "opacity-0",
-            ]}
-          />
-          <div
-            id={trackId}
-            ref={trackRef}
-            class="carousel carousel-start motion-stagger no-scrollbar w-full items-start overflow-y-visible scroll-smooth py-2 ps-0 pe-0"
-          >
-            <Slot />
-          </div>
-          </div>
-          {hasOverflow.value && (
-            <progress
-              aria-hidden="true"
-              class="progress progress-secondary mt-4 h-1 w-full"
-              max={100}
-              value={scrollRatio.value * 100}
-            />
-          )}
         </div>
       </section>
     );

@@ -18,7 +18,6 @@ import {
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import {
-  langCountLabel,
   langDiscoverMovies,
   langLatestDolbyVisionMovies,
   langLatestHDR10Movies,
@@ -30,7 +29,6 @@ import {
   langText,
   langTrendingMovies,
   langUpcomingMovies,
-  langSwipeToBrowse,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
@@ -172,73 +170,7 @@ export default component$(() => {
   return (
     <div class="space-y-6">
       <SectionHeading
-        eyebrow={langMovies(lang)}
-        title={langText(
-          lang,
-          "Browse movie collections",
-          "Просмотр коллекций фильмов",
-        )}
-        description={langText(
-          lang,
-          `Local shelves and TMDB collections, kept in your current language and region ${getRegionFromLanguage(lang)}.`,
-          `Локальные полки и подборки TMDB в текущем языке и регионе ${getRegionFromLanguage(lang)}.`,
-        )}
-        badges={[
-          langCountLabel(
-            lang,
-            value.torMovies.length,
-            "latest title",
-            "latest titles",
-            "последний релиз",
-            "последних релиза",
-            "последних релизов",
-          ),
-          langCountLabel(
-            lang,
-            value.popularMovies.length,
-            "popular movie",
-            "popular movies",
-            "популярный фильм",
-            "популярных фильма",
-            "популярных фильмов",
-          ),
-          langCountLabel(
-            lang,
-            value.nowPlayingMovies.length,
-            "now playing title",
-            "now playing titles",
-            "фильм в прокате",
-            "фильма в прокате",
-            "фильмов в прокате",
-          ),
-          langCountLabel(
-            lang,
-            value.upcomingMovies.length,
-            "upcoming title",
-            "upcoming titles",
-            "ожидаемый релиз",
-            "ожидаемых релиза",
-            "ожидаемых релизов",
-          ),
-          langCountLabel(
-            lang,
-            value.hdrMovies.length,
-            "HDR10 title",
-            "HDR10 titles",
-            "HDR10 релиз",
-            "HDR10 релиза",
-            "HDR10 релизов",
-          ),
-          langCountLabel(
-            lang,
-            value.dolbyMovies.length,
-            "Dolby Vision title",
-            "Dolby Vision titles",
-            "релиз Dolby Vision",
-            "релиза Dolby Vision",
-            "релизов Dolby Vision",
-          ),
-        ]}
+        title={langMovies(lang)}
       />
       <QuickFilterStrip
         label={langQuickFilters(lang)}
@@ -271,7 +203,6 @@ export default component$(() => {
         </a>
       </div>
       <MediaCarousel
-        hintLabel={langSwipeToBrowse(lang)}
         sectionId="latest-movies"
         title={langLatestMovies(lang)}
         type={MediaType.Movie}
@@ -298,7 +229,6 @@ export default component$(() => {
       </MediaCarousel>
 
       <MediaCarousel
-        hintLabel={langSwipeToBrowse(lang)}
         sectionId="popular-movies"
         title={langPopularMovies(lang)}
         type={MediaType.Movie}
@@ -325,7 +255,6 @@ export default component$(() => {
       </MediaCarousel>
 
       <MediaCarousel
-        hintLabel={langSwipeToBrowse(lang)}
         sectionId="now-playing-movies"
         title={langNowPlayingMovies(lang)}
         type={MediaType.Movie}
@@ -352,7 +281,6 @@ export default component$(() => {
       </MediaCarousel>
 
       <MediaCarousel
-        hintLabel={langSwipeToBrowse(lang)}
         sectionId="upcoming-movies"
         title={langUpcomingMovies(lang)}
         type={MediaType.Movie}
@@ -379,7 +307,6 @@ export default component$(() => {
       </MediaCarousel>
 
       <MediaCarousel
-        hintLabel={langSwipeToBrowse(lang)}
         sectionId="hdr10-movies"
         title={langLatestHDR10Movies(lang)}
         type={MediaType.Movie}
@@ -406,7 +333,6 @@ export default component$(() => {
       </MediaCarousel>
 
       <MediaCarousel
-        hintLabel={langSwipeToBrowse(lang)}
         sectionId="dolby-vision-movies"
         title={langLatestDolbyVisionMovies(lang)}
         type={MediaType.Movie}
@@ -433,7 +359,6 @@ export default component$(() => {
       </MediaCarousel>
 
       <MediaCarousel
-        hintLabel={langSwipeToBrowse(lang)}
         sectionId="trending-movies"
         title={langTrendingMovies(lang)}
         type={MediaType.Movie}

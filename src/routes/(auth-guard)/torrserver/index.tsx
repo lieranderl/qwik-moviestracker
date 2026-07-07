@@ -112,7 +112,7 @@ export default component$(() => {
   const torrentsSig = useSignal<TorrServerTorrentStatus[]>([]);
   const connectionState = useSignal<ConnectionState>("idle");
   const connectionMessage = useSignal(
-    langText(lang, "Add a TorrServer URL to start managing your library.", "Добавьте URL TorrServer, чтобы начать управлять библиотекой."),
+    langText(lang, "Add a TorrServer URL.", "Добавьте URL TorrServer."),
   );
   const serverVersion = useSignal("");
   const settingsSig = useSignal<TorrServerSettings | null>(null);
@@ -174,8 +174,8 @@ export default component$(() => {
     if (!serverUrl) {
       connectionState.value = "idle";
       connectionMessage.value = torrServerList.value.length > 0
-        ? langText(lang, "Select a saved server to inspect its library.", "Выберите сохраненный сервер, чтобы открыть его библиотеку.")
-        : langText(lang, "Add a TorrServer URL to start managing your library.", "Добавьте URL TorrServer, чтобы начать управлять библиотекой.");
+        ? langText(lang, "Select a saved server.", "Выберите сохраненный сервер.")
+        : langText(lang, "Add a TorrServer URL.", "Добавьте URL TorrServer.");
       return;
     }
 
@@ -264,10 +264,10 @@ export default component$(() => {
   });
 
   const summaryMetrics = useComputed$<TorrServerSummaryMetric[]>(() => [
-    { label: langText(lang, "Saved servers", "Сохраненные серверы"), value: torrServerList.value.length, description: langText(lang, "Available in this browser", "Доступно в этом браузере") },
-    { label: langText(lang, "Library items", "Элементы библиотеки"), value: isCheckingTorrServer.value ? "..." : torrentsSig.value.length, description: langText(lang, "Loaded from the active server", "Загружено с активного сервера") },
-    { label: langText(lang, "Server version", "Версия сервера"), value: serverVersion.value || langText(lang, "Not connected", "Не подключено"), description: selectedTorServer.value || langText(lang, "No active server selected", "Не выбран активный сервер") },
-    { label: langText(lang, "Viewed entries", "Просмотренные записи"), value: viewedItemsSig.value.length, description: langText(lang, "From /viewed API state", "Из состояния API /viewed") },
+    { label: langText(lang, "Servers", "Серверы"), value: torrServerList.value.length },
+    { label: langText(lang, "Library", "Библиотека"), value: isCheckingTorrServer.value ? "..." : torrentsSig.value.length },
+    { label: langText(lang, "Version", "Версия"), value: serverVersion.value || langText(lang, "Not connected", "Не подключено") },
+    { label: langText(lang, "Viewed", "Просмотрено"), value: viewedItemsSig.value.length },
   ]);
 
   const summaryBadges = useComputed$<TorrServerSummaryBadge[]>(() => {
@@ -538,13 +538,7 @@ export default component$(() => {
   return (
     <div class="mx-auto w-full max-w-7xl pb-10">
       <SectionHeading
-        eyebrow={langText(lang, "Tools", "Инструменты")}
         title={langTorrServer(lang)}
-        description={langText(lang, "Turn TorrServer into an operational workspace: connect endpoints, inspect the active library, and keep streaming diagnostics visible while you work.", "Превратите TorrServer в рабочее пространство: подключайте серверы, просматривайте библиотеку и держите под рукой ключевую диагностику во время работы.")}
-        badges={[
-          langText(lang, "Playlist and stream actions", "Плейлисты и потоки"),
-          langText(lang, "Read-only diagnostics", "Диагностика только для чтения"),
-        ]}
       />
 
       <div class="mt-6 grid min-w-0 gap-6">
@@ -552,8 +546,7 @@ export default component$(() => {
         <section class="card border-base-200 bg-base-100/90 border shadow-sm backdrop-blur">
           <div class="card-body gap-6">
             <div class="space-y-1">
-              <h2 class="card-title text-xl">{langText(lang, "Connection workspace", "Рабочая область подключения")}</h2>
-              <p class="text-base-content/70 text-sm">{langText(lang, "Store multiple TorrServer endpoints locally, switch between them quickly, and refresh the active workspace without leaving the page.", "Сохраняйте несколько адресов TorrServer локально, быстро переключайтесь между ними и обновляйте рабочее пространство, не покидая страницу.")}</p>
+              <h2 class="card-title text-xl">{langText(lang, "Servers", "Серверы")}</h2>
             </div>
 
             <Form onSubmit$={addTorrserver} class="space-y-2">
@@ -585,7 +578,6 @@ export default component$(() => {
                 <button type="button" disabled={!selectedTorServer.value || isCheckingTorrServer.value} class="btn btn-outline join-item min-h-11 w-full justify-center md:w-28 md:shrink-0" onClick$={() => loadServerSnapshot(selectedTorServer.value)}>{langText(lang, "Refresh", "Обновить")}</button>
                 <button type="button" disabled={!selectedTorServer.value} class="btn btn-error btn-outline join-item min-h-11 w-full justify-center md:w-32 md:shrink-0" onClick$={removeActiveServer}><HiMinusSolid class="text-lg" />{langText(lang, "Remove", "Удалить")}</button>
               </div>
-              <p class="text-base-content/60 text-xs">{langText(lang, "Saved locally in this browser for quick switching.", "Сохранено локально в этом браузере для быстрого переключения.")}</p>
             </div>
 
             <div role="status" class={`alert ${connectionAlertClass(connectionState.value)}`}>
@@ -604,9 +596,7 @@ export default component$(() => {
 
         {/* ── Summary card ─────────────────────────────────── */}
         <TorrServerSummaryCard
-          eyebrow={langText(lang, "Snapshot", "Снимок")}
-          title={langText(lang, "Active server summary", "Сводка по серверу")}
-          description={langText(lang, "A compact read-only view of the current endpoint, library size, and the most relevant runtime toggles exposed by the live TorrServer API.", "Компактный режим только для чтения с данными по текущему серверу, размеру библиотеки и основным параметрам, доступным через API TorrServer.")}
+          title={langText(lang, "Server summary", "Сводка сервера")}
           endpoint={selectedTorServer.value || langText(lang, "No endpoint selected", "Сервер не выбран")}
           version={serverVersion.value}
           connectionLabel={getConnectionLabel(connectionState.value, lang)}
@@ -639,7 +629,7 @@ export default component$(() => {
       </div>
 
       <div class="mt-6 flex justify-end">
-        <button type="button" class="btn btn-outline min-h-11 rounded-full md:btn-sm" disabled={!selectedTorServer.value} onClick$={() => { apiToolsModalOpen.value = true; }}>{langText(lang, "API tools", "API-инструменты")}</button>
+        <button type="button" class="btn btn-outline min-h-11 rounded-full md:btn-sm" disabled={!selectedTorServer.value} onClick$={() => { apiToolsModalOpen.value = true; }}>{langText(lang, "Tools", "Инструменты")}</button>
       </div>
 
       {/* ── Filters ──────────────────────────────────────── */}
@@ -648,20 +638,18 @@ export default component$(() => {
       {/* ── Library grid ─────────────────────────────────── */}
       <section class="mt-6">
         {isCheckingTorrServer.value ? (
-          <LoadingState title={langText(lang, "Syncing TorrServer workspace", "Синхронизация рабочей области TorrServer")} description={langText(lang, "Fetching the current library, settings, and playback-ready metadata.", "Получаем библиотеку, настройки и метаданные для воспроизведения.")} compact={true} />
+          <LoadingState title={langText(lang, "Syncing TorrServer", "Синхронизация TorrServer")} description={langText(lang, "Loading library and settings.", "Загружаем библиотеку и настройки.")} compact={true} />
         ) : torrServerList.value.length === 0 ? (
-          <EmptyState title={langText(lang, "No TorrServer configured yet", "TorrServer еще не настроен")} description={langText(lang, "Add your TorrServer URL above to connect and open the streaming workspace.", "Добавьте URL TorrServer выше, чтобы подключиться и открыть рабочее пространство для стриминга.")} compact={true} />
+          <EmptyState title={langText(lang, "No TorrServer yet", "TorrServer еще не добавлен")} description={langText(lang, "Add a URL above to connect.", "Добавьте URL выше, чтобы подключиться.")} compact={true} />
         ) : connectionState.value === "error" ? (
           <ErrorState title={langText(lang, "Unable to load the selected server", "Не удалось загрузить выбранный сервер")} description={langText(lang, "Check the URL, make sure TorrServer is online, and try again.", "Проверьте URL, убедитесь, что TorrServer доступен, и попробуйте снова.")} compact={true} />
         ) : !selectedTorServer.value ? (
-          <EmptyState title={langText(lang, "Select a saved server", "Выберите сохраненный сервер")} description={langText(lang, "Choose one of your saved endpoints to load its active library.", "Выберите один из сохраненных адресов, чтобы загрузить его активную библиотеку.")} compact={true} />
+          <EmptyState title={langText(lang, "Select a server", "Выберите сервер")} description={langText(lang, "Choose a saved endpoint.", "Выберите сохраненный адрес.")} compact={true} />
         ) : visibleCount === 0 ? (
-          <EmptyState title={langNoResults(lang)} description={langText(lang, "The current filters do not match any torrents in this server library.", "Текущие фильтры не нашли ни одного торрента в библиотеке этого сервера.")} compact={true} />
+          <EmptyState title={langNoResults(lang)} description={langText(lang, "No torrents match these filters.", "По этим фильтрам торренты не найдены.")} compact={true} />
         ) : (
           <MediaGrid
-            eyebrow={langText(lang, "Library", "Библиотека")}
-            title={langText(lang, "TorrServer library workspace", "Рабочее пространство библиотеки TorrServer")}
-            description={langText(lang, "Inspect torrent activity and jump back into the app's media pages without leaving the server context.", "Следите за активностью торрентов и возвращайтесь к карточкам медиа в приложении, не теряя контекст сервера.")}
+            title={langText(lang, "Library", "Библиотека")}
             maxColumns={4}
             headerBadge={langCountLabel(lang, visibleCount, "item", "items", "элемент", "элемента", "элементов")}
           >

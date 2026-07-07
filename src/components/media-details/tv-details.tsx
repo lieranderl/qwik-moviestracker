@@ -13,13 +13,11 @@ import { formatYear } from "~/utils/format";
 import {
   langActors,
   langCreatedby,
-  langExternalLinks,
   langOverview,
   langQuickActions,
   langRecommendedTvShows,
   langCountLabel,
   langText,
-  langSwipeToBrowse,
 } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 import { writeLastViewed } from "~/utils/recent-activity";
@@ -69,7 +67,7 @@ export const TvDetails = component$(
     return (
       <DetailPageContainer>
         <section class="card border-base-200 bg-base-100/95 border shadow-sm">
-          <div class="card-body gap-6">
+          <div class="card-body gap-5 p-4 md:p-6">
             <div class="space-y-2">
               <MediaTitle
                 name={tv.name ?? ""}
@@ -133,14 +131,11 @@ export const TvDetails = component$(
           </div>
         </section>
 
-        <section class="section-reveal card border-base-200 bg-base-100/95 relative z-20 mt-6 border shadow-sm">
-          <div class="card-body gap-4">
+        <section class="section-reveal card border-base-200 bg-base-100/95 relative z-20 border shadow-sm">
+          <div class="card-body gap-4 p-4 md:p-6">
             <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div>
-                <p class="text-base-content/55 text-xs font-semibold tracking-[0.14em] uppercase">
-                  {langQuickActions(lang)}
-                </p>
-                <h3 class="text-xl font-semibold">{langExternalLinks(lang)}</h3>
+                <h3 class="text-xl font-semibold">{langQuickActions(lang)}</h3>
               </div>
               <div class="flex flex-wrap gap-3">
                 {tv.videos && tv.videos.results.length > 0 && (
@@ -164,8 +159,8 @@ export const TvDetails = component$(
           </div>
         </section>
 
-        <section class="section-reveal card border-base-200 bg-base-100/95 relative z-0 mt-6 border shadow-sm">
-          <div class="card-body">
+        <section class="section-reveal card border-base-200 bg-base-100/95 relative z-0 border shadow-sm">
+          <div class="card-body gap-4 p-4 md:p-6">
             <h3 class="card-title text-xl">{langOverview(lang)}</h3>
             <p class="leading-relaxed opacity-90">
               {tv.overview ||
@@ -178,7 +173,7 @@ export const TvDetails = component$(
           </div>
         </section>
 
-        <div class="mt-6 grid gap-6">
+        <div class="grid gap-6">
           <div class="space-y-6">
             <MediaInfo
               release_date={tv.first_air_date}
@@ -205,7 +200,7 @@ export const TvDetails = component$(
             />
 
             <section class="section-reveal card border-base-200 bg-base-100/95 border shadow-sm">
-              <div class="card-body">
+              <div class="card-body gap-4 p-4 md:p-6">
                 <h3 class="card-title text-base-content/80 text-lg">
                   {langText(lang, "Series Stats", "Статистика сериала")}
                 </h3>
@@ -238,12 +233,11 @@ export const TvDetails = component$(
           </div>
         </div>
 
-        <div class="mt-10 space-y-10">
+        <div class="space-y-6">
           <TvSeasons lang={lang} seasons={tv.seasons} />
 
           {tv.created_by.length > 0 && (
             <MediaCarousel
-              hintLabel={langSwipeToBrowse(lang)}
               title={langCreatedby(lang)}
               type={MediaType.Person}
               lang={lang}
@@ -269,7 +263,6 @@ export const TvDetails = component$(
           )}
 
           <MediaCarousel
-            hintLabel={langSwipeToBrowse(lang)}
             title={langActors(lang)}
             type={MediaType.Person}
             lang={lang}
@@ -296,7 +289,6 @@ export const TvDetails = component$(
 
           {recTv.length > 0 && (
             <MediaCarousel
-              hintLabel={langSwipeToBrowse(lang)}
               title={langRecommendedTvShows(lang)}
               type={MediaType.Person}
               category="updated"

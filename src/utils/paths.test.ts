@@ -5,25 +5,25 @@ import { categoryToTitle, paths } from "./paths";
 describe("category title labels", () => {
   it("maps TMDB movie discovery categories to localized titles", () => {
     expect(categoryToTitle("popular", MediaType.Movie, "en-US")).toBe(
-      "All Popular Movies",
+      "All popular movies",
     );
     expect(categoryToTitle("nowplaying", MediaType.Movie, "en-US")).toBe(
-      "All Now Playing",
+      "All now playing",
     );
     expect(categoryToTitle("upcoming", MediaType.Movie, "en-US")).toBe(
-      "All Upcoming Movies",
+      "All upcoming movies",
     );
   });
 
   it("maps TMDB tv discovery categories to localized titles", () => {
     expect(categoryToTitle("popular", MediaType.Tv, "en-US")).toBe(
-      "All Popular TV Shows",
+      "All popular series",
     );
     expect(categoryToTitle("airingtoday", MediaType.Tv, "en-US")).toBe(
-      "All Airing Today",
+      "All airing today",
     );
     expect(categoryToTitle("ontheair", MediaType.Tv, "en-US")).toBe(
-      "All On The Air",
+      "All on the air",
     );
   });
 });

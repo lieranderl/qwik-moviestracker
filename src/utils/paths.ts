@@ -4,15 +4,10 @@ import {
   langLatestDolbyVisionMovies,
   langLatestHDR10Movies,
   langLatestMovies,
-  langNowPlayingMovies,
-  langOnTheAirTvShows,
-  langPopularMovies,
-  langPopularTvShows,
   langTopRatedTvShows,
   langTrendingMovies,
   langTrengingTVShows,
-  langUpcomingMovies,
-  langAiringTodayTvShows,
+  langText,
 } from "./languages";
 
 const CATEGORY_TO_DB: Record<string, string> = {
@@ -40,11 +35,11 @@ export const categoryToTitle = (
       case "dolbyvision":
         return `${allLabel} ${langLatestDolbyVisionMovies(lang)}`;
       case "popular":
-        return `${allLabel} ${langPopularMovies(lang)}`;
+        return `${allLabel} ${langText(lang, "popular movies", "популярные фильмы")}`;
       case "nowplaying":
-        return `${allLabel} ${langNowPlayingMovies(lang)}`;
+        return `${allLabel} ${langText(lang, "now playing", "фильмы в прокате")}`;
       case "upcoming":
-        return `${allLabel} ${langUpcomingMovies(lang)}`;
+        return `${allLabel} ${langText(lang, "upcoming movies", "ожидаемые фильмы")}`;
       case "trending":
         return `${allLabel} ${langTrendingMovies(lang)}`;
       case "updated":
@@ -55,11 +50,11 @@ export const categoryToTitle = (
 
   switch (category) {
     case "popular":
-      return `${allLabel} ${langPopularTvShows(lang)}`;
+      return `${allLabel} ${langText(lang, "popular series", "популярные сериалы")}`;
     case "airingtoday":
-      return `${allLabel} ${langAiringTodayTvShows(lang)}`;
+      return `${allLabel} ${langText(lang, "airing today", "сериалы сегодня")}`;
     case "ontheair":
-      return `${allLabel} ${langOnTheAirTvShows(lang)}`;
+      return `${allLabel} ${langText(lang, "on the air", "сериалы в эфире")}`;
     case "toprated":
       return `${allLabel} ${langTopRatedTvShows(lang)}`;
     case "trending":

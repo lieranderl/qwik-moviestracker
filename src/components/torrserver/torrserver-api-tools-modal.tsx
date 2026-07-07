@@ -558,13 +558,13 @@ export const TorrServerApiToolsModal = component$(
         closeLabel={lt(props.lang, "Close API tools", "Закрыть API-инструменты")}
         title={lt(
           props.lang,
-          "API tools workspace",
-          "Рабочая область API-инструментов",
+          "Tools",
+          "Инструменты",
         )}
         subtitle={lt(
           props.lang,
-          "Add magnet links, upload .torrent files, run searches, manage storage and viewed state.",
-          "Добавление magnet-ссылок, загрузка .torrent файлов, поиск, управление хранилищем и просмотрами.",
+          "Add torrents, search, and update storage.",
+          "Добавляйте торренты, ищите и обновляйте хранилище.",
         )}
         onClose$={props.onClose$}
       >

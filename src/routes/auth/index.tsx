@@ -3,52 +3,18 @@ import { useLocation } from "@builder.io/qwik-city";
 import { HiFilmOutline } from "@qwikest/icons/heroicons";
 import { LoginButton } from "~/components/login-button";
 import {
-  langClearDetails,
-  langClearDetailsDescription,
-  langFastSearch,
-  langFastSearchDescription,
-  langNew,
-  langOneWatchlist,
-  langOneWatchlistDescription,
   langPersonalWatchlist,
   langPrivateCatalogAccessForSignedInUsers,
   langPrivateMovieHub,
   langSimplePlaceToDiscoverTitles,
   langTrackMoviesAndTvShowsAccent,
   langTrackMoviesAndTvShowsPrefix,
-  langWhyPeopleUseIt,
   langGoogleLogo,
 } from "~/utils/languages";
 
 export default component$(() => {
   const location = useLocation();
   const lang = location.url.searchParams.get("lang") || "en-US";
-  const authFeatureCards = [
-    {
-      copy: langFastSearchDescription(lang),
-      icon: "M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 0z",
-      index: "01",
-      title: langFastSearch(lang),
-      toneClass:
-        "bg-[color:var(--auth-feature-one-bg)] text-[color:var(--auth-feature-one-fg)]",
-    },
-    {
-      copy: langClearDetailsDescription(lang),
-      icon: "M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12",
-      index: "02",
-      title: langClearDetails(lang),
-      toneClass:
-        "bg-[color:var(--auth-feature-two-bg)] text-[color:var(--auth-feature-two-fg)]",
-    },
-    {
-      copy: langOneWatchlistDescription(lang),
-      icon: "M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z",
-      index: "03",
-      title: langOneWatchlist(lang),
-      toneClass:
-        "bg-[color:var(--auth-feature-three-bg)] text-[color:var(--auth-feature-three-fg)]",
-    },
-  ] as const;
 
   return (
     <div class="bg-base-100 page-enter relative min-h-dvh overflow-hidden">
@@ -123,7 +89,7 @@ export default component$(() => {
           </p>
 
           <div
-            class="section-reveal mb-12 md:mb-20"
+            class="section-reveal"
             style={{ "--motion-delay": "180ms" }}
           >
             <LoginButton
@@ -160,58 +126,6 @@ export default component$(() => {
               </svg>
             </LoginButton>
           </div>
-
-          {/* Feature cards section */}
-          <section
-            class="section-reveal w-full max-w-4xl"
-            style={{ "--motion-delay": "240ms" }}
-          >
-            <div class="mb-8 flex items-center justify-center gap-3">
-              <span class="text-base-content text-base font-bold tracking-tight">
-                {langWhyPeopleUseIt(lang)}
-              </span>
-              <span class="badge badge-sm border-0 bg-(--auth-badge-bg) text-[0.68rem] font-semibold text-white uppercase">
-                {langNew(lang)}
-              </span>
-            </div>
-
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
-              {authFeatureCards.map((feature) => (
-                <article
-                  key={feature.index}
-                  class="border-base-200/80 bg-base-100/70 group rounded-2xl border p-5 backdrop-blur-md transition-all duration-200 hover:shadow-lg"
-                >
-                  <div class="mb-3 flex items-center gap-3">
-                    <span
-                      class={[
-                        "grid h-10 w-10 place-items-center rounded-xl text-sm font-bold",
-                        feature.toneClass,
-                      ]}
-                    >
-                      <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <path d={feature.icon} />
-                      </svg>
-                    </span>
-                    <p class="text-base-content text-[0.95rem] font-bold">
-                      {feature.title}
-                    </p>
-                  </div>
-                  <p class="text-base-content/60 text-sm leading-relaxed">
-                    {feature.copy}
-                  </p>
-                </article>
-              ))}
-            </div>
-          </section>
         </main>
 
         {/* Footer */}

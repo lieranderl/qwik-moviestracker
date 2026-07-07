@@ -57,6 +57,9 @@
 - Runtime auth must fail closed without a real `AUTH_SECRET`; do not allow a
   predictable placeholder secret in normal dev, preview, or deployed auth
   flows.
+- Keep MongoDB and Auth Mongo adapter runtime imports behind request-time
+  guards. Bun SSG may run without `MONGO_URI`, and MongoDB 7/BSON imports
+  Node APIs that can break Linux Cloud Build if loaded during SSG.
 - Production auth/origin handling must pin the public origin with `AUTH_URL`;
   add preview/custom hosts with `TRUSTED_ORIGINS` instead of trusting arbitrary
   `Host` or `x-forwarded-proto` headers.
@@ -89,6 +92,9 @@
 - `dist/**` and `server/**` are committed generated output.
 - The repo has a small Bun-based test surface, but coverage is still narrow.
 - `adapters/cloud-run/vite.config.ts` references a missing entry file.
+- Keep Docker's Bun image pinned to the same tested Bun version as CI. Floating
+  `oven/bun:1` can pick up Linux runtime regressions before GitHub CI sees
+  them.
 - Verify the usage of suspicious legacy files before deleting them.
 
 ## Claude Enforcement

@@ -1,18 +1,18 @@
-import type { Adapter } from "@auth/core/adapters";
+import type { Adapter, AdapterUser } from "@auth/core/adapters";
 import type { Provider } from "@auth/core/providers";
 import type { GoogleProfile } from "@auth/core/providers/google";
+import type { Account, Profile, Session } from "@auth/core/types";
 import Google from "@auth/core/providers/google";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import { QwikAuth$ } from "@auth/qwik";
+import type { RequestEventCommon } from "@builder.io/qwik-city";
 import {
   resolveAuthTrustHost,
   resolveDatabaseAuthSecret,
   resolveFallbackJwtSecret,
 } from "./auth-config";
-import { mongoclient } from "../utils/mongodbinit";
 
 export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
-  ({ env }) => {
+  (async ({ env }: RequestEventCommon) => {
     const authSecret = env.get("AUTH_SECRET")?.trim();
     const lifecycleEvent = process.env.npm_lifecycle_event;
     const nodeEnv = env.get("NODE_ENV")?.trim() || process.env.NODE_ENV;
@@ -43,7 +43,32 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
           ]
         : [];
 
-    const mongo = mongoclient(env.get("MONGO_URI") ?? "");
+    const mongoUri = env.get("MONGO_URI") ?? "";
+    if (!mongoUri.startsWith("mongodb")) {
+      // During CI/SSG builds the runtime auth env may be intentionally absent.
+      // Keep the build-safe fallback self-contained so SSR generation can
+      // complete without runtime auth secrets.
+      return {
+        secret: resolveFallbackJwtSecret({
+          authSecret,
+          lifecycleEvent,
+          nodeEnv,
+        }),
+        trustHost,
+        session: {
+          strategy: "jwt",
+          maxAge: 60 * 60 * 24 * 7, // 1 week
+          updateAge: 60 * 60 * 24, // 1 day
+        },
+        providers,
+      };
+    }
+
+    const [{ MongoDBAdapter }, { mongoclient }] = await Promise.all([
+      import("@auth/mongodb-adapter"),
+      import("../utils/mongodbinit"),
+    ]);
+    const mongo = await mongoclient(mongoUri);
     if (!mongo) {
       // During CI/SSG builds the runtime auth env may be intentionally absent.
       // Keep the build-safe fallback self-contained so SSR generation can
@@ -77,7 +102,13 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
       trustHost,
       providers,
       callbacks: {
-        async session({ session, user }) {
+        async session({
+          session,
+          user,
+        }: {
+          session: Session;
+          user: AdapterUser;
+        }) {
           session.id = user.id;
           if (user.language) {
             session.language = user.language;
@@ -85,7 +116,13 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
 
           return session;
         },
-        async signIn({ account, profile }) {
+        async signIn({
+          account,
+          profile,
+        }: {
+          account: Account | null;
+          profile?: Profile;
+        }) {
           if (account && profile) {
             if (account.provider === "google") {
               const p = profile as GoogleProfile;
@@ -99,7 +136,7 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
         },
       },
     };
-  },
+  }) as unknown as Parameters<typeof QwikAuth$>[0],
 );
 
 declare module "@auth/core/types" {

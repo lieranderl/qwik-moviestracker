@@ -168,9 +168,15 @@ export default component$(() => {
   }
 
   return (
-    <div class="space-y-6">
+    <div class="space-y-5 md:space-y-6">
       <SectionHeading
+        eyebrow={langText(lang, "Movie collections", "Коллекции фильмов")}
         title={langMovies(lang)}
+        description={langText(
+          lang,
+          "Browse latest, popular, now playing, upcoming, HDR10, Dolby Vision, and trending movie collections.",
+          "Просматривайте новинки, популярные, идущие сейчас, будущие, HDR10, Dolby Vision и трендовые коллекции фильмов.",
+        )}
       />
       <QuickFilterStrip
         label={langQuickFilters(lang)}
@@ -194,14 +200,31 @@ export default component$(() => {
           },
         ]}
       />
-      <div class="section-reveal flex flex-wrap items-center gap-2">
-        <a
-          href={paths.movieDiscover(lang)}
-          class="btn btn-primary rounded-full"
-        >
-          {langDiscoverMovies(lang)}
-        </a>
-      </div>
+      <section
+        aria-label={langDiscoverMovies(lang)}
+        class="section-reveal card border-base-200 bg-base-100 border shadow-sm"
+      >
+        <div class="card-body items-start gap-3 p-4 sm:flex-row sm:items-center sm:justify-between md:p-6">
+          <div class="space-y-1">
+            <h2 class="card-title text-base">
+              {langText(lang, "Movie discovery", "Поиск фильмов")}
+            </h2>
+            <p class="text-base-content/65 text-sm leading-relaxed">
+              {langText(
+                lang,
+                "Filter movies by region, year, providers, and rating.",
+                "Фильтруйте фильмы по региону, году, провайдерам и рейтингу.",
+              )}
+            </p>
+          </div>
+          <a
+            href={paths.movieDiscover(lang)}
+            class="btn btn-primary h-11 min-h-11 w-full rounded-full px-5 sm:w-auto"
+          >
+            {langDiscoverMovies(lang)}
+          </a>
+        </div>
+      </section>
       <MediaCarousel
         sectionId="latest-movies"
         title={langLatestMovies(lang)}
@@ -213,7 +236,7 @@ export default component$(() => {
           <div class="carousel-item" key={m.id}>
             <a
               href={paths.media(MediaType.Movie, m.id, lang)}
-              class="media-card-link"
+              class="media-card-link block"
             >
               <MediaCard
                 title={m.title ? m.title : ""}
@@ -239,7 +262,7 @@ export default component$(() => {
           <div class="carousel-item" key={m.id}>
             <a
               href={paths.media(MediaType.Movie, m.id, lang)}
-              class="media-card-link"
+              class="media-card-link block"
             >
               <MediaCard
                 title={m.title ? m.title : ""}
@@ -265,7 +288,7 @@ export default component$(() => {
           <div class="carousel-item" key={m.id}>
             <a
               href={paths.media(MediaType.Movie, m.id, lang)}
-              class="media-card-link"
+              class="media-card-link block"
             >
               <MediaCard
                 title={m.title ? m.title : ""}
@@ -291,7 +314,7 @@ export default component$(() => {
           <div class="carousel-item" key={m.id}>
             <a
               href={paths.media(MediaType.Movie, m.id, lang)}
-              class="media-card-link"
+              class="media-card-link block"
             >
               <MediaCard
                 title={m.title ? m.title : ""}
@@ -317,7 +340,7 @@ export default component$(() => {
           <div class="carousel-item" key={m.id}>
             <a
               href={paths.media(MediaType.Movie, m.id, lang)}
-              class="media-card-link"
+              class="media-card-link block"
             >
               <MediaCard
                 title={m.title ? m.title : ""}
@@ -343,7 +366,7 @@ export default component$(() => {
           <div class="carousel-item" key={m.id}>
             <a
               href={paths.media(MediaType.Movie, m.id, lang)}
-              class="media-card-link"
+              class="media-card-link block"
             >
               <MediaCard
                 title={m.title ? m.title : ""}
@@ -369,7 +392,7 @@ export default component$(() => {
           <div class="carousel-item" key={m.id}>
             <a
               href={paths.media(MediaType.Movie, m.id, lang)}
-              class="media-card-link"
+              class="media-card-link block"
             >
               <MediaCard
                 title={m.title ? m.title : ""}

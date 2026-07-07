@@ -49,8 +49,8 @@ export const TorrentCard = component$(
     const statusBucket = getTorrentStatusFilter(torrent);
 
     return (
-      <article class="card border-base-200 bg-base-100 min-w-0 shadow-sm">
-        <div class="card-body gap-4 p-3 sm:p-4">
+      <article class="card border-base-200 bg-base-100 min-w-0 border shadow-sm">
+        <div class="card-body gap-3 p-3 sm:gap-4 sm:p-4">
           <div class="flex flex-wrap gap-2">
             <span class="badge badge-outline badge-sm px-3 py-2">
               {torrent.mediaKind === "tv"
@@ -88,7 +88,7 @@ export const TorrentCard = component$(
               href={href}
               target="_blank"
               rel="noreferrer"
-              class="mb-4 block min-w-0"
+              class="block min-w-0"
             >
               <MediaCard
                 title={title}
@@ -101,7 +101,7 @@ export const TorrentCard = component$(
               />
             </a>
           ) : (
-            <div class="mb-4 block min-w-0">
+            <div class="block min-w-0">
               <MediaCard
                 title={title}
                 width={300}
@@ -114,7 +114,7 @@ export const TorrentCard = component$(
             </div>
           )}
 
-          <div class="space-y-3">
+          <div class="grid gap-3">
             <div class="stats stats-vertical bg-base-200/45 sm:stats-horizontal w-full shadow-none">
               <div class="stat min-w-0 overflow-hidden px-3 py-2">
                 <div class="stat-title text-xs">
@@ -140,7 +140,7 @@ export const TorrentCard = component$(
               </div>
             </div>
 
-            <p class="text-base-content/70 line-clamp-2 px-1 text-xs wrap-break-word">
+            <p class="text-base-content/70 line-clamp-2 text-xs wrap-break-word">
               {torrent.name || torrent.title}
             </p>
 

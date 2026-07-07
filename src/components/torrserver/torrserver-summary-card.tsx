@@ -48,10 +48,10 @@ export const TorrServerSummaryCard = component$(
     return (
       <section
         aria-labelledby={headingId}
-        class="rounded-box border-base-200 bg-base-100/90 border shadow-sm backdrop-blur"
+        class="card border-base-200 bg-base-100 border shadow-sm"
       >
-        <div class="card-body gap-5 p-5 md:p-6">
-          <header class="space-y-4">
+        <div class="card-body gap-4 p-4 md:gap-5 md:p-6">
+          <header class="space-y-3">
             <div class="flex flex-wrap items-center gap-2">
               <span
                 title={endpoint}
@@ -65,7 +65,9 @@ export const TorrServerSummaryCard = component$(
                 </span>
               )}
               {connectionLabel && (
-                <span class={`badge rounded-full px-3 py-3 font-medium ${getToneBadgeClass(statusTone)}`}>
+                <span
+                  class={`badge rounded-full px-3 py-3 font-medium ${getToneBadgeClass(statusTone)}`}
+                >
                   {connectionLabel}
                 </span>
               )}
@@ -77,7 +79,7 @@ export const TorrServerSummaryCard = component$(
                   {eyebrow}
                 </p>
               )}
-              <h2 id={headingId} class="text-2xl font-semibold text-balance">
+              <h2 id={headingId} class="card-title text-2xl text-balance">
                 {title}
               </h2>
               {description && (
@@ -89,27 +91,23 @@ export const TorrServerSummaryCard = component$(
           </header>
 
           {metrics.length > 0 && (
-            <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div class="stats stats-vertical bg-base-200/40 md:stats-horizontal shadow-none">
               {metrics.map((metric) => {
                 const tone = metric.tone ?? "neutral";
 
                 return (
                   <div
-                    class="rounded-box border-base-200 bg-base-200/40 min-w-0 border px-4 py-3"
+                    class="stat min-w-0 overflow-hidden px-4 py-3"
                     key={metric.label}
                   >
-                    <p class="text-base-content/55 truncate text-xs font-medium">
-                      {metric.label}
-                    </p>
+                    <p class="stat-title truncate text-xs">{metric.label}</p>
                     <p
-                      class={`mt-1 truncate text-xl font-bold ${getToneStatValueClass(tone)}`}
+                      class={`stat-value truncate text-xl ${getToneStatValueClass(tone)}`}
                     >
                       {metric.value}
                     </p>
                     {metric.description && (
-                      <p class="text-base-content/60 mt-1 truncate text-xs">
-                        {metric.description}
-                      </p>
+                      <p class="stat-desc truncate">{metric.description}</p>
                     )}
                   </div>
                 );

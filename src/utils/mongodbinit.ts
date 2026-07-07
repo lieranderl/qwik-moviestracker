@@ -1,11 +1,11 @@
-import { MongoClient } from "mongodb";
+import type { MongoClient as MongoClientType } from "mongodb";
 
 type MongoGlobal = typeof globalThis & {
-	__moviesMongoClient?: MongoClient;
+	__moviesMongoClient?: MongoClientType;
 	__moviesMongoUri?: string;
 };
 
-export const mongoclient = (env: string) => {
+export const mongoclient = async (env: string) => {
 	if (!env.startsWith("mongodb")) {
 		return;
 	}
@@ -18,6 +18,7 @@ export const mongoclient = (env: string) => {
 		return globalMongo.__moviesMongoClient;
 	}
 
+	const { MongoClient } = await import("mongodb");
 	const client = new MongoClient(env, {
 		// Keep pool bounded to avoid Atlas connection spikes under load.
 		maxPoolSize: 20,

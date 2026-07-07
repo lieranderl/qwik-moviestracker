@@ -951,29 +951,25 @@ export default component$(() => {
   /* ── Render ────────────────────────────────────────────── */
 
   return (
-    <div class="mx-auto w-full max-w-7xl space-y-6 pb-10">
+    <div class="mx-auto w-full max-w-7xl space-y-8 pb-10">
       <SectionHeading title={langTorrServer(lang)} />
 
-      <div class="grid min-w-0 gap-6">
+      <div class="space-y-8">
         {/* ── Connection workspace ─────────────────────────── */}
         <section class="card border-base-200 bg-base-100 border shadow-sm">
-          <div class="card-body gap-4 p-4 md:gap-5 md:p-6">
-            <div class="space-y-1">
-              <h2 class="card-title text-xl">
-                {langText(lang, "Servers", "Серверы")}
-              </h2>
-            </div>
+          <div class="card-body gap-5 p-4 md:p-6">
+            <h2 class="card-title">{langText(lang, "Servers", "Серверы")}</h2>
 
-            <Form onSubmit$={addTorrserver} class="space-y-2">
+            <Form onSubmit$={addTorrserver}>
               <Field name="ipaddress">
                 {(field, props) => (
                   <div class="space-y-2">
                     <div class="join join-vertical sm:join-horizontal w-full">
                       <label
-                        class="input input-bordered join-item flex w-full min-w-0 items-center gap-2 text-base"
+                        class="input input-bordered join-item flex w-full min-w-0 items-center gap-2"
                         for="torrserver-url"
                       >
-                        <span class="label text-base-content/65 shrink-0 text-xs font-medium tracking-[0.12em] uppercase">
+                        <span class="text-base-content/60 shrink-0 text-xs font-medium tracking-[0.12em] uppercase">
                           {langText(lang, "URL", "Адрес")}
                         </span>
                         <input
@@ -981,13 +977,13 @@ export default component$(() => {
                           id="torrserver-url"
                           type="url"
                           placeholder={langAddNewTorrServerURL(lang)}
-                          class="h-11 min-w-0 grow"
+                          class="min-w-0 grow"
                         />
                       </label>
                       <button
                         type="submit"
                         disabled={newTorrServerForm.invalid}
-                        class="btn btn-primary join-item min-h-11 w-full justify-center sm:w-32 sm:shrink-0"
+                        class="btn btn-primary join-item w-full sm:w-32 sm:shrink-0"
                       >
                         <HiPlusSolid class="text-lg" />
                         {langText(lang, "Add", "Добавить")}
@@ -1001,17 +997,15 @@ export default component$(() => {
               </Field>
             </Form>
 
-            <div class="space-y-2">
-              <label class="label px-0 pt-0" for="active-torrserver">
-                <span class="label-text font-medium">
-                  {langText(lang, "Active server", "Активный сервер")}
-                </span>
-              </label>
+            <label class="form-control">
+              <span class="label label-text px-0 pt-0">
+                {langText(lang, "Active server", "Активный сервер")}
+              </span>
               <div class="join join-vertical md:join-horizontal w-full">
                 <select
                   id="active-torrserver"
                   value={selectedTorServer.value}
-                  class="select select-bordered join-item h-11 min-h-11 w-full min-w-0 text-base"
+                  class="select select-bordered join-item w-full min-w-0"
                   onChange$={(_, el) => {
                     selectedTorServer.value = normalizeServer(el.value);
                     persistServersStorage({
@@ -1040,7 +1034,7 @@ export default component$(() => {
                   disabled={
                     !selectedTorServer.value || isCheckingTorrServer.value
                   }
-                  class="btn btn-outline join-item min-h-11 w-full justify-center md:w-28 md:shrink-0"
+                  class="btn btn-outline join-item w-full md:w-28 md:shrink-0"
                   onClick$={() => loadServerSnapshot(selectedTorServer.value)}
                 >
                   {langText(lang, "Refresh", "Обновить")}
@@ -1048,20 +1042,20 @@ export default component$(() => {
                 <button
                   type="button"
                   disabled={!selectedTorServer.value}
-                  class="btn btn-error btn-outline join-item min-h-11 w-full justify-center md:w-32 md:shrink-0"
+                  class="btn btn-error btn-outline join-item w-full md:w-32 md:shrink-0"
                   onClick$={removeActiveServer}
                 >
                   <HiMinusSolid class="text-lg" />
                   {langText(lang, "Remove", "Удалить")}
                 </button>
               </div>
-            </div>
+            </label>
 
             <div
               role="status"
               class={`alert ${connectionAlertClass(connectionState.value)}`}
             >
-              <div class="space-y-1">
+              <div>
                 <p class="font-semibold">
                   {connectionState.value === "connected"
                     ? langText(
@@ -1101,7 +1095,7 @@ export default component$(() => {
           metrics={summaryMetrics.value}
           badges={summaryBadges.value}
         >
-          <div class="grid min-w-0 gap-3 md:grid-cols-2">
+          <div class="grid gap-3 md:grid-cols-2">
             <div class="card border-base-200 bg-base-200/40 border shadow-none">
               <div class="card-body gap-2 p-4">
                 <p class="font-semibold">
@@ -1143,7 +1137,7 @@ export default component$(() => {
               </div>
             </div>
           </div>
-          <div class="grid gap-2 sm:flex sm:flex-wrap">
+          <div class="flex flex-wrap gap-2">
             {selectedTorServer.value && (
               <a
                 href={buildTorrentPlaylistUrl(
@@ -1153,7 +1147,7 @@ export default component$(() => {
                 )}
                 target="_blank"
                 rel="noreferrer"
-                class="btn btn-outline md:btn-sm min-h-11 w-full rounded-full sm:w-auto"
+                class="btn btn-outline btn-sm flex-1 sm:flex-none"
               >
                 {langText(
                   lang,
@@ -1167,14 +1161,14 @@ export default component$(() => {
                 href={`${selectedTorServer.value}/playlistall/all.m3u`}
                 target="_blank"
                 rel="noreferrer"
-                class="btn btn-ghost md:btn-sm min-h-11 w-full rounded-full sm:w-auto"
+                class="btn btn-ghost btn-sm flex-1 sm:flex-none"
               >
                 {langText(lang, "Full library M3U", "M3U всей библиотеки")}
               </a>
             )}
             <button
               type="button"
-              class="btn btn-outline md:btn-sm min-h-11 w-full rounded-full sm:w-auto"
+              class="btn btn-outline btn-sm flex-1 sm:flex-none"
               disabled={!selectedTorServer.value}
               onClick$={() => {
                 apiToolsModalOpen.value = true;

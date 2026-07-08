@@ -45,7 +45,13 @@ export const mongoclient = async (env: string) => {
     return client;
   })();
 
-  const client = await globalMongo.__moviesMongoPromise;
-  globalMongo.__moviesMongoPromise = undefined;
-  return client;
+  try {
+    const client = await globalMongo.__moviesMongoPromise;
+    return client;
+  } finally {
+    // Clear the cached promise so transient connection failures
+    // (Atlas hiccups, network blips) can retry on the next request
+    // instead of rethrowing the same rejected promise forever.
+    globalMongo.__moviesMongoPromise = undefined;
+  }
 };

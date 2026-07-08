@@ -18,8 +18,10 @@ curl_args=(
 	--header "Cache-Control: no-cache"
 )
 
-# --- Root endpoint: expect app shell with title ---
+# --- Root endpoint: app is behind auth guard and redirects to /auth ---
+# Follow the redirect to verify the app serves content (not a 5xx crash).
 curl "${curl_args[@]}" \
+	--location \
 	--dump-header "${work_dir}/root.headers" \
 	--output "${work_dir}/root.body" \
 	"${base_url}/"

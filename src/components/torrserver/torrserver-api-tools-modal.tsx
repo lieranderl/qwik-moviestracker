@@ -317,12 +317,12 @@ const SearchSection = component$(
           )}
           {serverUrl && (
             <a
-              href={`${serverUrl}/stats`}
+              href={`${serverUrl}/stat`}
               target="_blank"
               rel="noreferrer"
               class="btn btn-ghost min-h-11 flex-1 sm:flex-none"
             >
-              /stats
+              /stat
             </a>
           )}
           {serverUrl && (
@@ -340,8 +340,8 @@ const SearchSection = component$(
           {(statsText || "").slice(0, 420) ||
             lt(
               lang,
-              "Statistics text from /stats will appear here after connection.",
-              "Текст статистики из /stats появится здесь после подключения.",
+              "Statistics text from /stat will appear here after connection.",
+              "Текст статистики из /stat появится здесь после подключения.",
             )}
         </p>
       </div>

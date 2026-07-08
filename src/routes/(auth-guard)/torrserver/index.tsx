@@ -44,7 +44,10 @@ import {
   getTorrServerVersion,
   listTorrent,
   listViewedTorrents,
+  markViewedTorrent,
   removeTorrent,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- restore removeViewed UI in follow-up
+  removeViewedTorrent,
   searchRutor,
   searchTorznab,
   type TorrServerSearchResult,
@@ -644,8 +647,21 @@ export default component$(() => {
     }
   });
 
-  const selectFileForViewed = $((file: TorrServerFileEntry) => {
+  const selectFileForViewed = $(async (file: TorrServerFileEntry) => {
+    const baseUrl = selectedTorServer.value;
+    if (!baseUrl || !selectedTorrentHash.value) return;
     selectedFileId.value = file.id;
+    try {
+      const updated = await markViewedTorrent(
+        baseUrl,
+        selectedTorrentHash.value,
+        file.id,
+      );
+      viewedItemsSig.value = updated;
+    } catch {
+      // Non-critical: viewed persistence may be unavailable on some
+      // TorrServer builds; the UI selection still updates locally.
+    }
   });
 
   const copyStreamUrl = $(async (file: TorrServerFileEntry) => {

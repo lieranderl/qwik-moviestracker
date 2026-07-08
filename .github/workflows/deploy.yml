@@ -172,9 +172,11 @@ jobs:
           test -n "$URL" && test "$URL" != "null"
           CANDIDATE_HOST="${URL#https://}"
 
-          # Add the candidate host to TRUSTED_ORIGINS so the smoke test can
-          printf 'TRUSTED_ORIGINS: "https://%s,%s"\n' "$CANDIDATE_HOST" "$PROD_URL" > /tmp/candidate-env.yaml
-          # reach the candidate revision through its tagged *.a.run.app URL.
+          # Write ALL env vars to a YAML file to avoid gcloud dict-parsing
+          # issues with URLs containing :// and commas.
+          printf 'NODE_ENV: production\nAUTH_URL: %s\nGOOGLE_ID: %s\nTRUSTED_ORIGINS: "%s,%s"\n' \
+            "$PROD_URL" "$GOOGLE_ID" "$CANDIDATE_HOST" "$PROD_URL" \
+            > /tmp/candidate-env.yaml
           gcloud run deploy "$PROD_SERVICE" \
             --image="$IMAGE" \
             --region="$GCP_REGION" \
@@ -182,11 +184,10 @@ jobs:
             --no-traffic \
             --tag="$TAG" \
             --revision-suffix="$SUFFIX" \
-            --set-env-vars="NODE_ENV=production,AUTH_URL=$PROD_URL,GOOGLE_ID=$GOOGLE_ID" \
             --env-vars-file=/tmp/candidate-env.yaml \
             --update-secrets="AUTH_SECRET=AUTH_SECRET:latest,GOOGLE_SECRET=GOOGLE_SECRET:latest,MONGO_URI=MONGO_URI:latest,TMDB_API_KEY=TMDB_API_KEY:latest,GC_API_KEY=GC_API_KEY:latest" \
             --quiet
-          test -n "$URL" && test "$URL" != "null"
+
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "revision=$PROD_SERVICE-$SUFFIX" >> "$GITHUB_OUTPUT"
           echo "previous=$PREVIOUS" >> "$GITHUB_OUTPUT"

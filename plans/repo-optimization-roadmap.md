@@ -40,7 +40,7 @@
    - Verification enforcement knows about type-check, lint, and full build, but not about focused test execution.
    - Agent workflow is stronger than before, but it still cannot enforce the "run the closest targeted test" rule from `AGENTS.md`.
 
-8. `references/guardrails.md`, `references/architecture.md`, `CLAUDE.md`
+8. `references/guardrails.md`, `references/architecture.md`
    - Some guidance still lags repo reality, especially around test maturity and route sharp edges.
 
 ## Execution order

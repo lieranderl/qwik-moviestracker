@@ -165,7 +165,7 @@ jobs:
             --tag="$TAG" \
             --revision-suffix="$SUFFIX" \
             --set-env-vars="NODE_ENV=production,AUTH_URL=$PROD_URL,GOOGLE_ID=$GOOGLE_ID" \
-            --update-env-vars="TRUSTED_ORIGINS=https://${CANDIDATE_HOST},$PROD_URL" \
+            --set-env-vars="TRUSTED_ORIGINS=https://${CANDIDATE_HOST},$PROD_URL" \
             --update-secrets="AUTH_SECRET=AUTH_SECRET:latest,GOOGLE_SECRET=GOOGLE_SECRET:latest,MONGO_URI=MONGO_URI:latest,TMDB_API_KEY=TMDB_API_KEY:latest,GC_API_KEY=GC_API_KEY:latest" \
             --quiet
 
@@ -183,7 +183,7 @@ jobs:
             --tag="$TAG" \
             --revision-suffix="$SUFFIX" \
             --set-env-vars="NODE_ENV=production,AUTH_URL=$PROD_URL,GOOGLE_ID=$GOOGLE_ID" \
-            --update-env-vars="TRUSTED_ORIGINS=https://${CANDIDATE_HOST},$PROD_URL" \
+            --set-env-vars="TRUSTED_ORIGINS=https://${CANDIDATE_HOST},$PROD_URL" \
             --update-secrets="AUTH_SECRET=AUTH_SECRET:latest,GOOGLE_SECRET=GOOGLE_SECRET:latest,MONGO_URI=MONGO_URI:latest,TMDB_API_KEY=TMDB_API_KEY:latest,GC_API_KEY=GC_API_KEY:latest" \
             --quiet
           test -n "$URL" && test "$URL" != "null"

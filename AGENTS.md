@@ -7,9 +7,8 @@ the reference files and project memory files linked below.
 ## Read Order
 
 1. `AGENTS.md`
-2. `CLAUDE.md`
-3. `.agent/skills/qwik-moviestracker/SKILL.md`
-4. The one reference file that matches the current task
+2. `.agent/skills/qwik-moviestracker/SKILL.md`
+3. The one reference file that matches the current task
 
 Reference files:
 
@@ -47,11 +46,6 @@ Do not load every reference by default. Open only what the task needs.
   classes such as `min-h-11`, `min-w-11`, sensible padding, and accessible
   labels. Avoid `btn-sm`, `btn-xs`, and `min-h-0` on touch-first mobile
   controls.
-- For Claude Code, keep project automation in `.claude/**` and keep the root
-  `CLAUDE.md` concise. Put durable detail in `references/**`. Project-scoped
-  MCP config lives in `.mcp.json`.
-- For cross-model work, prefer: Claude Code plans, Codex reviews the plan
-  against the codebase, Claude implements, Codex verifies.
 
 ## Repository Workflow
 

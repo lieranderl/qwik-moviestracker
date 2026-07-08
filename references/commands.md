@@ -108,29 +108,14 @@ Required Secret Manager secret names expected by the deploy workflow:
 - `TMDB_API_KEY`
 - `GC_API_KEY`
 
-## Claude + Codex Workflow
+## Agent Workflow
 
 For non-trivial work:
 
-1. Claude Code starts in plan mode.
-2. Save the phased plan in `plans/<task>.md`.
-3. Codex reviews the plan against the real codebase and appends findings.
-4. Claude Code implements phase-by-phase.
-5. Codex verifies the result and the final verification commands are rerun.
+1. Plan in phases and save to `plans/<task>.md`.
+2. Review the plan against the real codebase.
+3. Implement phase-by-phase.
+4. Verify the result and rerun final verification commands.
 
-## Claude Slash Workflows
-
-Project-local command workflows live in `.claude/commands/**`.
-
-- `/plan-feature` - create or update a phased plan in `plans/<task>.md`
-- `/verify-repo` - run the repo verification workflow
-- `/review-auth` - launch the auth review workflow
-- `/ui-check` - run a Qwik/daisyUI UI check with Playwright when available
-- `/deploy-check` - review Bun SSR, Docker, GitHub Actions, and Cloud Run
-  changes
-
-## Useful Session Guidance
-
-- Use plan mode first for complex tasks.
-- Use worktrees for independent parallel tasks.
-- Use project skills instead of pasting long repeated instructions into prompts.
+Prefer project skills and reference files over pasting long repeated instructions
+into prompts.

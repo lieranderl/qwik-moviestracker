@@ -1,5 +1,12 @@
 # Moviestracker
 
+[![CI](https://github.com/lieranderl/qwik-moviestracker/actions/workflows/quality.yml/badge.svg)](https://github.com/lieranderl/qwik-moviestracker/actions/workflows/quality.yml)
+[![Last Commit](https://img.shields.io/github/last-commit/lieranderl/qwik-moviestracker)](https://github.com/lieranderl/qwik-moviestracker/commits/main)
+[![Issues](https://img.shields.io/github/issues/lieranderl/qwik-moviestracker)](https://github.com/lieranderl/qwik-moviestracker/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/lieranderl/qwik-moviestracker)](https://github.com/lieranderl/qwik-moviestracker/pulls)
+[![Stars](https://img.shields.io/github/stars/lieranderl/qwik-moviestracker)](https://github.com/lieranderl/qwik-moviestracker/stargazers)
+[![Top Language](https://img.shields.io/github/languages/top/lieranderl/qwik-moviestracker)](https://github.com/lieranderl/qwik-moviestracker)
+
 Private Qwik City app for discovering movies and TV shows, opening rich detail
 pages, authenticating with Google, reading curated/latest items from MongoDB
 Atlas, and managing a connected TorrServer library.
@@ -69,16 +76,3 @@ last healthy revision automatically.
 - GCP authentication uses Workload Identity Federation — no service-account keys
   are stored in the repository
 - The repository supports development and production environments only
-
-## AI Agent Docs
-
-Project-specific agent guidance lives in:
-
-- [AGENTS.md](./AGENTS.md) - root operating contract
-- [.agent/skills/qwik-moviestracker/SKILL.md](./.agent/skills/qwik-moviestracker/SKILL.md) - project-local skill entrypoint
-- [.claude/skills/qwik-moviestracker/SKILL.md](./.claude/skills/qwik-moviestracker/SKILL.md) - Claude Code project skill
-- [.github/copilot-instructions.md](./.github/copilot-instructions.md) - lightweight GitHub Copilot guidance
-
-The docs are intentionally layered. Agents should update the corresponding
-Markdown file whenever they discover stale guidance, changed behavior, new
-verification steps, or new team preferences.

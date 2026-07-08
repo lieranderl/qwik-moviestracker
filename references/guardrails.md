@@ -45,7 +45,7 @@
 - Production secrets belong in Google Secret Manager and are injected by Cloud
   Run. GitHub Actions may reference secret names, but must not store secret
   values or service-account keys.
-- Claude project hooks block direct edits to `.env*`, `adminSDK.json`,
+- Project hooks block direct edits to `.env*`, `adminSDK.json`,
   `dist/**`, and `server/**`.
 
 ## Runtime Safety
@@ -123,10 +123,9 @@
   events. The quality.yml secrets job is restricted to `push` and
   `pull_request` events only.
 
-## Claude Enforcement
+## Agent Enforcement
 
-- Project-local Claude hooks track when code files were edited in a session.
-- Claude stop is blocked when required verification did not run for tracked
-  code changes.
-- Docs-only work under `references/**`, `.claude/**`, `plans/**`, `AGENTS.md`,
-  and `CLAUDE.md` does not trigger app verification requirements.
+- Hooks track when code files were edited and block stop when required
+  verification did not run for tracked code changes.
+- Docs-only work under `references/**`, `plans/**`, `AGENTS.md`, and
+  `CLAUDE.md` does not trigger app verification requirements.

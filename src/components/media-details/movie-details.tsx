@@ -69,7 +69,7 @@ export const MovieDetails = component$(
     return (
       <DetailPageContainer>
         <section class="card border-base-200 bg-base-100/95 border shadow-sm">
-          <div class="card-body gap-5 p-4 md:p-6">
+          <div class="card-body gap-4 p-4 md:p-6">
             <div class="space-y-2">
               <MediaTitle
                 name={movie.title ?? ""}
@@ -115,7 +115,7 @@ export const MovieDetails = component$(
           </div>
         </section>
 
-        <section class="section-reveal card border-base-200 bg-base-100/95 relative z-20 border shadow-sm">
+        <section class="section-reveal card border-base-200 bg-base-100/95 border shadow-sm">
           <div class="card-body gap-4 p-4 md:p-6">
             <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div>
@@ -143,7 +143,7 @@ export const MovieDetails = component$(
           </div>
         </section>
 
-        <section class="section-reveal card border-base-200 bg-base-100/95 relative z-0 border shadow-sm">
+        <section class="section-reveal card border-base-200 bg-base-100/95 border shadow-sm">
           <div class="card-body gap-4 p-4 md:p-6">
             <h3 class="card-title text-xl">{langOverview(lang)}</h3>
             <p class="leading-relaxed opacity-90">

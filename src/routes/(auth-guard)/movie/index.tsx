@@ -168,7 +168,7 @@ export default component$(() => {
   }
 
   return (
-    <div class="space-y-5 md:space-y-6">
+    <div class="space-y-8">
       <SectionHeading
         eyebrow={langText(lang, "Movie collections", "Коллекции фильмов")}
         title={langMovies(lang)}
@@ -219,7 +219,7 @@ export default component$(() => {
           </div>
           <a
             href={paths.movieDiscover(lang)}
-            class="btn btn-primary h-11 min-h-11 w-full rounded-full px-5 sm:w-auto"
+            class="btn btn-primary btn-sm w-full rounded-full sm:w-auto"
           >
             {langDiscoverMovies(lang)}
           </a>

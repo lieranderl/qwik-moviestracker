@@ -30,7 +30,7 @@ export const DetailPageShell = component$<DetailPageShellProps>(
 
 export const DetailPageContainer = component$(() => {
   return (
-    <div class="min-h-screen space-y-6">
+    <div class="min-h-screen space-y-8">
       <Slot />
     </div>
   );

@@ -6,7 +6,7 @@ import { FeaturedSpotlight } from "~/components/discovery/featured-spotlight";
 import { QuickFilterStrip } from "~/components/discovery/quick-filter-strip";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
-import { ErrorState, SectionHeading } from "~/components/page-feedback";
+import { ErrorState } from "~/components/page-feedback";
 import {
   createDevHomeFeed,
   DEV_SESSION_BYPASS_COOKIE,
@@ -133,8 +133,26 @@ export default component$(() => {
   const featuredMovie =
     value.movies[(new Date().getDate() - 1) % value.movies.length];
   return (
-    <div class="space-y-6">
-      <SectionHeading title={langHomeDashboardTitle(lang)} />
+    <div class="space-y-5">
+      <div class="section-reveal flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <h1 class="text-3xl font-semibold tracking-tight md:text-4xl">
+          {langHomeDashboardTitle(lang)}
+        </h1>
+        <div class="flex flex-wrap items-center gap-2">
+          <a
+            href={paths.movieDiscover(lang)}
+            class="btn btn-primary btn-sm h-10 min-h-10 rounded-full"
+          >
+            {langDiscoverMovies(lang)}
+          </a>
+          <a
+            href={paths.tvDiscover(lang)}
+            class="btn btn-outline btn-sm h-10 min-h-10 rounded-full"
+          >
+            {langDiscoverTv(lang)}
+          </a>
+        </div>
+      </div>
       <QuickFilterStrip
         label={langQuickFilters(lang)}
         items={[
@@ -152,26 +170,11 @@ export default component$(() => {
           { href: "#trending-tv", label: langTrengingTVShows(lang) },
         ]}
       />
-      <div class="section-reveal flex flex-wrap items-center gap-2">
-        <a
-          href={paths.movieDiscover(lang)}
-          class="btn btn-primary h-11 min-h-11 rounded-full"
-        >
-          {langDiscoverMovies(lang)}
-        </a>
-        <a
-          href={paths.tvDiscover(lang)}
-          class="btn btn-outline h-11 min-h-11 rounded-full"
-        >
-          {langDiscoverTv(lang)}
-        </a>
-      </div>
       {value.movies.length > 0 && featuredMovie && (
         <FeaturedSpotlight
           ctaLabel={langOpenDetails(lang)}
           description={
-            featuredMovie.overview ||
-            langFeaturedSpotlightDescription(lang)
+            featuredMovie.overview || langFeaturedSpotlightDescription(lang)
           }
           href={paths.media(MediaType.Movie, featuredMovie.id, lang)}
           imagePath={featuredMovie.backdrop_path}

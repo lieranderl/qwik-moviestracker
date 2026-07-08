@@ -76,6 +76,7 @@ jobs:
 
   secrets:
     name: Secret scan
+    if: github.event_name != 'workflow_call'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

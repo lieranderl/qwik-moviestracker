@@ -173,7 +173,7 @@ jobs:
           CANDIDATE_HOST="${URL#https://}"
 
           # Add the candidate host to TRUSTED_ORIGINS so the smoke test can
-          printf 'TRUSTED_ORIGINS=https://%s,%s\n' "$CANDIDATE_HOST" "$PROD_URL" > /tmp/candidate-env.yaml
+          printf 'TRUSTED_ORIGINS: "https://%s,%s"\n' "$CANDIDATE_HOST" "$PROD_URL" > /tmp/candidate-env.yaml
           # reach the candidate revision through its tagged *.a.run.app URL.
           gcloud run deploy "$PROD_SERVICE" \
             --image="$IMAGE" \

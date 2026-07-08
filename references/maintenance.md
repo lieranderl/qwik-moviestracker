@@ -18,7 +18,6 @@ Update docs in the same task when you discover:
 ## Where Changes Go
 
 - `AGENTS.md`: cross-agent root contract
-- `CLAUDE.md`: concise project memory
 - `references/architecture.md`: file map, runtime shape, route/service boundaries
 - `references/ui-system.md`: UI conventions and reusable patterns
 - `references/commands.md`: commands, verification, and workflow steps
@@ -36,7 +35,8 @@ Update docs in the same task when you discover:
 
 - Do not repeat the same long guidance in every file.
 - Keep root files short and point to the right deeper document.
-- When agent workflow changes, update `CLAUDE.md` and the relevant tooling directory.
+- When agent workflow changes, update the relevant tooling directory and
+  `references/commands.md`.
 - When repo-wide truths change, update `AGENTS.md` and the matching reference.
 
 ## Review Trigger

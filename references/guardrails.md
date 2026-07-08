@@ -127,5 +127,5 @@
 
 - Hooks track when code files were edited and block stop when required
   verification did not run for tracked code changes.
-- Docs-only work under `references/**`, `plans/**`, `AGENTS.md`, and
-  `CLAUDE.md` does not trigger app verification requirements.
+- Docs-only work under `references/**`, `plans/**`, and `AGENTS.md` does not
+  trigger app verification requirements.

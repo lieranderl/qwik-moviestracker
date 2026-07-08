@@ -220,12 +220,12 @@ export const MediaAvailability = component$<MediaAvailabilityProps>(
 
     return (
       <section class="card border-base-200 bg-base-100/95 border shadow-sm">
-        <div class="card-body">
+        <div class="card-body gap-4 p-4 md:p-6">
           <h3 class="card-title text-base-content/80 text-lg">
             {langAvailability(lang)}
           </h3>
 
-          <section class="my-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-3 text-sm">
+          <section class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-3 text-sm">
             {certification && (
               <>
                 <span class="leading-7 font-bold opacity-70">

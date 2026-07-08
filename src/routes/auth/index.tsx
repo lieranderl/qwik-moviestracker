@@ -55,7 +55,7 @@ export default component$(() => {
               Moviestracker
             </span>
           </div>
-          <span class="badge badge-sm border-base-300/80 bg-base-100/85 h-8 rounded-xl px-3.5 text-[0.78rem] font-medium backdrop-blur-sm">
+          <span class="badge badge-sm border-base-300/80 bg-base-100/85 px-3 text-xs font-medium backdrop-blur-sm">
             {langPersonalWatchlist(lang)}
           </span>
         </header>
@@ -63,11 +63,9 @@ export default component$(() => {
         {/* Hero - centered layout */}
         <main
           id="main-content"
-          class="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center px-4 pt-6 pb-12 text-center sm:px-6 sm:pt-8 sm:pb-16 lg:pt-4 lg:pb-20"
+          class="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center px-4 pt-8 pb-16 text-center sm:px-6 lg:pt-12 lg:pb-24"
         >
-          <div
-            class="section-reveal badge badge-sm bg-base-200/80 mb-6 h-8 rounded-xl border-0 px-4 text-xs font-semibold tracking-[0.08em] uppercase"
-          >
+          <div class="section-reveal badge badge-sm bg-base-200/80 mb-6 border-0 px-4 text-xs font-semibold tracking-wider uppercase">
             {langPrivateMovieHub(lang)}
           </div>
 
@@ -76,7 +74,7 @@ export default component$(() => {
             style={{ "--motion-delay": "80ms" }}
           >
             {langTrackMoviesAndTvShowsPrefix(lang)}{" "}
-            <span class="from-(--auth-accent-from) via-[color:var(--auth-accent-via)] bg-linear-to-r to-(--auth-accent-to) bg-clip-text text-transparent">
+            <span class="bg-linear-to-r from-(--auth-accent-from) via-[color:var(--auth-accent-via)] to-(--auth-accent-to) bg-clip-text text-transparent">
               {langTrackMoviesAndTvShowsAccent(lang)}
             </span>
           </h1>
@@ -88,10 +86,7 @@ export default component$(() => {
             {langSimplePlaceToDiscoverTitles(lang)}
           </p>
 
-          <div
-            class="section-reveal"
-            style={{ "--motion-delay": "180ms" }}
-          >
+          <div class="section-reveal" style={{ "--motion-delay": "180ms" }}>
             <LoginButton
               lang={lang}
               providerName="google"

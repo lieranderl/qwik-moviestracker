@@ -159,7 +159,7 @@ export default component$(() => {
   ].filter(Boolean) as string[];
 
   return (
-    <div class="space-y-6">
+    <div class="space-y-8">
       <SectionHeading title={langDiscoverTv(value.lang)} />
 
       <section class="card border-base-200 bg-base-100 border shadow-sm">
@@ -170,7 +170,7 @@ export default component$(() => {
                 {langText(value.lang, "Filters", "Фильтры")}
               </h2>
             </div>
-            <div class="badge badge-outline min-h-8 shrink-0 px-3">
+            <div class="badge badge-outline shrink-0">
               {langText(
                 value.lang,
                 `${value.results.total_results} matches`,
@@ -188,7 +188,7 @@ export default component$(() => {
                   {langRegion(value.lang)}
                 </span>
                 <select
-                  class="select select-bordered h-11 min-h-11 w-full text-base"
+                  class="select select-bordered w-full text-base"
                   name="region"
                   value={value.filters.region}
                 >
@@ -205,7 +205,7 @@ export default component$(() => {
                   {langStreamingProvider(value.lang)}
                 </span>
                 <select
-                  class="select select-bordered h-11 min-h-11 w-full text-base"
+                  class="select select-bordered w-full text-base"
                   name="provider"
                   value={
                     value.filters.providerId
@@ -227,7 +227,7 @@ export default component$(() => {
                   {langFirstAirYear(value.lang)}
                 </span>
                 <input
-                  class="input input-bordered h-11 min-h-11 w-full text-base"
+                  class="input input-bordered w-full text-base"
                   max="2100"
                   min="1888"
                   name="year"
@@ -241,7 +241,7 @@ export default component$(() => {
                   {langMinimumVotes(value.lang)}
                 </span>
                 <input
-                  class="input input-bordered h-11 min-h-11 w-full text-base"
+                  class="input input-bordered w-full text-base"
                   min="0"
                   name="minVotes"
                   type="number"
@@ -254,7 +254,7 @@ export default component$(() => {
                   {langSortBy(value.lang)}
                 </span>
                 <select
-                  class="select select-bordered h-11 min-h-11 w-full text-base"
+                  class="select select-bordered w-full text-base"
                   name="sortBy"
                   value={value.filters.sortBy}
                 >
@@ -276,19 +276,19 @@ export default component$(() => {
               <div class="flex flex-col gap-2 sm:flex-row sm:items-center lg:shrink-0">
                 <button
                   type="submit"
-                  class="btn btn-primary h-11 min-h-11 w-full sm:w-auto"
+                  class="btn btn-primary btn-sm w-full sm:w-auto"
                 >
                   {langApplyFilters(value.lang)}
                 </button>
                 <a
                   href={paths.tvDiscover(value.lang)}
-                  class="btn btn-ghost h-11 min-h-11 w-full sm:w-auto"
+                  class="btn btn-ghost btn-sm w-full sm:w-auto"
                 >
                   {langResetFilters(value.lang)}
                 </a>
                 <a
                   href={paths.tv(value.lang)}
-                  class="btn btn-outline h-11 min-h-11 w-full sm:w-auto"
+                  class="btn btn-outline btn-sm w-full sm:w-auto"
                 >
                   {langText(value.lang, "Series", "Сериалы")}
                 </a>
@@ -334,10 +334,7 @@ export default component$(() => {
           {value.results.total_pages > 1 && (
             <div class="flex flex-wrap items-center justify-between gap-3">
               {value.filters.page <= 1 ? (
-                <span
-                  aria-disabled="true"
-                  class="btn btn-outline btn-disabled"
-                >
+                <span aria-disabled="true" class="btn btn-outline btn-disabled">
                   {langText(value.lang, "Previous page", "Предыдущая страница")}
                 </span>
               ) : (
@@ -345,7 +342,7 @@ export default component$(() => {
                   href={buildTvDiscoverHref(value.lang, value.filters, {
                     page: value.filters.page - 1,
                   })}
-                  class="btn btn-outline h-11 min-h-11"
+                  class="btn btn-outline"
                 >
                   {langText(value.lang, "Previous page", "Предыдущая страница")}
                 </a>
@@ -358,10 +355,7 @@ export default component$(() => {
                 )}
               </span>
               {value.filters.page >= value.results.total_pages ? (
-                <span
-                  aria-disabled="true"
-                  class="btn btn-outline btn-disabled"
-                >
+                <span aria-disabled="true" class="btn btn-outline btn-disabled">
                   {langText(value.lang, "Next page", "Следующая страница")}
                 </span>
               ) : (
@@ -369,7 +363,7 @@ export default component$(() => {
                   href={buildTvDiscoverHref(value.lang, value.filters, {
                     page: value.filters.page + 1,
                   })}
-                  class="btn btn-outline h-11 min-h-11"
+                  class="btn btn-outline"
                 >
                   {langText(value.lang, "Next page", "Следующая страница")}
                 </a>

@@ -45,9 +45,7 @@ export const FeaturedSpotlight = component$<FeaturedSpotlightProps>(
                 <HiFireSolid class="h-3.5 w-3.5" />
                 {overline}
               </div>
-              <h2 class="card-title max-w-2xl text-3xl md:text-5xl">
-                {title}
-              </h2>
+              <h2 class="card-title max-w-2xl text-3xl md:text-5xl">{title}</h2>
               <div class="flex flex-wrap items-center gap-2">
                 {meta.map((item) => (
                   <span key={item} class="badge badge-ghost">
@@ -61,13 +59,10 @@ export const FeaturedSpotlight = component$<FeaturedSpotlightProps>(
                   </span>
                 )}
               </div>
-              <p class="text-base-content/68 max-w-2xl text-sm leading-relaxed md:text-base">
+              <p class="text-base-content/68 line-clamp-3 max-w-2xl text-sm leading-relaxed md:text-base">
                 {description}
               </p>
-              <a
-                href={href}
-                class="btn btn-primary min-h-11 w-fit"
-              >
+              <a href={href} class="btn btn-primary min-h-11 w-fit">
                 <HiPlaySolid class="h-5 w-5" />
                 {ctaLabel}
               </a>

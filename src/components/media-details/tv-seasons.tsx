@@ -18,7 +18,7 @@ export type TvSeasonsProps = {
 };
 export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
   return (
-    <section class="my-6">
+    <section>
       {seasons.length > 0 && (
         <MediaCarousel
           title={langSeasons(lang)}
@@ -68,7 +68,11 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
                         <form method="dialog">
                           <button
                             type="submit"
-                            aria-label={langText(lang, "Close season overview", "Закрыть описание сезона")}
+                            aria-label={langText(
+                              lang,
+                              "Close season overview",
+                              "Закрыть описание сезона",
+                            )}
                             class="btn btn-ghost btn-circle min-h-11 w-11 p-0"
                           >
                             ✕

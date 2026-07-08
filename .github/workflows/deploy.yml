@@ -95,7 +95,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Scan candidate before pushing to registry
-        aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ steps.image.outputs.uri }}:sha-${{ github.sha }}
           format: table

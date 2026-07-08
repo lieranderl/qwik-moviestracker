@@ -206,9 +206,9 @@ jobs:
           trap rollback EXIT
           trap 'exit 130' INT TERM
 
-          ./scripts/smoke-deployment.sh "$CANDIDATE_URL"
+          ./scripts/smoke-deployment.sh "$CANDIDATE_URL" "${PROD_URL#https://}"
           gcloud run services update-traffic "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --to-revisions="$REVISION=10,$PREVIOUS=90" --quiet
-          ./scripts/smoke-deployment.sh "$CANDIDATE_URL"
+          ./scripts/smoke-deployment.sh "$CANDIDATE_URL" "${PROD_URL#https://}"
           gcloud run services update-traffic "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --to-revisions="$REVISION=100" --quiet
           ./scripts/smoke-deployment.sh "$URL"
 

@@ -1,0 +1,218 @@
+name: Build and deploy production to Cloud Run
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-platform
+  cancel-in-progress: false
+
+env:
+  GCP_PROJECT: ${{ vars.GCP_PROJECT }}
+  GCP_REGION: ${{ vars.GCP_REGION }}
+  GAR_REPOSITORY: ${{ vars.GAR_REPOSITORY }}
+  IMAGE_NAME: ${{ vars.IMAGE_NAME }}
+  PROD_SERVICE: ${{ vars.PROD_SERVICE }}
+  PROD_URL: ${{ vars.PROD_URL }}
+  GOOGLE_ID: ${{ vars.GOOGLE_ID }}
+
+jobs:
+  quality:
+    name: Reuse quality gates
+    permissions:
+      contents: read
+    uses: ./.github/workflows/quality.yml
+    secrets: inherit
+
+  build:
+    name: Build, scan, and attest image
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
+    outputs:
+      image: ${{ steps.image.outputs.uri }}
+      digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Validate production deployment inputs
+        env:
+          WIF_PROVIDER: ${{ vars.GCP_WORKLOAD_ID_PROVIDER }}
+          DEPLOYER_SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
+        run: |
+          for name in GCP_PROJECT GCP_REGION GAR_REPOSITORY IMAGE_NAME PROD_SERVICE PROD_URL GOOGLE_ID WIF_PROVIDER DEPLOYER_SERVICE_ACCOUNT; do
+            [[ -n "${!name:-}" ]] || { echo "Missing required deployment variable: $name" >&2; exit 1; }
+          done
+          [[ "$WIF_PROVIDER" =~ ^projects/[0-9]+/locations/global/workloadIdentityPools/[^/]+/providers/[^/]+$ ]]
+          [[ "$DEPLOYER_SERVICE_ACCOUNT" == *@"$GCP_PROJECT".iam.gserviceaccount.com ]]
+          [[ "$PROD_URL" =~ ^https://[^/]+$ ]]
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_ID_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v3
+        with:
+          project_id: ${{ env.GCP_PROJECT }}
+
+      - name: Configure Artifact Registry authentication
+        run: gcloud auth configure-docker "${GCP_REGION}-docker.pkg.dev" --quiet
+
+      - name: Set image URI
+        id: image
+        run: echo "uri=${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GAR_REPOSITORY}/${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build once and push immutable candidate
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ${{ steps.image.outputs.uri }}:release-${{ github.event.release.tag_name }}
+            ${{ steps.image.outputs.uri }}:sha-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: mode=max
+          sbom: true
+
+      - name: Attest exact image digest
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ steps.image.outputs.uri }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+
+      - name: Scan exact image digest
+        uses: aquasecurity/trivy-action@0.36.0
+        with:
+          image-ref: ${{ steps.image.outputs.uri }}@${{ steps.build.outputs.digest }}
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+
+  production:
+    name: Smoke, canary, and promote production
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Authenticate production deployer
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_ID_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v3
+        with:
+          project_id: ${{ env.GCP_PROJECT }}
+
+      - name: Deploy candidate without traffic
+        id: deploy
+        env:
+          IMAGE: ${{ needs.build.outputs.image }}@${{ needs.build.outputs.digest }}
+          TAG: candidate-${{ github.run_id }}
+          SUFFIX: candidate-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          SERVICE_STATE=$(gcloud run services describe "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --format=json)
+          ACTIVE_COUNT=$(jq '[.status.traffic[] | select((.percent // 0) > 0)] | length' <<<"$SERVICE_STATE")
+          ACTIVE_PERCENT=$(jq -r '[.status.traffic[] | select((.percent // 0) > 0)][0].percent' <<<"$SERVICE_STATE")
+          PREVIOUS=$(jq -r '[.status.traffic[] | select((.percent // 0) > 0)][0].revisionName' <<<"$SERVICE_STATE")
+          test "$ACTIVE_COUNT" = "1" && test "$ACTIVE_PERCENT" = "100"
+          test -n "$PREVIOUS" && test "$PREVIOUS" != "null"
+
+          gcloud run deploy "$PROD_SERVICE" \
+            --image="$IMAGE" \
+            --region="$GCP_REGION" \
+            --project="$GCP_PROJECT" \
+            --no-traffic \
+            --tag="$TAG" \
+            --revision-suffix="$SUFFIX" \
+            --set-env-vars="NODE_ENV=production,AUTH_URL=$PROD_URL,GOOGLE_ID=$GOOGLE_ID" \
+            --update-secrets="AUTH_SECRET=AUTH_SECRET:latest,GOOGLE_SECRET=GOOGLE_SECRET:latest,MONGO_URI=MONGO_URI:latest,TMDB_API_KEY=TMDB_API_KEY:latest,GC_API_KEY=GC_API_KEY:latest" \
+            --quiet
+
+          URL=$(gcloud run services describe "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --format=json | jq -r --arg tag "$TAG" '.status.traffic[] | select(.tag == $tag) | .url')
+          test -n "$URL" && test "$URL" != "null"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "revision=$PROD_SERVICE-$SUFFIX" >> "$GITHUB_OUTPUT"
+          echo "previous=$PREVIOUS" >> "$GITHUB_OUTPUT"
+
+      - name: Persist rollback state
+        env:
+          CANDIDATE: ${{ steps.deploy.outputs.revision }}
+          PREVIOUS: ${{ steps.deploy.outputs.previous }}
+        run: |
+          printf 'candidate=%s\nprevious=%s\n' "$CANDIDATE" "$PREVIOUS" > /tmp/production-recovery.env
+
+      - name: Upload rollback state
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-recovery-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/production-recovery.env
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Smoke-test candidate and promote traffic
+        env:
+          CANDIDATE_URL: ${{ steps.deploy.outputs.url }}
+          REVISION: ${{ steps.deploy.outputs.revision }}
+          PREVIOUS: ${{ steps.deploy.outputs.previous }}
+          URL: ${{ env.PROD_URL }}
+        run: |
+          promotion_complete=false
+          rollback() {
+            if [[ "$promotion_complete" != "true" ]]; then
+              echo "Rolling traffic back to $PREVIOUS"
+              gcloud run services update-traffic "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --to-revisions="$PREVIOUS=100" --quiet || true
+            fi
+          }
+          trap rollback EXIT
+          trap 'exit 130' INT TERM
+
+          ./scripts/smoke-deployment.sh "$CANDIDATE_URL"
+          gcloud run services update-traffic "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --to-revisions="$REVISION=10,$PREVIOUS=90" --quiet
+          ./scripts/smoke-deployment.sh "$CANDIDATE_URL"
+          gcloud run services update-traffic "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --to-revisions="$REVISION=100" --quiet
+          ./scripts/smoke-deployment.sh "$URL"
+
+          FINAL_STATE=$(gcloud run services describe "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --format=json)
+          test "$(jq --arg revision "$REVISION" '[.status.traffic[] | select((.percent // 0) > 0)] | length == 1 and .[0].revisionName == $revision and .[0].percent == 100' <<<"$FINAL_STATE")" = "true"
+
+          promotion_complete=true
+          trap - EXIT INT TERM
+
+      - name: Remove candidate tag
+        if: always()
+        env:
+          TAG: candidate-${{ github.run_id }}
+        run: gcloud run services update-traffic "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --remove-tags="$TAG" --quiet || true

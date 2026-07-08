@@ -57,16 +57,18 @@ For the first local Playwright run, install the browser once:
 bunx playwright install chromium
 ```
 
-## Deployment Notes
+## Deployment
 
-- Preferred runtime output: Bun SSR via `src/entry.bun.ts`
-- Build/deploy shape: `Dockerfile` + `.github/workflows/deploy.yml`
-- Production deploys are triggered by published GitHub releases and target Cloud
-  Run with immutable Artifact Registry image digests.
-- The repository supports development and production only. Do not add extra
-  runtime branches, services, variables, or workflows.
-- `adapters/cloud-run/vite.config.ts` exists, but it is not the current source
-  of truth for deployment
+Production deploys run automatically when a GitHub release is published. The
+pipeline builds the app into a Docker image, scans it for vulnerabilities, pushes
+it to Google Artifact Registry, deploys to Cloud Run, and verifies the
+production URL with a smoke test. If anything fails, traffic rolls back to the
+last healthy revision automatically.
+
+- Only one production path exists: GitHub Actions → Artifact Registry → Cloud Run
+- GCP authentication uses Workload Identity Federation — no service-account keys
+  are stored in the repository
+- The repository supports development and production environments only
 
 ## AI Agent Docs
 

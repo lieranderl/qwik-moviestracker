@@ -899,7 +899,7 @@ export default component$(() => {
                       <button
                         type="submit"
                         disabled={newTorrServerForm.invalid}
-                        class="btn btn-primary join-item min-h-11 w-full sm:w-32 sm:shrink-0"
+                        class="btn btn-primary join-item w-full sm:w-32 sm:shrink-0"
                       >
                         <HiPlusSolid class="text-lg" />
                         {langText(lang, "Add", "Добавить")}

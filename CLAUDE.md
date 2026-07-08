@@ -80,6 +80,11 @@ Store reusable plans in `plans/`.
 - `.env` and `adminSDK.json` must be treated as sensitive.
 - Production deployment is GitHub Actions -> Artifact Registry -> Cloud Run.
   Keep the repo development + production only.
+- gcloud's --set-env-vars breaks on URL values containing :// and commas.
+  Use --env-vars-file with YAML when setting multi-URL env vars.
+- The Qwik SSR entry validates request host against AUTH_URL and
+  TRUSTED_ORIGINS. Smoke tests should target the production URL after routing
+  traffic rather than tagged *.a.run.app candidate URLs.
 
 ## Personal Overrides
 

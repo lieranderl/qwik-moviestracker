@@ -16,7 +16,7 @@
 - Serve Bun SSR output: `bun run serve`
 - Optional formatting: `bun run fmt`
 - Optional Biome pass: `bun run biome`
-- Deployment smoke check: `./scripts/smoke-deployment.sh <url>`
+- Deployment smoke check: `./scripts/smoke-deployment.sh <url> [prod_host]`
 
 ## Minimum Verification
 
@@ -72,7 +72,7 @@ workflow calls with:
 5. `bun run build`
 6. `bun audit --audit-level=high`
 7. Playwright Chromium smoke subset
-8. gitleaks secret scanning
+8. gitleaks secret scanning (push and pull_request events only)
 9. Docker build/run smoke test
 10. Trivy high/critical container scan
 
@@ -82,9 +82,9 @@ Production deployment lives at `.github/workflows/deploy.yml`.
 - Branch model: PRs merge to `main`; `main` is the development integration
   branch. No other long-lived runtime branch or environment exists.
 - Deployment model: build once, scan the local image, push clean image to
-  Artifact Registry, attest/SBOM, deploy a no-traffic Cloud Run candidate,
-  smoke-test, canary 10%, promote to 100%, or roll back to the previous
-  revision.
+  Artifact Registry, attest, deploy a no-traffic Cloud Run candidate, route
+  100% traffic to it, smoke-test via the production URL, and roll back to
+  the previous revision on failure.
 - GCP auth: GitHub OIDC / Workload Identity Federation. Never use checked-in or
   GitHub-stored service-account keys.
 

@@ -110,6 +110,18 @@
   them.
 - Docker runtime must stay non-root and expose port `3000`.
 - Verify the usage of suspicious legacy files before deleting them.
+- The Qwik SSR entry (`server/entry.bun.js`) enforces origin validation by
+  comparing the request host against `AUTH_URL` and `TRUSTED_ORIGINS`. When
+  deploying tagged Cloud Run revisions (`candidate-*---*.a.run.app`), the
+  candidate host must be included in `TRUSTED_ORIGINS` unless the smoke test
+  targets the production URL directly.
+- gcloud's `--set-env-vars` and `--update-env-vars` flags use a comma-based
+  dict parser that cannot handle URL values containing both `://` and commas.
+  When setting env vars that include multiple comma-separated URLs, use
+  `--env-vars-file` with a YAML file instead.
+- `gitleaks-action@v3` does not support `release`-triggered `workflow_call`
+  events. The quality.yml secrets job is restricted to `push` and
+  `pull_request` events only.
 
 ## Claude Enforcement
 

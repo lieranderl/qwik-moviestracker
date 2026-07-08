@@ -111,9 +111,9 @@ Keep new external API access in `src/services/**`, not inside route files.
 
 The repository supports development and production only. Production deploys are
 triggered by published GitHub releases, authenticate to GCP through GitHub OIDC
-/ Workload Identity Federation, build, scan locally, push the clean image to Artifact
-Registry, deploy a no-traffic Cloud Run candidate, smoke-test it, canary it, and
-promote or roll back traffic.
+/ Workload Identity Federation, build, scan locally, push the clean image to
+Artifact Registry, deploy a no-traffic Cloud Run candidate, route 100% traffic
+to it, smoke-test via the production URL, and roll back on failure.
 
 ## Known Gaps
 

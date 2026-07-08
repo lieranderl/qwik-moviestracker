@@ -66,14 +66,17 @@ Do not load every reference by default. Open only what the task needs.
 ## CI/CD Expectations
 
 - Quality gates run type-check, lint, Bun tests, production build, the stable
-  Playwright browser smoke subset, dependency audit, gitleaks, Docker build/run,
-  and Trivy.
+  Playwright browser smoke subset, dependency audit, gitleaks (push/PR only),
+  Docker build/run, and Trivy.
+- The gitleaks job is restricted to `push` and `pull_request` events because
+  the action does not support `release`-triggered `workflow_call` invocations.
 - GitHub Actions is the delivery system. Do not reintroduce alternate GCP build
-  triggers or local deploy scripts as a second production path.
+  triggers, local deploy scripts, or `gcloud`-based Make targets as a second
+  production path.
 - Production deployment builds one Docker image, scans it locally, pushes the
-  clean image to Artifact Registry, records provenance, deploys to Cloud Run with
-  no traffic, smoke-tests the candidate URL, canaries 10%, then promotes to 100%
-  or rolls traffic back to the previous revision.
+  clean image to Artifact Registry, records provenance, deploys to Cloud Run
+  with no traffic, routes 100% traffic to the new revision, smoke-tests via the
+  production URL, and rolls traffic back to the previous revision on failure.
 - GCP auth in Actions must use OIDC / Workload Identity Federation. Do not store
   service-account keys in GitHub.
 
@@ -111,8 +114,10 @@ Do not load every reference by default. Open only what the task needs.
   deployment changes.
 - Run `bun run verify` for DevOps, dependency, Docker, workflow, or broad app
   changes.
-- Run `./scripts/smoke-deployment.sh <url>` for local container checks and
-  Cloud Run candidate validation.
+- Run `./scripts/smoke-deployment.sh <url> [prod_host]` for local container
+  checks and Cloud Run validation. The optional `prod_host` argument sends a
+  `Host` header for environments where the auth library requires a matching
+  origin.
 - After integrating subagent work, rerun the appropriate project-level checks
   before declaring success.
 

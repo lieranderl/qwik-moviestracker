@@ -16,8 +16,8 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
   // Control caching for this request for best performance and to reduce hosting costs:
   // https://qwik.builder.io/docs/caching/
   cacheControl({
-    // Always serve a cached response by default, up to a week stale
-    staleWhileRevalidate: 60 * 60 * 24 * 7,
+    // Serve stale cache for up to 1 hour before requiring a fresh fetch
+    staleWhileRevalidate: 3600,
     // Max once every 5 seconds, revalidate on the server to get a fresh version of this page
     maxAge: 5,
   });
@@ -26,10 +26,10 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 //auth guard
 export const onRequest: RequestHandler = (event) => {
   event.cacheControl({
-    staleWhileRevalidate: 60 * 60 * 24 * 7,
+    staleWhileRevalidate: 3600,
     // Max once every 5 seconds, revalidate on the server to get a fresh version of this page
     maxAge: 5,
-  }); // disable caching
+  });
 
   let session: Session | null = event.sharedMap.get("session");
   if (!session) {

@@ -1,4 +1,4 @@
-import { component$, type Signal } from "@builder.io/qwik";
+import { component$, type Signal, useId } from "@builder.io/qwik";
 import { langText } from "~/utils/languages";
 import {
   SORT_OPTIONS,
@@ -44,72 +44,117 @@ export interface TorrServerFiltersProps {
 }
 
 export const TorrServerFilters = component$(
-  ({ lang, querySig, sortKeySig, statusFilterSig }: TorrServerFiltersProps) => (
-    <section class="card border-base-200 bg-base-100 border shadow-sm">
-      <div class="card-body gap-5 p-4 md:p-6">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <h2 class="card-title">{langText(lang, "Filters", "Фильтры")}</h2>
+  ({ lang, querySig, sortKeySig, statusFilterSig }: TorrServerFiltersProps) => {
+    const headingId = useId();
+    const statusGroupId = useId();
 
-          <div class="grid w-full min-w-0 gap-3 md:grid-cols-[minmax(0,18rem)_minmax(0,12rem)] lg:w-auto">
-            <label class="input input-bordered flex min-w-0 items-center gap-2">
-              <span class="text-base-content/60 shrink-0 text-xs font-medium tracking-[0.12em] uppercase">
-                {langText(lang, "Search", "Поиск")}
-              </span>
-              <input
-                type="text"
-                value={querySig.value}
-                placeholder={langText(
+    return (
+      <section
+        aria-labelledby={headingId}
+        class="card border-base-200 bg-base-100 border shadow-sm"
+      >
+        <div class="card-body gap-5 p-4 md:gap-6 md:p-6">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div class="space-y-1">
+              <h2 id={headingId} class="card-title md:text-2xl">
+                {langText(lang, "Filters", "Фильтры")}
+              </h2>
+              <p class="text-base-content/65 text-sm leading-relaxed">
+                {langText(
                   lang,
-                  "Search title, hash, category",
-                  "Поиск по названию, hash, категории",
+                  "Find torrents by title, hash, or status.",
+                  "Ищите торренты по названию, hash или статусу.",
                 )}
-                class="min-w-0 grow"
-                onInput$={(_, element) => {
-                  querySig.value = element.value;
-                }}
-              />
-            </label>
+              </p>
+            </div>
 
-            <select
-              value={sortKeySig.value}
-              aria-label={langText(
-                lang,
-                "Sort TorrServer torrents",
-                "Сортировать торренты TorrServer",
-              )}
-              class="select select-bordered"
-              onChange$={(_, element) => {
-                sortKeySig.value = element.value as TorrServerSortKey;
-              }}
-            >
-              {SORT_OPTIONS.map((sortKey) => (
-                <option value={sortKey} key={sortKey}>{`${langText(
-                  lang,
-                  "Sort: ",
-                  "Сортировка: ",
-                )}${getSortLabel(sortKey, lang)}`}</option>
+            <div class="grid w-full min-w-0 gap-3 md:grid-cols-[minmax(0,20rem)_minmax(0,14rem)] lg:w-auto">
+              <label class="form-control gap-2">
+                <span class="label px-0 py-0">
+                  <span class="label-text font-medium">
+                    {langText(lang, "Search", "Поиск")}
+                  </span>
+                </span>
+                <span class="input input-bordered flex min-h-11 min-w-0 items-center">
+                  <input
+                    type="text"
+                    value={querySig.value}
+                    placeholder={langText(
+                      lang,
+                      "Title, hash, category",
+                      "Название, hash, категория",
+                    )}
+                    aria-label={langText(
+                      lang,
+                      "Search TorrServer library",
+                      "Поиск по библиотеке TorrServer",
+                    )}
+                    class="min-w-0 grow"
+                    onInput$={(_, element) => {
+                      querySig.value = element.value;
+                    }}
+                  />
+                </span>
+              </label>
+
+              <label class="form-control gap-2">
+                <span class="label px-0 py-0">
+                  <span class="label-text font-medium">
+                    {langText(lang, "Sort", "Сортировка")}
+                  </span>
+                </span>
+                <select
+                  value={sortKeySig.value}
+                  aria-label={langText(
+                    lang,
+                    "Sort TorrServer torrents",
+                    "Сортировать торренты TorrServer",
+                  )}
+                  class="select select-bordered min-h-11"
+                  onChange$={(_, element) => {
+                    sortKeySig.value = element.value as TorrServerSortKey;
+                  }}
+                >
+                  {SORT_OPTIONS.map((sortKey) => (
+                    <option value={sortKey} key={sortKey}>
+                      {getSortLabel(sortKey, lang)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div
+            role="group"
+            aria-labelledby={statusGroupId}
+            class="flex flex-col gap-2"
+          >
+            <p id={statusGroupId} class="text-sm font-medium">
+              {langText(lang, "Status", "Статус")}
+            </p>
+            <div class="flex flex-wrap gap-2">
+              {STATUS_FILTERS.map((filter) => (
+                <button
+                  type="button"
+                  key={filter}
+                  aria-pressed={statusFilterSig.value === filter}
+                  class={`btn min-h-11 flex-1 rounded-full sm:flex-none ${
+                    statusFilterSig.value === filter
+                      ? "btn-primary"
+                      : "btn-ghost"
+                  }`}
+                  onClick$={() => {
+                    statusFilterSig.value = filter;
+                  }}
+                >
+                  {getStatusFilterLabel(filter, lang)}
+                </button>
               ))}
-            </select>
+            </div>
           </div>
         </div>
-
-        <div class="flex flex-wrap gap-2">
-          {STATUS_FILTERS.map((filter) => (
-            <button
-              type="button"
-              key={filter}
-              class={`btn btn-sm flex-1 sm:flex-none ${
-                statusFilterSig.value === filter ? "btn-primary" : "btn-ghost"
-              }`}
-              onClick$={() => {
-                statusFilterSig.value = filter;
-              }}
-            >
-              {getStatusFilterLabel(filter, lang)}
-            </button>
-          ))}
-        </div>
-      </div>
-    </section>
-  ),
+      </section>
+    );
+  },
 );

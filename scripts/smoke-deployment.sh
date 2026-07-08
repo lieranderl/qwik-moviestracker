@@ -18,6 +18,18 @@ curl_args=(
 	--header "Cache-Control: no-cache"
 )
 
+# --- Root endpoint: expect app shell with title ---
+curl "${curl_args[@]}" \
+	--dump-header "${work_dir}/root.headers" \
+	--output "${work_dir}/root.body" \
+	"${base_url}/"
+
+grep --fixed-strings --quiet "Moviestracker" "${work_dir}/root.body"
+grep --extended-regexp --ignore-case --quiet \
+	'^x-content-type-options:[[:space:]]*nosniff' \
+	"${work_dir}/root.headers"
+
+# --- Auth page ---
 curl "${curl_args[@]}" \
 	--dump-header "${work_dir}/auth.headers" \
 	--output "${work_dir}/auth.body" \
@@ -27,3 +39,5 @@ grep --fixed-strings --quiet "Moviestracker" "${work_dir}/auth.body"
 grep --extended-regexp --ignore-case --quiet \
 	'^x-content-type-options:[[:space:]]*nosniff' \
 	"${work_dir}/auth.headers"
+
+echo "Smoke check passed: ${base_url}"

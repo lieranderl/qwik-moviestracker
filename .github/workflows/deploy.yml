@@ -40,7 +40,7 @@ jobs:
       id-token: write
     outputs:
       image: ${{ steps.image.outputs.uri }}
-      digest: ${{ steps.build.outputs.digest }}
+      digest: ${{ steps.push.outputs.digest }}
     steps:
       - name: Checkout release tag
         uses: actions/checkout@v4
@@ -80,35 +80,42 @@ jobs:
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build once and push immutable candidate
+      - name: Build candidate locally (single build, scan before push)
         id: build
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: true
+          push: false
+          load: true
           platforms: linux/amd64
           tags: |
             ${{ steps.image.outputs.uri }}:release-${{ github.event.release.tag_name }}
             ${{ steps.image.outputs.uri }}:sha-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          provenance: mode=max
-          sbom: true
+
+      - name: Scan candidate before pushing to registry
+        uses: aquasecurity/trivy-action@0.36.0
+        with:
+          image-ref: ${{ steps.image.outputs.uri }}:sha-${{ github.sha }}
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+
+      - name: Push clean image to Artifact Registry
+        id: push
+        run: |
+          docker push "${{ steps.image.outputs.uri }}:release-${{ github.event.release.tag_name }}"
+          docker push "${{ steps.image.outputs.uri }}:sha-${{ github.sha }}"
+          DIGEST=$(docker image inspect "${{ steps.image.outputs.uri }}:sha-${{ github.sha }}" --format '{{index .RepoDigests 0}}' | rev | cut -d@ -f1 | rev)
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
 
       - name: Attest exact image digest
         uses: actions/attest-build-provenance@v2
         with:
           subject-name: ${{ steps.image.outputs.uri }}
-          subject-digest: ${{ steps.build.outputs.digest }}
-
-      - name: Scan exact image digest
-        uses: aquasecurity/trivy-action@0.36.0
-        with:
-          image-ref: ${{ steps.image.outputs.uri }}@${{ steps.build.outputs.digest }}
-          format: table
-          severity: HIGH,CRITICAL
-          ignore-unfixed: true
-          exit-code: "1"
+          subject-digest: ${{ steps.push.outputs.digest }}
 
   production:
     name: Smoke, canary, and promote production

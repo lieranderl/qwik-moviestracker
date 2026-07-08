@@ -88,7 +88,7 @@ export const TorrServerPlayerModal = component$(
               {actions.map((action) =>
                 action.href ? (
                   <a
-                    class={`btn min-h-11 w-full rounded-full sm:w-auto md:btn-sm ${getToneBtnClass(action.tone ?? "info")}`}
+                    class={`btn min-h-11 w-full rounded-full sm:w-auto ${getToneBtnClass(action.tone ?? "info")}`}
                     href={action.href}
                     key={action.label}
                     rel="noreferrer"
@@ -100,7 +100,7 @@ export const TorrServerPlayerModal = component$(
                   <button
                     key={action.label}
                     type="button"
-                    class={`btn min-h-11 w-full rounded-full sm:w-auto md:btn-sm ${getToneBtnClass(action.tone ?? "info")}`}
+                    class={`btn min-h-11 w-full rounded-full sm:w-auto ${getToneBtnClass(action.tone ?? "info")}`}
                     onClick$={async () => action.onClick$?.()}
                   >
                     {action.label}

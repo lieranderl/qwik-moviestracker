@@ -49,7 +49,7 @@ export const TorrentCard = component$(
     const statusBucket = getTorrentStatusFilter(torrent);
 
     return (
-      <article class="card border-base-200 bg-base-100 min-w-0 border shadow-sm">
+      <article class="card border-base-200 bg-base-100 h-full min-w-0 border shadow-sm">
         <div class="card-body gap-4 p-4">
           <div class="flex flex-wrap items-center gap-2">
             <span class="badge badge-outline badge-sm">
@@ -89,6 +89,11 @@ export const TorrentCard = component$(
               target="_blank"
               rel="noreferrer"
               class="block min-w-0"
+              aria-label={langText(
+                lang,
+                `Open details for ${title}`,
+                `Открыть детали: ${title}`,
+              )}
             >
               <MediaCard
                 title={title}
@@ -114,8 +119,8 @@ export const TorrentCard = component$(
             </div>
           )}
 
-          <div class="grid gap-4">
-            <div class="stats stats-vertical bg-base-200/40 sm:stats-horizontal w-full shadow-none">
+          <div class="grid flex-1 gap-4">
+            <div class="stats stats-vertical border-base-200 bg-base-200/40 sm:stats-horizontal w-full border shadow-none">
               <div class="stat min-w-0 overflow-hidden px-4 py-3">
                 <div class="stat-title text-xs">
                   {langText(lang, "Peers", "Пиры")}
@@ -140,14 +145,14 @@ export const TorrentCard = component$(
               </div>
             </div>
 
-            <p class="text-base-content/70 line-clamp-2 text-xs break-words">
+            <p class="text-base-content/70 line-clamp-2 text-xs wrap-break-word">
               {torrent.name || torrent.title}
             </p>
 
-            <div class="flex flex-wrap gap-2">
+            <div class="mt-auto flex flex-wrap gap-2">
               <button
                 type="button"
-                class="btn btn-primary btn-sm flex-1 sm:flex-none"
+                class="btn btn-primary min-h-11 flex-1 sm:flex-none"
                 onClick$={() => onOpenFiles$(torrent)}
               >
                 <LuFolderOpen class="text-base" />
@@ -157,7 +162,12 @@ export const TorrentCard = component$(
                 href={buildTorrentPlaylistUrl(serverUrl, torrent.hash)}
                 target="_blank"
                 rel="noreferrer"
-                class="btn btn-outline btn-sm flex-1 sm:flex-none"
+                class="btn btn-outline min-h-11 flex-1 sm:flex-none"
+                aria-label={langText(
+                  lang,
+                  `Open playlist for ${title}`,
+                  `Открыть плейлист: ${title}`,
+                )}
               >
                 <LuListMusic class="text-base" />
                 <span>{langText(lang, "Playlist", "Плейлист")}</span>
@@ -166,14 +176,19 @@ export const TorrentCard = component$(
                 href={buildMagnetFromHash(torrent.hash)}
                 target="_blank"
                 rel="noreferrer"
-                class="btn btn-info btn-outline btn-sm flex-1 sm:flex-none"
+                class="btn btn-info btn-outline min-h-11 flex-1 sm:flex-none"
+                aria-label={langText(
+                  lang,
+                  `Open magnet link for ${title}`,
+                  `Открыть magnet ссылку: ${title}`,
+                )}
               >
                 <LuMagnet class="text-base" />
                 <span>{langText(lang, "Magnet", "Магнет")}</span>
               </a>
               <button
                 type="button"
-                class="btn btn-warning btn-outline btn-sm flex-1 sm:flex-none"
+                class="btn btn-warning btn-outline min-h-11 flex-1 sm:flex-none"
                 onClick$={() => onDrop$(torrent)}
               >
                 <LuPause class="text-base" />
@@ -181,7 +196,7 @@ export const TorrentCard = component$(
               </button>
               <button
                 type="button"
-                class="btn btn-error btn-outline btn-sm flex-1 sm:flex-none"
+                class="btn btn-error btn-outline min-h-11 flex-1 sm:flex-none"
                 onClick$={() => onRemove$(torrent)}
               >
                 <LuTrash2 class="text-base" />

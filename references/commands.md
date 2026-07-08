@@ -8,12 +8,15 @@
 - Type-check: `bun run build.types`
 - Lint: `bun run lint`
 - Test: `bun run test`
-- Playwright smoke test: `bun run test:e2e`
+- Playwright smoke test: `bun run test:e2e:smoke`
+- Full Playwright suite: `bun run test:e2e`
 - Full build: `bun run build`
+- Full local verification: `bun run verify`
 - Preview build: `bun preview`
 - Serve Bun SSR output: `bun run serve`
 - Optional formatting: `bun run fmt`
 - Optional Biome pass: `bun run biome`
+- Deployment smoke check: `./scripts/smoke-deployment.sh <url>`
 
 ## Minimum Verification
 
@@ -38,7 +41,15 @@ when the task touches:
 
 Optional frontend verification:
 
-5. `bun run test:e2e` for auth-page and browser smoke checks
+5. `bun run test:e2e:smoke` for the stable CI browser smoke subset
+6. `bun run test:e2e` for broader browser coverage after repairing or accepting
+   currently red full-suite expectations
+
+For DevOps, dependency, Docker, workflow, or broad app changes, run:
+
+```bash
+bun run verify
+```
 
 First-time local browser setup:
 
@@ -47,17 +58,55 @@ First-time local browser setup:
   `PLAYWRIGHT_AUTH_BYPASS=1` so authenticated home, search, and movie/TV/person
   detail smoke tests can run against dev-only fixtures.
 
-## GitHub Actions CI
+## GitHub Actions CI/CD
 
-The repo CI workflow lives at `.github/workflows/ci.yml`.
+The repo quality workflow lives at `.github/workflows/quality.yml`.
 
-It currently runs on push and pull request with:
+It runs on pull requests, pushes to `main`, manual dispatch, and reusable
+workflow calls with:
 
 1. `bun install --frozen-lockfile`
 2. `bun run build.types`
 3. `bun run lint`
 4. `bun run test`
 5. `bun run build`
+6. `bun audit --audit-level=high`
+7. Playwright Chromium smoke subset
+8. gitleaks secret scanning
+9. Docker build/run smoke test
+10. Trivy high/critical container scan
+
+Production deployment lives at `.github/workflows/deploy.yml`.
+
+- Trigger: published GitHub release only.
+- Branch model: PRs merge to `main`; `main` is the development integration
+  branch. No other long-lived runtime branch or environment exists.
+- Deployment model: build once, scan the local image, push clean image to
+  Artifact Registry, attest/SBOM, deploy a no-traffic Cloud Run candidate,
+  smoke-test, canary 10%, promote to 100%, or roll back to the previous
+  revision.
+- GCP auth: GitHub OIDC / Workload Identity Federation. Never use checked-in or
+  GitHub-stored service-account keys.
+
+Required repository or production environment variables:
+
+- `GCP_PROJECT`
+- `GCP_REGION`
+- `GAR_REPOSITORY`
+- `IMAGE_NAME`
+- `PROD_SERVICE`
+- `PROD_URL`
+- `GOOGLE_ID`
+- `GCP_WORKLOAD_ID_PROVIDER`
+- `GCP_SERVICE_ACCOUNT`
+
+Required Secret Manager secret names expected by the deploy workflow:
+
+- `AUTH_SECRET`
+- `GOOGLE_SECRET`
+- `MONGO_URI`
+- `TMDB_API_KEY`
+- `GC_API_KEY`
 
 ## Claude + Codex Workflow
 
@@ -77,7 +126,8 @@ Project-local command workflows live in `.claude/commands/**`.
 - `/verify-repo` - run the repo verification workflow
 - `/review-auth` - launch the auth review workflow
 - `/ui-check` - run a Qwik/daisyUI UI check with Playwright when available
-- `/deploy-check` - review Bun SSR, Docker, Cloud Build, and Cloud Run changes
+- `/deploy-check` - review Bun SSR, Docker, GitHub Actions, and Cloud Run
+  changes
 
 ## Useful Session Guidance
 

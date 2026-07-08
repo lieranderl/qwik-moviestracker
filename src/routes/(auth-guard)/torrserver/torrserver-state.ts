@@ -31,7 +31,7 @@ export type TorrServerState = {
 };
 
 export function normalizeServer(value: string): string {
-  return value.trim();
+  return value.trim().replace(/\/+$/, "");
 }
 
 export function normalizeServerList(list: string[]): string[] {
@@ -223,7 +223,9 @@ export function connectionAlertClass(state: ConnectionState): string {
   }
 }
 
-export function getTorrentStatusFilter(torrent: TSResult): TorrServerStatusFilter {
+export function getTorrentStatusFilter(
+  torrent: TSResult,
+): TorrServerStatusFilter {
   const normalizedStatus = torrent.stat_string.toLowerCase();
 
   if (
@@ -341,10 +343,16 @@ export const SORT_OPTIONS: TorrServerSortKey[] = [
   "title",
 ];
 
-export function sortTorrents<T extends { title?: string; name?: string; total_peers?: number; preloaded_bytes?: number; torrent_size?: number; timestamp?: number }>(
-  torrents: T[],
-  sortKey: TorrServerSortKey,
-): T[] {
+export function sortTorrents<
+  T extends {
+    title?: string;
+    name?: string;
+    total_peers?: number;
+    preloaded_bytes?: number;
+    torrent_size?: number;
+    timestamp?: number;
+  },
+>(torrents: T[], sortKey: TorrServerSortKey): T[] {
   return [...torrents].sort((left, right) => {
     if (sortKey === "title") {
       return (left.title || left.name || "").localeCompare(
@@ -355,8 +363,12 @@ export function sortTorrents<T extends { title?: string; name?: string; total_pe
       return (right.total_peers || 0) - (left.total_peers || 0);
     }
     if (sortKey === "preload") {
-      const lp = left.torrent_size ? (left.preloaded_bytes || 0) / left.torrent_size : 0;
-      const rp = right.torrent_size ? (right.preloaded_bytes || 0) / right.torrent_size : 0;
+      const lp = left.torrent_size
+        ? (left.preloaded_bytes || 0) / left.torrent_size
+        : 0;
+      const rp = right.torrent_size
+        ? (right.preloaded_bytes || 0) / right.torrent_size
+        : 0;
       return rp - lp;
     }
     return (right.timestamp || 0) - (left.timestamp || 0);

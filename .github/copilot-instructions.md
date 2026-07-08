@@ -26,6 +26,12 @@ Verification baseline for code changes:
 2. `bun run build.types`
 3. `bun run lint`
 4. add `bun run build` for routing, runtime, auth, env, or deployment changes
+5. use `bun run verify` for DevOps, dependency, Docker, workflow, or broad app
+   changes
+
+Production deployment is handled only by `.github/workflows/deploy.yml` on
+published GitHub releases. Keep the repo development + production only; do not
+add extra runtime workflows or variables.
 
 If you discover stale guidance, update the corresponding Markdown file in the
 same task instead of leaving it outdated.

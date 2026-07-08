@@ -1,7 +1,6 @@
 # Copilot Instructions
 
-See the root [`AGENTS.md`](../AGENTS.md) for the cross-agent contract and
-[`CLAUDE.md`](../CLAUDE.md) for Claude Code project memory.
+See the root [`AGENTS.md`](../AGENTS.md) for the cross-agent contract.
 
 Working defaults:
 

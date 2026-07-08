@@ -1,15 +1,7 @@
-# CLAUDE.md
+# Project Memory
 
-This file provides project memory for Claude Code in this repository.
-
-## Start Here
-
-Read in this order:
-
-1. `AGENTS.md`
-2. `CLAUDE.md`
-3. `references/architecture.md` or the one reference file that matches the task
-4. `.claude/skills/qwik-moviestracker/SKILL.md` when deeper repo guidance is needed
+This file provides project memory for AI coding agents in this repository.
+Read `AGENTS.md` first for the root operating contract.
 
 ## Project Snapshot
 
@@ -25,7 +17,7 @@ Read in this order:
 ## Working Rules
 
 - Edit `src/**`, `public/**`, and root config files.
-- Do not hand-edit `dist/**` or `server/**` unless the user explicitly asks.
+- Do not hand-edit `dist/**` or `server/**` unless explicitly asked.
 - Keep authenticated routes in `src/routes/(auth-guard)/`.
 - Preserve the `lang` query parameter flow unless the task intentionally
   changes it.
@@ -36,30 +28,6 @@ Read in this order:
 - Prefer Bun commands.
 - Follow the Qwik and daisyUI 5 rules in `references/ui-system.md` for all UI
   work.
-
-## Claude Code Workflow
-
-- Start complex work in plan mode before editing.
-- Keep context small. Open one reference file at a time and use `/clear`
-  between unrelated tasks.
-- Use project skills for repo guidance and verification instead of repeating the
-  same instructions in prompts.
-- Use bounded subagents for isolated review or exploration, not for vague
-  “handle everything” tasks.
-- Use git worktrees for parallel sessions when tasks are independent.
-- Shared Claude settings live in `.claude/settings.json`.
-- Project-scoped MCP servers live in `.mcp.json`.
-- Project-local hooks block protected-path edits and enforce required
-  verification before session stop for tracked code changes.
-
-## Cross-Model Workflow
-
-- Claude Code: plan and phase the work.
-- Codex: review the plan against the actual codebase and add findings.
-- Claude Code: implement phase-by-phase with verification gates.
-- Codex: verify the implementation against the agreed plan.
-
-Store reusable plans in `plans/`.
 
 ## Verification
 
@@ -78,16 +46,10 @@ Store reusable plans in `plans/`.
   which does not currently exist.
 - The repo has a small Bun-based automated test surface, but it is still narrow.
 - `.env` and `adminSDK.json` must be treated as sensitive.
-- Production deployment is GitHub Actions -> Artifact Registry -> Cloud Run.
+- Production deployment is GitHub Actions → Artifact Registry → Cloud Run.
   Keep the repo development + production only.
-- gcloud's --set-env-vars breaks on URL values containing :// and commas.
-  Use --env-vars-file with YAML when setting multi-URL env vars.
-- The Qwik SSR entry validates request host against AUTH_URL and
-  TRUSTED_ORIGINS. Smoke tests should target the production URL after routing
-  traffic rather than tagged *.a.run.app candidate URLs.
-
-## Personal Overrides
-
-- Use `CLAUDE.local.md` for personal, non-shared preferences.
-- Use `.claude/settings.local.json` for local Claude Code overrides.
-- Neither file should be committed.
+- gcloud's `--set-env-vars` breaks on URL values containing `://` and commas.
+  Use `--env-vars-file` with YAML when setting multi-URL env vars.
+- The Qwik SSR entry validates request host against `AUTH_URL` and
+  `TRUSTED_ORIGINS`. Smoke tests should target the production URL after routing
+  traffic rather than tagged `*.a.run.app` candidate URLs.

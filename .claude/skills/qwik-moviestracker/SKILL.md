@@ -11,8 +11,7 @@ Use this skill for project onboarding and shared repo guidance.
 ## Read Order
 
 1. `AGENTS.md`
-2. `CLAUDE.md`
-3. The one matching file in `references/**`
+2. The one matching file in `references/**`
 
 Do not load every reference file unless the task needs it. Prefer the
 path-scoped skills for day-to-day work once you know which slice of the repo you

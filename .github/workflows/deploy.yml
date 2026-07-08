@@ -118,7 +118,7 @@ jobs:
           subject-digest: ${{ steps.push.outputs.digest }}
 
   production:
-    name: Smoke, canary, and promote production
+    name: Deploy, smoke, and promote
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -143,8 +143,7 @@ jobs:
         with:
           project_id: ${{ env.GCP_PROJECT }}
 
-      - name: Deploy candidate without traffic
-        id: deploy
+      - name: Deploy, smoke-test, and promote
         env:
           IMAGE: ${{ needs.build.outputs.image }}@${{ needs.build.outputs.digest }}
           TAG: candidate-${{ github.run_id }}
@@ -157,6 +156,17 @@ jobs:
           test "$ACTIVE_COUNT" = "1" && test "$ACTIVE_PERCENT" = "100"
           test -n "$PREVIOUS" && test "$PREVIOUS" != "null"
 
+          promotion_complete=false
+          rollback() {
+            if [[ "$promotion_complete" != "true" ]]; then
+              echo "Rolling traffic back to $PREVIOUS"
+              gcloud run services update-traffic "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --to-revisions="$PREVIOUS=100" --quiet || true
+            fi
+          }
+          trap rollback EXIT
+          trap 'exit 130' INT TERM
+
+          # Deploy new revision without traffic
           gcloud run deploy "$PROD_SERVICE" \
             --image="$IMAGE" \
             --region="$GCP_REGION" \
@@ -168,70 +178,9 @@ jobs:
             --update-secrets="AUTH_SECRET=AUTH_SECRET:latest,GOOGLE_SECRET=GOOGLE_SECRET:latest,MONGO_URI=MONGO_URI:latest,TMDB_API_KEY=TMDB_API_KEY:latest,GC_API_KEY=GC_API_KEY:latest" \
             --quiet
 
-          URL=$(gcloud run services describe "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --format=json | jq -r --arg tag "$TAG" '.status.traffic[] | select(.tag == $tag) | .url')
-          test -n "$URL" && test "$URL" != "null"
-          CANDIDATE_HOST="${URL#https://}"
-
-          # Write ALL env vars to a YAML file to avoid gcloud dict-parsing
-          # issues with URLs containing :// and commas.
-          printf 'NODE_ENV: production\nAUTH_URL: %s\nGOOGLE_ID: %s\nTRUSTED_ORIGINS: "%s,%s"\n' \
-            "$PROD_URL" "$GOOGLE_ID" "$CANDIDATE_HOST" "$PROD_URL" \
-            > /tmp/candidate-env.yaml
-          gcloud run deploy "$PROD_SERVICE" \
-            --image="$IMAGE" \
-            --region="$GCP_REGION" \
-            --project="$GCP_PROJECT" \
-            --no-traffic \
-            --tag="$TAG" \
-            --revision-suffix="$SUFFIX" \
-            --env-vars-file=/tmp/candidate-env.yaml \
-            --update-secrets="AUTH_SECRET=AUTH_SECRET:latest,GOOGLE_SECRET=GOOGLE_SECRET:latest,MONGO_URI=MONGO_URI:latest,TMDB_API_KEY=TMDB_API_KEY:latest,GC_API_KEY=GC_API_KEY:latest" \
-            --quiet
-
-          echo "url=$URL" >> "$GITHUB_OUTPUT"
-          echo "revision=$PROD_SERVICE-$SUFFIX" >> "$GITHUB_OUTPUT"
-          echo "previous=$PREVIOUS" >> "$GITHUB_OUTPUT"
-
-      - name: Persist rollback state
-        env:
-          CANDIDATE: ${{ steps.deploy.outputs.revision }}
-          PREVIOUS: ${{ steps.deploy.outputs.previous }}
-        run: |
-          printf 'candidate=%s\nprevious=%s\n' "$CANDIDATE" "$PREVIOUS" > /tmp/production-recovery.env
-
-      - name: Upload rollback state
-        uses: actions/upload-artifact@v4
-        with:
-          name: production-recovery-${{ github.run_id }}-${{ github.run_attempt }}
-          path: /tmp/production-recovery.env
-          if-no-files-found: error
-          retention-days: 1
-
-      - name: Smoke-test candidate and promote traffic
-        env:
-          CANDIDATE_URL: ${{ steps.deploy.outputs.url }}
-          REVISION: ${{ steps.deploy.outputs.revision }}
-          PREVIOUS: ${{ steps.deploy.outputs.previous }}
-          URL: ${{ env.PROD_URL }}
-        run: |
-          promotion_complete=false
-          rollback() {
-            if [[ "$promotion_complete" != "true" ]]; then
-              echo "Rolling traffic back to $PREVIOUS"
-              gcloud run services update-traffic "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --to-revisions="$PREVIOUS=100" --quiet || true
-            fi
-          }
-          trap rollback EXIT
-          trap 'exit 130' INT TERM
-
-          ./scripts/smoke-deployment.sh "$CANDIDATE_URL"
-          gcloud run services update-traffic "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --to-revisions="$REVISION=10,$PREVIOUS=90" --quiet
-          ./scripts/smoke-deployment.sh "$CANDIDATE_URL"
-          gcloud run services update-traffic "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --to-revisions="$REVISION=100" --quiet
-          ./scripts/smoke-deployment.sh "$URL"
-
-          FINAL_STATE=$(gcloud run services describe "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --format=json)
-          test "$(jq --arg revision "$REVISION" '[.status.traffic[] | select((.percent // 0) > 0)] | length == 1 and .[0].revisionName == $revision and .[0].percent == 100' <<<"$FINAL_STATE")" = "true"
+          # Route 100% traffic to the new revision, smoke-test via PROD_URL
+          gcloud run services update-traffic "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --to-revisions="$PROD_SERVICE-$SUFFIX=100" --quiet
+          ./scripts/smoke-deployment.sh "$PROD_URL"
 
           promotion_complete=true
           trap - EXIT INT TERM

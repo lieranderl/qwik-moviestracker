@@ -77,7 +77,7 @@ export const TorrServerModal = component$(
               <button
                 type="submit"
                 aria-label={closeLabel}
-                class="btn btn-ghost btn-circle btn-sm"
+                class="btn btn-ghost btn-circle min-h-11 min-w-11"
               >
                 ✕
               </button>

@@ -2,7 +2,6 @@
 
 Use this file as the root contract for AI agents working in this repository.
 Keep it short, operational, and non-repetitive. Deeper project truth lives in
-the skill reference files linked below.
 the reference files and project memory files linked below.
 
 ## Read Order
@@ -54,15 +53,66 @@ Do not load every reference by default. Open only what the task needs.
 - For cross-model work, prefer: Claude Code plans, Codex reviews the plan
   against the codebase, Claude implements, Codex verifies.
 
+## Repository Workflow
+
+- Work on feature/chore/fix branches. Do not commit directly to `main`.
+- Open pull requests into `main`; PRs must pass `.github/workflows/quality.yml`.
+- `main` is the only long-lived development integration branch.
+- Production deploys only from a published GitHub release. There is no third
+  runtime environment, branch, service, or workflow.
+- Keep local development in `.env` and production configuration in GitHub
+  environment variables plus Google Secret Manager.
+
+## CI/CD Expectations
+
+- Quality gates run type-check, lint, Bun tests, production build, the stable
+  Playwright browser smoke subset, dependency audit, gitleaks, Docker build/run,
+  and Trivy.
+- GitHub Actions is the delivery system. Do not reintroduce alternate GCP build
+  triggers or local deploy scripts as a second production path.
+- Production deployment builds one Docker image, scans it locally, pushes the
+  clean image to Artifact Registry, records provenance, deploys to Cloud Run with
+  no traffic, smoke-tests the candidate URL, canaries 10%, then promotes to 100%
+  or rolls traffic back to the previous revision.
+- GCP auth in Actions must use OIDC / Workload Identity Federation. Do not store
+  service-account keys in GitHub.
+
+## Release Process
+
+1. Merge a verified PR to `main`.
+2. Create an annotated semantic-version tag from the intended `main` commit.
+3. Publish a GitHub release for that tag.
+4. Approve the protected `production` environment after reviewing build, scan,
+   image digest, and deployment metadata.
+5. Confirm Cloud Run revision health, traffic, errors, latency, and logs.
+
+## DevOps Conventions
+
+- Docker images must be built from the root `Dockerfile`, run as non-root, expose
+  port `3000`, and start `server/entry.bun.js`.
+- Keep Docker, workflow, and Bun versions aligned through `packageManager`,
+  Dependabot, and explicit Docker image tags.
+- Secrets never belong in source, image layers, workflow logs, CLI output, or
+  Markdown. Name missing variables without printing values.
+- Extend pipelines by adding focused jobs or reusable workflows with minimal
+  permissions, concurrency controls, timeouts, immutable artifact references,
+  and environment protection for production.
+- If infrastructure as code is introduced, use `infra/` with OpenTofu, remote
+  encrypted state, committed provider locks, saved plans, and protected applies.
+
 ## Verification
 
 - For bug fixes and behavior changes, use test-first when practical.
 - Run the closest targeted test for the behavior you touched when one exists.
-- Minimum verification for code changes:
+- Minimum local verification for code changes:
   1. `bun run build.types`
   2. `bun run lint`
 - Also run `bun run build` for routing, SSR/runtime, auth, environment, or
   deployment changes.
+- Run `bun run verify` for DevOps, dependency, Docker, workflow, or broad app
+  changes.
+- Run `./scripts/smoke-deployment.sh <url>` for local container checks and
+  Cloud Run candidate validation.
 - After integrating subagent work, rerun the appropriate project-level checks
   before declaring success.
 

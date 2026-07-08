@@ -12,7 +12,7 @@ Atlas, and managing a connected TorrServer library.
 - MongoDB Atlas for auth/session and curated content
 - TMDB for media discovery
 - daisyUI + Tailwind CSS v4 + Catppuccin themes
-- Docker + Google Cloud Build / Cloud Run for the practical deploy path
+- Docker + GitHub Actions + Google Artifact Registry / Cloud Run for production
 
 ## App Areas
 
@@ -39,10 +39,12 @@ bun start
 
 ```bash
 bun test
+bun run test:e2e:smoke
 bun run test:e2e
 bun run build.types
 bun run lint
 bun run build
+bun run verify
 ```
 
 `bun start` is still available as a convenience alias that opens the app in a
@@ -58,7 +60,11 @@ bunx playwright install chromium
 ## Deployment Notes
 
 - Preferred runtime output: Bun SSR via `src/entry.bun.ts`
-- Build/deploy shape: `Dockerfile` + `cloudbuild.yaml`
+- Build/deploy shape: `Dockerfile` + `.github/workflows/deploy.yml`
+- Production deploys are triggered by published GitHub releases and target Cloud
+  Run with immutable Artifact Registry image digests.
+- The repository supports development and production only. Do not add extra
+  runtime branches, services, variables, or workflows.
 - `adapters/cloud-run/vite.config.ts` exists, but it is not the current source
   of truth for deployment
 

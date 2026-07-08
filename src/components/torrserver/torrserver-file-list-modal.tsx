@@ -29,8 +29,11 @@ export interface TorrServerFileListModalProps {
   onCopyStreamUrl$?: PropFunction<(file: TorrServerFileEntry) => void>;
   onOpenStream$?: PropFunction<(file: TorrServerFileEntry) => void>;
   onPlayFile$?: PropFunction<(file: TorrServerFileEntry) => void>;
+  onSelectFile$?: PropFunction<(file: TorrServerFileEntry) => void>;
   open: boolean;
   playActionLabel?: string;
+  selectActionLabel?: string;
+  selectedLabel?: string;
   streamActionLabel?: string;
   streamTooltip?: string;
   subtitle?: string;
@@ -50,8 +53,11 @@ export const TorrServerFileListModal = component$(
     onCopyStreamUrl$,
     onOpenStream$,
     onPlayFile$,
+    onSelectFile$,
     open,
     playActionLabel = "Play",
+    selectActionLabel = "Select for viewed",
+    selectedLabel = "Selected",
     streamActionLabel = "Stream",
     streamTooltip = "Opens in browser. Not all codecs are supported — audio or video may not play. Use Copy URL and paste into an external player (VLC, mpv) for full experience.",
     subtitle,
@@ -101,12 +107,19 @@ export const TorrServerFileListModal = component$(
                   <div class="card-body gap-4 p-4">
                     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                       <div class="min-w-0 space-y-3">
-                        <span class="badge badge-outline rounded-full font-medium">
-                          {sizeLabel}
-                        </span>
+                        <div class="flex flex-wrap items-center gap-2">
+                          <span class="badge badge-outline rounded-full font-medium">
+                            {sizeLabel}
+                          </span>
+                          {file.isPrimary && (
+                            <span class="badge badge-primary rounded-full font-medium">
+                              {selectedLabel}
+                            </span>
+                          )}
+                        </div>
 
                         <div class="space-y-1">
-                          <h4 class="min-w-0 text-base font-semibold break-words md:text-lg">
+                          <h4 class="min-w-0 text-base font-semibold wrap-break-word md:text-lg">
                             {titleLabel}
                           </h4>
                           {file.path && file.path !== titleLabel && (
@@ -128,10 +141,23 @@ export const TorrServerFileListModal = component$(
                       </div>
 
                       <div class="flex flex-wrap gap-2">
+                        {onSelectFile$ && (
+                          <button
+                            type="button"
+                            aria-pressed={file.isPrimary}
+                            class={`btn min-h-11 flex-1 sm:flex-none ${
+                              file.isPrimary ? "btn-primary" : "btn-outline"
+                            }`}
+                            disabled={file.isPrimary}
+                            onClick$={async () => onSelectFile$(file)}
+                          >
+                            {file.isPrimary ? selectedLabel : selectActionLabel}
+                          </button>
+                        )}
                         {onPlayFile$ && (
                           <button
                             type="button"
-                            class="btn btn-primary btn-sm flex-1 sm:flex-none"
+                            class="btn btn-primary min-h-11 flex-1 sm:flex-none"
                             onClick$={async () => onPlayFile$(file)}
                           >
                             {playActionLabel}
@@ -140,7 +166,7 @@ export const TorrServerFileListModal = component$(
                         {file.streamUrl && onOpenStream$ && (
                           <a
                             href={file.streamUrl}
-                            class="btn btn-outline btn-sm flex-1 sm:flex-none"
+                            class="btn btn-outline min-h-11 flex-1 sm:flex-none"
                             data-tip={streamTooltip}
                             rel="noreferrer"
                             target="_blank"
@@ -151,7 +177,7 @@ export const TorrServerFileListModal = component$(
                         {file.streamUrl && onCopyStreamUrl$ && (
                           <button
                             type="button"
-                            class="btn btn-ghost btn-sm flex-1 sm:flex-none"
+                            class="btn btn-ghost min-h-11 flex-1 sm:flex-none"
                             onClick$={async () => onCopyStreamUrl$(file)}
                           >
                             {copyActionLabel}

@@ -31,7 +31,7 @@ export default component$(() => {
       {/* Animated gradient blobs */}
       <div class="pointer-events-none absolute inset-0">
         <div
-          class="absolute -top-32 left-1/2 h-[480px] w-[600px] -translate-x-1/2 rounded-full bg-(--auth-blob-one) blur-[140px]"
+          class="absolute -top-32 left-1/2 h-120 w-150 -translate-x-1/2 rounded-full bg-(--auth-blob-one) blur-[140px]"
           style={{ animation: "pulse 8s ease-in-out infinite" }}
         />
         <div
@@ -74,7 +74,7 @@ export default component$(() => {
             style={{ "--motion-delay": "80ms" }}
           >
             {langTrackMoviesAndTvShowsPrefix(lang)}{" "}
-            <span class="bg-linear-to-r from-(--auth-accent-from) via-[color:var(--auth-accent-via)] to-(--auth-accent-to) bg-clip-text text-transparent">
+            <span class="bg-linear-to-r from-(--auth-accent-from) via-(--auth-accent-via) to-(--auth-accent-to) bg-clip-text text-transparent">
               {langTrackMoviesAndTvShowsAccent(lang)}
             </span>
           </h1>

@@ -45,12 +45,12 @@ const AddLinkSection = component$(
         </h3>
         <form preventdefault:submit onSubmit$={onAddLink$} class="grid gap-3">
           <label class="form-control">
-            <span class="label label-text px-0 pb-1 text-xs">
+            <span class="label label-text px-0 pb-1 text-sm font-medium">
               {lt(lang, "Torrent or magnet link", "Torrent или magnet ссылка")}
             </span>
             <input
               type="text"
-              class="input input-bordered w-full"
+              class="input input-bordered min-h-11 w-full"
               placeholder={lt(
                 lang,
                 "magnet:?xt=... or http(s)://...",
@@ -63,12 +63,12 @@ const AddLinkSection = component$(
             />
           </label>
           <label class="form-control">
-            <span class="label label-text px-0 pb-1 text-xs">
+            <span class="label label-text px-0 pb-1 text-sm font-medium">
               {lt(lang, "Title", "Заголовок")}
             </span>
             <input
               type="text"
-              class="input input-bordered w-full"
+              class="input input-bordered min-h-11 w-full"
               placeholder={lt(
                 lang,
                 "Optional title",
@@ -82,11 +82,11 @@ const AddLinkSection = component$(
           </label>
           <div class="grid gap-2 sm:grid-cols-2">
             <label class="form-control">
-              <span class="label label-text px-0 pb-1 text-xs">
+              <span class="label label-text px-0 pb-1 text-sm font-medium">
                 {lt(lang, "Category", "Категория")}
               </span>
               <select
-                class="select select-bordered w-full"
+                class="select select-bordered min-h-11 w-full"
                 value={categoryValue.value}
                 onChange$={(_, el) => {
                   categoryValue.value = el.value;
@@ -101,7 +101,7 @@ const AddLinkSection = component$(
             <label class="label rounded-box border-base-200 min-h-11 cursor-pointer justify-start gap-2 border px-3">
               <input
                 type="checkbox"
-                class="checkbox checkbox-sm"
+                class="checkbox"
                 checked={saveToDbValue.value}
                 onChange$={(_, el) => {
                   saveToDbValue.value = el.checked;
@@ -114,7 +114,7 @@ const AddLinkSection = component$(
           </div>
           <button
             type="submit"
-            class="btn btn-primary w-full"
+            class="btn btn-primary min-h-11 w-full"
             disabled={!serverUrl || addLinkBusy}
           >
             {addLinkBusy
@@ -131,8 +131,6 @@ const AddLinkSection = component$(
 
 const UploadSection = component$(
   ({
-    downloadSize,
-    downloadTestUrl,
     lang,
     onUpload$,
     onUploadFileChange$,
@@ -141,8 +139,6 @@ const UploadSection = component$(
     uploadFileName,
     uploadValidationMessage,
   }: {
-    downloadSize: Signal<string>;
-    downloadTestUrl?: string;
     lang: string;
     onUpload$: PropFunction<() => void>;
     onUploadFileChange$: PropFunction<(file: File | null) => void>;
@@ -157,13 +153,13 @@ const UploadSection = component$(
           {lt(lang, "Upload .torrent file", "Загрузить .torrent файл")}
         </h3>
         <label class="form-control">
-          <span class="label label-text px-0 pb-1 text-xs">
+          <span class="label label-text px-0 pb-1 text-sm font-medium">
             {lt(lang, ".torrent file", ".torrent файл")}
           </span>
           <input
             type="file"
             accept=".torrent"
-            class="file-input file-input-bordered w-full"
+            class="file-input file-input-bordered min-h-11 w-full"
             onChange$={(_, element) => {
               onUploadFileChange$(element.files?.[0] ?? null);
             }}
@@ -180,7 +176,7 @@ const UploadSection = component$(
         </p>
         <button
           type="button"
-          class="btn btn-secondary w-full"
+          class="btn btn-secondary min-h-11 w-full"
           disabled={
             !serverUrl ||
             !uploadFileName ||
@@ -193,38 +189,6 @@ const UploadSection = component$(
             ? lt(lang, "Uploading...", "Загрузка...")
             : lt(lang, "Upload", "Загрузить")}
         </button>
-        <div class="border-base-300 grid gap-3 border-t pt-3">
-          <p class="text-sm font-semibold">
-            {lt(lang, "Download speed test", "Тест скорости скачивания")}
-          </p>
-          <label class="form-control">
-            <span class="label label-text px-0 pb-1 text-xs">
-              {lt(lang, "Download size in MB", "Размер скачивания в MB")}
-            </span>
-            <span class="input input-bordered flex items-center gap-2">
-              <span class="text-base-content/70 text-xs">MB</span>
-              <input
-                type="number"
-                min={1}
-                class="min-w-0 grow"
-                value={downloadSize.value}
-                onInput$={(_, element) => {
-                  downloadSize.value = element.value;
-                }}
-              />
-            </span>
-          </label>
-          {downloadTestUrl && (
-            <a
-              href={downloadTestUrl}
-              target="_blank"
-              rel="noreferrer"
-              class="btn btn-outline w-full"
-            >
-              /download
-            </a>
-          )}
-        </div>
       </div>
     </section>
   ),
@@ -262,12 +226,12 @@ const SearchSection = component$(
           {lt(lang, "Search and diagnostics", "Поиск и диагностика")}
         </h3>
         <label class="form-control">
-          <span class="label label-text px-0 pb-1 text-xs">
+          <span class="label label-text px-0 pb-1 text-sm font-medium">
             {lt(lang, "Search query", "Поисковый запрос")}
           </span>
           <input
             type="text"
-            class="input input-bordered w-full"
+            class="input input-bordered min-h-11 w-full"
             value={apiQuery.value}
             placeholder={lt(lang, "Search query", "Поисковый запрос")}
             onInput$={(_, element) => {
@@ -278,7 +242,7 @@ const SearchSection = component$(
         <div class="grid gap-2 sm:grid-cols-2">
           <button
             type="button"
-            class="btn btn-outline"
+            class="btn btn-outline min-h-11"
             disabled={!serverUrl || !apiQuery.value.trim()}
             onClick$={async () => {
               await onSearch$("rutor");
@@ -328,7 +292,7 @@ const SearchSection = component$(
                 </span>
                 <button
                   type="button"
-                  class="btn btn-primary btn-xs"
+                  class="btn btn-primary min-h-11"
                   disabled={!serverUrl || addLinkBusy}
                   onClick$={async () => {
                     await onAddSearchResult$(result);
@@ -346,7 +310,7 @@ const SearchSection = component$(
               href={`${serverUrl}/magnets`}
               target="_blank"
               rel="noreferrer"
-              class="btn btn-ghost btn-sm flex-1 sm:flex-none"
+              class="btn btn-ghost min-h-11 flex-1 sm:flex-none"
             >
               /magnets
             </a>
@@ -356,7 +320,7 @@ const SearchSection = component$(
               href={`${serverUrl}/stat`}
               target="_blank"
               rel="noreferrer"
-              class="btn btn-ghost btn-sm flex-1 sm:flex-none"
+              class="btn btn-ghost min-h-11 flex-1 sm:flex-none"
             >
               /stat
             </a>
@@ -366,7 +330,7 @@ const SearchSection = component$(
               href={`${serverUrl}/playlistall/all.m3u`}
               target="_blank"
               rel="noreferrer"
-              class="btn btn-ghost btn-sm flex-1 sm:flex-none"
+              class="btn btn-ghost min-h-11 flex-1 sm:flex-none"
             >
               /playlistall
             </a>
@@ -385,158 +349,17 @@ const SearchSection = component$(
   ),
 );
 
-/* ── Storage and viewed tools ────────────────────────────── */
-
-const StorageSection = component$(
-  ({
-    lang,
-    onApplyStorage$,
-    onMarkViewed$,
-    onRemoveViewed$,
-    selectedTorrentLabel,
-    serverUrl,
-    storageDraftSettings,
-    storageDraftViewed,
-    storageUpdateBusy,
-    viewedActionBusy,
-    viewedIsMarked,
-  }: {
-    lang: string;
-    onApplyStorage$: PropFunction<() => void>;
-    onMarkViewed$: PropFunction<() => void>;
-    onRemoveViewed$: PropFunction<() => void>;
-    selectedTorrentLabel?: string;
-    serverUrl: string;
-    storageDraftSettings: Signal<string>;
-    storageDraftViewed: Signal<string>;
-    storageUpdateBusy: boolean;
-    viewedActionBusy: boolean;
-    viewedIsMarked: boolean;
-  }) => (
-    <section class="card border-base-200 bg-base-200/40 border shadow-none">
-      <div class="card-body gap-3 p-4">
-        <h3 class="font-semibold">
-          {lt(
-            lang,
-            "Storage and viewed tools",
-            "Инструменты хранилища и просмотренного",
-          )}
-        </h3>
-        <div class="grid gap-3">
-          <label class="form-control">
-            <span class="label label-text px-0 pb-1 text-xs">
-              {lt(lang, "Settings storage", "Хранилище настроек")}
-            </span>
-            <select
-              id="modal-storage-settings-mode"
-              class="select select-bordered w-full"
-              value={storageDraftSettings.value}
-              onChange$={(_, element) => {
-                storageDraftSettings.value =
-                  element.value === "bbolt" ? "bbolt" : "json";
-              }}
-            >
-              <option value="json">json</option>
-              <option value="bbolt">bbolt</option>
-            </select>
-          </label>
-          <label class="form-control">
-            <span class="label label-text px-0 pb-1 text-xs">
-              {lt(lang, "Viewed storage", "Хранилище просмотренного")}
-            </span>
-            <select
-              id="modal-storage-viewed-mode"
-              class="select select-bordered w-full"
-              value={storageDraftViewed.value}
-              onChange$={(_, element) => {
-                storageDraftViewed.value =
-                  element.value === "bbolt" ? "bbolt" : "json";
-              }}
-            >
-              <option value="json">json</option>
-              <option value="bbolt">bbolt</option>
-            </select>
-          </label>
-          <button
-            type="button"
-            class="btn btn-outline w-full"
-            disabled={!serverUrl || storageUpdateBusy}
-            onClick$={onApplyStorage$}
-          >
-            {storageUpdateBusy
-              ? lt(lang, "Applying...", "Применение...")
-              : lt(lang, "Apply storage mode", "Применить режим хранилища")}
-          </button>
-          <p class="text-base-content/60 text-xs">
-            {lt(
-              lang,
-              "TorrServer restart may be required after changing storage backend.",
-              "После смены хранилища может потребоваться перезапуск TorrServer.",
-            )}
-          </p>
-        </div>
-
-        <div class="border-base-300 grid gap-3 border-t pt-3">
-          <p class="text-sm font-semibold">
-            {lt(lang, "Viewed actions", "Действия просмотренного")}
-          </p>
-          <p class="text-base-content/70 text-xs">
-            {selectedTorrentLabel
-              ? lt(
-                  lang,
-                  viewedIsMarked
-                    ? "Selected torrent/file is currently marked as viewed."
-                    : "Selected torrent/file is not marked as viewed.",
-                  viewedIsMarked
-                    ? "Выбранный торрент/файл отмечен как просмотренный."
-                    : "Выбранный торрент/файл не отмечен как просмотренный.",
-                )
-              : lt(
-                  lang,
-                  "Select a torrent to set or remove viewed state.",
-                  "Выберите торрент, чтобы установить или убрать статус просмотренного.",
-                )}
-          </p>
-          <div class="grid gap-2 sm:grid-cols-2">
-            <button
-              type="button"
-              class="btn btn-primary"
-              disabled={!serverUrl || !selectedTorrentLabel || viewedActionBusy}
-              onClick$={onMarkViewed$}
-            >
-              {lt(lang, "Set viewed", "Отметить")}
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline"
-              disabled={!serverUrl || !selectedTorrentLabel || viewedActionBusy}
-              onClick$={onRemoveViewed$}
-            >
-              {lt(lang, "Remove viewed", "Убрать отметку")}
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-  ),
-);
-
 /* ── Main modal ──────────────────────────────────────────── */
 
 export interface TorrServerApiToolsModalProps {
   addLinkBusy: boolean;
   apiQuery: Signal<string>;
   categoryValue: Signal<string>;
-  downloadSize: Signal<string>;
-  downloadTestUrl?: string;
   lang: string;
   linkValue: Signal<string>;
   onAddLink$: PropFunction<() => void>;
   onAddSearchResult$: PropFunction<(result: TorrServerApiSearchResult) => void>;
-  onApplyStorage$: PropFunction<() => void>;
   onClose$: PropFunction<() => void>;
-  onMarkViewed$: PropFunction<() => void>;
-  onRemoveViewed$: PropFunction<() => void>;
   onSearch$: PropFunction<(source: "rutor" | "torznab") => void>;
   onUpload$: PropFunction<() => void>;
   onUploadFileChange$: PropFunction<(file: File | null) => void>;
@@ -545,18 +368,12 @@ export interface TorrServerApiToolsModalProps {
   searchBusy: boolean;
   searchResults: TorrServerApiSearchResult[];
   searchSource: "rutor" | "torznab" | null;
-  selectedTorrentLabel?: string;
   serverUrl: string;
   statsText: string;
-  storageDraftSettings: Signal<string>;
-  storageDraftViewed: Signal<string>;
-  storageUpdateBusy: boolean;
   titleValue: Signal<string>;
   uploadBusy: boolean;
   uploadFileName: string;
   uploadValidationMessage?: string;
-  viewedActionBusy: boolean;
-  viewedIsMarked: boolean;
 }
 
 export const TorrServerApiToolsModal = component$(
@@ -572,8 +389,8 @@ export const TorrServerApiToolsModal = component$(
         title={lt(props.lang, "Tools", "Инструменты")}
         subtitle={lt(
           props.lang,
-          "Add torrents, search, and update storage.",
-          "Добавляйте торренты, ищите и обновляйте хранилище.",
+          "Add torrents, search, and manage playlists.",
+          "Добавляйте торренты, ищите и управляйте плейлистами.",
         )}
         onClose$={props.onClose$}
       >
@@ -590,8 +407,6 @@ export const TorrServerApiToolsModal = component$(
           />
 
           <UploadSection
-            downloadSize={props.downloadSize}
-            downloadTestUrl={props.downloadTestUrl}
             lang={props.lang}
             onUpload$={props.onUpload$}
             onUploadFileChange$={props.onUploadFileChange$}
@@ -612,20 +427,6 @@ export const TorrServerApiToolsModal = component$(
             searchSource={props.searchSource}
             serverUrl={props.serverUrl}
             statsText={props.statsText}
-          />
-
-          <StorageSection
-            lang={props.lang}
-            onApplyStorage$={props.onApplyStorage$}
-            onMarkViewed$={props.onMarkViewed$}
-            onRemoveViewed$={props.onRemoveViewed$}
-            selectedTorrentLabel={props.selectedTorrentLabel}
-            serverUrl={props.serverUrl}
-            storageDraftSettings={props.storageDraftSettings}
-            storageDraftViewed={props.storageDraftViewed}
-            storageUpdateBusy={props.storageUpdateBusy}
-            viewedActionBusy={props.viewedActionBusy}
-            viewedIsMarked={props.viewedIsMarked}
           />
         </div>
       </TorrServerModal>

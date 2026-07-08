@@ -5,7 +5,7 @@
 - Framework: Qwik / Qwik City 1.x
 - Runtime path: Bun SSR
 - Tooling baseline: Bun + Vite 7 + Biome 2
-- Deploy path: Docker -> Cloud Build -> Cloud Run
+- Deploy path: Docker -> GitHub Actions -> Artifact Registry -> Cloud Run
 - Styling stack: Tailwind CSS v4 + daisyUI 5 + Catppuccin themes
 
 ## Entry Points
@@ -103,8 +103,17 @@ Keep new external API access in `src/services/**`, not inside route files.
 ## Deployment Files
 
 - Docker runtime: `Dockerfile`
-- Cloud Build pipeline: `cloudbuild.yaml`
-- Local deploy helper: `gcloud_deploy.sh`
+- Quality workflow: `.github/workflows/quality.yml`
+- Production deployment workflow: `.github/workflows/deploy.yml`
+- Deployment smoke check: `scripts/smoke-deployment.sh`
+- Local operational tasks: `Makefile`
+- Environment template: `.env.example`
+
+The repository supports development and production only. Production deploys are
+triggered by published GitHub releases, authenticate to GCP through GitHub OIDC
+/ Workload Identity Federation, build, scan locally, push the clean image to Artifact
+Registry, deploy a no-traffic Cloud Run candidate, smoke-test it, canary it, and
+promote or roll back traffic.
 
 ## Known Gaps
 

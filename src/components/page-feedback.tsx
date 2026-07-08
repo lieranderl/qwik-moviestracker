@@ -20,10 +20,10 @@ type FeedbackPanelProps = FeedbackCardProps & {
 
 const FEEDBACK_SECTION_BASE_CLASS = "overlay-enter";
 
-const getFeedbackSectionClass = (compact: boolean, minHeightClass: string) => [
-  FEEDBACK_SECTION_BASE_CLASS,
-  compact ? "py-6" : `flex ${minHeightClass} items-center justify-center py-8`,
-];
+const getFeedbackSectionClass = (compact: boolean, minHeightClass: string) =>
+  compact
+    ? `${FEEDBACK_SECTION_BASE_CLASS} flex justify-center py-6`
+    : `${FEEDBACK_SECTION_BASE_CLASS} flex ${minHeightClass} items-center justify-center py-8`;
 
 const FeedbackPanel = ({
   title,

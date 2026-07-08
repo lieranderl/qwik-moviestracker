@@ -38,9 +38,13 @@
 
 ## Secrets
 
-- Treat `.env`, `.env.*`, and `adminSDK.json` as sensitive.
+- Treat `.env`, `.env.*`, and `adminSDK.json` as sensitive. `.env.example` may
+  contain placeholder names only.
 - Never print secret values into summaries, issues, or docs.
 - Name missing variables without echoing their values.
+- Production secrets belong in Google Secret Manager and are injected by Cloud
+  Run. GitHub Actions may reference secret names, but must not store secret
+  values or service-account keys.
 - Claude project hooks block direct edits to `.env*`, `adminSDK.json`,
   `dist/**`, and `server/**`.
 
@@ -59,7 +63,7 @@
   flows.
 - Keep MongoDB and Auth Mongo adapter runtime imports behind request-time
   guards. Bun SSG may run without `MONGO_URI`, and MongoDB 7/BSON imports
-  Node APIs that can break Linux Cloud Build if loaded during SSG.
+  Node APIs that can break Linux container builds if loaded during SSG.
 - Keep the MongoDB driver on the Bun-compatible 6.x line until Bun supports the
   `node:v8` startup snapshot APIs used by MongoDB 7/BSON.
 - Production auth/origin handling must pin the public origin with `AUTH_URL`;
@@ -75,6 +79,13 @@
   explicit bypass gate. Keep them narrow, route-scoped, and obviously fake so
   they never become an alternate production data path.
 - Treat deployment config as part of runtime behavior, not standalone docs.
+- The supported environment model is development plus production only. Do not
+  add extra runtime services, branches, variables, or workflows.
+- GitHub Actions is the production delivery path. Do not reintroduce Cloud
+  Build, local shell deploy scripts, or console-only release steps as parallel
+  production mechanisms.
+- Production deploys must use immutable Artifact Registry digests and Cloud Run
+  traffic promotion/rollback rather than mutable tags.
 - Prefer shared browser helpers in `src/utils/browser.ts` for `localStorage`
   and dialog access instead of repeating raw browser-global checks.
 - Do not treat `typeof localStorage !== "undefined"` as sufficient. Validate
@@ -97,6 +108,7 @@
 - Keep Docker's Bun image pinned to the same tested Bun version as CI. Floating
   `oven/bun:1` can pick up Linux runtime regressions before GitHub CI sees
   them.
+- Docker runtime must stay non-root and expose port `3000`.
 - Verify the usage of suspicious legacy files before deleting them.
 
 ## Claude Enforcement

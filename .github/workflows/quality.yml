@@ -122,7 +122,7 @@ jobs:
           ./scripts/smoke-deployment.sh http://127.0.0.1:3000
 
       - name: Scan production container
-        uses: aquasecurity/trivy-action@0.36.0
+        aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: moviestracker:ci
           format: table

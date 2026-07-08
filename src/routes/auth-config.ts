@@ -78,6 +78,13 @@ export const resolveAuthTrustHost = ({
   lifecycleEvent,
   nodeEnv,
 }: Omit<AuthSecretContext, "authSecret"> & { authUrl?: string | null }) => {
+  // Explicit env override for Cloud Run candidate/preview deployments
+  // where AUTH_URL points to the production domain but requests arrive
+  // through *.a.run.app hostnames.
+  if (process.env.AUTH_TRUST_HOST === "true") {
+    return true;
+  }
+
   if (normalizeOrigin(authUrl)) {
     return true;
   }

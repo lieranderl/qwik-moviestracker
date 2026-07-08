@@ -165,7 +165,6 @@ jobs:
             --tag="$TAG" \
             --revision-suffix="$SUFFIX" \
             --set-env-vars="NODE_ENV=production,AUTH_URL=$PROD_URL,GOOGLE_ID=$GOOGLE_ID" \
-            --env-vars-file=/tmp/candidate-env.yaml \
             --update-secrets="AUTH_SECRET=AUTH_SECRET:latest,GOOGLE_SECRET=GOOGLE_SECRET:latest,MONGO_URI=MONGO_URI:latest,TMDB_API_KEY=TMDB_API_KEY:latest,GC_API_KEY=GC_API_KEY:latest" \
             --quiet
 

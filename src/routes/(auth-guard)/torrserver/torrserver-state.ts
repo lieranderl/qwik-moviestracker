@@ -15,6 +15,7 @@ export const SELECTED_TORR_SERVER_KEY = "selectedTorServer";
 export type ConnectionState = "idle" | "connecting" | "connected" | "error";
 export type TorrServerStatusFilter = "all" | "active" | "database" | "other";
 
+
 export type ParsedTorrentMedia = {
   id: number;
   title?: string;
@@ -248,34 +249,13 @@ export function getTorrentStatusFilter(
 
 export function filterTorrServerTorrents(
   torrents: TSResult[],
-  query: string,
   status: TorrServerStatusFilter,
 ): TSResult[] {
-  const normalizedQuery = query.trim().toLowerCase();
-
   return torrents.filter((torrent) => {
     if (status !== "all" && getTorrentStatusFilter(torrent) !== status) {
       return false;
     }
-
-    if (!normalizedQuery) {
-      return true;
-    }
-
-    const media = parseTorrentMedia(torrent.data);
-    const searchableValues = [
-      torrent.title,
-      torrent.name,
-      torrent.hash,
-      torrent.category,
-      media?.title,
-      media?.name,
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-
-    return searchableValues.includes(normalizedQuery);
+    return true;
   });
 }
 

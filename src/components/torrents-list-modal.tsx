@@ -129,12 +129,8 @@ export const TorrentsModal = component$(
             <div class="px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:p-5 sm:pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
               <TorrentList
                 torrents={torrentsStore.torrents}
-                title={title}
-                year={torrentsStore.year}
-                isMovie={isMovie}
                 movie={media}
                 lang={lang}
-                season={torrentsStore.season}
                 sourceLoaded={torrentsStore.loaded}
                 sourceTotal={torrentsStore.total}
               />

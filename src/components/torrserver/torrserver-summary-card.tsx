@@ -6,6 +6,14 @@ import {
   type TorrServerTone,
 } from "./torrserver-utils";
 
+const STATUS_DOT_CLASS: Record<TorrServerTone, string> = {
+  neutral: "status-neutral",
+  info: "status-info",
+  success: "status-success",
+  warning: "status-warning",
+  error: "status-error",
+};
+
 export type TorrServerSummaryMetric = {
   description?: string;
   label: string;
@@ -65,10 +73,11 @@ export const TorrServerSummaryCard = component$(
                 </span>
               )}
               {connectionLabel && (
-                <span
-                  class={`badge rounded-full font-medium ${getToneBadgeClass(statusTone)}`}
-                >
-                  {connectionLabel}
+                <span class="flex items-center gap-1.5">
+                  <span
+                    class={`status ${STATUS_DOT_CLASS[statusTone]}`}
+                  ></span>
+                  <span class="text-xs font-medium">{connectionLabel}</span>
                 </span>
               )}
             </div>

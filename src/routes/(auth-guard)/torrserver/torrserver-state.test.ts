@@ -55,11 +55,9 @@ describe("torrserver state helpers", () => {
     expect(getTorrentStatusFilter(torrents[1])).toBe("database");
   });
 
-  it("filters torrents by query and status", () => {
-    expect(filterTorrServerTorrents(torrents, "avatar", "all")).toEqual([
-      torrents[0],
-    ]);
-    expect(filterTorrServerTorrents(torrents, "", "database")).toEqual([
+  it("filters torrents by status", () => {
+    expect(filterTorrServerTorrents(torrents, "all")).toEqual(torrents);
+    expect(filterTorrServerTorrents(torrents, "database")).toEqual([
       torrents[1],
     ]);
   });

@@ -65,10 +65,11 @@ jobs:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_ID_PROVIDER }}
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
 
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v3
-        with:
-          project_id: ${{ env.GCP_PROJECT }}
+      - name: Setup gcloud project
+        run: |
+          # Avoid setup-gcloud action's gcloud config set project which can fail on WIF token refresh.
+          # Use CLOUDSDK_CORE_PROJECT env var to set project without triggering a token refresh.
+          echo "CLOUDSDK_CORE_PROJECT=${GCP_PROJECT}" >> "$GITHUB_ENV"
 
       - name: Configure Artifact Registry authentication
         run: gcloud auth configure-docker "${GCP_REGION}-docker.pkg.dev" --quiet
@@ -138,10 +139,9 @@ jobs:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_ID_PROVIDER }}
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
 
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v3
-        with:
-          project_id: ${{ env.GCP_PROJECT }}
+      - name: Setup gcloud project
+        run: |
+          echo "CLOUDSDK_CORE_PROJECT=${GCP_PROJECT}" >> "$GITHUB_ENV"
 
       - name: Deploy, smoke-test, and promote
         env:

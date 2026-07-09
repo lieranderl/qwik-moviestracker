@@ -25,6 +25,10 @@ interface MovieDetailsProps {
   lang: string;
 }
 
+const sectionCardClass =
+  "card border-base-200 bg-base-100/95 border shadow-sm";
+const sectionBodyClass = "card-body gap-4 p-4 md:p-6";
+
 export const PersonDetails = component$(
   ({ person, perMovies, perTv, lang }: MovieDetailsProps) => {
     // eslint-disable-next-line qwik/no-use-visible-task
@@ -40,82 +44,83 @@ export const PersonDetails = component$(
 
     return (
       <DetailPageContainer>
-        <section class="card border-base-200 bg-base-100/95 border shadow-sm">
-          <div class="card-body p-4 md:p-6">
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr]">
-              <div class="flex justify-center md:justify-start">
-                {person.profile_path ? (
-                  <Image
-                    width="300"
-                    height="450"
-                    src={`https://image.tmdb.org/t/p/w300${person.profile_path}`}
-                    class="border-base-200 aspect-2/3 w-45 rounded-xl border object-cover shadow-sm md:w-55"
-                    alt={person.name}
-                  />
-                ) : (
-                  <div class="border-base-200 bg-base-200 text-base-content/55 flex aspect-2/3 w-45 items-center justify-center rounded-xl border text-sm font-medium shadow-sm md:w-55">
-                    {langText(lang, "No image", "Нет изображения")}
-                  </div>
-                )}
+        {/* ── HERO: Profile Image + Name + Personal Info ── */}
+        <section class={`${sectionCardClass} sm:card-side`}>
+          <figure class="mx-auto w-48 shrink-0 p-4 pb-0 sm:mx-0 sm:w-56 sm:p-6 sm:pr-0 lg:w-64">
+            {person.profile_path ? (
+              <Image
+                width="300"
+                height="450"
+                src={`https://image.tmdb.org/t/p/w300${person.profile_path}`}
+                alt={person.name}
+                class="rounded-box h-auto w-full shadow-lg"
+              />
+            ) : (
+              <div class="bg-base-200 rounded-box flex aspect-2/3 w-full items-center justify-center">
+                <span class="text-base-content/20 text-5xl select-none" aria-hidden="true">
+                  👤
+                </span>
               </div>
+            )}
+          </figure>
 
-              <div class="space-y-4">
-                <div class="space-y-1">
-                  <div class="flex items-center gap-2 text-3xl font-bold">
-                    <span>{person.name}</span>
-                    <span class="text-base-content/60 text-xl font-light">
-                      {person.gender === 1 && <BsGenderFemale />}
-                      {person.gender === 2 && <BsGenderMale />}
-                      {person.gender === 3 && <BsGenderTrans />}
-                    </span>
-                  </div>
-                  {person.known_for_department && (
-                    <span class="badge badge-outline badge-sm">
-                      {person.known_for_department}
-                    </span>
-                  )}
-                </div>
+          <div class={`${sectionBodyClass} min-w-0 flex-1`}>
+            {/* Name + Gender */}
+            <header>
+              <h1 class="me-1 flex items-center gap-2 text-3xl font-bold md:text-4xl">
+                <span>{person.name}</span>
+                <span class="text-base-content/40 text-xl" aria-hidden="true">
+                  {person.gender === 1 && <BsGenderFemale />}
+                  {person.gender === 2 && <BsGenderMale />}
+                  {person.gender === 3 && <BsGenderTrans />}
+                </span>
+              </h1>
+              {person.known_for_department && (
+                <span class="badge badge-outline badge-sm mt-1">
+                  {person.known_for_department}
+                </span>
+              )}
+            </header>
 
-                <section class="card border-base-200 bg-base-100 border shadow-none">
-                  <div class="card-body p-4">
-                    <h3 class="card-title text-base-content/80 text-lg">
-                      {langText(lang, "Personal info", "Личная информация")}
-                    </h3>
-                    <PersonDate
-                      place_of_birth={person.place_of_birth}
-                      birthday={person.birthday}
-                      deathday={person.deathday}
-                    />
-                  </div>
-                </section>
-              </div>
+            {/* Personal Info */}
+            <div class="space-y-3">
+              <h2 class="text-base-content/70 text-sm font-semibold uppercase tracking-wide">
+                {langText(lang, "Personal info", "Личная информация")}
+              </h2>
+              <PersonDate
+                place_of_birth={person.place_of_birth}
+                birthday={person.birthday}
+                deathday={person.deathday}
+              />
             </div>
           </div>
         </section>
 
-        <section class="section-reveal card border-base-200 bg-base-100/95 border shadow-sm">
-          <div class="card-body gap-3 p-4 md:p-6">
-            <h3 class="text-xl font-semibold">
-              {langText(lang, "Quick links", "Быстрые ссылки")}
-            </h3>
-            <ExternalIds
-              external_ids={person.external_ids}
-              lang={lang}
-              type={"person"}
-            />
-          </div>
-        </section>
+        <div class="divider" />
 
-        <section class="section-reveal card border-base-200 bg-base-100/95 border shadow-sm">
-          <div class="card-body gap-4 p-4 md:p-6">
-            <h3 class="card-title text-lg">
+        {/* ── EXTERNAL LINKS ── */}
+        <ExternalIds
+          external_ids={person.external_ids}
+          lang={lang}
+          type={"person"}
+        />
+
+        <div class="divider" />
+
+        {/* ── BIOGRAPHY ── */}
+        <section class={sectionCardClass}>
+          <div class={sectionBodyClass}>
+            <h2 class="card-title text-xl">
               {langText(lang, "Biography", "Биография")}
-            </h3>
+            </h2>
             <PersonBio biography={person.biography} lang={lang} />
           </div>
         </section>
 
-        <section class="space-y-6">
+        <div class="divider" />
+
+        {/* ── FILMOGRAPHY ── */}
+        <div class="space-y-6">
           {perMovies.cast.length > 0 && (
             <MediaCarousel
               title={langText(lang, "Actor in movies", "Актер в фильмах")}
@@ -227,7 +232,7 @@ export const PersonDetails = component$(
               ))}
             </MediaCarousel>
           )}
-        </section>
+        </div>
       </DetailPageContainer>
     );
   },

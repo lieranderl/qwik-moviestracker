@@ -69,7 +69,6 @@ import {
 } from "~/utils/languages";
 import {
   applyServersState,
-  connectionAlertClass,
   filterTorrServerTorrents,
   formatTransferSpeed,
   getDefaultSelectedTorrentHash,
@@ -110,9 +109,6 @@ export default component$(() => {
   const isCheckingTorrServer = useSignal(false);
   const torrentsSig = useSignal<TorrServerTorrentStatus[]>([]);
   const connectionState = useSignal<ConnectionState>("idle");
-  const connectionMessage = useSignal(
-    langText(lang, "Add a TorrServer URL.", "Добавьте URL TorrServer."),
-  );
   const serverVersion = useSignal("");
   const settingsSig = useSignal<TorrServerSettings | null>(null);
   const storageSettingsSig = useSignal<TorrServerStorageSettings | null>(null);
@@ -121,7 +117,6 @@ export default component$(() => {
   const viewedItemsSig = useSignal<TorrServerViewedItem[]>([]);
   const activatingHashSig = useSignal("");
 
-  const querySig = useSignal("");
   const statusFilterSig = useSignal<TorrServerStatusFilter>("all");
   const sortKeySig = useSignal<TorrServerSortKey>("recent");
   const selectedTorrentHash = useSignal("");
@@ -185,25 +180,12 @@ export default component$(() => {
 
     if (!serverUrl) {
       connectionState.value = "idle";
-      connectionMessage.value =
-        torrServerList.value.length > 0
-          ? langText(
-              lang,
-              "Select a saved server.",
-              "Выберите сохраненный сервер.",
-            )
-          : langText(lang, "Add a TorrServer URL.", "Добавьте URL TorrServer.");
       return;
     }
 
     try {
       isCheckingTorrServer.value = true;
       connectionState.value = "connecting";
-      connectionMessage.value = langText(
-        lang,
-        `Connecting to ${serverUrl}...`,
-        `Подключение к ${serverUrl}...`,
-      );
 
       const settled = await Promise.allSettled([
         getTorrServerVersion(serverUrl),
@@ -229,19 +211,9 @@ export default component$(() => {
       statsTextSig.value = val(settled[5], "");
       viewedItemsSig.value = val(settled[6], []);
       connectionState.value = "connected";
-      connectionMessage.value = langText(
-        lang,
-        `Connected to ${serverUrl}`,
-        `Подключено к ${serverUrl}`,
-      );
     } catch (error) {
       console.error(error);
       connectionState.value = "error";
-      connectionMessage.value = langText(
-        lang,
-        `Failed to reach ${serverUrl}`,
-        `Не удалось подключиться к ${serverUrl}`,
-      );
     } finally {
       isCheckingTorrServer.value = false;
     }
@@ -253,7 +225,6 @@ export default component$(() => {
     sortTorrents(
       filterTorrServerTorrents(
         torrentsSig.value as TSResult[],
-        querySig.value,
         statusFilterSig.value,
       ) as TorrServerTorrentStatus[],
       sortKeySig.value,
@@ -975,37 +946,6 @@ export default component$(() => {
                 </button>
               </div>
             </label>
-
-            <div
-              role="status"
-              aria-live="polite"
-              class={`alert alert-vertical sm:alert-horizontal items-start ${connectionAlertClass(connectionState.value)}`}
-            >
-              <div class="space-y-1">
-                <p class="font-semibold">
-                  {connectionState.value === "connected"
-                    ? langText(
-                        lang,
-                        "Connection healthy",
-                        "Соединение установлено",
-                      )
-                    : connectionState.value === "connecting"
-                      ? langText(lang, "Checking server", "Проверка сервера")
-                      : connectionState.value === "error"
-                        ? langText(
-                            lang,
-                            "Connection failed",
-                            "Ошибка подключения",
-                          )
-                        : langText(
-                            lang,
-                            "Waiting for a server",
-                            "Ожидание сервера",
-                          )}
-                </p>
-                <p class="text-sm leading-relaxed">{connectionMessage.value}</p>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -1120,7 +1060,6 @@ export default component$(() => {
       {/* ── Filters ──────────────────────────────────────── */}
       <TorrServerFilters
         lang={lang}
-        querySig={querySig}
         sortKeySig={sortKeySig}
         statusFilterSig={statusFilterSig}
       />

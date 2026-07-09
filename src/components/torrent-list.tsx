@@ -1,19 +1,12 @@
 import {
   $,
   component$,
-  useOnDocument,
+  useId,
   useSignal,
   useStore,
   useTask$,
 } from "@builder.io/qwik";
-import { server$ } from "@builder.io/qwik-city";
-import { setValue, useForm } from "@modular-forms/qwik";
-import { HiMagnifyingGlassOutline } from "@qwikest/icons/heroicons";
 import type { MovieDetails, Torrent } from "~/services/models";
-import {
-  getTorrentSearch,
-  type getTorrentsType,
-} from "~/services/torrent-search";
 import { filterAndSortTorrents } from "~/utils/filter-utils";
 import {
   getDynamicRangeLabel,
@@ -32,11 +25,6 @@ import {
   langTorrentov,
 } from "~/utils/languages";
 import { TorrentBlock } from "./torrent";
-
-type SearchTorrForm = {
-  name: string;
-  year: number;
-};
 
 type SelectFilterKey =
   "category" | "dynamicRange" | "quality" | "season" | "tracker" | "voice";
@@ -151,12 +139,8 @@ const getSeasonOptions = (torrents: Torrent[] | null) => {
 
 export type TorrentListProps = {
   torrents: Torrent[] | null;
-  title: string;
-  year: number;
-  isMovie: boolean;
   movie: MovieDetails;
   lang: string;
-  season?: number;
   sourceLoaded?: number;
   sourceTotal?: number;
 };
@@ -164,17 +148,11 @@ export type TorrentListProps = {
 export const TorrentList = component$(
   ({
     torrents,
-    isMovie,
-    title,
-    year,
     movie,
     lang,
-    season,
     sourceLoaded = 0,
     sourceTotal = 0,
   }: TorrentListProps) => {
-    const titlePlaceholder = lang === "en-US" ? "title" : "название";
-    const yearPlaceholder = lang === "en-US" ? "year" : "год";
     const resetFiltersLabel =
       lang === "en-US" ? "Reset filters" : "Сбросить фильтры";
 
@@ -189,7 +167,6 @@ export const TorrentList = component$(
       loaded: sourceLoaded,
       total: sourceTotal,
     });
-    const formatDropdownRef = useSignal<HTMLElement>();
     const sortedTorrents = useStore({ value: null as Torrent[] | null });
     const sortFilterStore = useStore({
       selectedSort: "Date" as string,
@@ -237,42 +214,10 @@ export const TorrentList = component$(
       touchFilters();
     });
 
-    const [searchTorrForm, { Form, Field }] = useForm<SearchTorrForm>({
-      loader: { value: { name: title, year: year } },
-    });
+    const formatMegaId = useId();
+    const openMenuSig = useSignal<string | null>(null);
 
-    const handleSubmit = $(async (values: SearchTorrForm) => {
-      sortedTorrents.value = null;
-      try {
-        const result = await server$((request: getTorrentsType) =>
-          getTorrentSearch(request),
-        )({
-          name: values.name,
-          year: values.year,
-          isMovie: isMovie,
-          season,
-        });
-        sourceStats.loaded = result.loaded;
-        sourceStats.total = result.total;
-        if (result.torrents.length > 0) {
-          initTorrents.value = result.torrents;
-          return;
-        }
-        initTorrents.value = [];
-      } catch (error) {
-        console.error(error);
-        initTorrents.value = [];
-        sortedTorrents.value = [];
-      }
 
-      sortedTorrents.value = [];
-    });
-
-    useTask$((ctx) => {
-      ctx.track(() => year);
-      sortedTorrents.value = null;
-      setValue(searchTorrForm, "year", year);
-    });
 
     useTask$((ctx) => {
       ctx.track(() => torrents);
@@ -292,28 +237,12 @@ export const TorrentList = component$(
       filterTorrents();
     });
 
-    useOnDocument(
-      "click",
-      $((event) => {
-        const dropdown = formatDropdownRef.value;
-        const target = event.target;
-        if (!(target instanceof Node) || !dropdown?.contains(target)) {
-          dropdown?.removeAttribute("open");
-        }
-      }),
-    );
-
     const qualityOptions = getQualityOptions(initTorrents.value);
     const dynamicRangeOptions = getDynamicRangeOptions(initTorrents.value);
     const trackerOptions = getTrackerOptions(initTorrents.value);
     const voiceOptions = getVoiceOptions(initTorrents.value);
     const categoryOptions = getCategoryOptions(initTorrents.value);
     const seasonOptions = getSeasonOptions(initTorrents.value);
-    const formatLabelParts = [
-      qualityOptions.find((option) => option.value === sortFilterStore.quality)
-        ?.label,
-      getDynamicRangeLabel(sortFilterStore.dynamicRange as DynamicRangeFilter),
-    ].filter(Boolean);
     const activeFilterCandidates: Array<{
       key: ClearableFilterKey;
       label: string;
@@ -407,59 +336,6 @@ export const TorrentList = component$(
                 ))}
               </select>
             </label>
-
-            <Form
-              onSubmit$={handleSubmit}
-              class="flex min-w-0 flex-col items-stretch gap-2 sm:flex-row sm:items-start"
-            >
-              <div class="join join-vertical sm:join-horizontal w-full min-w-0 sm:w-auto">
-                <Field name="name">
-                  {(field, props) => (
-                    <label class="form-control min-w-0">
-                      <span class="sr-only">{titlePlaceholder}</span>
-                      <input
-                        {...props}
-                        type="text"
-                        placeholder={titlePlaceholder}
-                        class="input input-bordered join-item md:input-sm w-full min-w-0 text-base sm:w-48"
-                      />
-                      {field.error && (
-                        <div class="text-error text-xs">{field.error}</div>
-                      )}
-                    </label>
-                  )}
-                </Field>
-                <Field name="year" type="number">
-                  {(field, props) => (
-                    <label class="form-control">
-                      <span class="sr-only">{yearPlaceholder}</span>
-                      <input
-                        {...props}
-                        type="number"
-                        class="input input-bordered join-item md:input-sm w-full text-base sm:w-24"
-                        placeholder={yearPlaceholder}
-                      />
-                      {field.error && (
-                        <div class="text-error text-xs">{field.error}</div>
-                      )}
-                    </label>
-                  )}
-                </Field>
-              </div>
-
-              <button
-                type="submit"
-                disabled={searchTorrForm.invalid}
-                aria-label={langText(
-                  lang,
-                  "Search torrents",
-                  "Искать торренты",
-                )}
-                class="btn btn-primary md:btn-sm md:btn-square min-h-11 w-full sm:w-11"
-              >
-                <HiMagnifyingGlassOutline class="h-5 w-5" />
-              </button>
-            </Form>
           </div>
         )}
 
@@ -468,75 +344,129 @@ export const TorrentList = component$(
             <div class="flex flex-wrap items-end gap-3">
               {(qualityOptions.length > 0 ||
                 dynamicRangeOptions.length > 0) && (
-                <details
-                  class="dropdown dropdown-bottom"
-                  ref={formatDropdownRef}
+                <div
+                  class="megamenu megamenu-sm p-2 border border-base-300 rounded-box"
+                  id={formatMegaId}
                 >
-                  <summary class="btn btn-outline justify-between">
-                    {formatLabelParts.length > 0
-                      ? `${langText(lang, "Format", "Формат")}: ${formatLabelParts.join(" + ")}`
-                      : langText(lang, "Format", "Формат")}
-                  </summary>
-                  <div class="dropdown-content card card-border border-base-300 bg-base-100 z-20 mt-2 w-[min(18rem,calc(100vw-2rem))] shadow-lg">
-                    <div class="card-body gap-3 p-4">
-                      {qualityOptions.length > 0 && (
-                        <label class="form-control">
-                          <div class="label px-0 pt-0 pb-1">
-                            <span class="label-text text-xs font-medium">
-                              {langText(lang, "Resolution", "Разрешение")}
-                            </span>
-                          </div>
-                          <select
-                            class="select select-bordered md:select-sm min-h-11 w-full text-base"
-                            value={sortFilterStore.quality}
-                            onChange$={(_, element) => {
-                              setSelectFilter("quality", element.value);
-                            }}
-                          >
-                            <option value="">
-                              {langText(lang, "Any", "Любой")}
-                            </option>
-                            {qualityOptions.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {`${option.label} (${option.count})`}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                      )}
+                  <span class="megamenu-active"></span>
 
-                      {dynamicRangeOptions.length > 0 && (
-                        <label class="form-control">
-                          <div class="label px-0 pt-0 pb-1">
-                            <span class="label-text text-xs font-medium">
-                              {langText(
-                                lang,
-                                "Dynamic range",
-                                "Динамический диапазон",
-                              )}
-                            </span>
-                          </div>
-                          <select
-                            class="select select-bordered md:select-sm min-h-11 w-full text-base"
-                            value={sortFilterStore.dynamicRange}
-                            onChange$={(_, element) => {
-                              setSelectFilter("dynamicRange", element.value);
-                            }}
-                          >
-                            <option value="">
-                              {langText(lang, "Any", "Любой")}
-                            </option>
-                            {dynamicRangeOptions.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {`${option.label} (${option.count})`}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
+                  {qualityOptions.length > 0 && (
+                    <div class="relative inline-flex">
+                      <button
+                        type="button"
+                        class="after:content-none min-h-0 px-3"
+                        onClick$={() =>
+                          (openMenuSig.value =
+                            openMenuSig.value === "quality" ? null : "quality")
+                        }
+                      >
+                        <span class="text-xs opacity-60 mr-1">
+                          {langText(lang, "Resolution:", "Разрешение:")}
+                        </span>
+                        <span class="font-medium text-sm">
+                          {qualityOptions.find(
+                            (o) => o.value === sortFilterStore.quality,
+                          )?.label || langText(lang, "Any", "Любое")}
+                        </span>
+                      </button>
+                      {openMenuSig.value === "quality" && (
+                        <ul class="menu bg-base-100 rounded-box border border-base-300 absolute top-full left-0 z-30 mt-1 w-56 shadow-lg p-2">
+                          <li>
+                            <button
+                              type="button"
+                              class={!sortFilterStore.quality ? "active" : ""}
+                              onClick$={() => {
+                                setSelectFilter("quality", "");
+                                openMenuSig.value = null;
+                              }}
+                            >
+                              {langText(lang, "Any", "Любое")}
+                            </button>
+                          </li>
+                          {qualityOptions.map((option) => (
+                            <li key={option.value}>
+                              <button
+                                type="button"
+                                class={
+                                  sortFilterStore.quality === option.value
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick$={() => {
+                                  setSelectFilter("quality", option.value);
+                                  openMenuSig.value = null;
+                                }}
+                              >
+                                {option.label} ({option.count})
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
                       )}
                     </div>
-                  </div>
-                </details>
+                  )}
+
+                  {dynamicRangeOptions.length > 0 && (
+                    <div class="relative inline-flex">
+                      <button
+                        type="button"
+                        class="after:content-none min-h-0 px-3"
+                        onClick$={() =>
+                          (openMenuSig.value =
+                            openMenuSig.value === "dr" ? null : "dr")
+                        }
+                      >
+                        <span class="text-xs opacity-60 mr-1">
+                          {langText(lang, "HDR:", "HDR:")}
+                        </span>
+                        <span class="font-medium text-sm">
+                          {getDynamicRangeLabel(
+                            sortFilterStore.dynamicRange as DynamicRangeFilter,
+                          ) || langText(lang, "Any", "Любое")}
+                        </span>
+                      </button>
+                      {openMenuSig.value === "dr" && (
+                        <ul class="menu bg-base-100 rounded-box border border-base-300 absolute top-full left-0 z-30 mt-1 w-56 shadow-lg p-2">
+                          <li>
+                            <button
+                              type="button"
+                              class={
+                                !sortFilterStore.dynamicRange ? "active" : ""
+                              }
+                              onClick$={() => {
+                                setSelectFilter("dynamicRange", "");
+                                openMenuSig.value = null;
+                              }}
+                            >
+                              {langText(lang, "Any", "Любое")}
+                            </button>
+                          </li>
+                          {dynamicRangeOptions.map((option) => (
+                            <li key={option.value}>
+                              <button
+                                type="button"
+                                class={
+                                  sortFilterStore.dynamicRange === option.value
+                                    ? "active"
+                                    : ""
+                                }
+                                onClick$={() => {
+                                  setSelectFilter(
+                                    "dynamicRange",
+                                    option.value,
+                                  );
+                                  openMenuSig.value = null;
+                                }}
+                              >
+                                {option.label} ({option.count})
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+                </div>
               )}
 
               {trackerOptions.length > 0 && (

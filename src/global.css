@@ -1,8 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Onest:wght@300..900&display=swap");
 @import "tailwindcss";
 
 @theme {
-  --font-montserrat: "Outfit", "sans-serif";
+  --font-montserrat: "Onest", "sans-serif";
 }
 @layer components {
   .custom-container {

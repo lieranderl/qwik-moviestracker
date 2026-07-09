@@ -38,13 +38,12 @@ const getSortLabel = (sortKey: TorrServerSortKey, lang: string): string => {
 
 export interface TorrServerFiltersProps {
   lang: string;
-  querySig: Signal<string>;
   sortKeySig: Signal<TorrServerSortKey>;
   statusFilterSig: Signal<TorrServerStatusFilter>;
 }
 
 export const TorrServerFilters = component$(
-  ({ lang, querySig, sortKeySig, statusFilterSig }: TorrServerFiltersProps) => {
+  ({ lang, sortKeySig, statusFilterSig }: TorrServerFiltersProps) => {
     const headingId = useId();
     const statusGroupId = useId();
 
@@ -62,41 +61,13 @@ export const TorrServerFilters = component$(
               <p class="text-base-content/65 text-sm leading-relaxed">
                 {langText(
                   lang,
-                  "Find torrents by title, hash, or status.",
-                  "Ищите торренты по названию, hash или статусу.",
+                  "Filter torrents by status.",
+                  "Фильтруйте торренты по статусу.",
                 )}
               </p>
             </div>
 
-            <div class="grid w-full min-w-0 gap-3 md:grid-cols-[minmax(0,20rem)_minmax(0,14rem)] lg:w-auto">
-              <label class="form-control gap-2">
-                <span class="label px-0 py-0">
-                  <span class="label-text font-medium">
-                    {langText(lang, "Search", "Поиск")}
-                  </span>
-                </span>
-                <span class="input input-bordered flex min-h-11 min-w-0 items-center">
-                  <input
-                    type="text"
-                    value={querySig.value}
-                    placeholder={langText(
-                      lang,
-                      "Title, hash, category",
-                      "Название, hash, категория",
-                    )}
-                    aria-label={langText(
-                      lang,
-                      "Search TorrServer library",
-                      "Поиск по библиотеке TorrServer",
-                    )}
-                    class="min-w-0 grow"
-                    onInput$={(_, element) => {
-                      querySig.value = element.value;
-                    }}
-                  />
-                </span>
-              </label>
-
+            <div class="grid w-full min-w-0 gap-3 lg:w-auto">
               <label class="form-control gap-2">
                 <span class="label px-0 py-0">
                   <span class="label-text font-medium">

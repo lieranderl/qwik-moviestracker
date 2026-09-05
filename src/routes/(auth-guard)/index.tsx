@@ -13,12 +13,12 @@ import {
 } from "~/routes/dev-session";
 import type {
   MediaShort,
-  MovieMongo,
+  MovieCatalog,
   MovieShort,
   TvShort,
 } from "~/services/models";
 import { MediaType } from "~/services/models";
-import { DbType, getMoviesMongo } from "~/services/mongoatlas";
+import { DbType, getMoviesFirestore } from "~/services/firestore";
 import { getTrendingMedia, withImages } from "~/services/tmdb";
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
@@ -49,7 +49,7 @@ type HomeFeedData =
       lang: string;
       movies: MovieShort[];
       tv: TvShort[];
-      torMovies: MovieMongo[];
+      torMovies: MovieCatalog[];
     }
   | {
       status: "error";
@@ -58,7 +58,9 @@ type HomeFeedData =
 
 export const useHomeFeedLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
-  const envMongoUrl = event.env.get("MONGO_URI") ?? "";
+  const projectId =
+    event.env.get("GCP_PROJECT") ?? event.env.get("GOOGLE_CLOUD_PROJECT") ?? "";
+  const databaseId = event.env.get("FIRESTORE_DATABASE") ?? "moviestracker";
 
   const devHomeFeed = createDevHomeFeed({
     bypassCookie: event.cookie.get(DEV_SESSION_BYPASS_COOKIE)?.value ?? null,
@@ -89,13 +91,15 @@ export const useHomeFeedLoader = routeLoader$(async (event) => {
         needbackdrop: true,
       }),
       withImages(
-        (await getMoviesMongo({
-          entries_on_page: MEDIA_PAGE_SIZE,
-          language: lang,
-          dbName: DbType.LastMovies,
-          page: 1,
-          env: envMongoUrl,
-        })) as MediaShort[],
+        (
+          await getMoviesFirestore({
+            entriesOnPage: MEDIA_PAGE_SIZE,
+            language: lang,
+            dbName: DbType.LastMovies,
+            projectId,
+            databaseId,
+          })
+        ).movies as MediaShort[],
         lang,
       ),
     ]);
@@ -105,7 +109,7 @@ export const useHomeFeedLoader = routeLoader$(async (event) => {
       lang,
       movies: m as MovieShort[],
       tv: t as TvShort[],
-      torMovies: tm as MovieMongo[],
+      torMovies: tm as MovieCatalog[],
     } satisfies HomeFeedData;
   } catch (error) {
     console.error(error);

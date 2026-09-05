@@ -1,24 +1,23 @@
-import type { Adapter, AdapterUser } from "@auth/core/adapters";
+import type { JWT } from "@auth/core/jwt";
 import type { Provider } from "@auth/core/providers";
+import Google from "@auth/core/providers/google";
 import type { GoogleProfile } from "@auth/core/providers/google";
 import type { Account, Profile, Session } from "@auth/core/types";
-import Google from "@auth/core/providers/google";
 import { QwikAuth$ } from "@auth/qwik";
 import type { RequestEventCommon } from "@builder.io/qwik-city";
-import {
-  resolveAuthTrustHost,
-  resolveDatabaseAuthSecret,
-  resolveFallbackJwtSecret,
-} from "./auth-config";
+import { resolveAuthTrustHost, resolveFallbackJwtSecret } from "./auth-config";
 
 export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
   (async ({ env }: RequestEventCommon) => {
-    const authSecret = env.get("AUTH_SECRET")?.trim();
     const lifecycleEvent = process.env.npm_lifecycle_event;
     const nodeEnv = env.get("NODE_ENV")?.trim() || process.env.NODE_ENV;
-    const authUrl = env.get("AUTH_URL")?.trim();
+    const secret = resolveFallbackJwtSecret({
+      authSecret: env.get("AUTH_SECRET"),
+      lifecycleEvent,
+      nodeEnv,
+    });
     const trustHost = resolveAuthTrustHost({
-      authUrl,
+      authUrl: env.get("AUTH_URL"),
       lifecycleEvent,
       nodeEnv,
     });
@@ -32,88 +31,36 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
               clientSecret: googleSecret,
               profile(profile: GoogleProfile) {
                 return {
+                  ...profile,
                   id: profile.sub,
                   language: "en-US",
                   image: profile.picture,
                   emailVerified: profile.email_verified,
-                  ...profile,
                 };
               },
             }),
           ]
         : [];
 
-    const mongoUri = env.get("MONGO_URI") ?? "";
-    if (!mongoUri.startsWith("mongodb")) {
-      // During CI/SSG builds the runtime auth env may be intentionally absent.
-      // Keep the build-safe fallback self-contained so SSR generation can
-      // complete without runtime auth secrets.
-      return {
-        secret: resolveFallbackJwtSecret({
-          authSecret,
-          lifecycleEvent,
-          nodeEnv,
-        }),
-        trustHost,
-        session: {
-          strategy: "jwt",
-          maxAge: 60 * 60 * 24 * 7, // 1 week
-          updateAge: 60 * 60 * 24, // 1 day
-        },
-        providers,
-      };
-    }
-
-    const [{ MongoDBAdapter }, { mongoclient }] = await Promise.all([
-      import("@auth/mongodb-adapter"),
-      import("../utils/mongodbinit"),
-    ]);
-    const mongo = await mongoclient(mongoUri);
-    if (!mongo) {
-      // During CI/SSG builds the runtime auth env may be intentionally absent.
-      // Keep the build-safe fallback self-contained so SSR generation can
-      // complete without runtime auth secrets.
-      return {
-        secret: resolveFallbackJwtSecret({
-          authSecret,
-          lifecycleEvent,
-          nodeEnv,
-        }),
-        trustHost,
-        session: {
-          strategy: "jwt",
-          maxAge: 60 * 60 * 24 * 7, // 1 week
-          updateAge: 60 * 60 * 24, // 1 day
-        },
-        providers,
-      };
-    }
-
     return {
-      session: {
-        strategy: "database",
-        maxAge: 60 * 60 * 24 * 7, // 1 week
-        updateAge: 60 * 60 * 24, // 1 day
-      },
-      adapter: MongoDBAdapter(mongo, {
-        databaseName: "movies",
-      }) as Adapter,
-      secret: resolveDatabaseAuthSecret({ authSecret }),
+      secret,
       trustHost,
       providers,
+      session: {
+        strategy: "jwt",
+        maxAge: 60 * 60 * 24 * 7,
+      },
       callbacks: {
-        async session({
-          session,
-          user,
-        }: {
-          session: Session;
-          user: AdapterUser;
-        }) {
-          session.id = user.id;
-          if (user.language) {
-            session.language = user.language;
+        async jwt({ token, profile }: { token: JWT; profile?: Profile }) {
+          if (profile) {
+            token.language = "en-US";
           }
-
+          return token;
+        },
+        async session({ session, token }: { session: Session; token: JWT }) {
+          session.id = token.sub;
+          session.language =
+            typeof token.language === "string" ? token.language : "en-US";
           return session;
         },
         async signIn({
@@ -123,16 +70,14 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
           account: Account | null;
           profile?: Profile;
         }) {
-          if (account && profile) {
-            if (account.provider === "google") {
-              const p = profile as GoogleProfile;
-              return p.email_verified && p.email.endsWith("@gmail.com");
-            }
-            if (account.provider === "github") {
-              return true;
-            }
+          if (account?.provider !== "google" || !profile) {
+            return false;
           }
-          return false;
+          const googleProfile = profile as GoogleProfile;
+          return Boolean(
+            googleProfile.email_verified &&
+            googleProfile.email?.endsWith("@gmail.com"),
+          );
         },
       },
     };
@@ -147,8 +92,8 @@ declare module "@auth/core/types" {
   }
 }
 
-declare module "@auth/core/adapters" {
-  interface AdapterUser {
+declare module "@auth/core/jwt" {
+  interface JWT {
     language?: string;
   }
 }

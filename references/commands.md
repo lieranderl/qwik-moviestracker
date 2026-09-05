@@ -95,8 +95,10 @@ Required repository or production environment variables:
 - `GAR_REPOSITORY`
 - `IMAGE_NAME`
 - `PROD_SERVICE`
+- `PROD_SERVICE_ACCOUNT`
 - `PROD_URL`
 - `GOOGLE_ID`
+- `FIRESTORE_DATABASE`
 - `GCP_WORKLOAD_ID_PROVIDER`
 - `GCP_SERVICE_ACCOUNT`
 
@@ -104,7 +106,6 @@ Required Secret Manager secret names expected by the deploy workflow:
 
 - `AUTH_SECRET`
 - `GOOGLE_SECRET`
-- `MONGO_URI`
 - `TMDB_API_KEY`
 - `GC_API_KEY`
 

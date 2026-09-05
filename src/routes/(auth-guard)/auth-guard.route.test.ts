@@ -21,7 +21,7 @@ describe("auth guard redirect behavior", () => {
     const source = await readFile(routeFile, "utf8");
 
     expect(source).not.toContain("export const useEnv");
-    expect(source).not.toContain("envMongoUrl");
+    expect(source).not.toContain("MONGO_URI");
   });
 
   it("allows an explicit dev-only Playwright session bypass outside production", () => {

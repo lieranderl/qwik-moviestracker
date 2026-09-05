@@ -17,8 +17,10 @@ env:
   GAR_REPOSITORY: ${{ vars.GAR_REPOSITORY }}
   IMAGE_NAME: ${{ vars.IMAGE_NAME }}
   PROD_SERVICE: ${{ vars.PROD_SERVICE }}
+  PROD_SERVICE_ACCOUNT: ${{ vars.PROD_SERVICE_ACCOUNT }}
   PROD_URL: ${{ vars.PROD_URL }}
   GOOGLE_ID: ${{ vars.GOOGLE_ID }}
+  FIRESTORE_DATABASE: moviestracker
 
 jobs:
   quality:
@@ -52,11 +54,12 @@ jobs:
           WIF_PROVIDER: ${{ vars.GCP_WORKLOAD_ID_PROVIDER }}
           DEPLOYER_SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
         run: |
-          for name in GCP_PROJECT GCP_REGION GAR_REPOSITORY IMAGE_NAME PROD_SERVICE PROD_URL GOOGLE_ID WIF_PROVIDER DEPLOYER_SERVICE_ACCOUNT; do
+          for name in GCP_PROJECT GCP_REGION GAR_REPOSITORY IMAGE_NAME PROD_SERVICE PROD_SERVICE_ACCOUNT PROD_URL GOOGLE_ID WIF_PROVIDER DEPLOYER_SERVICE_ACCOUNT; do
             [[ -n "${!name:-}" ]] || { echo "Missing required deployment variable: $name" >&2; exit 1; }
           done
           [[ "$WIF_PROVIDER" =~ ^projects/[0-9]+/locations/global/workloadIdentityPools/[^/]+/providers/[^/]+$ ]]
           [[ "$DEPLOYER_SERVICE_ACCOUNT" == *@"$GCP_PROJECT".iam.gserviceaccount.com ]]
+          [[ "$PROD_SERVICE_ACCOUNT" == *@"$GCP_PROJECT".iam.gserviceaccount.com ]]
           [[ "$PROD_URL" =~ ^https://[^/]+$ ]]
 
       - name: Authenticate to Google Cloud
@@ -118,6 +121,13 @@ jobs:
           subject-name: ${{ steps.image.outputs.uri }}
           subject-digest: ${{ steps.push.outputs.digest }}
 
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0.20.6
+        with:
+          image: ${{ steps.image.outputs.uri }}@${{ steps.push.outputs.digest }}
+          artifact-name: moviestracker-${{ github.event.release.tag_name }}.spdx.json
+          output-file: sbom.spdx.json
+
   production:
     name: Deploy, smoke, and promote
     needs: build
@@ -174,8 +184,14 @@ jobs:
             --no-traffic \
             --tag="$TAG" \
             --revision-suffix="$SUFFIX" \
-            --set-env-vars="NODE_ENV=production,AUTH_URL=$PROD_URL,GOOGLE_ID=$GOOGLE_ID" \
-            --update-secrets="AUTH_SECRET=AUTH_SECRET:latest,GOOGLE_SECRET=GOOGLE_SECRET:latest,MONGO_URI=MONGO_URI:latest,TMDB_API_KEY=TMDB_API_KEY:latest,GC_API_KEY=GC_API_KEY:latest" \
+            --service-account="$PROD_SERVICE_ACCOUNT" \
+            --cpu=1 \
+            --memory=512Mi \
+            --min=0 \
+            --max=2 \
+            --concurrency=40 \
+            --set-env-vars="NODE_ENV=production,AUTH_URL=$PROD_URL,GOOGLE_ID=$GOOGLE_ID,GCP_PROJECT=$GCP_PROJECT,FIRESTORE_DATABASE=$FIRESTORE_DATABASE" \
+            --update-secrets="AUTH_SECRET=AUTH_SECRET:latest,GOOGLE_SECRET=GOOGLE_SECRET:latest,TMDB_API_KEY=TMDB_API_KEY:latest,GC_API_KEY=GC_API_KEY:latest" \
             --quiet
 
           # Route 100% traffic to the new revision, smoke-test via PROD_URL

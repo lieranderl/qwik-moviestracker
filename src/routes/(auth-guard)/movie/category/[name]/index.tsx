@@ -5,7 +5,7 @@ import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import type { MediaShort } from "~/services/models";
 import { MediaType } from "~/services/models";
-import { getMoviesMongo } from "~/services/mongoatlas";
+import { getMoviesFirestore } from "~/services/firestore";
 import {
   getMedias,
   getRegionFromLanguage,
@@ -20,9 +20,16 @@ import { categoryToDb, categoryToTitle, paths } from "~/utils/paths";
 
 type FetchMovieCategoryPageArgs = {
   category: string;
-  env: string;
+  cursor?: string | null;
+  databaseId: string;
   lang: string;
   page: number;
+  projectId: string;
+};
+
+type MovieCategoryPage = {
+  movies: MediaShort[];
+  nextCursor: string | null;
 };
 
 const MOVIE_TMDB_CATEGORY_QUERIES: Record<string, string | null> = {
@@ -38,25 +45,31 @@ const isSupportedMovieCategory = (category: string) =>
   category === "hdr10" ||
   category === "dolbyvision";
 
+const isFirestoreCategory = (category: string) =>
+  category === "updated" || category === "hdr10" || category === "dolbyvision";
+
 const fetchMovieCategoryPage = async ({
   category,
-  env,
+  cursor,
+  databaseId,
   lang,
   page,
-}: FetchMovieCategoryPageArgs): Promise<MediaShort[]> => {
+  projectId,
+}: FetchMovieCategoryPageArgs): Promise<MovieCategoryPage> => {
   const tmdbQuery = MOVIE_TMDB_CATEGORY_QUERIES[category];
 
   if (tmdbQuery === null) {
-    return (await getTrendingMedia({
+    const movies = (await getTrendingMedia({
       page,
       language: lang,
       type: MediaType.Movie,
       needbackdrop: false,
     })) as MediaShort[];
+    return { movies, nextCursor: null };
   }
 
   if (tmdbQuery) {
-    return (await getMedias({
+    const movies = (await getMedias({
       page,
       language: lang,
       query: tmdbQuery,
@@ -67,23 +80,29 @@ const fetchMovieCategoryPage = async ({
       type: MediaType.Movie,
       needbackdrop: false,
     })) as MediaShort[];
+    return { movies, nextCursor: null };
   }
 
-  return (await withImages(
-    (await getMoviesMongo({
-      entries_on_page: MEDIA_PAGE_SIZE,
-      dbName: categoryToDb(category),
-      page,
-      language: lang,
-      env,
-    })) as MediaShort[],
+  const result = await getMoviesFirestore({
+    entriesOnPage: MEDIA_PAGE_SIZE,
+    dbName: categoryToDb(category),
+    cursor,
+    language: lang,
+    projectId,
+    databaseId,
+  });
+  const movies = (await withImages(
+    result.movies as MediaShort[],
     lang,
   )) as MediaShort[];
+  return { movies, nextCursor: result.nextCursor };
 };
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
-  const env = event.env.get("MONGO_URI") ?? "";
+  const projectId =
+    event.env.get("GCP_PROJECT") ?? event.env.get("GOOGLE_CLOUD_PROJECT") ?? "";
+  const databaseId = event.env.get("FIRESTORE_DATABASE") ?? "moviestracker";
   const category = event.params.name;
 
   if (!isSupportedMovieCategory(category)) {
@@ -91,13 +110,14 @@ export const useContentLoader = routeLoader$(async (event) => {
   }
 
   try {
-    const movies = await fetchMovieCategoryPage({
+    const result = await fetchMovieCategoryPage({
       page: 1,
       category,
       lang,
-      env,
+      projectId,
+      databaseId,
     });
-    return { movies, category, lang };
+    return { ...result, category, lang };
   } catch (error) {
     console.error(error);
     throw event.redirect(302, paths.notFound(lang));
@@ -109,8 +129,11 @@ export default component$(() => {
   const movieItemsSig = useSignal(resource.value.movies as MediaShort[]);
   const isLoadingMovies = useSignal(false);
   const pageSig = useSignal(1);
+  const cursorSig = useSignal<string | null>(resource.value.nextCursor);
   const hasMoreMovies = useSignal(
-    resource.value.movies.length >= MEDIA_PAGE_SIZE,
+    isFirestoreCategory(resource.value.category)
+      ? resource.value.nextCursor !== null
+      : resource.value.movies.length >= MEDIA_PAGE_SIZE,
   );
   const sentinelRef = useSignal<Element>();
 
@@ -118,13 +141,18 @@ export default component$(() => {
     page: number,
     category: string,
     lang: string,
+    cursor: string | null,
   ) {
-    const env = this.env.get("MONGO_URI") ?? "";
+    const projectId =
+      this.env.get("GCP_PROJECT") ?? this.env.get("GOOGLE_CLOUD_PROJECT") ?? "";
+    const databaseId = this.env.get("FIRESTORE_DATABASE") ?? "moviestracker";
     return await fetchMovieCategoryPage({
       page,
       category,
       lang,
-      env,
+      cursor,
+      projectId,
+      databaseId,
     });
   });
 
@@ -136,11 +164,13 @@ export default component$(() => {
     isLoadingMovies.value = true;
     try {
       const nextPage = pageSig.value + 1;
-      const nextMovies = (await fetchMovies(
+      const nextResult = await fetchMovies(
         nextPage,
         resource.value.category,
         resource.value.lang,
-      )) as MediaShort[];
+        cursorSig.value,
+      );
+      const nextMovies = nextResult.movies as MediaShort[];
 
       if (nextMovies.length === 0) {
         hasMoreMovies.value = false;
@@ -149,7 +179,10 @@ export default component$(() => {
 
       movieItemsSig.value = [...movieItemsSig.value, ...nextMovies];
       pageSig.value = nextPage;
-      hasMoreMovies.value = nextMovies.length >= MEDIA_PAGE_SIZE;
+      cursorSig.value = nextResult.nextCursor;
+      hasMoreMovies.value = isFirestoreCategory(resource.value.category)
+        ? nextResult.nextCursor !== null
+        : nextMovies.length >= MEDIA_PAGE_SIZE;
     } finally {
       isLoadingMovies.value = false;
     }

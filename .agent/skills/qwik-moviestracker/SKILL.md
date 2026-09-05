@@ -12,7 +12,7 @@ metadata:
     - moviestracker
     - tmdb
     - torrserver
-    - mongodb
+    - firestore
     - bun
     - cloud run
     - daisyui

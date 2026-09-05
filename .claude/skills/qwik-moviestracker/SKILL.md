@@ -23,7 +23,7 @@ are changing.
 - Treat `dist/**` and `server/**` as generated output.
 - Keep authenticated routes under `src/routes/(auth-guard)/`.
 - Preserve the `lang` query parameter flow.
-- Keep TMDB, MongoDB, Cloud gateway, and TorrServer logic in `src/services/**`.
+- Keep TMDB, Firestore, Cloud gateway, and TorrServer logic in `src/services/**`.
 - For monetization or public-commercial changes, check the commercial boundary
   in `references/guardrails.md` before adding paid access, ads, affiliate
   links, or public SEO surfaces.

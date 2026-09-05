@@ -8,15 +8,15 @@
 [![Top Language](https://img.shields.io/github/languages/top/lieranderl/qwik-moviestracker)](https://github.com/lieranderl/qwik-moviestracker)
 
 Private Qwik City app for discovering movies and TV shows, opening rich detail
-pages, authenticating with Google, reading curated/latest items from MongoDB
-Atlas, and managing a connected TorrServer library.
+pages, authenticating with Google, reading curated/latest items from Firestore,
+and managing a connected TorrServer library.
 
 ## Stack
 
 - Qwik + Qwik City
 - Bun SSR runtime
 - Auth.js with Google provider
-- MongoDB Atlas for auth/session and curated content
+- Firestore Native for curated content; signed JWT sessions for Auth.js
 - TMDB for media discovery
 - daisyUI + Tailwind CSS v4 + Catppuccin themes
 - Docker + GitHub Actions + Google Artifact Registry / Cloud Run for production

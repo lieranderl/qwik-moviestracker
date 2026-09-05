@@ -8,7 +8,7 @@ import { MediaCarousel } from "~/components/media-carousel";
 import { ErrorState, SectionHeading } from "~/components/page-feedback";
 import type { MediaShort, MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
-import { DbType, getMoviesMongo } from "~/services/mongoatlas";
+import { DbType, getMoviesFirestore } from "~/services/firestore";
 import {
   getMedias,
   getRegionFromLanguage,
@@ -51,7 +51,9 @@ type MovieCollectionsData =
 
 export const useMovieCollectionsLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
-  const envMongoUrl = event.env.get("MONGO_URI") ?? "";
+  const projectId =
+    event.env.get("GCP_PROJECT") ?? event.env.get("GOOGLE_CLOUD_PROJECT") ?? "";
+  const databaseId = event.env.get("FIRESTORE_DATABASE") ?? "moviestracker";
   const region = getRegionFromLanguage(lang);
 
   try {
@@ -94,33 +96,39 @@ export const useMovieCollectionsLoader = routeLoader$(async (event) => {
         needbackdrop: true,
       }),
       withImages(
-        (await getMoviesMongo({
-          page: 1,
-          entries_on_page: MEDIA_PAGE_SIZE,
-          language: lang,
-          dbName: DbType.LastMovies,
-          env: envMongoUrl,
-        })) as MediaShort[],
+        (
+          await getMoviesFirestore({
+            entriesOnPage: MEDIA_PAGE_SIZE,
+            language: lang,
+            dbName: DbType.LastMovies,
+            projectId,
+            databaseId,
+          })
+        ).movies as MediaShort[],
         lang,
       ),
       withImages(
-        (await getMoviesMongo({
-          page: 1,
-          entries_on_page: MEDIA_PAGE_SIZE,
-          language: lang,
-          dbName: DbType.HDR10,
-          env: envMongoUrl,
-        })) as MediaShort[],
+        (
+          await getMoviesFirestore({
+            entriesOnPage: MEDIA_PAGE_SIZE,
+            language: lang,
+            dbName: DbType.HDR10,
+            projectId,
+            databaseId,
+          })
+        ).movies as MediaShort[],
         lang,
       ),
       withImages(
-        (await getMoviesMongo({
-          page: 1,
-          entries_on_page: MEDIA_PAGE_SIZE,
-          language: lang,
-          dbName: DbType.DV,
-          env: envMongoUrl,
-        })) as MediaShort[],
+        (
+          await getMoviesFirestore({
+            entriesOnPage: MEDIA_PAGE_SIZE,
+            language: lang,
+            dbName: DbType.DV,
+            projectId,
+            databaseId,
+          })
+        ).movies as MediaShort[],
         lang,
       ),
     ]);

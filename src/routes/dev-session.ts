@@ -3,7 +3,7 @@ import {
   type LocalizedCertification,
   MediaType,
   type MovieFull,
-  type MovieMongo,
+  type MovieCatalog,
   type MovieShort,
   type PersonFull,
   type PersonMedia,
@@ -101,7 +101,7 @@ type DevHomeFeedFixture = {
   lang: string;
   movies: MovieShort[];
   tv: TvShort[];
-  torMovies: MovieMongo[];
+  torMovies: MovieCatalog[];
 };
 
 type DevTvDetailFixture = {
@@ -248,7 +248,7 @@ const DEV_HOME_TOR_MOVIES = [
     year: "2025",
     vote_average: 6.9,
   },
-] satisfies MovieMongo[];
+] satisfies MovieCatalog[];
 
 const DEV_TV_DETAIL = {
   id: DEV_TV_DETAIL_ID,

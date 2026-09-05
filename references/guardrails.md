@@ -21,7 +21,7 @@
 
 ## Service Layer
 
-- TMDB, MongoDB, Cloud gateway, and TorrServer access belongs in
+- TMDB, Firestore, Cloud gateway, and TorrServer access belongs in
   `src/services/**`.
 - Route files should compose data, not create duplicate clients.
 
@@ -57,15 +57,14 @@
   functions only, and pass derived data rather than raw secret values.
 - Be careful with auth fallback behavior during build and SSG.
 - `src/routes/plugin@auth.ts` may use a placeholder secret only for build/test
-  contexts in the JWT fallback branch where MongoDB is absent.
+  contexts.
 - Runtime auth must fail closed without a real `AUTH_SECRET`; do not allow a
   predictable placeholder secret in normal dev, preview, or deployed auth
   flows.
-- Keep MongoDB and Auth Mongo adapter runtime imports behind request-time
-  guards. Bun SSG may run without `MONGO_URI`, and MongoDB 7/BSON imports
-  Node APIs that can break Linux container builds if loaded during SSG.
-- Keep the MongoDB driver on the Bun-compatible 6.x line until Bun supports the
-  `node:v8` startup snapshot APIs used by MongoDB 7/BSON.
+- Firestore access must remain server-only and use Application Default
+  Credentials. Do not introduce database credentials or client-side Firestore.
+- JacRed is the only torrent-search integration. Do not restore the retired
+  GetTorrentsForMovie service or its gateway route.
 - Production auth/origin handling must pin the public origin with `AUTH_URL`;
   add preview/custom hosts with `TRUSTED_ORIGINS` instead of trusting arbitrary
   `Host` or `x-forwarded-proto` headers.

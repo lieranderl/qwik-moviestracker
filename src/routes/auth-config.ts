@@ -57,20 +57,7 @@ export const resolveFallbackJwtSecret = (context: AuthSecretContext) => {
     return BUILD_ONLY_AUTH_SECRET;
   }
 
-  throw new Error(
-    "AUTH_SECRET is required for runtime JWT auth when MongoDB is unavailable.",
-  );
-};
-
-export const resolveDatabaseAuthSecret = ({
-  authSecret,
-}: AuthSecretContext) => {
-  const normalizedSecret = normalizeValue(authSecret);
-  if (normalizedSecret) {
-    return normalizedSecret;
-  }
-
-  throw new Error("AUTH_SECRET is required for MongoDB-backed auth.");
+  throw new Error("AUTH_SECRET is required for runtime JWT auth.");
 };
 
 export const resolveAuthTrustHost = ({

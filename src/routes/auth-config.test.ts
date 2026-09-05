@@ -2,7 +2,6 @@ import { describe, expect, it } from "bun:test";
 import {
   BUILD_ONLY_AUTH_SECRET,
   resolveAuthTrustHost,
-  resolveDatabaseAuthSecret,
   resolveFallbackJwtSecret,
 } from "./auth-config";
 
@@ -32,19 +31,7 @@ describe("auth config secret resolution", () => {
         lifecycleEvent: "dev",
         nodeEnv: "development",
       }),
-    ).toThrow(
-      "AUTH_SECRET is required for runtime JWT auth when MongoDB is unavailable.",
-    );
-  });
-
-  it("requires a real secret for MongoDB-backed auth", () => {
-    expect(() => resolveDatabaseAuthSecret({ authSecret: "" })).toThrow(
-      "AUTH_SECRET is required for MongoDB-backed auth.",
-    );
-
-    expect(
-      resolveDatabaseAuthSecret({ authSecret: " real-secret " }),
-    ).toBe("real-secret");
+    ).toThrow("AUTH_SECRET is required for runtime JWT auth.");
   });
 
   it("trusts host handling when AUTH_URL pins production origin", () => {

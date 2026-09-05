@@ -16,10 +16,10 @@ Expected environment variables include:
 - `GOOGLE_ID`
 - `GOOGLE_SECRET`
 - `AUTH_SECRET`
-- `MONGO_URI`
+- `GCP_PROJECT`
+- `FIRESTORE_DATABASE`
 - `TMDB_API_KEY`
 - `GC_API_KEY`
-- `VITE_FIREBASE_CONFIG`
 
 Rules:
 
@@ -52,6 +52,10 @@ Do not move server-side env reads into browser-only code.
 - Preserve the `lang` query parameter flow unless the task intentionally
   changes language behavior.
 - Keep external API access centralized in `src/services/**`.
+- Firestore must use Application Default Credentials on the server; never
+  serialize credentials or cursors' decoded internals to the browser.
+- JacRed is the only supported torrent-search backend. Do not restore the
+  retired GetTorrentsForMovie service.
 - Prefer GET-friendly search/query flows when the URL should reflect state.
 
 ## Commercial Boundary

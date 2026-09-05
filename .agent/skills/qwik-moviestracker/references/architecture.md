@@ -14,8 +14,8 @@ metadata:
 
 - Framework: Qwik + Qwik City
 - Main runtime target: Bun SSR
-- Practical deployment path: Docker image built from `Dockerfile` and deployed
-  with `cloudbuild.yaml`
+- Practical deployment path: digest-pinned Docker image built and deployed by
+  release-gated GitHub Actions to Cloud Run
 - Route structure is file-based under `src/routes/`
 
 ## Key Entry Points
@@ -54,10 +54,9 @@ Protected routes live under `src/routes/(auth-guard)/`.
 | Concern | File | Notes |
 |---------|------|-------|
 | TMDB client | `src/services/tmdb.ts` | trending, search, details, recommendations, images |
-| Google Cloud gateway | `src/services/cloud-func-api.ts` | IMDb ratings and torrent lookups |
-| Mongo latest content | `src/services/mongoatlas.ts` | curated/latest movie data |
+| Google Cloud gateway | `src/services/cloud-func-api.ts` | IMDb ratings only |
+| Firestore latest content | `src/services/firestore.ts` | ADC-backed curated/latest movie data and cursor pagination |
 | TorrServer API | `src/services/torrserver.ts` | echo, list, add, remove with timeout handling |
-| Mongo client reuse | `src/utils/mongodbinit.ts` | global cached client |
 
 ## Shared UI Primitives
 
@@ -80,8 +79,8 @@ patterns.
   `(auth-guard)` layout loaders in `src/routes/(auth-guard)/layout.tsx`.
 - Auth redirect enforcement happens in the `(auth-guard)` layout, not each page.
 - External API logic is already centralized in services; keep it there.
-- Mongo-backed auth switches to a JWT fallback when `MONGO_URI` is absent at
-  build time.
+- Auth.js always uses signed JWT sessions; no database adapter is loaded.
+- JacRed is the only torrent-search integration.
 - Search behavior is split between:
   - `src/routes/(auth-guard)/search/index.tsx`
   - `src/routes/(auth-guard)/search/search.logic.ts`

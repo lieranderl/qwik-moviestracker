@@ -32,7 +32,7 @@ Do not load every reference by default. Open only what the task needs.
   explicitly introduces a public flow.
 - Preserve the `lang` query parameter flow unless the task changes language
   behavior on purpose.
-- Keep TMDB, MongoDB, Cloud gateway, and TorrServer integration logic in
+- Keep TMDB, Firestore, Cloud gateway, and TorrServer integration logic in
   `src/services/**`.
 - For monetization or public-commercial work, apply the commercial boundary in
   `references/guardrails.md` before adding paid access, ads, affiliate links,

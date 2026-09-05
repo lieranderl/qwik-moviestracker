@@ -11,7 +11,7 @@ metadata:
 
 ## Preferred Tooling
 
-Use Bun unless the task explicitly requires npm. The repo includes `bun.lockb`
+Use Bun unless the task explicitly requires npm. The repo includes `bun.lock`
 and the main runtime/build path is Bun-oriented.
 
 ## Common Commands
@@ -67,7 +67,7 @@ When a task is unclear, inspect:
 - `src/routes/(auth-guard)/layout.tsx`
 - the relevant file under `src/services/**`
 
-## Known Command Caveat
+## Deployment Boundary
 
-`package.json` still contains a placeholder `deploy` script. Deployment truth
-currently lives in `Dockerfile` and `cloudbuild.yaml`, not `bun deploy`.
+`bun run deploy` is informational. Production releases run only through the
+release-gated GitHub Actions workflow.

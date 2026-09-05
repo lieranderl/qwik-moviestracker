@@ -18,8 +18,9 @@ routes.
 - Keep auth logic centralized in `src/routes/plugin@auth.ts`.
 - Keep protected-route enforcement inside `src/routes/(auth-guard)/layout.tsx`.
 - Preserve the `lang` query parameter flow when changing redirects or links.
-- Be careful with the JWT fallback path used during build or SSG when Mongo is
-  unavailable.
+- Sessions are JWT-only; there is no database session adapter.
+- Be careful with the build-only auth secret fallback used during build or SSG.
+  Runtime auth must fail closed without a real `AUTH_SECRET`.
 
 ## Verification
 

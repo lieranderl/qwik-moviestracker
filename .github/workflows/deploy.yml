@@ -194,7 +194,7 @@ jobs:
             --max=2 \
             --concurrency=40 \
             --set-env-vars="NODE_ENV=production,AUTH_URL=$PROD_URL,GOOGLE_ID=$GOOGLE_ID,GCP_PROJECT=$GCP_PROJECT,FIRESTORE_DATABASE=$FIRESTORE_DATABASE" \
-            --update-secrets="AUTH_SECRET=AUTH_SECRET:latest,GOOGLE_SECRET=GOOGLE_SECRET:latest,TMDB_API_KEY=TMDB_API_KEY:latest,GC_API_KEY=GC_API_KEY:latest" \
+            --set-secrets="AUTH_SECRET=AUTH_SECRET:latest,GOOGLE_SECRET=GOOGLE_SECRET:latest,TMDB_API_KEY=TMDB_API_KEY:latest,GC_API_KEY=GC_API_KEY:latest" \
             --quiet
 
           # Route 100% traffic to the new revision, smoke-test via PROD_URL

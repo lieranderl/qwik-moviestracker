@@ -52,6 +52,7 @@
     "qwik": "qwik"
   },
   "dependencies": {
+    "@auth/core": "0.41.3",
     "@google-cloud/firestore": "9.0.1",
     "undici": "8.10.2",
     "valibot": "1.4.2"

@@ -1,10 +1,9 @@
 ---
 name: media-services
-description: Guidance for TMDB, MongoDB, Cloud gateway, and TorrServer service-layer work in qwik-moviestracker.
+description: Guidance for TMDB, Firestore, Cloud gateway, and TorrServer service-layer work in qwik-moviestracker.
 user-invocable: false
 paths:
   - src/services/**
-  - src/utils/mongodbinit.ts
 ---
 
 # Media Services
@@ -17,12 +16,15 @@ Use this skill when changing the service layer or integration behavior.
 - Do not duplicate network client creation inside route components.
 - Respect server/runtime boundaries for environment access.
 - Preserve typed service interfaces and keep fetch helpers reusable.
+- Firestore access is server-only and uses Application Default Credentials.
+  Do not introduce database credentials or a client-side Firestore SDK.
+- Keep movie catalog pagination cursor-based; treat cursors as opaque values.
 
 ## Service Map
 
 - `src/services/tmdb.ts`
 - `src/services/cloud-func-api.ts`
-- `src/services/mongoatlas.ts`
+- `src/services/firestore.ts`
 - `src/services/torrserver.ts`
 
 ## Verification

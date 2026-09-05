@@ -127,6 +127,9 @@ jobs:
           image: ${{ steps.image.outputs.uri }}@${{ steps.push.outputs.digest }}
           artifact-name: moviestracker-${{ github.event.release.tag_name }}.spdx.json
           output-file: sbom.spdx.json
+          # Attaching a release asset needs contents: write; keep this job's
+          # token read-only and retain the SBOM as a workflow artifact instead.
+          upload-release-assets: false
 
   production:
     name: Deploy, smoke, and promote

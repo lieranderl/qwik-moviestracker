@@ -15,6 +15,14 @@ import type {
 } from "./models";
 import { MediaType } from "./models";
 import { createJsonApiClient, getOptionalResult } from "./json-api";
+import {
+  parseTmdbCertificationList,
+  parseTmdbCollection,
+  parseTmdbDetail,
+  parseTmdbProviderCatalog,
+  parseTmdbWatchProviders,
+} from "./provider-contracts";
+import { BoundedAsyncCache, CACHE_TTL_MS } from "./server-cache";
 export {
   getRegionFromLanguage,
   resolveMovieCertification,
@@ -33,17 +41,37 @@ const PERSON_DETAIL_APPEND_RESPONSE = "images,external_ids";
 const tmdbClient = createJsonApiClient({
   baseUrl: TMDB_API_BASE_URL,
   name: "TMDB",
+  source: "tmdb",
   auth: {
     param: "api_key",
     value: () => process.env.TMDB_API_KEY,
   },
 });
 
+const tmdbCache = new BoundedAsyncCache();
+
+export const clearTmdbCacheForTests = () => tmdbCache.clear();
+
+type TmdbCachePolicy<T> = {
+  parse?: (input: unknown) => T;
+  ttl: number;
+};
+
 const fetchTMDB = async <T = unknown>(
   path: string,
   search: Record<string, boolean | number | string | undefined> = {},
+  policy?: TmdbCachePolicy<T>,
 ): Promise<T> => {
-  return tmdbClient.request<T>(path, { search });
+  const load = async () => {
+    const input = await tmdbClient.request<unknown>(path, { search });
+    return policy?.parse ? policy.parse(input) : (input as T);
+  };
+  if (!policy) return load();
+  const params = Object.entries(search)
+    .filter((entry) => entry[1] !== undefined)
+    .sort(([left], [right]) => left.localeCompare(right));
+  const key = `${path}:${JSON.stringify(params)}`;
+  return (await tmdbCache.getOrLoad(key, policy.ttl, load)).value;
 };
 
 const sortByYearDesc = <T>(
@@ -66,10 +94,17 @@ export const getTrendingMedia = async ({
 }: GetTrendingMedia) => {
   const result = await fetchTMDB<
     MediaCollection<MediaShortStrict<typeof type>>
-  >(`trending/${type}/week`, {
-    page: String(page),
-    language,
-  });
+  >(
+    `trending/${type}/week`,
+    {
+      page: String(page),
+      language,
+    },
+    {
+      ttl: CACHE_TTL_MS.tmdbFeed,
+      parse: parseTmdbCollection,
+    },
+  );
   return result.results;
 };
 
@@ -89,11 +124,18 @@ export const getMedias = async ({
 }: GetMedias) => {
   const result = await fetchTMDB<
     MediaCollection<MediaShortStrict<typeof type>>
-  >(`${type}/${query}`, {
-    page: String(page),
-    language,
-    ...(region ? { region } : {}),
-  });
+  >(
+    `${type}/${query}`,
+    {
+      page: String(page),
+      language,
+      ...(region ? { region } : {}),
+    },
+    {
+      ttl: CACHE_TTL_MS.tmdbFeed,
+      parse: parseTmdbCollection,
+    },
+  );
 
   return result.results;
 };
@@ -104,27 +146,48 @@ type GetDetailType = {
 };
 
 export const getMovieDetails = ({ id, language }: GetDetailType) => {
-  return fetchTMDB<MovieFull>(`${MediaType.Movie}/${id}`, {
-    append_to_response: MOVIE_DETAIL_APPEND_RESPONSE,
-    include_image_language: DEFAULT_IMAGE_LANGUAGE,
-    language,
-  });
+  return fetchTMDB<MovieFull>(
+    `${MediaType.Movie}/${id}`,
+    {
+      append_to_response: MOVIE_DETAIL_APPEND_RESPONSE,
+      include_image_language: DEFAULT_IMAGE_LANGUAGE,
+      language,
+    },
+    {
+      ttl: CACHE_TTL_MS.tmdbDetail,
+      parse: parseTmdbDetail,
+    },
+  );
 };
 
 export const getTvDetails = ({ id, language }: GetDetailType) => {
-  return fetchTMDB<TvFull>(`${MediaType.Tv}/${id}`, {
-    append_to_response: TV_DETAIL_APPEND_RESPONSE,
-    include_image_language: DEFAULT_IMAGE_LANGUAGE,
-    language,
-  });
+  return fetchTMDB<TvFull>(
+    `${MediaType.Tv}/${id}`,
+    {
+      append_to_response: TV_DETAIL_APPEND_RESPONSE,
+      include_image_language: DEFAULT_IMAGE_LANGUAGE,
+      language,
+    },
+    {
+      ttl: CACHE_TTL_MS.tmdbDetail,
+      parse: parseTmdbDetail,
+    },
+  );
 };
 
 export const getPersonDetails = ({ id, language }: GetDetailType) => {
-  return fetchTMDB<PersonFull>(`${MediaType.Person}/${id}`, {
-    append_to_response: PERSON_DETAIL_APPEND_RESPONSE,
-    include_image_language: DEFAULT_IMAGE_LANGUAGE,
-    language,
-  });
+  return fetchTMDB<PersonFull>(
+    `${MediaType.Person}/${id}`,
+    {
+      append_to_response: PERSON_DETAIL_APPEND_RESPONSE,
+      include_image_language: DEFAULT_IMAGE_LANGUAGE,
+      language,
+    },
+    {
+      ttl: CACHE_TTL_MS.tmdbDetail,
+      parse: parseTmdbDetail,
+    },
+  );
 };
 
 type GetWatchProviders = {
@@ -133,7 +196,11 @@ type GetWatchProviders = {
 };
 
 export const getWatchProviders = ({ id, type }: GetWatchProviders) => {
-  return fetchTMDB<WatchProviderResults>(`${type}/${id}/watch/providers`);
+  return fetchTMDB<WatchProviderResults>(
+    `${type}/${id}/watch/providers`,
+    {},
+    { ttl: CACHE_TTL_MS.tmdbDetail, parse: parseTmdbWatchProviders },
+  );
 };
 
 export const getOptionalWatchProviders = async ({
@@ -166,9 +233,16 @@ export const getMediaRecom = async ({
 }: GetMediaRecomType) => {
   const result = await fetchTMDB<
     MediaCollection<MediaShortStrict<typeof type>>
-  >(`${type}/${id}/${query}`, {
-    language,
-  });
+  >(
+    `${type}/${id}/${query}`,
+    {
+      language,
+    },
+    {
+      ttl: CACHE_TTL_MS.tmdbFeed,
+      parse: parseTmdbCollection,
+    },
+  );
 
   if (type === MediaType.Movie) {
     return sortByYearDesc(result.results, (item) => item.release_date);
@@ -185,9 +259,15 @@ export const getCollectionMovies = async ({
   id,
   language,
 }: GetColMoviesType) => {
-  const result = await fetchTMDB<Collection>(`collection/${id}`, {
-    language,
-  });
+  const result = await fetchTMDB<Collection>(
+    `collection/${id}`,
+    {
+      language,
+    },
+    {
+      ttl: CACHE_TTL_MS.tmdbFeed,
+    },
+  );
   return sortByYearDesc(result.parts, (item) => item.release_date);
 };
 
@@ -197,10 +277,16 @@ type GetPerson = {
 };
 
 export const getPersonMovies = async ({ id, language }: GetPerson) => {
-  const result = await fetchTMDB<PersonMedia>(`person/${id}/movie_credits`, {
-    append_to_response: "credits",
-    language,
-  });
+  const result = await fetchTMDB<PersonMedia>(
+    `person/${id}/movie_credits`,
+    {
+      append_to_response: "credits",
+      language,
+    },
+    {
+      ttl: CACHE_TTL_MS.tmdbFeed,
+    },
+  );
 
   return {
     ...result,
@@ -210,10 +296,16 @@ export const getPersonMovies = async ({ id, language }: GetPerson) => {
 };
 
 export const getPersonTv = async ({ id, language }: GetPerson) => {
-  const result = await fetchTMDB<PersonMedia>(`person/${id}/tv_credits`, {
-    append_to_response: "credits",
-    language,
-  });
+  const result = await fetchTMDB<PersonMedia>(
+    `person/${id}/tv_credits`,
+    {
+      append_to_response: "credits",
+      language,
+    },
+    {
+      ttl: CACHE_TTL_MS.tmdbFeed,
+    },
+  );
 
   return {
     ...result,
@@ -236,6 +328,7 @@ export const search = ({ query, page, language }: Search) => {
       language,
       query,
     },
+    { ttl: CACHE_TTL_MS.tmdbFeed, parse: parseTmdbCollection },
   );
 };
 
@@ -260,22 +353,29 @@ export const discoverMovies = ({
   sortBy,
   year,
 }: DiscoverMovie) => {
-  return fetchTMDB<MediaCollection<MovieShort>>("discover/movie", {
-    page: String(page),
-    language,
-    sort_by: sortBy,
-    region,
-    watch_region: region,
-    ...(minVotes ? { "vote_count.gte": String(minVotes) } : {}),
-    ...(year ? { primary_release_year: String(year) } : {}),
-    ...(providerId ? { with_watch_providers: String(providerId) } : {}),
-    ...(certification
-      ? {
-          certification,
-          certification_country: region,
-        }
-      : {}),
-  });
+  return fetchTMDB<MediaCollection<MovieShort>>(
+    "discover/movie",
+    {
+      page: String(page),
+      language,
+      sort_by: sortBy,
+      region,
+      watch_region: region,
+      ...(minVotes ? { "vote_count.gte": String(minVotes) } : {}),
+      ...(year ? { primary_release_year: String(year) } : {}),
+      ...(providerId ? { with_watch_providers: String(providerId) } : {}),
+      ...(certification
+        ? {
+            certification,
+            certification_country: region,
+          }
+        : {}),
+    },
+    {
+      ttl: CACHE_TTL_MS.tmdbFeed,
+      parse: parseTmdbCollection,
+    },
+  );
 };
 
 type DiscoverTv = {
@@ -297,19 +397,30 @@ export const discoverTv = ({
   sortBy,
   year,
 }: DiscoverTv) => {
-  return fetchTMDB<MediaCollection<TvShort>>("discover/tv", {
-    page: String(page),
-    language,
-    sort_by: sortBy,
-    watch_region: region,
-    ...(minVotes ? { "vote_count.gte": String(minVotes) } : {}),
-    ...(year ? { first_air_date_year: String(year) } : {}),
-    ...(providerId ? { with_watch_providers: String(providerId) } : {}),
-  });
+  return fetchTMDB<MediaCollection<TvShort>>(
+    "discover/tv",
+    {
+      page: String(page),
+      language,
+      sort_by: sortBy,
+      watch_region: region,
+      ...(minVotes ? { "vote_count.gte": String(minVotes) } : {}),
+      ...(year ? { first_air_date_year: String(year) } : {}),
+      ...(providerId ? { with_watch_providers: String(providerId) } : {}),
+    },
+    {
+      ttl: CACHE_TTL_MS.tmdbFeed,
+      parse: parseTmdbCollection,
+    },
+  );
 };
 
 export const getMovieCertificationList = () => {
-  return fetchTMDB<CertificationList>("certification/movie/list");
+  return fetchTMDB<CertificationList>(
+    "certification/movie/list",
+    {},
+    { ttl: CACHE_TTL_MS.tmdbCatalog, parse: parseTmdbCertificationList },
+  );
 };
 
 export const getOptionalMovieCertificationList = async () => {
@@ -322,7 +433,11 @@ export const getOptionalMovieCertificationList = async () => {
 };
 
 export const getTvCertificationList = () => {
-  return fetchTMDB<CertificationList>("certification/tv/list");
+  return fetchTMDB<CertificationList>(
+    "certification/tv/list",
+    {},
+    { ttl: CACHE_TTL_MS.tmdbCatalog, parse: parseTmdbCertificationList },
+  );
 };
 
 export const getOptionalTvCertificationList = async () => {
@@ -339,7 +454,11 @@ type GetWatchProviderCatalog = {
 };
 
 export const getWatchProviderCatalog = ({ type }: GetWatchProviderCatalog) => {
-  return fetchTMDB<WatchProviderCatalog>(`watch/providers/${type}`);
+  return fetchTMDB<WatchProviderCatalog>(
+    `watch/providers/${type}`,
+    {},
+    { ttl: CACHE_TTL_MS.tmdbCatalog, parse: parseTmdbProviderCatalog },
+  );
 };
 
 export const getOptionalWatchProviderCatalog = async ({

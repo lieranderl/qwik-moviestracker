@@ -1,4 +1,5 @@
 import type { MediaDetails, FileStat, TSResult, Torrent } from "./models";
+import { parseTorrServerStatus } from "./provider-contracts";
 
 type JsonPrimitive = boolean | number | string;
 type JsonQueryValue = JsonPrimitive | null | undefined;
@@ -578,6 +579,7 @@ export const getDefaultPlayableFile = inferPlayableFile;
 export const normalizeTorrentStatus = (
 	raw: TorrServerTorrentStatusRaw,
 ): TorrServerTorrentStatus => {
+	raw = parseTorrServerStatus(raw);
 	const files = asFileStats(raw.file_stats ?? raw.files);
 	const media = parseTorrentMedia(raw.data);
 

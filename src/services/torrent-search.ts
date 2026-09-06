@@ -1,13 +1,19 @@
 import type { Torrent } from "./models";
+import { parseJacRedSearchResponse } from "./provider-contracts";
+import { BoundedAsyncCache, CACHE_TTL_MS } from "./server-cache";
+import {
+	requestWithRetry,
+	toUpstreamFailure,
+	upstreamHttpError,
+	UpstreamError,
+	type UpstreamFailureKind,
+} from "./upstream";
 
 const DEFAULT_JACRED_API_BASE_URL = "https://api.jacred.su";
 const DEFAULT_JACRED_SEARCH_PATH = "/api/search";
 const DEFAULT_JACRED_SEARCH_LIMIT = 80;
 const DEFAULT_JACRED_SEARCH_TIMEOUT_MS = 7000;
 const JACRED_SEARCH_LIMIT_MAX = 120;
-const JACRED_CACHE_TTL_MS = 90_000;
-const JACRED_CACHE_MAX_ENTRIES = 200;
-const JACRED_RETRY_STATUSES = new Set([502, 503, 504]);
 
 export type TorrentSearchRequest = {
 	name: string;
@@ -25,6 +31,7 @@ export type TorrentSearchResult = {
 	loaded: number;
 	torrents: Torrent[];
 	total: number;
+	status: "found" | UpstreamFailureKind;
 };
 
 export type JacRedFacet = {
@@ -79,23 +86,7 @@ export type JacRedResult = {
 	year?: number;
 };
 
-type CacheEntry = {
-	expiresAt: number;
-	value: TorrentSearchResult;
-};
-
-export class JacRedSearchError extends Error {
-	constructor(
-		message: string,
-		readonly status?: number,
-		readonly retryable = false,
-	) {
-		super(message);
-		this.name = "JacRedSearchError";
-	}
-}
-
-const torrentCache = new Map<string, CacheEntry>();
+const sharedTorrentCache = new BoundedAsyncCache();
 
 const clampInteger = (value: number, fallback: number, max: number) => {
 	if (!Number.isFinite(value) || value < 1) {
@@ -188,122 +179,44 @@ export const buildJacRedSearchUrl = (request: TorrentSearchRequest) => {
 	return url;
 };
 
-const getCachedTorrents = (cacheKey: string) => {
-	const entry = torrentCache.get(cacheKey);
-	if (!entry) {
-		return null;
-	}
-
-	if (entry.expiresAt <= Date.now()) {
-		torrentCache.delete(cacheKey);
-		return null;
-	}
-
-	return entry.value;
-};
-
-const setCachedTorrents = (cacheKey: string, value: TorrentSearchResult) => {
-	torrentCache.set(cacheKey, {
-		expiresAt: Date.now() + JACRED_CACHE_TTL_MS,
-		value,
-	});
-
-	if (torrentCache.size <= JACRED_CACHE_MAX_ENTRIES) {
-		return;
-	}
-
-	const [oldestKey] = torrentCache.keys();
-	if (oldestKey) {
-		torrentCache.delete(oldestKey);
-	}
-};
-
-const fetchWithTimeout = async (
-	resource: string,
-	timeout: number,
-): Promise<Response> => {
-	const controller = new AbortController();
-	const timer = setTimeout(() => controller.abort(), timeout);
-
-	try {
-		return await fetch(resource, {
-			headers: {
-				"X-JacRed-Client": "moviestracker",
-			},
-			signal: controller.signal,
-		});
-	} catch (error) {
-		if (error instanceof Error && error.name === "AbortError") {
-			throw new JacRedSearchError(
-				`JacRed search timed out after ${timeout}ms`,
-				undefined,
-				true,
-			);
-		}
-
-		throw new JacRedSearchError("JacRed search network failure", undefined, true);
-	} finally {
-		clearTimeout(timer);
-	}
-};
-
-const delay = (ms: number) =>
-	new Promise((resolve) => {
-		setTimeout(resolve, ms);
-	});
-
-const requestJacRedSearch = async (
+const requestValidatedJacRedSearch = async (
 	request: TorrentSearchRequest,
 ): Promise<JacRedSearchResponse> => {
 	const config = getJacRedConfig();
 	const url = buildJacRedSearchUrl(request);
-	let lastError: unknown = null;
-
-	for (let attempt = 0; attempt < 2; attempt += 1) {
-		try {
-			const response = await fetchWithTimeout(String(url), config.timeout);
-
-			if (!response.ok) {
-				const retryable = JACRED_RETRY_STATUSES.has(response.status);
-				throw new JacRedSearchError(
-					`JacRed search failed with status ${response.status}`,
-					response.status,
-					retryable,
-				);
+	return requestWithRetry(
+		async (signal) => {
+			let response: Response;
+			try {
+				response = await fetch(String(url), {
+					headers: { "X-JacRed-Client": "moviestracker" },
+					signal,
+				});
+			} catch (error) {
+				if (error instanceof UpstreamError) throw error;
+				throw new TypeError("JacRed network failure", { cause: error });
 			}
-
-			const body = (await response.json()) as Partial<JacRedSearchResponse>;
-			if (!Array.isArray(body.results)) {
-				throw new JacRedSearchError("JacRed search returned an invalid body");
+			if (!response.ok) throw upstreamHttpError("jacred", response.status);
+			let input: unknown;
+			try {
+				input = await response.json();
+			} catch (error) {
+				throw new UpstreamError({
+					source: "jacred",
+					kind: "invalid-response",
+					retryable: false,
+					cause: error,
+				});
 			}
-
-			return {
-				facets: body.facets,
-				limit: Number(body.limit ?? 0),
-				loaded: Number(body.loaded ?? 0),
-				open: Boolean(body.open),
-				query: String(body.query ?? request.name),
-				results: body.results,
-				total: Number(body.total ?? body.results.length),
-			};
-		} catch (error) {
-			lastError = error;
-
-			const retryable =
-				error instanceof JacRedSearchError &&
-				error.retryable &&
-				error.status !== 428 &&
-				error.status !== 429;
-
-			if (!retryable || attempt > 0) {
-				break;
-			}
-
-			await delay(150 + Math.floor(Math.random() * 100));
-		}
-	}
-
-	throw lastError;
+			return parseJacRedSearchResponse(input, request.name);
+		},
+		{
+			source: "jacred",
+			timeoutMs: config.timeout,
+			maxRetries: 1,
+			baseDelayMs: 150,
+		},
+	);
 };
 
 export const extractTorrentHash = (magnet: string) => {
@@ -350,8 +263,7 @@ export const normalizeJacRedResults = (
 			includesToken(normalizedTitle, /\bhdr\b/i) ||
 			includesToken(normalizedTitle, /\bhdr10\b/i);
 		const isHdr10Plus = includesToken(title, /hdr10\+|hdr10plus/i);
-		const isHdr10 =
-			!isHdr10Plus && includesToken(title, /\bhdr10\b|hdr10/i);
+		const isHdr10 = !isHdr10Plus && includesToken(title, /\bhdr10\b|hdr10/i);
 
 		torrents.push({
 			AvailabilityScore: Number(result.availability_score ?? 0),
@@ -393,7 +305,7 @@ const logJacRedSearchFailure = (
 	error: unknown,
 	request: TorrentSearchRequest,
 ) => {
-	const status = error instanceof JacRedSearchError ? error.status : undefined;
+	const status = error instanceof UpstreamError ? error.status : undefined;
 	console.error("JacRed torrent search failed", {
 		isMovie: request.isMovie,
 		nameLength: request.name.trim().length,
@@ -413,34 +325,42 @@ export const getTorrentSearch = async (
 			loaded: 0,
 			torrents: [],
 			total: 0,
+			status: "empty",
 		};
 	}
 
 	const cacheKey = buildCacheKey(request);
-	const cached = getCachedTorrents(cacheKey);
-	if (cached) {
-		return cached;
-	}
 
 	try {
-		const response = await requestJacRedSearch(request);
-		const torrents = normalizeJacRedResults(response.results, request);
-		const result = {
-			facets: response.facets,
-			limit: response.limit,
-			loaded: response.loaded,
-			torrents,
-			total: response.total,
-		};
-		setCachedTorrents(cacheKey, result);
-		return result;
+		return (
+			await sharedTorrentCache.getOrLoad(
+				cacheKey,
+				CACHE_TTL_MS.jacred,
+				async () => {
+					const response = await requestValidatedJacRedSearch(request);
+					const torrents = normalizeJacRedResults(response.results, request);
+					const status: TorrentSearchResult["status"] =
+						torrents.length > 0 ? "found" : "empty";
+					return {
+						facets: response.facets,
+						limit: response.limit,
+						loaded: response.loaded,
+						torrents,
+						total: response.total,
+						status,
+					};
+				},
+			)
+		).value;
 	} catch (error) {
 		logJacRedSearchFailure(error, request);
+		const failure = toUpstreamFailure(error, "jacred");
 		return {
 			limit: getRequestLimit(request),
 			loaded: 0,
 			torrents: [],
 			total: 0,
+			status: failure.ok ? "unavailable" : failure.error.kind,
 		};
 	}
 };
@@ -450,5 +370,5 @@ export const getTorrents = async (
 ): Promise<Torrent[]> => (await getTorrentSearch(request)).torrents;
 
 export const clearTorrentSearchCacheForTests = () => {
-	torrentCache.clear();
+	sharedTorrentCache.clear();
 };

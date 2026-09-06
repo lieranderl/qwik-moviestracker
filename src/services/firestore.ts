@@ -5,6 +5,11 @@ import {
   type DocumentData,
 } from "@google-cloud/firestore";
 import type { MovieCatalog } from "./models";
+import {
+  parseFirestoreCursor,
+  parseFirestoreMovieDocument,
+} from "./provider-contracts";
+import { BoundedAsyncCache, CACHE_TTL_MS } from "./server-cache";
 
 export enum DbType {
   LastMovies = "latesttorrentsmovies",
@@ -35,23 +40,30 @@ type FirestoreGlobal = typeof globalThis & {
   __moviesFirestoreClients?: Map<string, Firestore>;
 };
 
+const firestoreCatalogCache = new BoundedAsyncCache();
+
+export const clearFirestoreCatalogCacheForTests = () =>
+  firestoreCatalogCache.clear();
+
+export const loadFirestoreCatalog = async (
+  key: string,
+  load: () => Promise<MoviePage>,
+) =>
+  (
+    await firestoreCatalogCache.getOrLoad(
+      key,
+      CACHE_TTL_MS.firestoreCatalog,
+      load,
+    )
+  ).value;
+
 export const encodeMovieCursor = (cursor: MovieCursor) =>
   Buffer.from(JSON.stringify(cursor), "utf8").toString("base64url");
 
 export const decodeMovieCursor = (value: string): MovieCursor => {
   try {
     const parsed = JSON.parse(Buffer.from(value, "base64url").toString("utf8"));
-    if (
-      !parsed ||
-      typeof parsed.id !== "string" ||
-      !parsed.id ||
-      typeof parsed.timestampMillis !== "number" ||
-      !Number.isSafeInteger(parsed.timestampMillis) ||
-      parsed.timestampMillis < 0
-    ) {
-      throw new Error("invalid payload");
-    }
-    return parsed as MovieCursor;
+    return parseFirestoreCursor(parsed);
   } catch {
     throw new Error("Invalid movie cursor");
   }
@@ -67,26 +79,29 @@ const optionalNumber = (value: unknown) => {
 export const mapMovieDocument = (
   documentId: string,
   data: DocumentData,
-): MovieCatalog => ({
-  backdrop_path: optionalString(data.backdrop_path),
-  genre_ids: Array.isArray(data.genre_ids)
-    ? data.genre_ids.filter(
-        (value): value is number => typeof value === "number",
-      )
-    : undefined,
-  id: optionalNumber(data.id) ?? Number(documentId),
-  lasttimefound:
-    data.lasttimefound instanceof Timestamp
-      ? data.lasttimefound.toDate()
+): MovieCatalog => {
+  const parsed = parseFirestoreMovieDocument(data);
+  return {
+    backdrop_path: optionalString(parsed.backdrop_path),
+    genre_ids: Array.isArray(data.genre_ids)
+      ? data.genre_ids.filter(
+          (value): value is number => typeof value === "number",
+        )
       : undefined,
-  original_title: optionalString(data.original_title),
-  poster_path: optionalString(data.poster_path),
-  release_date: optionalString(data.release_date),
-  title: optionalString(data.title),
-  vote_average: optionalNumber(data.vote_average),
-  vote_count: optionalNumber(data.vote_count),
-  year: optionalString(data.Year) ?? optionalString(data.year) ?? "",
-});
+    id: optionalNumber(data.id) ?? Number(documentId),
+    lasttimefound:
+      data.lasttimefound instanceof Timestamp
+        ? data.lasttimefound.toDate()
+        : undefined,
+    original_title: optionalString(data.original_title),
+    poster_path: optionalString(data.poster_path),
+    release_date: optionalString(data.release_date),
+    title: optionalString(data.title),
+    vote_average: optionalNumber(data.vote_average),
+    vote_count: optionalNumber(data.vote_count),
+    year: optionalString(parsed.Year) ?? optionalString(parsed.year) ?? "",
+  };
+};
 
 const getClient = (projectId: string, databaseId: string) => {
   if (!projectId.trim()) {
@@ -122,36 +137,46 @@ export const getMoviesFirestore = async ({
     throw new Error("entriesOnPage must be between 1 and 100");
   }
 
-  let query = getClient(projectId, databaseId)
-    .collection(dbName)
-    .orderBy("lasttimefound", "desc")
-    .orderBy(FieldPath.documentId(), "desc")
-    .limit(entriesOnPage);
-  if (cursor) {
-    const position = decodeMovieCursor(cursor);
-    query = query.startAfter(
-      Timestamp.fromMillis(position.timestampMillis),
-      position.id,
-    );
-  }
-
-  const snapshot = await query.get();
-  const movies = snapshot.docs.map((document) => {
-    const movie = mapMovieDocument(document.id, document.data());
-    if (language === "en-US" && movie.original_title) {
-      movie.title = movie.original_title;
-    }
-    return movie;
+  const cacheKey = JSON.stringify({
+    cursor: cursor ?? null,
+    databaseId,
+    dbName,
+    entriesOnPage,
+    language: language ?? null,
+    projectId,
   });
-  const last = snapshot.docs.at(-1);
-  const timestamp = last?.get("lasttimefound");
-  const nextCursor =
-    last && snapshot.size === entriesOnPage && timestamp instanceof Timestamp
-      ? encodeMovieCursor({
-          id: last.id,
-          timestampMillis: timestamp.toMillis(),
-        })
-      : null;
+  return loadFirestoreCatalog(cacheKey, async () => {
+    let query = getClient(projectId, databaseId)
+      .collection(dbName)
+      .orderBy("lasttimefound", "desc")
+      .orderBy(FieldPath.documentId(), "desc")
+      .limit(entriesOnPage);
+    if (cursor) {
+      const position = decodeMovieCursor(cursor);
+      query = query.startAfter(
+        Timestamp.fromMillis(position.timestampMillis),
+        position.id,
+      );
+    }
 
-  return { movies, nextCursor };
+    const snapshot = await query.get();
+    const movies = snapshot.docs.map((document) => {
+      const movie = mapMovieDocument(document.id, document.data());
+      if (language === "en-US" && movie.original_title) {
+        movie.title = movie.original_title;
+      }
+      return movie;
+    });
+    const last = snapshot.docs.at(-1);
+    const timestamp = last?.get("lasttimefound");
+    const nextCursor =
+      last && snapshot.size === entriesOnPage && timestamp instanceof Timestamp
+        ? encodeMovieCursor({
+            id: last.id,
+            timestampMillis: timestamp.toMillis(),
+          })
+        : null;
+
+    return { movies, nextCursor };
+  });
 };

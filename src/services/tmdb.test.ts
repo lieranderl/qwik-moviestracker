@@ -2,7 +2,10 @@ import { afterEach, describe, expect, it, mock } from "bun:test";
 import { MediaType } from "./models";
 import type { MovieShort, TvShort } from "./models";
 import {
+  clearTmdbCacheForTests,
   getCollectionMovies,
+  getMovieCertificationList,
+  getMovieDetails,
   getMediaRecom,
   getMedias,
   getTrendingMedia,
@@ -19,6 +22,7 @@ const createJsonResponse = (body: unknown, status = 200) =>
   }) as Response;
 
 afterEach(() => {
+  clearTmdbCacheForTests();
   globalThis.fetch = originalFetch;
 
   if (originalTmdbApiKey === undefined) {
@@ -29,6 +33,70 @@ afterEach(() => {
 });
 
 describe("tmdb service", () => {
+  it("coalesces equivalent feed requests and validates the response", async () => {
+    process.env.TMDB_API_KEY = "tmdb-test-key";
+    let resolveResponse!: (value: Response) => void;
+    const pending = new Promise<Response>((resolve) => {
+      resolveResponse = resolve;
+    });
+    const fetchMock = mock(async () => pending);
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+    const first = getTrendingMedia({
+      page: 1,
+      language: "en-US",
+      type: MediaType.Movie,
+    });
+    const second = getTrendingMedia({
+      page: 1,
+      language: "en-US",
+      type: MediaType.Movie,
+    });
+    resolveResponse(
+      createJsonResponse({
+        page: 1,
+        results: [{ id: 1 }],
+        total_pages: 1,
+        total_results: 1,
+      }),
+    );
+
+    expect((await first)[0]?.id).toBe(1);
+    expect((await second)[0]?.id).toBe(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("caches detail and provider catalog responses independently", async () => {
+    process.env.TMDB_API_KEY = "tmdb-test-key";
+    const fetchMock = mock(async (input: RequestInfo | URL) => {
+      const path = new URL(String(input)).pathname;
+      return path.endsWith("/certification/movie/list")
+        ? createJsonResponse({ certifications: {} })
+        : createJsonResponse({ id: 1, title: "Alien" });
+    });
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+    await getMovieDetails({ id: 1, language: "en-US" });
+    await getMovieDetails({ id: 1, language: "en-US" });
+    await getMovieCertificationList();
+    await getMovieCertificationList();
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("rejects malformed TMDB feeds instead of returning empty results", async () => {
+    globalThis.fetch = (async () =>
+      createJsonResponse({ results: "bad" })) as unknown as typeof fetch;
+
+    await expect(
+      getTrendingMedia({
+        page: 1,
+        language: "en-US",
+        type: MediaType.Movie,
+      }),
+    ).rejects.toMatchObject({ kind: "invalid-response", source: "tmdb" });
+  });
+
   it("builds TMDB requests with the API key and search params", async () => {
     process.env.TMDB_API_KEY = "tmdb-test-key";
 

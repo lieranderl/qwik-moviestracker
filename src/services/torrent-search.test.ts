@@ -82,8 +82,7 @@ describe("JacRed torrent search service", () => {
 			Hash: "61065EA115B7CC3E8DB9FB5AB1F6F327F08BD1C9",
 			K4: true,
 			Leeches: 27,
-			Magnet:
-				"magnet:?xt=urn:btih:61065ea115b7cc3e8db9fb5ab1f6f327f08bd1c9",
+			Magnet: "magnet:?xt=urn:btih:61065ea115b7cc3e8db9fb5ab1f6f327f08bd1c9",
 			Name: "Матрица / The Matrix [1999, WEB-DL 2160p, HDR10+, Dolby Vision]",
 			OriginalName: "The Matrix",
 			Peers: 27,
@@ -257,6 +256,7 @@ describe("JacRed torrent search service", () => {
 		expect(result.total).toBe(197);
 		expect(result.loaded).toBe(80);
 		expect(result.torrents).toHaveLength(1);
+		expect(result.status).toBe("found");
 	});
 
 	it("returns an empty list for short queries without fetching", async () => {
@@ -267,6 +267,9 @@ describe("JacRed torrent search service", () => {
 
 		expect(result).toEqual([]);
 		expect(fetchMock).not.toHaveBeenCalled();
+		expect(
+			(await getTorrentSearch({ isMovie: true, name: "m", year: 1999 })).status,
+		).toBe("empty");
 	});
 
 	it("fails closed for JacRed proof-of-work and rate-limit responses", async () => {
@@ -284,6 +287,10 @@ describe("JacRed torrent search service", () => {
 		expect(result).toEqual([]);
 		expect(fetchMock).toHaveBeenCalledTimes(1);
 		expect(consoleErrorMock).toHaveBeenCalledTimes(1);
+		expect(
+			(await getTorrentSearch({ isMovie: true, name: "Matrix 2", year: 2003 }))
+				.status,
+		).toBe("unavailable");
 	});
 
 	it("retries transient JacRed failures once", async () => {
@@ -303,7 +310,7 @@ describe("JacRed torrent search service", () => {
 		expect(consoleErrorMock).toHaveBeenCalledTimes(1);
 	});
 
-	it("retries network failures once", async () => {
+it("retries network failures once", async () => {
 		const consoleErrorMock = mock(() => undefined);
 		const fetchMock = mock(async () => {
 			throw new Error("socket closed");
@@ -318,7 +325,23 @@ describe("JacRed torrent search service", () => {
 		});
 
 		expect(result).toEqual([]);
-		expect(fetchMock).toHaveBeenCalledTimes(2);
-		expect(consoleErrorMock).toHaveBeenCalledTimes(1);
-	});
+expect(fetchMock).toHaveBeenCalledTimes(2);
+expect(consoleErrorMock).toHaveBeenCalledTimes(1);
+});
+
+it("reports empty when provider rows contain no usable torrents", async () => {
+globalThis.fetch = (async () =>
+createJsonResponse({
+results: [{ title: "No magnet" }],
+})) as unknown as typeof fetch;
+
+const result = await getTorrentSearch({
+isMovie: true,
+name: "No magnet",
+year: 2026,
+});
+
+expect(result.torrents).toEqual([]);
+expect(result.status).toBe("empty");
+});
 });

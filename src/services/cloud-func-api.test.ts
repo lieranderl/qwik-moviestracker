@@ -29,8 +29,9 @@ describe("cloud function API service", () => {
 
 		const fetchMock = mock(async () =>
 			createJsonResponse({
-				imdb_id: "tt0133093",
-				imdb_rating: "8.7",
+				Id: "tt0133093",
+				Rating: "8.7",
+				Votes: "2,000,000",
 			}),
 		);
 
@@ -92,5 +93,18 @@ describe("cloud function API service", () => {
 		expect(firstConsoleCall[0]).toBe(
 			"Unable to fetch IMDb rating for tt0133093",
 		);
+	});
+
+	it("rejects malformed IMDb payloads", async () => {
+		globalThis.fetch = (async () =>
+			createJsonResponse({
+				Id: "tt0133093",
+				Rating: 8.7,
+			})) as unknown as typeof fetch;
+
+		await expect(getImdbRating("tt0133093")).rejects.toMatchObject({
+			kind: "invalid-response",
+			source: "imdb",
+		});
 	});
 });

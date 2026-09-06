@@ -7,12 +7,21 @@ import {
   buildTorrentStreamUrl,
   getDefaultPlayableFile,
   isBrowserLikelyToPlayVideo,
+  normalizeTorrentStatus,
   primeTorrentPlayback,
   TORR_SERVER_UPLOAD_MAX_BYTES,
   validateTorrServerUploadFile,
 } from "./torrserver";
 
 describe("torrserver helpers", () => {
+  it("rejects malformed status payloads before normalization", () => {
+    expect(() =>
+      normalizeTorrentStatus({
+        file_stats: [{ id: 0, length: "large", path: "Alien.mkv" }],
+      } as never),
+    ).toThrow();
+  });
+
   it("builds playlist URLs for a saved torrent hash", () => {
     expect(
       buildTorrentPlaylistUrl("http://192.168.0.109:8090", "abc123", {

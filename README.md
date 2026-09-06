@@ -81,6 +81,11 @@ runtime environment and secret bindings, IAM, and alerting. IMDb calls use the
 private service URL and Google ID tokens; GC_API_KEY exists only during the
 one-release gateway fallback.
 
+Measure authenticated SSR before and after a release with
+`SSR_BENCH_COOKIE=... bun run bench:ssr -- https://service.example`. Preserve
+the JSON output as release evidence; it records p50/p95/p99 and 5xx counts for
+Home, Movies, and TV while Cloud Monitoring records instances and requests.
+
 - Only one production path exists: GitHub Actions → Artifact Registry → Cloud Run
 - GCP authentication uses Workload Identity Federation — no service-account keys
   are stored in the repository

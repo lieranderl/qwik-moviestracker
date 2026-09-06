@@ -20,12 +20,10 @@ import {
 } from "~/components/page-feedback";
 import {
   TorrServerApiToolsModal,
-  TorrServerFileListModal,
+  TorrServerFileWorkspaceModal,
   TorrServerSummaryCard,
 } from "~/components/torrserver";
 import type {
-  TorrServerApiSearchResult,
-  TorrServerFileEntry,
   TorrServerSummaryBadge,
   TorrServerSummaryMetric,
 } from "~/components/torrserver";
@@ -33,32 +31,24 @@ import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
 import type { TSResult } from "~/services/models";
 import {
   activateTorrent,
-  addTorrentByLink,
   buildTorrentPlaylistUrl,
-  buildTorrentStreamUrl,
   dropTorrent,
-  getTorrServerSettings,
-  getTorrServerStats,
-  getTorrServerStorageSettings,
-  getTorrServerTMDBSettings,
-  getTorrServerVersion,
   listTorrent,
-  listViewedTorrents,
-  markViewedTorrent,
   removeTorrent,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- restore removeViewed UI in follow-up
   removeViewedTorrent,
-  searchRutor,
-  searchTorznab,
-  type TorrServerSearchResult,
   type TorrServerSettings,
   type TorrServerStorageSettings,
   type TorrServerTmdbSettings,
   type TorrServerTorrentStatus,
   type TorrServerViewedItem,
-  uploadTorrentFile,
-  validateTorrServerUploadFile,
 } from "~/services/torrserver";
+import {
+  loadTorrServerWorkspace,
+  mergePolledTorrents,
+  nextPollDelay,
+  transitionConnection,
+} from "~/services/torrserver/workspace";
 import { readStorageString } from "~/utils/browser";
 import {
   langAddNewTorrServerURL,
@@ -70,10 +60,8 @@ import {
 import {
   applyServersState,
   filterTorrServerTorrents,
-  formatTransferSpeed,
   getDefaultSelectedTorrentHash,
   getHydratedServersState,
-  getSelectedFile,
   normalizeServer,
   persistServersStorage,
   sortTorrents,
@@ -116,25 +104,13 @@ export default component$(() => {
   const statsTextSig = useSignal("");
   const viewedItemsSig = useSignal<TorrServerViewedItem[]>([]);
   const activatingHashSig = useSignal("");
+  const snapshotRequestId = useSignal(0);
 
   const statusFilterSig = useSignal<TorrServerStatusFilter>("all");
   const sortKeySig = useSignal<TorrServerSortKey>("recent");
   const selectedTorrentHash = useSignal("");
-  const selectedFileId = useSignal<number | null>(null);
   const fileModalOpen = useSignal(false);
   const apiToolsModalOpen = useSignal(false);
-  const apiQuerySig = useSignal("");
-  const addLinkBusySig = useSignal(false);
-  const uploadBusySig = useSignal(false);
-  const uploadFileSig = useSignal<File | null>(null);
-  const uploadValidationMessageSig = useSignal("");
-  const searchBusySig = useSignal(false);
-  const searchSourceSig = useSignal<"rutor" | "torznab" | null>(null);
-  const searchResultsSig = useSignal<TorrServerSearchResult[]>([]);
-  const addLinkSig = useSignal("");
-  const addTitleSig = useSignal("");
-  const addCategorySig = useSignal("other");
-  const addSaveToDbSig = useSignal(true);
 
   const validateTorrServer = $((values: PartialValues<TorrServerForm>) => {
     const ip = values.ipaddress?.trim() ?? "";
@@ -168,6 +144,8 @@ export default component$(() => {
   /* ── Server lifecycle ──────────────────────────────────── */
 
   const loadServerSnapshot = $(async (serverUrl: string): Promise<void> => {
+    const requestId = snapshotRequestId.value + 1;
+    snapshotRequestId.value = requestId;
     torrentsSig.value = [];
     serverVersion.value = "";
     settingsSig.value = null;
@@ -175,47 +153,44 @@ export default component$(() => {
     tmdbSettingsSig.value = null;
     statsTextSig.value = "";
     viewedItemsSig.value = [];
-    searchResultsSig.value = [];
-    searchSourceSig.value = null;
 
     if (!serverUrl) {
-      connectionState.value = "idle";
+      connectionState.value = transitionConnection(
+        connectionState.value,
+        "clear",
+      );
       return;
     }
 
     try {
       isCheckingTorrServer.value = true;
-      connectionState.value = "connecting";
-
-      const settled = await Promise.allSettled([
-        getTorrServerVersion(serverUrl),
-        listTorrent(serverUrl),
-        getTorrServerSettings(serverUrl),
-        getTorrServerStorageSettings(serverUrl),
-        getTorrServerTMDBSettings(serverUrl),
-        getTorrServerStats(serverUrl),
-        listViewedTorrents(serverUrl),
-      ]);
-      const val = <T,>(r: PromiseSettledResult<T>, fb: T): T =>
-        r.status === "fulfilled" ? r.value : fb;
-
-      const version = val(settled[0], "");
-      if (!version) throw new Error("Echo endpoint did not respond");
-
-      serverVersion.value = version;
-      torrentsSig.value = val(settled[1], []);
-      settingsSig.value = val(settled[2], null);
-      const storage = val(settled[3], null);
-      storageSettingsSig.value = storage;
-      tmdbSettingsSig.value = val(settled[4], null);
-      statsTextSig.value = val(settled[5], "");
-      viewedItemsSig.value = val(settled[6], []);
-      connectionState.value = "connected";
+      connectionState.value = transitionConnection(
+        connectionState.value,
+        "connect",
+      );
+      const snapshot = await loadTorrServerWorkspace(serverUrl);
+      if (requestId !== snapshotRequestId.value) return;
+      serverVersion.value = snapshot.version;
+      torrentsSig.value = snapshot.torrents;
+      settingsSig.value = snapshot.settings;
+      storageSettingsSig.value = snapshot.storageSettings;
+      tmdbSettingsSig.value = snapshot.tmdbSettings;
+      statsTextSig.value = snapshot.stats;
+      viewedItemsSig.value = snapshot.viewedItems;
+      connectionState.value = transitionConnection(
+        connectionState.value,
+        "success",
+      );
     } catch (error) {
+      if (requestId !== snapshotRequestId.value) return;
       console.error(error);
-      connectionState.value = "error";
+      connectionState.value = transitionConnection(
+        connectionState.value,
+        "failure",
+      );
     } finally {
-      isCheckingTorrServer.value = false;
+      if (requestId === snapshotRequestId.value)
+        isCheckingTorrServer.value = false;
     }
   });
 
@@ -239,36 +214,6 @@ export default component$(() => {
       filteredTorrentsSig.value[0] ||
       null,
   );
-
-  const selectedFileSig = useComputed$(() =>
-    getSelectedFile(selectedTorrentSig.value?.files, selectedFileId.value),
-  );
-
-  const fileEntriesSig = useComputed$<TorrServerFileEntry[]>(() => {
-    const server = selectedTorServer.value;
-    const torrent = selectedTorrentSig.value;
-    if (!server || !torrent) return [];
-    return torrent.files.map((file) => ({
-      id: file.id,
-      isPrimary: file.id === selectedFileSig.value?.id,
-      note:
-        torrent.playableFile?.id === file.id
-          ? langText(
-              lang,
-              "Default playback candidate for this torrent.",
-              "Файл по умолчанию для воспроизведения этого торрента.",
-            )
-          : undefined,
-      path: file.path,
-      size: file.length,
-      streamUrl: buildTorrentStreamUrl(server, {
-        filename: file.path,
-        index: file.id,
-        link: torrent.hash,
-        play: true,
-      }),
-    }));
-  });
 
   const summaryMetrics = useComputed$<TorrServerSummaryMetric[]>(() => [
     {
@@ -387,190 +332,6 @@ export default component$(() => {
     });
   });
 
-  const addLinkToServer = $(async () => {
-    if (!selectedTorServer.value) return;
-    const link = addLinkSig.value.trim();
-    if (!link) {
-      toastManager.addToast({
-        message: langText(
-          lang,
-          "Please provide a torrent or magnet link.",
-          "Укажите торрент или magnet ссылку.",
-        ),
-        type: "error",
-        autocloseTime: 4000,
-      });
-      return;
-    }
-    addLinkBusySig.value = true;
-    try {
-      await addTorrentByLink(selectedTorServer.value, {
-        category: addCategorySig.value || "other",
-        link,
-        saveToDb: addSaveToDbSig.value,
-        title: addTitleSig.value.trim() || link,
-      });
-      toastManager.addToast({
-        message: langText(
-          lang,
-          "Link has been sent to TorrServer.",
-          "Ссылка отправлена в TorrServer.",
-        ),
-        type: "success",
-        autocloseTime: 4000,
-      });
-      addLinkSig.value = "";
-      addTitleSig.value = "";
-      await loadServerSnapshot(selectedTorServer.value);
-    } catch (error) {
-      console.error(error);
-      toastManager.addToast({
-        message: langText(
-          lang,
-          "Could not add link to TorrServer.",
-          "Не удалось добавить ссылку в TorrServer.",
-        ),
-        type: "error",
-        autocloseTime: 5000,
-      });
-    } finally {
-      addLinkBusySig.value = false;
-    }
-  });
-
-  const uploadTorrentToServer = $(async () => {
-    if (!selectedTorServer.value || !uploadFileSig.value) return;
-    const validation = validateTorrServerUploadFile(
-      uploadFileSig.value,
-      uploadFileSig.value.name,
-    );
-    if (!validation.ok) {
-      uploadValidationMessageSig.value = validation.message;
-      toastManager.addToast({
-        message: validation.message,
-        type: "error",
-        autocloseTime: 5000,
-      });
-      return;
-    }
-    uploadBusySig.value = true;
-    try {
-      await uploadTorrentFile(selectedTorServer.value, {
-        category: "other",
-        file: uploadFileSig.value,
-        fileName: validation.fileName,
-        saveToDb: true,
-        title: validation.fileName,
-      });
-      toastManager.addToast({
-        message: langText(
-          lang,
-          "Torrent file uploaded successfully.",
-          "Файл торрента успешно загружен.",
-        ),
-        type: "success",
-        autocloseTime: 5000,
-      });
-      uploadFileSig.value = null;
-      uploadValidationMessageSig.value = "";
-      await loadServerSnapshot(selectedTorServer.value);
-    } catch (error) {
-      console.error(error);
-      toastManager.addToast({
-        message: langText(
-          lang,
-          "Upload failed. Check TorrServer permissions.",
-          "Загрузка не удалась. Проверьте права в TorrServer.",
-        ),
-        type: "error",
-        autocloseTime: 5000,
-      });
-    } finally {
-      uploadBusySig.value = false;
-    }
-  });
-
-  const runApiSearch = $(async (source: "rutor" | "torznab") => {
-    if (!selectedTorServer.value || !apiQuerySig.value.trim()) return;
-    searchBusySig.value = true;
-    searchSourceSig.value = source;
-    try {
-      searchResultsSig.value =
-        source === "rutor"
-          ? await searchRutor(selectedTorServer.value, apiQuerySig.value.trim())
-          : await searchTorznab(
-              selectedTorServer.value,
-              apiQuerySig.value.trim(),
-            );
-    } catch (error) {
-      console.error(error);
-      searchResultsSig.value = [];
-      toastManager.addToast({
-        message: langText(
-          lang,
-          "Search request failed for selected endpoint.",
-          "Поисковый запрос к выбранному эндпоинту завершился ошибкой.",
-        ),
-        type: "error",
-        autocloseTime: 5000,
-      });
-    } finally {
-      searchBusySig.value = false;
-    }
-  });
-
-  const addSearchResultToServer = $(
-    async (result: TorrServerApiSearchResult) => {
-      if (!selectedTorServer.value) return;
-      const link = result.magnet || result.link || result.torrent;
-      if (!link) {
-        toastManager.addToast({
-          message: langText(
-            lang,
-            "This result does not include a torrent link.",
-            "Этот результат не содержит торрент-ссылки.",
-          ),
-          type: "warning",
-          autocloseTime: 4500,
-        });
-        return;
-      }
-      addLinkBusySig.value = true;
-      try {
-        await addTorrentByLink(selectedTorServer.value, {
-          category: "other",
-          link,
-          poster: result.poster || "",
-          saveToDb: true,
-          title: result.name || link,
-        });
-        toastManager.addToast({
-          message: langText(
-            lang,
-            "Search result added to TorrServer.",
-            "Результат поиска добавлен в TorrServer.",
-          ),
-          type: "success",
-          autocloseTime: 4000,
-        });
-        await loadServerSnapshot(selectedTorServer.value);
-      } catch (error) {
-        console.error(error);
-        toastManager.addToast({
-          message: langText(
-            lang,
-            "Could not add search result to TorrServer.",
-            "Не удалось добавить результат поиска в TorrServer.",
-          ),
-          type: "error",
-          autocloseTime: 5000,
-        });
-      } finally {
-        addLinkBusySig.value = false;
-      }
-    },
-  );
-
   const activateAndPollTorrent = $(
     async (hash: string): Promise<TorrServerTorrentStatus | null> => {
       if (!selectedTorServer.value) return null;
@@ -608,63 +369,10 @@ export default component$(() => {
 
   const openFilesForTorrent = $(async (torrent: TorrServerTorrentStatus) => {
     selectedTorrentHash.value = torrent.hash;
-    selectedFileId.value = getSelectedFile(torrent.files, null)?.id ?? null;
     fileModalOpen.value = true;
     if (torrent.files.length === 0) {
-      const activated = await activateAndPollTorrent(torrent.hash);
-      if (activated)
-        selectedFileId.value =
-          getSelectedFile(activated.files, null)?.id ?? null;
+      await activateAndPollTorrent(torrent.hash);
     }
-  });
-
-  const selectFileForViewed = $(async (file: TorrServerFileEntry) => {
-    const baseUrl = selectedTorServer.value;
-    if (!baseUrl || !selectedTorrentHash.value) return;
-    selectedFileId.value = file.id;
-    try {
-      const updated = await markViewedTorrent(
-        baseUrl,
-        selectedTorrentHash.value,
-        file.id,
-      );
-      viewedItemsSig.value = updated;
-    } catch {
-      // Non-critical: viewed persistence may be unavailable on some
-      // TorrServer builds; the UI selection still updates locally.
-    }
-  });
-
-  const copyStreamUrl = $(async (file: TorrServerFileEntry) => {
-    if (!file.streamUrl) return;
-    try {
-      await navigator.clipboard.writeText(file.streamUrl);
-      toastManager.addToast({
-        message: langText(
-          lang,
-          "Stream URL copied to clipboard.",
-          "Ссылка потока скопирована в буфер обмена.",
-        ),
-        type: "success",
-        autocloseTime: 4000,
-      });
-    } catch (error) {
-      console.error(error);
-      toastManager.addToast({
-        message: langText(
-          lang,
-          "Could not copy the stream URL.",
-          "Не удалось скопировать ссылку потока.",
-        ),
-        type: "error",
-        autocloseTime: 4000,
-      });
-    }
-  });
-
-  const openStreamUrl = $((file: TorrServerFileEntry) => {
-    if (file.streamUrl)
-      window.open(file.streamUrl, "_blank", "noopener,noreferrer");
   });
 
   const dropTorrentFromServer = $(async (torrent: TorrServerTorrentStatus) => {
@@ -758,9 +466,6 @@ export default component$(() => {
       filteredTorrentsSig.value as TSResult[],
       selectedTorrentHash.value,
     );
-    selectedFileId.value =
-      getSelectedFile(selectedTorrentSig.value?.files, selectedFileId.value)
-        ?.id ?? null;
   });
 
   // eslint-disable-next-line qwik/no-use-visible-task
@@ -768,41 +473,57 @@ export default component$(() => {
     const baseUrl = track(() => selectedTorServer.value);
     const connState = track(() => connectionState.value);
     if (!baseUrl || connState !== "connected") return;
+    let disposed = false;
+    let failures = 0;
+    let running = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let controller: AbortController | undefined;
+
+    const schedule = () => {
+      if (disposed || document.visibilityState !== "visible") return;
+      timer = setTimeout(() => void poll(), nextPollDelay(failures));
+    };
+
     const poll = async () => {
+      if (disposed || running || document.visibilityState !== "visible") return;
+      running = true;
+      controller = new AbortController();
       try {
-        const updated = await listTorrent(baseUrl);
-        const current = torrentsSig.value;
-        const activatingHash = activatingHashSig.value;
-        torrentsSig.value = updated.map((polled) => {
-          const existing = current.find((t) => t.hash === polled.hash);
-          if (!existing) return polled;
-          const preserveFiles =
-            existing.files.length > 0 && polled.files.length === 0;
-          const preservePreload =
-            polled.hash === activatingHash &&
-            (existing.preloaded_bytes || 0) > (polled.preloaded_bytes || 0);
-          if (preserveFiles || preservePreload) {
-            return {
-              ...polled,
-              ...(preserveFiles && {
-                files: existing.files,
-                file_stats: existing.file_stats,
-                fileCount: existing.fileCount,
-                playableFile: existing.playableFile,
-              }),
-              ...(preservePreload && {
-                preloaded_bytes: existing.preloaded_bytes,
-              }),
-            };
-          }
-          return polled;
-        });
+        const updated = await listTorrent(baseUrl, controller.signal);
+        if (disposed) return;
+        torrentsSig.value = mergePolledTorrents(
+          torrentsSig.value,
+          updated,
+          activatingHashSig.value,
+        );
+        failures = 0;
       } catch (error) {
-        console.error("Live stats poll failed", error);
+        if (!controller.signal.aborted) {
+          failures += 1;
+          console.error("Live stats poll failed", error);
+        }
+      } finally {
+        running = false;
+        schedule();
       }
     };
-    const id = setInterval(poll, 2000);
-    cleanup(() => clearInterval(id));
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState !== "visible") {
+        if (timer) clearTimeout(timer);
+        controller?.abort();
+        return;
+      }
+      if (!running) void poll();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    schedule();
+    cleanup(() => {
+      disposed = true;
+      if (timer) clearTimeout(timer);
+      controller?.abort();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    });
   });
 
   const visibleCount = filteredTorrentsSig.value.length;
@@ -1158,54 +879,22 @@ export default component$(() => {
       </section>
 
       {/* ── Modals ────────────────────────────────────────── */}
-      <TorrServerFileListModal
+      <TorrServerFileWorkspaceModal
         open={fileModalOpen.value}
-        title={
-          selectedTorrentSig.value?.title ||
-          selectedTorrentSig.value?.name ||
-          langText(lang, "Torrent files", "Файлы торрента")
-        }
-        subtitle={selectedTorrentSig.value?.hash}
-        files={fileEntriesSig.value}
+        lang={lang}
+        serverUrl={selectedTorServer.value}
+        torrent={selectedTorrentSig.value}
         loading={
           activatingHashSig.value === selectedTorrentHash.value &&
           activatingHashSig.value !== ""
         }
-        loadingLabel={(() => {
-          const t = selectedTorrentSig.value;
-          if (!t)
-            return langText(
-              lang,
-              "Activating torrent...",
-              "Активация торрента...",
-            );
-          return langText(
-            lang,
-            `Activating · Peers: ${t.total_peers || 0} · Down: ${formatTransferSpeed(t.download_speed)} · Up: ${formatTransferSpeed(t.upload_speed)}`,
-            `Активация · Пиры: ${t.total_peers || 0} · Скачивание: ${formatTransferSpeed(t.download_speed)} · Отдача: ${formatTransferSpeed(t.upload_speed)}`,
-          );
-        })()}
-        loadingProgress={(() => {
-          const t = selectedTorrentSig.value;
-          if (!t || !t.torrent_size) return 0;
-          return ((t.preloaded_bytes || 0) / t.torrent_size) * 100;
-        })()}
         onClose$={$(() => {
           fileModalOpen.value = false;
         })}
-        onSelectFile$={selectFileForViewed}
-        selectActionLabel={langText(
-          lang,
-          "Select for viewed",
-          "Выбрать для отметки",
-        )}
-        selectedLabel={langText(lang, "Selected", "Выбран")}
-        onOpenStream$={openStreamUrl}
-        onCopyStreamUrl$={copyStreamUrl}
-        streamActionLabel={langText(lang, "Stream", "Поток")}
-        copyActionLabel={langText(lang, "Copy URL", "Копировать")}
+        onViewedChanged$={$((items) => {
+          viewedItemsSig.value = items;
+        })}
       />
-
       <TorrServerApiToolsModal
         open={apiToolsModalOpen.value}
         lang={lang}
@@ -1213,37 +902,7 @@ export default component$(() => {
         onClose$={$(() => {
           apiToolsModalOpen.value = false;
         })}
-        addLinkBusy={addLinkBusySig.value}
-        linkValue={addLinkSig}
-        titleValue={addTitleSig}
-        categoryValue={addCategorySig}
-        saveToDbValue={addSaveToDbSig}
-        onAddLink$={addLinkToServer}
-        uploadBusy={uploadBusySig.value}
-        uploadFileName={uploadFileSig.value?.name ?? ""}
-        uploadValidationMessage={uploadValidationMessageSig.value}
-        onUploadFileChange$={$((file: File | null) => {
-          if (!file) {
-            uploadFileSig.value = null;
-            uploadValidationMessageSig.value = "";
-            return;
-          }
-          const validation = validateTorrServerUploadFile(file, file.name);
-          if (!validation.ok) {
-            uploadFileSig.value = null;
-            uploadValidationMessageSig.value = validation.message;
-            return;
-          }
-          uploadFileSig.value = file;
-          uploadValidationMessageSig.value = "";
-        })}
-        onUpload$={uploadTorrentToServer}
-        apiQuery={apiQuerySig}
-        searchBusy={searchBusySig.value}
-        searchSource={searchSourceSig.value}
-        searchResults={searchResultsSig.value}
-        onSearch$={runApiSearch}
-        onAddSearchResult$={addSearchResultToServer}
+        onLibraryChanged$={$(() => loadServerSnapshot(selectedTorServer.value))}
         statsText={statsTextSig.value}
       />
     </div>

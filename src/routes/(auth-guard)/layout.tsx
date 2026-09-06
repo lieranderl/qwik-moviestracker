@@ -7,6 +7,7 @@ import {
   DEV_SESSION_BYPASS_COOKIE,
 } from "~/routes/dev-session";
 import { applyAuthenticatedCachePolicy } from "~/routes/authenticated-cache";
+import { buildAuthRedirectPath } from "~/routes/auth-redirect";
 
 export const useQueryParamsLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
@@ -39,7 +40,7 @@ export const onRequest: RequestHandler = (event) => {
 
   if (!session || new Date(session.expires) < new Date() || session.error) {
     const lang = event.url.searchParams.get("lang");
-    const authPath = lang ? `/auth/?lang=${encodeURIComponent(lang)}` : "/auth";
+    const authPath = buildAuthRedirectPath(lang);
     throw event.redirect(302, authPath);
   }
 };

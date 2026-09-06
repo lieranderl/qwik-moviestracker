@@ -1,6 +1,6 @@
 import { GoogleAuth, type IdTokenClient } from "google-auth-library";
 
-import type { ImdbRating } from "./models";
+import type { ImdbRating } from "./models/imdb";
 import { parseImdbRating } from "./provider-contracts";
 import { requestWithRetry, upstreamHttpError, UpstreamError } from "./upstream";
 

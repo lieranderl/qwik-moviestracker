@@ -1,4 +1,17 @@
-import { component$, type PropFunction, type Signal } from "@builder.io/qwik";
+import {
+  $,
+  component$,
+  type PropFunction,
+  type Signal,
+  useContext,
+  useSignal,
+} from "@builder.io/qwik";
+import { ToastManagerContext } from "qwik-toasts";
+import { validateTorrServerUploadFile } from "~/services/torrserver";
+import {
+  torrServerLibraryClient,
+  torrServerSearchClient,
+} from "~/services/torrserver/clients";
 import { TorrServerModal } from "./torrserver-modal";
 
 export type TorrServerApiSearchResult = {
@@ -352,32 +365,195 @@ const SearchSection = component$(
 /* ── Main modal ──────────────────────────────────────────── */
 
 export interface TorrServerApiToolsModalProps {
-  addLinkBusy: boolean;
-  apiQuery: Signal<string>;
-  categoryValue: Signal<string>;
   lang: string;
-  linkValue: Signal<string>;
-  onAddLink$: PropFunction<() => void>;
-  onAddSearchResult$: PropFunction<(result: TorrServerApiSearchResult) => void>;
   onClose$: PropFunction<() => void>;
-  onSearch$: PropFunction<(source: "rutor" | "torznab") => void>;
-  onUpload$: PropFunction<() => void>;
-  onUploadFileChange$: PropFunction<(file: File | null) => void>;
+  onLibraryChanged$: PropFunction<() => void>;
   open: boolean;
-  saveToDbValue: Signal<boolean>;
-  searchBusy: boolean;
-  searchResults: TorrServerApiSearchResult[];
-  searchSource: "rutor" | "torznab" | null;
   serverUrl: string;
   statsText: string;
-  titleValue: Signal<string>;
-  uploadBusy: boolean;
-  uploadFileName: string;
-  uploadValidationMessage?: string;
 }
 
 export const TorrServerApiToolsModal = component$(
   (props: TorrServerApiToolsModalProps) => {
+    const toastManager = useContext(ToastManagerContext);
+    const apiQuery = useSignal("");
+    const addLinkBusy = useSignal(false);
+    const uploadBusy = useSignal(false);
+    const uploadFile = useSignal<File | null>(null);
+    const uploadValidationMessage = useSignal("");
+    const searchBusy = useSignal(false);
+    const searchSource = useSignal<"rutor" | "torznab" | null>(null);
+    const searchResults = useSignal<TorrServerApiSearchResult[]>([]);
+    const linkValue = useSignal("");
+    const titleValue = useSignal("");
+    const categoryValue = useSignal("other");
+    const saveToDbValue = useSignal(true);
+
+    const notify = $(
+      (message: string, type: "error" | "success" | "warning") => {
+        toastManager.addToast({ message, type, autocloseTime: 5_000 });
+      },
+    );
+
+    const addLink = $(async () => {
+      const link = linkValue.value.trim();
+      if (!props.serverUrl || !link) {
+        notify(
+          lt(
+            props.lang,
+            "Provide a torrent or magnet link.",
+            "Укажите торрент или magnet ссылку.",
+          ),
+          "error",
+        );
+        return;
+      }
+      addLinkBusy.value = true;
+      try {
+        await torrServerLibraryClient.addByLink(props.serverUrl, {
+          category: categoryValue.value || "other",
+          link,
+          saveToDb: saveToDbValue.value,
+          title: titleValue.value.trim() || link,
+        });
+        linkValue.value = "";
+        titleValue.value = "";
+        notify(
+          lt(
+            props.lang,
+            "Link sent to TorrServer.",
+            "Ссылка отправлена в TorrServer.",
+          ),
+          "success",
+        );
+        await props.onLibraryChanged$();
+      } catch (error) {
+        console.error(error);
+        notify(
+          lt(
+            props.lang,
+            "Could not add the link.",
+            "Не удалось добавить ссылку.",
+          ),
+          "error",
+        );
+      } finally {
+        addLinkBusy.value = false;
+      }
+    });
+
+    const onUploadFileChange = $((file: File | null) => {
+      if (!file) {
+        uploadFile.value = null;
+        uploadValidationMessage.value = "";
+        return;
+      }
+      const validation = validateTorrServerUploadFile(file, file.name);
+      uploadFile.value = validation.ok ? file : null;
+      uploadValidationMessage.value = validation.ok ? "" : validation.message;
+    });
+
+    const upload = $(async () => {
+      const file = uploadFile.value;
+      if (!props.serverUrl || !file) return;
+      const validation = validateTorrServerUploadFile(file, file.name);
+      if (!validation.ok) {
+        uploadValidationMessage.value = validation.message;
+        notify(validation.message, "error");
+        return;
+      }
+      uploadBusy.value = true;
+      try {
+        await torrServerLibraryClient.upload(props.serverUrl, {
+          category: "other",
+          file,
+          fileName: validation.fileName,
+          saveToDb: true,
+          title: validation.fileName,
+        });
+        uploadFile.value = null;
+        uploadValidationMessage.value = "";
+        notify(
+          lt(props.lang, "Torrent uploaded.", "Торрент загружен."),
+          "success",
+        );
+        await props.onLibraryChanged$();
+      } catch (error) {
+        console.error(error);
+        notify(
+          lt(props.lang, "Upload failed.", "Загрузка не удалась."),
+          "error",
+        );
+      } finally {
+        uploadBusy.value = false;
+      }
+    });
+
+    const search = $(async (source: "rutor" | "torznab") => {
+      const query = apiQuery.value.trim();
+      if (!props.serverUrl || !query) return;
+      searchBusy.value = true;
+      searchSource.value = source;
+      try {
+        searchResults.value =
+          source === "rutor"
+            ? await torrServerSearchClient.rutor(props.serverUrl, query)
+            : await torrServerSearchClient.torznab(props.serverUrl, query);
+      } catch (error) {
+        console.error(error);
+        searchResults.value = [];
+        notify(lt(props.lang, "Search failed.", "Ошибка поиска."), "error");
+      } finally {
+        searchBusy.value = false;
+      }
+    });
+
+    const addSearchResult = $(async (result: TorrServerApiSearchResult) => {
+      const link = result.magnet || result.link || result.torrent;
+      if (!props.serverUrl || !link) {
+        notify(
+          lt(
+            props.lang,
+            "Result has no torrent link.",
+            "В результате нет торрент-ссылки.",
+          ),
+          "warning",
+        );
+        return;
+      }
+      addLinkBusy.value = true;
+      try {
+        await torrServerLibraryClient.addByLink(props.serverUrl, {
+          category: "other",
+          link,
+          poster: result.poster || "",
+          saveToDb: true,
+          title: result.name || link,
+        });
+        notify(
+          lt(
+            props.lang,
+            "Result added to TorrServer.",
+            "Результат добавлен в TorrServer.",
+          ),
+          "success",
+        );
+        await props.onLibraryChanged$();
+      } catch (error) {
+        console.error(error);
+        notify(
+          lt(
+            props.lang,
+            "Could not add the result.",
+            "Не удалось добавить результат.",
+          ),
+          "error",
+        );
+      } finally {
+        addLinkBusy.value = false;
+      }
+    });
+
     return (
       <TorrServerModal
         open={props.open}
@@ -396,35 +572,35 @@ export const TorrServerApiToolsModal = component$(
       >
         <div class="grid min-w-0 gap-4 lg:grid-cols-2">
           <AddLinkSection
-            addLinkBusy={props.addLinkBusy}
-            categoryValue={props.categoryValue}
+            addLinkBusy={addLinkBusy.value}
+            categoryValue={categoryValue}
             lang={props.lang}
-            linkValue={props.linkValue}
-            onAddLink$={props.onAddLink$}
-            saveToDbValue={props.saveToDbValue}
+            linkValue={linkValue}
+            onAddLink$={addLink}
+            saveToDbValue={saveToDbValue}
             serverUrl={props.serverUrl}
-            titleValue={props.titleValue}
+            titleValue={titleValue}
           />
 
           <UploadSection
             lang={props.lang}
-            onUpload$={props.onUpload$}
-            onUploadFileChange$={props.onUploadFileChange$}
+            onUpload$={upload}
+            onUploadFileChange$={onUploadFileChange}
             serverUrl={props.serverUrl}
-            uploadBusy={props.uploadBusy}
-            uploadFileName={props.uploadFileName}
-            uploadValidationMessage={props.uploadValidationMessage}
+            uploadBusy={uploadBusy.value}
+            uploadFileName={uploadFile.value?.name ?? ""}
+            uploadValidationMessage={uploadValidationMessage.value}
           />
 
           <SearchSection
-            addLinkBusy={props.addLinkBusy}
-            apiQuery={props.apiQuery}
+            addLinkBusy={addLinkBusy.value}
+            apiQuery={apiQuery}
             lang={props.lang}
-            onAddSearchResult$={props.onAddSearchResult$}
-            onSearch$={props.onSearch$}
-            searchBusy={props.searchBusy}
-            searchResults={props.searchResults}
-            searchSource={props.searchSource}
+            onAddSearchResult$={addSearchResult}
+            onSearch$={search}
+            searchBusy={searchBusy.value}
+            searchResults={searchResults.value}
+            searchSource={searchSource.value}
             serverUrl={props.serverUrl}
             statsText={props.statsText}
           />

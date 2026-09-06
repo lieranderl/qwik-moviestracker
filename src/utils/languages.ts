@@ -1,3 +1,5 @@
+import { message, normalizeLocale } from "./i18n";
+
 export const languages = [
   { english_name: "No Language", iso_639_1: "xx" },
   { english_name: "Afar", iso_639_1: "aa" },
@@ -197,23 +199,18 @@ const formatCountWord = (
   ruFew: string,
   ruMany: string,
 ) => {
-  if (lang === "en-US") {
-    return count === 1 ? enOne : enMany;
-  }
-
-  const absoluteCount = Math.abs(count);
-  const mod10 = absoluteCount % 10;
-  const mod100 = absoluteCount % 100;
-
-  if (mod10 === 1 && mod100 !== 11) {
-    return ruOne;
-  }
-
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
-    return ruFew;
-  }
-
-  return ruMany;
+  const locale = normalizeLocale(lang);
+  const category = new Intl.PluralRules(locale).select(count);
+  if (locale === "en-US") return category === "one" ? enOne : enMany;
+  const russianForms: Record<Intl.LDMLPluralRule, string> = {
+    zero: ruMany,
+    one: ruOne,
+    two: ruMany,
+    few: ruFew,
+    many: ruMany,
+    other: ruMany,
+  };
+  return russianForms[category];
 };
 
 const formatCountLabel = (
@@ -224,30 +221,11 @@ const formatCountLabel = (
   ruOne: string,
   ruFew: string,
   ruMany: string,
-) => `${count} ${formatCountWord(lang, count, enOne, enMany, ruOne, ruFew, ruMany)}`;
-
-const getRussianPluralIndex = (count: number) => {
-  const absCount = Math.abs(count);
-  const lastDigit = absCount % 10;
-  const lastTwoDigits = absCount % 100;
-
-  if (lastDigit === 1 && lastTwoDigits !== 11) {
-    return 0;
-  }
-
-  if (
-    lastDigit >= 2 &&
-    lastDigit <= 4 &&
-    (lastTwoDigits < 10 || lastTwoDigits >= 20)
-  ) {
-    return 1;
-  }
-
-  return 2;
-};
+) =>
+  `${count} ${formatCountWord(lang, count, enOne, enMany, ruOne, ruFew, ruMany)}`;
 
 export const langText = (lang: string, english: string, russian: string) =>
-  lang === "en-US" ? english : russian;
+  normalizeLocale(lang) === "ru-RU" ? russian : english;
 
 export const langCountWord = (
   lang: string,
@@ -258,12 +236,15 @@ export const langCountWord = (
   russianFew: string,
   russianMany: string,
 ) => {
-  if (lang === "en-US") {
-    return count === 1 ? englishSingular : englishPlural;
-  }
-
-  const russianForms = [russianOne, russianFew, russianMany];
-  return russianForms[getRussianPluralIndex(count)];
+  return formatCountWord(
+    lang,
+    count,
+    englishSingular,
+    englishPlural,
+    russianOne,
+    russianFew,
+    russianMany,
+  );
 };
 
 export const langCountLabel = (
@@ -274,1122 +255,364 @@ export const langCountLabel = (
   russianOne: string,
   russianFew: string,
   russianMany: string,
-) => `${count} ${langCountWord(lang, count, englishSingular, englishPlural, russianOne, russianFew, russianMany)}`;
-
-export const langBudget = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Budget";
-    case "ru-RU":
-      return "Бюджет";
-    default:
-      return "Бюджет";
-  }
-};
-
-export const langRevenue = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Revenue";
-    case "ru-RU":
-      return "Сборы";
-    default:
-      return "Сборы";
-  }
-};
-
-export const langMovies = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Movies";
-    case "ru-RU":
-      return "Фильмы";
-    default:
-      return "Фильмы";
-  }
-};
-
-export const langSeries = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Series";
-    case "ru-RU":
-      return "Сериалы";
-    default:
-      return "Сериалы";
-  }
-};
-
-export const langPeople = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "People";
-    case "ru-RU":
-      return "Люди";
-    default:
-      return "Люди";
-  }
-};
-
-export const langSearch = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Search";
-    case "ru-RU":
-      return "Поиск";
-    default:
-      return "Поиск";
-  }
-};
-
-export const langTorrServer = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "TorrServer";
-    case "ru-RU":
-      return "ТоррСервер";
-    default:
-      return "ТоррСервер";
-  }
-};
-
-export const langExploreAll = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "All";
-    case "ru-RU":
-      return "Все";
-    default:
-      return "Все";
-  }
-};
-
-export const langLatestMovies = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Latest movies";
-    case "ru-RU":
-      return "Последние Фильмы";
-    default:
-      return "Последние Фильмы";
-  }
-};
-
-export const langTrendingMovies = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Trending movies";
-    case "ru-RU":
-      return "Популярные Фильмы";
-    default:
-      return "Популярные Фильмы";
-  }
-};
-
-export const langNowPlayingMovies = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Now Playing";
-    case "ru-RU":
-      return "Сейчас в кино";
-    default:
-      return "Сейчас в кино";
-  }
-};
-
-export const langUpcomingMovies = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Upcoming";
-    case "ru-RU":
-      return "Скоро в кино";
-    default:
-      return "Скоро в кино";
-  }
-};
-
-export const langPopularMovies = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Popular";
-    case "ru-RU":
-      return "Популярные фильмы";
-    default:
-      return "Популярные фильмы";
-  }
-};
-
-export const langTrengingTVShows = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Trending series";
-    case "ru-RU":
-      return "Популярные Сериалы";
-    default:
-      return "Популярные Сериалы";
-  }
-};
-
-export const langAiringTodayTvShows = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Airing Today";
-    case "ru-RU":
-      return "Сегодня в эфире";
-    default:
-      return "Сегодня в эфире";
-  }
-};
-
-export const langOnTheAirTvShows = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "On the air";
-    case "ru-RU":
-      return "Сейчас выходят";
-    default:
-      return "Сейчас выходят";
-  }
-};
-
-export const langPopularTvShows = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Popular";
-    case "ru-RU":
-      return "Популярные сериалы";
-    default:
-      return "Популярные сериалы";
-  }
-};
-
-export const langLatestHDR10Movies = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "HDR10";
-    case "ru-RU":
-      return "Последние HDR10 Фильмы";
-    default:
-      return "Последние HDR10 Фильмы";
-  }
-};
-
-export const langLatestDolbyVisionMovies = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Dolby Vision";
-    case "ru-RU":
-      return "Последние Dolby Vision Фильмы";
-    default:
-      return "Последние Dolby Vision Фильмы";
-  }
-};
-
-export const langTopRatedTvShows = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Top rated";
-    case "ru-RU":
-      return "Лучшие Сериалы";
-    default:
-      return "Лучшие Сериалы";
-  }
-};
-
-export const langAll = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "All";
-    case "ru-RU":
-      return "Все";
-    default:
-      return "Все";
-  }
-};
-
-export const langNoResults = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "No Results";
-    case "ru-RU":
-      return "Нет результатов";
-    default:
-      return "Нет результатов";
-  }
-};
-
-export const langSearchResults = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Results";
-    case "ru-RU":
-      return "Результаты поиска";
-    default:
-      return "Результаты поиска";
-  }
-};
-
-export const langResults = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Results";
-    case "ru-RU":
-      return "Результаты";
-    default:
-      return "Результаты";
-  }
-};
-
-export const langSingOut = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Sign Out";
-    case "ru-RU":
-      return "Выйти";
-    default:
-      return "Выйти";
-  }
-};
-
-export const langAddNewTorrServerURL = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "TorrServer URL";
-    case "ru-RU":
-      return "Добавить URL ТоррСервера...";
-    default:
-      return "Добавить URL ТоррСервера...";
-  }
-};
-
-export const langTorrents = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Torrents";
-    case "ru-RU":
-      return "Торренты";
-    default:
-      return "Торренты";
-  }
-};
-
-export const langTrailers = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Trailers";
-    case "ru-RU":
-      return "Трейлеры";
-    default:
-      return "Трейлеры";
-  }
-};
-
-export const langActors = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Actors";
-    case "ru-RU":
-      return "Актеры";
-    default:
-      return "Актеры";
-  }
-};
-
-export const langCrew = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Crew";
-    case "ru-RU":
-      return "Съемочная группа";
-    default:
-      return "Съемочная группа";
-  }
-};
-export const langCollectionMovies = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Collection Movies";
-    case "ru-RU":
-      return "Коллекция Фильмов";
-    default:
-      return "Коллекция Фильмов";
-  }
-};
-export const langRecommendedMovies = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Recommended Movies";
-    case "ru-RU":
-      return "Рекомендуемые Фильмы";
-    default:
-      return "Рекомендуемые Фильмы";
-  }
-};
-export const langRecommendedTvShows = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Recommended Tv Shows";
-    case "ru-RU":
-      return "Рекомендуемые Сериалы";
-    default:
-      return "Рекомендуемые Сериалы";
-  }
-};
-
-export const langLastEpisode = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Last Episode";
-    case "ru-RU":
-      return "Последняя вышедшая серия";
-    default:
-      return "Последняя вышедшая серия";
-  }
-};
-
-export const langTvShowEnded = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Tv Show ended";
-    case "ru-RU":
-      return "Сериал завершён";
-    default:
-      return "Сериал завершён";
-  }
-};
-
-export const langNextEpisode = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Next Episode";
-    case "ru-RU":
-      return "Следующая серия";
-    default:
-      return "Следующая серия";
-  }
-};
-export const langCurrentSeason = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Current Season";
-    case "ru-RU":
-      return "Текущий сезон";
-    default:
-      return "Текущий сезон";
-  }
-};
-
-export const langEnded = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "ended";
-    case "ru-RU":
-      return "завершён";
-    default:
-      return "завершён";
-  }
-};
-
-export const langCreatedby = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Created by";
-    case "ru-RU":
-      return "Создан";
-    default:
-      return "Создан";
-  }
-};
-
-export const langSeasons = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Seasons";
-    case "ru-RU":
-      return "Сезоны";
-    default:
-      return "Сезоны";
-  }
-};
-
-export const langEpisodesCount = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Episodes count:";
-    case "ru-RU":
-      return "Кол-во серий:";
-    default:
-      return "Кол-во серий:";
-  }
-};
-export const langOverview = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Overview";
-    case "ru-RU":
-      return "Описание";
-    default:
-      return "Описание";
-  }
-};
-
-export const langDate = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Date";
-    case "ru-RU":
-      return "Датe";
-    default:
-      return "Датe";
-  }
-};
-
-export const langSize = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Size";
-    case "ru-RU":
-      return "Размеру";
-    default:
-      return "Размеру";
-  }
-};
-
-export const langSeeds = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Seeds";
-    case "ru-RU":
-      return "Сидам";
-    default:
-      return "Сидам";
-  }
-};
-
-export const langLeeches = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Leeches";
-    case "ru-RU":
-      return "Личам";
-    default:
-      return "Личам";
-  }
-};
-
-export const langSortOn = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Sort by:";
-    case "ru-RU":
-      return "Сортировать по:";
-    default:
-      return "Сортировать по:";
-  }
-};
-
-export const langFound = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Found";
-    case "ru-RU":
-      return "Найдено";
-    default:
-      return "Найдено";
-  }
-};
-
-export const langTorrentov = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Torrents";
-    case "ru-RU":
-      return "Торрентов";
-    default:
-      return "Торрентов";
-  }
-};
-
-export const langNotFound = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Not Found";
-    case "ru-RU":
-      return "Не найдено";
-    default:
-      return "Не найдено";
-  }
-};
-
-export const langSeason = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Season";
-    case "ru-RU":
-      return "Сезон";
-    default:
-      return "Сезон";
-  }
-};
-
-export const langRelease = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Release";
-    case "ru-RU":
-      return "Релиз";
-    default:
-      return "Релиз";
-  }
-};
-
-export const langCountries = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Countries";
-    case "ru-RU":
-      return "Страны";
-    default:
-      return "Страны";
-  }
-};
-
-export const langLanguages = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Languages";
-    case "ru-RU":
-      return "Языки";
-    default:
-      return "Языки";
-  }
-};
-
-export const langNetworks = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Networks";
-    case "ru-RU":
-      return "Сети";
-    default:
-      return "Сети";
-  }
-};
-
-export const langAvailability = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Availability";
-    case "ru-RU":
-      return "Доступность";
-    default:
-      return "Доступность";
-  }
-};
-
-export const langWhereToWatch = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Where to watch in";
-    case "ru-RU":
-      return "Где смотреть в регионе";
-    default:
-      return "Где смотреть в регионе";
-  }
-};
-
-export const langCertification = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Certification";
-    case "ru-RU":
-      return "Возрастной рейтинг";
-    default:
-      return "Возрастной рейтинг";
-  }
-};
-
-export const langRegion = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Region:";
-    case "ru-RU":
-      return "Регион:";
-    default:
-      return "Регион:";
-  }
-};
-
-export const langStream = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Stream";
-    case "ru-RU":
-      return "Стриминг";
-    default:
-      return "Стриминг";
-  }
-};
-
-export const langFree = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Free";
-    case "ru-RU":
-      return "Бесплатно";
-    default:
-      return "Бесплатно";
-  }
-};
-
-export const langWatchWithAds = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "With ads";
-    case "ru-RU":
-      return "С рекламой";
-    default:
-      return "С рекламой";
-  }
-};
-
-export const langRent = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Rent";
-    case "ru-RU":
-      return "Аренда";
-    default:
-      return "Аренда";
-  }
-};
-
-export const langBuy = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Buy";
-    case "ru-RU":
-      return "Покупка";
-    default:
-      return "Покупка";
-  }
-};
-
-export const langOpenOnTmdb = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Open on TMDB";
-    case "ru-RU":
-      return "Открыть на TMDB";
-    default:
-      return "Открыть на TMDB";
-  }
-};
-
-export const langSupportedByTmdb = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Regional metadata from TMDB";
-    case "ru-RU":
-      return "Региональные данные из TMDB";
-    default:
-      return "Региональные данные из TMDB";
-  }
-};
-
-export const langQuickFilters = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Quick filters";
-    case "ru-RU":
-      return "Быстрые фильтры";
-    default:
-      return "Быстрые фильтры";
-  }
-};
-
-export const langDiscoverMovies = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Discover movies";
-    case "ru-RU":
-      return "Подбор фильмов";
-    default:
-      return "Подбор фильмов";
-  }
-};
-
-export const langDiscoverTv = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Discover series";
-    case "ru-RU":
-      return "Подбор сериалов";
-    default:
-      return "Подбор сериалов";
-  }
-};
-
-export const langApplyFilters = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Apply filters";
-    case "ru-RU":
-      return "Применить фильтры";
-    default:
-      return "Применить фильтры";
-  }
-};
-
-export const langResetFilters = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Reset filters";
-    case "ru-RU":
-      return "Сбросить фильтры";
-    default:
-      return "Сбросить фильтры";
-  }
-};
-
-export const langSortBy = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Sort by";
-    case "ru-RU":
-      return "Сортировка";
-    default:
-      return "Сортировка";
-  }
-};
-
-export const langMinimumVotes = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Minimum votes";
-    case "ru-RU":
-      return "Минимум голосов";
-    default:
-      return "Минимум голосов";
-  }
-};
-
-export const langReleaseYear = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Release year";
-    case "ru-RU":
-      return "Год релиза";
-    default:
-      return "Год релиза";
-  }
-};
-
-export const langFirstAirYear = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "First air year";
-    case "ru-RU":
-      return "Год премьеры";
-    default:
-      return "Год премьеры";
-  }
-};
-
-export const langStreamingProvider = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Streaming provider";
-    case "ru-RU":
-      return "Стриминг-провайдер";
-    default:
-      return "Стриминг-провайдер";
-  }
-};
-
-export const langAllProviders = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "All providers";
-    case "ru-RU":
-      return "Все провайдеры";
-    default:
-      return "Все провайдеры";
-  }
-};
-
-export const langAllCertifications = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "All certifications";
-    case "ru-RU":
-      return "Все рейтинги";
-    default:
-      return "Все рейтинги";
-  }
-};
-
-export const langFeaturedSpotlight = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Featured";
-    case "ru-RU":
-      return "Главный релиз";
-    default:
-      return "Главный релиз";
-  }
-};
-
-export const langOpenDetails = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Open details";
-    case "ru-RU":
-      return "Открыть детали";
-    default:
-      return "Открыть детали";
-  }
-};
-
-export const langContinueBrowsing = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Recent";
-    case "ru-RU":
-      return "Недавнее";
-    default:
-      return "Недавнее";
-  }
-};
-
-export const langJumpBackIn = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Last viewed";
-    case "ru-RU":
-      return "Последний просмотр";
-    default:
-      return "Последний просмотр";
-  }
-};
-
-export const langResume = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Resume";
-    case "ru-RU":
-      return "Продолжить";
-    default:
-      return "Продолжить";
-  }
-};
-
-export const langRecentSearches = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Recent searches";
-    case "ru-RU":
-      return "Последние поиски";
-    default:
-      return "Последние поиски";
-  }
-};
-
-export const langSearchAssist = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Browse instead";
-    case "ru-RU":
-      return "Открыть подборки";
-    default:
-      return "Открыть подборки";
-  }
-};
-
-export const langBrowseHome = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Browse home";
-    case "ru-RU":
-      return "Главная";
-    default:
-      return "Главная";
-  }
-};
-
-export const langBrowseMovies = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Browse movies";
-    case "ru-RU":
-      return "Фильмы";
-    default:
-      return "Фильмы";
-  }
-};
-
-export const langBrowseTv = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Browse TV";
-    case "ru-RU":
-      return "Сериалы";
-    default:
-      return "Сериалы";
-  }
-};
-
-export const langQuickActions = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Quick actions";
-    case "ru-RU":
-      return "Быстрые действия";
-    default:
-      return "Быстрые действия";
-  }
-};
-
-export const langExternalLinks = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "External links";
-    case "ru-RU":
-      return "Внешние ссылки";
-    default:
-      return "Внешние ссылки";
-  }
-};
-
-export const langAccount = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Account";
-    case "ru-RU":
-      return "Аккаунт";
-    default:
-      return "Аккаунт";
-  }
-};
-
-export const langPreferences = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Preferences";
-    case "ru-RU":
-      return "Настройки";
-    default:
-      return "Настройки";
-  }
-};
-
-export const langOpenAccountMenu = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Open account menu";
-    case "ru-RU":
-      return "Открыть меню аккаунта";
-    default:
-      return "Открыть меню аккаунта";
-  }
-};
-
-export const langAccountMenu = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Account menu";
-    case "ru-RU":
-      return "Меню аккаунта";
-    default:
-      return "Меню аккаунта";
-  }
-};
-
-export const langPrimaryNavigation = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Primary navigation";
-    case "ru-RU":
-      return "Основная навигация";
-    default:
-      return "Основная навигация";
-  }
-};
-
-export const langLanguage = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Language";
-    case "ru-RU":
-      return "Язык";
-    default:
-      return "Язык";
-  }
-};
-
-export const langLanguageName = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "English";
-    case "ru-RU":
-      return "Русский";
-    default:
-      return "English";
-  }
-};
-
-export const langHome = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Home";
-    case "ru-RU":
-      return "Главная";
-    default:
-      return "Главная";
-  }
-};
-
-export const langPageNotFound = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Page not found";
-    case "ru-RU":
-      return "Страница не найдена";
-    default:
-      return "Страница не найдена";
-  }
-};
-
-export const langPageNotFoundDescription = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "The page you requested does not exist.";
-    case "ru-RU":
-      return "Запрошенная страница не существует.";
-    default:
-      return "Запрошенная страница не существует.";
-  }
-};
-
-export const langSigningIn = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Signing in...";
-    case "ru-RU":
-      return "Выполняется вход...";
-    default:
-      return "Выполняется вход...";
-  }
-};
-
-export const langSignInWithProvider = (
-  lang: string,
-  providerName: string,
-) => {
+) =>
+  `${count} ${langCountWord(lang, count, englishSingular, englishPlural, russianOne, russianFew, russianMany)}`;
+
+/** @deprecated Prefer message(locale, key). */
+export const langBudget = (lang: string) => message(lang, "langBudget");
+
+/** @deprecated Prefer message(locale, key). */
+export const langRevenue = (lang: string) => message(lang, "langRevenue");
+
+/** @deprecated Prefer message(locale, key). */
+export const langMovies = (lang: string) => message(lang, "langMovies");
+
+/** @deprecated Prefer message(locale, key). */
+export const langSeries = (lang: string) => message(lang, "langSeries");
+
+/** @deprecated Prefer message(locale, key). */
+export const langPeople = (lang: string) => message(lang, "langPeople");
+
+/** @deprecated Prefer message(locale, key). */
+export const langSearch = (lang: string) => message(lang, "langSearch");
+
+/** @deprecated Prefer message(locale, key). */
+export const langTorrServer = (lang: string) => message(lang, "langTorrServer");
+
+/** @deprecated Prefer message(locale, key). */
+export const langExploreAll = (lang: string) => message(lang, "langExploreAll");
+
+/** @deprecated Prefer message(locale, key). */
+export const langLatestMovies = (lang: string) =>
+  message(lang, "langLatestMovies");
+
+/** @deprecated Prefer message(locale, key). */
+export const langTrendingMovies = (lang: string) =>
+  message(lang, "langTrendingMovies");
+
+/** @deprecated Prefer message(locale, key). */
+export const langNowPlayingMovies = (lang: string) =>
+  message(lang, "langNowPlayingMovies");
+
+/** @deprecated Prefer message(locale, key). */
+export const langUpcomingMovies = (lang: string) =>
+  message(lang, "langUpcomingMovies");
+
+/** @deprecated Prefer message(locale, key). */
+export const langPopularMovies = (lang: string) =>
+  message(lang, "langPopularMovies");
+
+/** @deprecated Prefer message(locale, key). */
+export const langTrengingTVShows = (lang: string) =>
+  message(lang, "langTrengingTVShows");
+
+/** @deprecated Prefer message(locale, key). */
+export const langAiringTodayTvShows = (lang: string) =>
+  message(lang, "langAiringTodayTvShows");
+
+/** @deprecated Prefer message(locale, key). */
+export const langOnTheAirTvShows = (lang: string) =>
+  message(lang, "langOnTheAirTvShows");
+
+/** @deprecated Prefer message(locale, key). */
+export const langPopularTvShows = (lang: string) =>
+  message(lang, "langPopularTvShows");
+
+/** @deprecated Prefer message(locale, key). */
+export const langLatestHDR10Movies = (lang: string) =>
+  message(lang, "langLatestHDR10Movies");
+
+/** @deprecated Prefer message(locale, key). */
+export const langLatestDolbyVisionMovies = (lang: string) =>
+  message(lang, "langLatestDolbyVisionMovies");
+
+/** @deprecated Prefer message(locale, key). */
+export const langTopRatedTvShows = (lang: string) =>
+  message(lang, "langTopRatedTvShows");
+
+/** @deprecated Prefer message(locale, key). */
+export const langAll = (lang: string) => message(lang, "langAll");
+
+/** @deprecated Prefer message(locale, key). */
+export const langNoResults = (lang: string) => message(lang, "langNoResults");
+
+/** @deprecated Prefer message(locale, key). */
+export const langSearchResults = (lang: string) =>
+  message(lang, "langSearchResults");
+
+/** @deprecated Prefer message(locale, key). */
+export const langResults = (lang: string) => message(lang, "langResults");
+
+/** @deprecated Prefer message(locale, key). */
+export const langSingOut = (lang: string) => message(lang, "langSingOut");
+
+/** @deprecated Prefer message(locale, key). */
+export const langAddNewTorrServerURL = (lang: string) =>
+  message(lang, "langAddNewTorrServerURL");
+
+/** @deprecated Prefer message(locale, key). */
+export const langTorrents = (lang: string) => message(lang, "langTorrents");
+
+/** @deprecated Prefer message(locale, key). */
+export const langTrailers = (lang: string) => message(lang, "langTrailers");
+
+/** @deprecated Prefer message(locale, key). */
+export const langActors = (lang: string) => message(lang, "langActors");
+
+/** @deprecated Prefer message(locale, key). */
+export const langCrew = (lang: string) => message(lang, "langCrew");
+/** @deprecated Prefer message(locale, key). */
+export const langCollectionMovies = (lang: string) =>
+  message(lang, "langCollectionMovies");
+/** @deprecated Prefer message(locale, key). */
+export const langRecommendedMovies = (lang: string) =>
+  message(lang, "langRecommendedMovies");
+/** @deprecated Prefer message(locale, key). */
+export const langRecommendedTvShows = (lang: string) =>
+  message(lang, "langRecommendedTvShows");
+
+/** @deprecated Prefer message(locale, key). */
+export const langLastEpisode = (lang: string) =>
+  message(lang, "langLastEpisode");
+
+/** @deprecated Prefer message(locale, key). */
+export const langTvShowEnded = (lang: string) =>
+  message(lang, "langTvShowEnded");
+
+/** @deprecated Prefer message(locale, key). */
+export const langNextEpisode = (lang: string) =>
+  message(lang, "langNextEpisode");
+/** @deprecated Prefer message(locale, key). */
+export const langCurrentSeason = (lang: string) =>
+  message(lang, "langCurrentSeason");
+
+/** @deprecated Prefer message(locale, key). */
+export const langEnded = (lang: string) => message(lang, "langEnded");
+
+/** @deprecated Prefer message(locale, key). */
+export const langCreatedby = (lang: string) => message(lang, "langCreatedby");
+
+/** @deprecated Prefer message(locale, key). */
+export const langSeasons = (lang: string) => message(lang, "langSeasons");
+
+/** @deprecated Prefer message(locale, key). */
+export const langEpisodesCount = (lang: string) =>
+  message(lang, "langEpisodesCount");
+/** @deprecated Prefer message(locale, key). */
+export const langOverview = (lang: string) => message(lang, "langOverview");
+
+/** @deprecated Prefer message(locale, key). */
+export const langDate = (lang: string) => message(lang, "langDate");
+
+/** @deprecated Prefer message(locale, key). */
+export const langSize = (lang: string) => message(lang, "langSize");
+
+/** @deprecated Prefer message(locale, key). */
+export const langSeeds = (lang: string) => message(lang, "langSeeds");
+
+/** @deprecated Prefer message(locale, key). */
+export const langLeeches = (lang: string) => message(lang, "langLeeches");
+
+/** @deprecated Prefer message(locale, key). */
+export const langSortOn = (lang: string) => message(lang, "langSortOn");
+
+/** @deprecated Prefer message(locale, key). */
+export const langFound = (lang: string) => message(lang, "langFound");
+
+/** @deprecated Prefer message(locale, key). */
+export const langTorrentov = (lang: string) => message(lang, "langTorrentov");
+
+/** @deprecated Prefer message(locale, key). */
+export const langNotFound = (lang: string) => message(lang, "langNotFound");
+
+/** @deprecated Prefer message(locale, key). */
+export const langSeason = (lang: string) => message(lang, "langSeason");
+
+/** @deprecated Prefer message(locale, key). */
+export const langRelease = (lang: string) => message(lang, "langRelease");
+
+/** @deprecated Prefer message(locale, key). */
+export const langCountries = (lang: string) => message(lang, "langCountries");
+
+/** @deprecated Prefer message(locale, key). */
+export const langLanguages = (lang: string) => message(lang, "langLanguages");
+
+/** @deprecated Prefer message(locale, key). */
+export const langNetworks = (lang: string) => message(lang, "langNetworks");
+
+/** @deprecated Prefer message(locale, key). */
+export const langAvailability = (lang: string) =>
+  message(lang, "langAvailability");
+
+/** @deprecated Prefer message(locale, key). */
+export const langWhereToWatch = (lang: string) =>
+  message(lang, "langWhereToWatch");
+
+/** @deprecated Prefer message(locale, key). */
+export const langCertification = (lang: string) =>
+  message(lang, "langCertification");
+
+/** @deprecated Prefer message(locale, key). */
+export const langRegion = (lang: string) => message(lang, "langRegion");
+
+/** @deprecated Prefer message(locale, key). */
+export const langStream = (lang: string) => message(lang, "langStream");
+
+/** @deprecated Prefer message(locale, key). */
+export const langFree = (lang: string) => message(lang, "langFree");
+
+/** @deprecated Prefer message(locale, key). */
+export const langWatchWithAds = (lang: string) =>
+  message(lang, "langWatchWithAds");
+
+/** @deprecated Prefer message(locale, key). */
+export const langRent = (lang: string) => message(lang, "langRent");
+
+/** @deprecated Prefer message(locale, key). */
+export const langBuy = (lang: string) => message(lang, "langBuy");
+
+/** @deprecated Prefer message(locale, key). */
+export const langOpenOnTmdb = (lang: string) => message(lang, "langOpenOnTmdb");
+
+/** @deprecated Prefer message(locale, key). */
+export const langSupportedByTmdb = (lang: string) =>
+  message(lang, "langSupportedByTmdb");
+
+/** @deprecated Prefer message(locale, key). */
+export const langQuickFilters = (lang: string) =>
+  message(lang, "langQuickFilters");
+
+/** @deprecated Prefer message(locale, key). */
+export const langDiscoverMovies = (lang: string) =>
+  message(lang, "langDiscoverMovies");
+
+/** @deprecated Prefer message(locale, key). */
+export const langDiscoverTv = (lang: string) => message(lang, "langDiscoverTv");
+
+/** @deprecated Prefer message(locale, key). */
+export const langApplyFilters = (lang: string) =>
+  message(lang, "langApplyFilters");
+
+/** @deprecated Prefer message(locale, key). */
+export const langResetFilters = (lang: string) =>
+  message(lang, "langResetFilters");
+
+/** @deprecated Prefer message(locale, key). */
+export const langSortBy = (lang: string) => message(lang, "langSortBy");
+
+/** @deprecated Prefer message(locale, key). */
+export const langMinimumVotes = (lang: string) =>
+  message(lang, "langMinimumVotes");
+
+/** @deprecated Prefer message(locale, key). */
+export const langReleaseYear = (lang: string) =>
+  message(lang, "langReleaseYear");
+
+/** @deprecated Prefer message(locale, key). */
+export const langFirstAirYear = (lang: string) =>
+  message(lang, "langFirstAirYear");
+
+/** @deprecated Prefer message(locale, key). */
+export const langStreamingProvider = (lang: string) =>
+  message(lang, "langStreamingProvider");
+
+/** @deprecated Prefer message(locale, key). */
+export const langAllProviders = (lang: string) =>
+  message(lang, "langAllProviders");
+
+/** @deprecated Prefer message(locale, key). */
+export const langAllCertifications = (lang: string) =>
+  message(lang, "langAllCertifications");
+
+/** @deprecated Prefer message(locale, key). */
+export const langFeaturedSpotlight = (lang: string) =>
+  message(lang, "langFeaturedSpotlight");
+
+/** @deprecated Prefer message(locale, key). */
+export const langOpenDetails = (lang: string) =>
+  message(lang, "langOpenDetails");
+
+/** @deprecated Prefer message(locale, key). */
+export const langContinueBrowsing = (lang: string) =>
+  message(lang, "langContinueBrowsing");
+
+/** @deprecated Prefer message(locale, key). */
+export const langJumpBackIn = (lang: string) => message(lang, "langJumpBackIn");
+
+/** @deprecated Prefer message(locale, key). */
+export const langResume = (lang: string) => message(lang, "langResume");
+
+/** @deprecated Prefer message(locale, key). */
+export const langRecentSearches = (lang: string) =>
+  message(lang, "langRecentSearches");
+
+/** @deprecated Prefer message(locale, key). */
+export const langSearchAssist = (lang: string) =>
+  message(lang, "langSearchAssist");
+
+/** @deprecated Prefer message(locale, key). */
+export const langBrowseHome = (lang: string) => message(lang, "langBrowseHome");
+
+/** @deprecated Prefer message(locale, key). */
+export const langBrowseMovies = (lang: string) =>
+  message(lang, "langBrowseMovies");
+
+/** @deprecated Prefer message(locale, key). */
+export const langBrowseTv = (lang: string) => message(lang, "langBrowseTv");
+
+/** @deprecated Prefer message(locale, key). */
+export const langQuickActions = (lang: string) =>
+  message(lang, "langQuickActions");
+
+/** @deprecated Prefer message(locale, key). */
+export const langExternalLinks = (lang: string) =>
+  message(lang, "langExternalLinks");
+
+/** @deprecated Prefer message(locale, key). */
+export const langAccount = (lang: string) => message(lang, "langAccount");
+
+/** @deprecated Prefer message(locale, key). */
+export const langPreferences = (lang: string) =>
+  message(lang, "langPreferences");
+
+/** @deprecated Prefer message(locale, key). */
+export const langOpenAccountMenu = (lang: string) =>
+  message(lang, "langOpenAccountMenu");
+
+/** @deprecated Prefer message(locale, key). */
+export const langAccountMenu = (lang: string) =>
+  message(lang, "langAccountMenu");
+
+/** @deprecated Prefer message(locale, key). */
+export const langPrimaryNavigation = (lang: string) =>
+  message(lang, "langPrimaryNavigation");
+
+/** @deprecated Prefer message(locale, key). */
+export const langLanguage = (lang: string) => message(lang, "langLanguage");
+
+/** @deprecated Prefer message(locale, key). */
+export const langLanguageName = (lang: string) =>
+  message(lang, "langLanguageName");
+
+/** @deprecated Prefer message(locale, key). */
+export const langHome = (lang: string) => message(lang, "langHome");
+
+/** @deprecated Prefer message(locale, key). */
+export const langPageNotFound = (lang: string) =>
+  message(lang, "langPageNotFound");
+
+/** @deprecated Prefer message(locale, key). */
+export const langPageNotFoundDescription = (lang: string) =>
+  message(lang, "langPageNotFoundDescription");
+
+/** @deprecated Prefer message(locale, key). */
+export const langSigningIn = (lang: string) => message(lang, "langSigningIn");
+
+export const langSignInWithProvider = (lang: string, providerName: string) => {
   const providerLabel =
     providerName.charAt(0).toUpperCase() + providerName.slice(1);
 
-  switch (lang) {
+  switch (normalizeLocale(lang)) {
     case "en-US":
       return `Sign in with ${providerLabel}`;
     case "ru-RU":
@@ -1399,187 +622,72 @@ export const langSignInWithProvider = (
   }
 };
 
-export const langPersonalWatchlist = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Personal Watchlist";
-    case "ru-RU":
-      return "Личный список";
-    default:
-      return "Личный список";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langPersonalWatchlist = (lang: string) =>
+  message(lang, "langPersonalWatchlist");
 
-export const langPrivateMovieHub = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Private catalog";
-    case "ru-RU":
-      return "Личный кинохаб";
-    default:
-      return "Личный кинохаб";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langPrivateMovieHub = (lang: string) =>
+  message(lang, "langPrivateMovieHub");
 
-export const langTrackMoviesAndTvShowsPrefix = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Movies and series";
-    case "ru-RU":
-      return "Отслеживайте фильмы и сериалы";
-    default:
-      return "Отслеживайте фильмы и сериалы";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langTrackMoviesAndTvShowsPrefix = (lang: string) =>
+  message(lang, "langTrackMoviesAndTvShowsPrefix");
 
-export const langTrackMoviesAndTvShowsAccent = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "made simple.";
-    case "ru-RU":
-      return "без лишнего шума.";
-    default:
-      return "без лишнего шума.";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langTrackMoviesAndTvShowsAccent = (lang: string) =>
+  message(lang, "langTrackMoviesAndTvShowsAccent");
 
-export const langSimplePlaceToDiscoverTitles = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Find a title, open the details, and keep watching.";
-    case "ru-RU":
-      return "Простое место, где можно находить тайтлы, открывать детали и держать список просмотра в порядке на любом экране.";
-    default:
-      return "Простое место, где можно находить тайтлы, открывать детали и держать список просмотра в порядке на любом экране.";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langSimplePlaceToDiscoverTitles = (lang: string) =>
+  message(lang, "langSimplePlaceToDiscoverTitles");
 
-export const langWhyPeopleUseIt = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "What it keeps clear";
-    case "ru-RU":
-      return "Почему это удобно";
-    default:
-      return "Почему это удобно";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langWhyPeopleUseIt = (lang: string) =>
+  message(lang, "langWhyPeopleUseIt");
 
-export const langFastSearch = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Fast search";
-    case "ru-RU":
-      return "Быстрый поиск";
-    default:
-      return "Быстрый поиск";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langFastSearch = (lang: string) => message(lang, "langFastSearch");
 
-export const langFastSearchDescription = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Movies, series, and people in one search.";
-    case "ru-RU":
-      return "Мгновенный поиск с чистыми результатами по фильмам и сериалам.";
-    default:
-      return "Мгновенный поиск с чистыми результатами по фильмам и сериалам.";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langFastSearchDescription = (lang: string) =>
+  message(lang, "langFastSearchDescription");
 
-export const langClearDetails = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Clear details";
-    case "ru-RU":
-      return "Понятные детали";
-    default:
-      return "Понятные детали";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langClearDetails = (lang: string) =>
+  message(lang, "langClearDetails");
 
-export const langClearDetailsDescription = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Ratings, cast, trailers, and torrents stay easy to scan.";
-    case "ru-RU":
-      return "Быстро получайте ключевую информацию без лишнего шума и перегруза интерфейса.";
-    default:
-      return "Быстро получайте ключевую информацию без лишнего шума и перегруза интерфейса.";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langClearDetailsDescription = (lang: string) =>
+  message(lang, "langClearDetailsDescription");
 
-export const langOneWatchlist = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "One watchlist";
-    case "ru-RU":
-      return "Один список просмотра";
-    default:
-      return "Один список просмотра";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langOneWatchlist = (lang: string) =>
+  message(lang, "langOneWatchlist");
 
-export const langOneWatchlistDescription = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Recent activity and saved context stay close.";
-    case "ru-RU":
-      return "Собирайте все, что хотите посмотреть, в одном личном списке.";
-    default:
-      return "Собирайте все, что хотите посмотреть, в одном личном списке.";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langOneWatchlistDescription = (lang: string) =>
+  message(lang, "langOneWatchlistDescription");
 
-export const langNew = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "New";
-    case "ru-RU":
-      return "Новое";
-    default:
-      return "Новое";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langNew = (lang: string) => message(lang, "langNew");
 
-export const langDiscovery = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Discovery";
-    case "ru-RU":
-      return "Подбор";
-    default:
-      return "Подбор";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langDiscovery = (lang: string) => message(lang, "langDiscovery");
 
-export const langSearchMoviesSeriesPeople = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Search";
-    case "ru-RU":
-      return "Ищите фильмы, сериалы и людей";
-    default:
-      return "Ищите фильмы, сериалы и людей";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langSearchMoviesSeriesPeople = (lang: string) =>
+  message(lang, "langSearchMoviesSeriesPeople");
 
-export const langSearchTitlesCastCrew = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Title, actor, or director";
-    case "ru-RU":
-      return "Ищите названия, актеров и съемочную группу...";
-    default:
-      return "Ищите названия, актеров и съемочную группу...";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langSearchTitlesCastCrew = (lang: string) =>
+  message(lang, "langSearchTitlesCastCrew");
 
 export const langSearchStartsAfterCharacters = (
   lang: string,
   minimumCharacters: number,
 ) => {
-  switch (lang) {
+  switch (normalizeLocale(lang)) {
     case "en-US":
       return `Use at least ${minimumCharacters} characters.`;
     case "ru-RU":
@@ -1589,22 +697,14 @@ export const langSearchStartsAfterCharacters = (
   }
 };
 
-export const langSearchTips = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Search tips";
-    case "ru-RU":
-      return "Подсказки поиска";
-    default:
-      return "Подсказки поиска";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langSearchTips = (lang: string) => message(lang, "langSearchTips");
 
 export const langSubmitAtLeastCharactersToLoadResults = (
   lang: string,
   minimumCharacters: number,
 ) => {
-  switch (lang) {
+  switch (normalizeLocale(lang)) {
     case "en-US":
       return `Submit at least ${minimumCharacters} characters to load results`;
     case "ru-RU":
@@ -1614,110 +714,47 @@ export const langSubmitAtLeastCharactersToLoadResults = (
   }
 };
 
-export const langSearchesMoviesTvAndPeople = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Searches movies, TV, and people";
-    case "ru-RU":
-      return "Ищет фильмы, сериалы и людей";
-    default:
-      return "Ищет фильмы, сериалы и людей";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langSearchesMoviesTvAndPeople = (lang: string) =>
+  message(lang, "langSearchesMoviesTvAndPeople");
 
-export const langResultsUpdateWhenYouSubmit = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Results update when you submit";
-    case "ru-RU":
-      return "Результаты обновляются после отправки";
-    default:
-      return "Результаты обновляются после отправки";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langResultsUpdateWhenYouSubmit = (lang: string) =>
+  message(lang, "langResultsUpdateWhenYouSubmit");
 
-export const langSearchForATitleOnceAndItWillShowUpHere = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Your searches will appear here.";
-    case "ru-RU":
-      return "Найдите любой тайтл один раз, и он появится здесь.";
-    default:
-      return "Найдите любой тайтл один раз, и он появится здесь.";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langSearchForATitleOnceAndItWillShowUpHere = (lang: string) =>
+  message(lang, "langSearchForATitleOnceAndItWillShowUpHere");
 
-export const langHomeFeedUnavailable = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Home feed is unavailable";
-    case "ru-RU":
-      return "Лента главной страницы недоступна";
-    default:
-      return "Лента главной страницы недоступна";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langHomeFeedUnavailable = (lang: string) =>
+  message(lang, "langHomeFeedUnavailable");
 
-export const langPleaseRefreshOrTryAgain = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Refresh the page or try again soon.";
-    case "ru-RU":
-      return "Обновите страницу или попробуйте еще раз через минуту.";
-    default:
-      return "Обновите страницу или попробуйте еще раз через минуту.";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langPleaseRefreshOrTryAgain = (lang: string) =>
+  message(lang, "langPleaseRefreshOrTryAgain");
 
-export const langLoadingSearchResults = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Searching";
-    case "ru-RU":
-      return "Загружаем результаты поиска";
-    default:
-      return "Загружаем результаты поиска";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langLoadingSearchResults = (lang: string) =>
+  message(lang, "langLoadingSearchResults");
 
-export const langFetchingMatchingTitlesAndPeople = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Looking for matching titles and people.";
-    case "ru-RU":
-      return "Ищем подходящие фильмы, сериалы и людей.";
-    default:
-      return "Ищем подходящие фильмы, сериалы и людей.";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langFetchingMatchingTitlesAndPeople = (lang: string) =>
+  message(lang, "langFetchingMatchingTitlesAndPeople");
 
-export const langSearchUnavailableRightNow = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Search is unavailable right now";
-    case "ru-RU":
-      return "Поиск сейчас недоступен";
-    default:
-      return "Поиск сейчас недоступен";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langSearchUnavailableRightNow = (lang: string) =>
+  message(lang, "langSearchUnavailableRightNow");
 
-export const langStartWithATitleActorOrDirector = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Start with a title or name";
-    case "ru-RU":
-      return "Начните с названия, актера или режиссера";
-    default:
-      return "Начните с названия, актера или режиссера";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langStartWithATitleActorOrDirector = (lang: string) =>
+  message(lang, "langStartWithATitleActorOrDirector");
 
 export const langSearchBecomesAvailableAfterCharacters = (
   lang: string,
   minimumCharacters: number,
 ) => {
-  switch (lang) {
+  switch (normalizeLocale(lang)) {
     case "en-US":
       return `Enter at least ${minimumCharacters} characters.`;
     case "ru-RU":
@@ -1730,7 +767,7 @@ export const langSearchBecomesAvailableAfterCharacters = (
 export const langTryABroaderTitleAPersonNameOrDifferentSpelling = (
   lang: string,
 ) => {
-  switch (lang) {
+  switch (normalizeLocale(lang)) {
     case "en-US":
       return "Try a broader title, name, or spelling.";
     case "ru-RU":
@@ -1751,16 +788,9 @@ export const langRecentSearchesCount = (lang: string, count: number) =>
     "недавних поисков",
   );
 
-export const langNoRecentSearches = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "No recent searches";
-    case "ru-RU":
-      return "Недавних поисков пока нет.";
-    default:
-      return "Недавних поисков пока нет.";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langNoRecentSearches = (lang: string) =>
+  message(lang, "langNoRecentSearches");
 
 export const langSearchTooShort = (
   lang: string,
@@ -1777,7 +807,7 @@ export const langSearchTooShort = (
     "символов",
   );
 
-  switch (lang) {
+  switch (normalizeLocale(lang)) {
     case "en-US":
       return `Search starts after ${minimumCharacters} characters. Add ${remainingCharacters} more ${remainingWord} and submit again.`;
     case "ru-RU":
@@ -1788,73 +818,37 @@ export const langSearchTooShort = (
 };
 
 export const langSearchMatchesCount = (lang: string, count: number) =>
-  formatCountLabel(lang, count, "match", "matches", "совпадение", "совпадения", "совпадений");
+  formatCountLabel(
+    lang,
+    count,
+    "match",
+    "matches",
+    "совпадение",
+    "совпадения",
+    "совпадений",
+  );
 
-export const langHomeDashboardTitle = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Home";
-    case "ru-RU":
-      return "Главная";
-    default:
-      return "Главная";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langHomeDashboardTitle = (lang: string) =>
+  message(lang, "langHomeDashboardTitle");
 
-export const langHomeDashboardDescription = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Featured, recent, and trending titles in one place.";
-    case "ru-RU":
-      return "Откройте избранный релиз, вернитесь к последнему просмотру или сразу переходите к последним и популярным подборкам, не покидая панель.";
-    default:
-      return "Откройте избранный релиз, вернитесь к последнему просмотру или сразу переходите к последним и популярным подборкам, не покидая панель.";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langHomeDashboardDescription = (lang: string) =>
+  message(lang, "langHomeDashboardDescription");
 
-export const langFeaturedSpotlightDescription = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "A title worth opening now.";
-    case "ru-RU":
-      return "Тайтл, который стоит открыть сейчас.";
-    default:
-      return "Тайтл, который стоит открыть сейчас.";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langFeaturedSpotlightDescription = (lang: string) =>
+  message(lang, "langFeaturedSpotlightDescription");
 
-export const langPrivateCatalogAccessForSignedInUsers = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Private catalog for signed-in users.";
-    case "ru-RU":
-      return "Доступ к приватному каталогу только для вошедших пользователей.";
-    default:
-      return "Доступ к приватному каталогу только для вошедших пользователей.";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langPrivateCatalogAccessForSignedInUsers = (lang: string) =>
+  message(lang, "langPrivateCatalogAccessForSignedInUsers");
 
-export const langGoogleLogo = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "Google logo";
-    case "ru-RU":
-      return "Логотип Google";
-    default:
-      return "Логотип Google";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langGoogleLogo = (lang: string) => message(lang, "langGoogleLogo");
 
-export const langAvatar = (lang: string) => {
-  switch (lang) {
-    case "en-US":
-      return "avatar";
-    case "ru-RU":
-      return "аватар";
-    default:
-      return "аватар";
-  }
-};
+/** @deprecated Prefer message(locale, key). */
+export const langAvatar = (lang: string) => message(lang, "langAvatar");
 
 export const langLatestItemsCount = (lang: string, count: number) =>
   formatCountLabel(
@@ -1889,10 +883,7 @@ export const langTrendingSeriesCount = (lang: string, count: number) =>
     "популярных сериалов",
   );
 
-export const langMovieDiscoverSortLabel = (
-  lang: string,
-  sortBy: string,
-) => {
+export const langMovieDiscoverSortLabel = (lang: string, sortBy: string) => {
   switch (sortBy) {
     case "vote_average.desc":
       return langText(lang, "Highest Rated", "Сначала высокий рейтинг");
@@ -1906,10 +897,7 @@ export const langMovieDiscoverSortLabel = (
   }
 };
 
-export const langTvDiscoverSortLabel = (
-  lang: string,
-  sortBy: string,
-) => {
+export const langTvDiscoverSortLabel = (lang: string, sortBy: string) => {
   switch (sortBy) {
     case "vote_average.desc":
       return langText(lang, "Highest Rated", "Сначала высокий рейтинг");

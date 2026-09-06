@@ -2,11 +2,11 @@ import * as v from "valibot";
 import type { DocumentData } from "@google-cloud/firestore";
 import type {
   CertificationList,
-  ImdbRating,
   MediaCollection,
   WatchProviderCatalog,
   WatchProviderResults,
 } from "./models";
+import type { ImdbRating } from "./models/imdb";
 import type { JacRedResult, JacRedSearchResponse } from "./torrent-search";
 import type { TorrServerTorrentStatusRaw } from "./torrserver";
 import { UpstreamError, type UpstreamSource } from "./upstream";
@@ -130,7 +130,9 @@ export const parseTmdbDetail = <T extends { id: number }>(input: unknown): T =>
 export const parseTmdbCertificationList = (input: unknown): CertificationList =>
   parse(tmdbCertificationListSchema, input, "tmdb") as CertificationList;
 
-export const parseTmdbProviderCatalog = (input: unknown): WatchProviderCatalog =>
+export const parseTmdbProviderCatalog = (
+  input: unknown,
+): WatchProviderCatalog =>
   parse(tmdbProviderCatalogSchema, input, "tmdb") as WatchProviderCatalog;
 
 export const parseTmdbWatchProviders = (input: unknown): WatchProviderResults =>

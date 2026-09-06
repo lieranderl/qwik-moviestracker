@@ -1,6 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 import type { UpstreamFailureDetails } from "~/services/upstream";
-import { langText } from "~/utils/languages";
+import { message } from "~/utils/i18n";
 import { ErrorState } from "./page-feedback";
 
 export const FeedSectionFailure = component$<{
@@ -12,16 +12,8 @@ export const FeedSectionFailure = component$<{
   return (
     <ErrorState
       compact={true}
-      title={langText(
-        lang,
-        `${title} is temporarily unavailable`,
-        `${title}: раздел временно недоступен`,
-      )}
-      description={langText(
-        lang,
-        "Other collections are still available. Try this section again later.",
-        "Другие коллекции доступны. Попробуйте открыть этот раздел позже.",
-      )}
+      title={message(lang, "feed.sectionUnavailable", { section: title })}
+      description={message(lang, "feed.tryAgain")}
     />
   );
 });

@@ -1,12 +1,24 @@
 import { describe, expect, it } from "bun:test";
 import type { FileStat, TSResult } from "~/services/models";
 import {
+  connectionAlertClass,
   filterTorrServerTorrents,
+  formatBinarySize,
+  formatDurationSeconds,
+  formatStatusLabel,
+  formatTransferSpeed,
   getDefaultSelectedTorrentHash,
+  getNormalizedServersState,
   getPlaybackSupportState,
   getSelectedFile,
+  getStateAfterServerRemoval,
+  getTorrentHref,
   getTorrentStatusFilter,
   getHydratedServersState,
+  normalizeServerList,
+  parseStoredServerList,
+  parseTorrentMedia,
+  sortTorrents,
 } from "./torrserver-state";
 
 const fileStats: FileStat[] = [
@@ -82,5 +94,63 @@ describe("torrserver state helpers", () => {
       hint: ".mkv often needs an external player. The in-page player remains available as an experimental option.",
       isLikelyPlayable: false,
     });
+  });
+
+  it("normalizes, deduplicates, selects, and removes server endpoints", () => {
+    expect(
+      normalizeServerList([" https://one.test/ ", "https://one.test"]),
+    ).toEqual(["https://one.test"]);
+    expect(getNormalizedServersState(["https://one.test"], "missing")).toEqual({
+      list: ["https://one.test"],
+      selected: "https://one.test",
+    });
+    expect(getStateAfterServerRemoval(["one", "two"], "one")).toEqual({
+      list: ["two"],
+      selected: "two",
+    });
+    expect(parseStoredServerList("not-json")).toEqual(["not-json"]);
+    expect(parseStoredServerList("{}")).toEqual([]);
+  });
+
+  it("parses media metadata and creates media links", () => {
+    const media = parseTorrentMedia(torrents[1].data);
+    expect(media?.id).toBe(333371);
+    expect(getTorrentHref(media, "en-US")).toContain("/movie/333371");
+    expect(parseTorrentMedia("{")).toBeNull();
+    expect(getTorrentHref(null, "en-US")).toBeNull();
+  });
+
+  it("formats operational values and connection state", () => {
+    expect(formatBinarySize(1536)).toBe("1.5 KB");
+    expect(formatBinarySize()).toBe("Unknown size");
+    expect(formatTransferSpeed(1024)).toBe("1.0 KB/s");
+    expect(formatDurationSeconds(3660)).toBe("1h 1m");
+    expect(formatStatusLabel("getting_info")).toBe("Getting Info");
+    expect(connectionAlertClass("connected")).toBe("alert-success");
+    expect(connectionAlertClass("error")).toBe("alert-error");
+  });
+
+  it("sorts a copy by title, peers, preload, and recency", () => {
+    const rows = [
+      {
+        title: "B",
+        total_peers: 1,
+        preloaded_bytes: 90,
+        torrent_size: 100,
+        timestamp: 1,
+      },
+      {
+        title: "A",
+        total_peers: 5,
+        preloaded_bytes: 10,
+        torrent_size: 100,
+        timestamp: 2,
+      },
+    ];
+    expect(sortTorrents(rows, "title")[0].title).toBe("A");
+    expect(sortTorrents(rows, "peers")[0].title).toBe("A");
+    expect(sortTorrents(rows, "preload")[0].title).toBe("B");
+    expect(sortTorrents(rows, "recent")[0].title).toBe("A");
+    expect(rows[0].title).toBe("B");
   });
 });

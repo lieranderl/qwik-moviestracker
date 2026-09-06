@@ -7,7 +7,7 @@ import {
   type ImdbLookupResult,
 } from "~/services/cloud-func-api";
 import { formatRating } from "~/utils/format";
-import { langText } from "~/utils/languages";
+import { message } from "~/utils/i18n";
 import { Imdb } from "../imdb";
 
 export type MediaRatingProps = {
@@ -47,7 +47,7 @@ export const MediaRating = component$<MediaRatingProps>(
           onPending={() => <span class="loading loading-ring loading-sm" />}
           onRejected={() => (
             <span class="text-xs opacity-60">
-              {langText(lang, "IMDb unavailable", "IMDb недоступен")}
+              {message(lang, "imdb.unavailable")}
             </span>
           )}
           onResolved={(result) =>
@@ -56,8 +56,8 @@ export const MediaRating = component$<MediaRatingProps>(
             ) : (
               <span class="text-xs opacity-60">
                 {result.status === "not-found"
-                  ? langText(lang, "IMDb not found", "IMDb не найден")
-                  : langText(lang, "IMDb unavailable", "IMDb недоступен")}
+                  ? message(lang, "imdb.notFound")
+                  : message(lang, "imdb.unavailable")}
               </span>
             )
           }

@@ -34,6 +34,7 @@
     "build.client": "vite build",
     "build.preview": "vite build --ssr src/entry.preview.tsx",
     "build.server": "vite build -c adapters/bun/vite.config.ts",
+    "bench:ssr": "bun scripts/measure-ssr.mjs",
     "build.types": "tsc --incremental --noEmit",
     "deploy": "echo 'Production deploys run through .github/workflows/deploy.yml on published GitHub releases'",
     "dev": "vite --mode ssr",

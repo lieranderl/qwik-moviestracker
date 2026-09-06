@@ -7,7 +7,7 @@ import { MediaCarousel } from "~/components/media-carousel";
 import { SectionHeading } from "~/components/page-feedback";
 import type { TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
-import { getMedias, getTrendingMedia } from "~/services/tmdb";
+import { loadTvCollections } from "~/services/feed-loaders";
 import { formatYear } from "~/utils/format";
 import {
   langAiringTodayTvShows,
@@ -24,43 +24,8 @@ import { paths } from "~/utils/paths";
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   try {
-    const [tvtrend, tvtoprated, tvpopular, tvairingtoday, tvontheair] =
-      await Promise.all([
-        getTrendingMedia({
-          page: 1,
-          language: lang,
-          type: MediaType.Tv,
-          needbackdrop: true,
-        }),
-        getMedias({
-          page: 1,
-          query: "top_rated",
-          language: lang,
-          type: MediaType.Tv,
-          needbackdrop: true,
-        }),
-        getMedias({
-          page: 1,
-          query: "popular",
-          language: lang,
-          type: MediaType.Tv,
-          needbackdrop: true,
-        }),
-        getMedias({
-          page: 1,
-          query: "airing_today",
-          language: lang,
-          type: MediaType.Tv,
-          needbackdrop: true,
-        }),
-        getMedias({
-          page: 1,
-          query: "on_the_air",
-          language: lang,
-          type: MediaType.Tv,
-          needbackdrop: true,
-        }),
-      ]);
+    const { tvtrend, tvtoprated, tvpopular, tvairingtoday, tvontheair } =
+      await loadTvCollections({ lang });
 
     return {
       tvtrend: tvtrend as TvShort[],

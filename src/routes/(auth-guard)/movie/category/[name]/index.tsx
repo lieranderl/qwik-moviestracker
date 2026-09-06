@@ -3,34 +3,16 @@ import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, server$ } from "@builder.io/qwik-city";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
-import type { MediaShort } from "~/services/models";
 import { MediaType } from "~/services/models";
-import { getMoviesFirestore } from "~/services/firestore";
 import {
-  getMedias,
-  getRegionFromLanguage,
-  getTrendingMedia,
-  withImages,
-} from "~/services/tmdb";
+  loadMovieCategoryPage,
+  type MovieCategoryItem,
+} from "~/services/feed-loaders";
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import { createInfiniteScrollObserver } from "~/utils/infinite-scroll";
 import { langText } from "~/utils/languages";
-import { categoryToDb, categoryToTitle, paths } from "~/utils/paths";
-
-type FetchMovieCategoryPageArgs = {
-  category: string;
-  cursor?: string | null;
-  databaseId: string;
-  lang: string;
-  page: number;
-  projectId: string;
-};
-
-type MovieCategoryPage = {
-  movies: MediaShort[];
-  nextCursor: string | null;
-};
+import { categoryToTitle, paths } from "~/utils/paths";
 
 const MOVIE_TMDB_CATEGORY_QUERIES: Record<string, string | null> = {
   trending: null,
@@ -48,56 +30,6 @@ const isSupportedMovieCategory = (category: string) =>
 const isFirestoreCategory = (category: string) =>
   category === "updated" || category === "hdr10" || category === "dolbyvision";
 
-const fetchMovieCategoryPage = async ({
-  category,
-  cursor,
-  databaseId,
-  lang,
-  page,
-  projectId,
-}: FetchMovieCategoryPageArgs): Promise<MovieCategoryPage> => {
-  const tmdbQuery = MOVIE_TMDB_CATEGORY_QUERIES[category];
-
-  if (tmdbQuery === null) {
-    const movies = (await getTrendingMedia({
-      page,
-      language: lang,
-      type: MediaType.Movie,
-      needbackdrop: false,
-    })) as MediaShort[];
-    return { movies, nextCursor: null };
-  }
-
-  if (tmdbQuery) {
-    const movies = (await getMedias({
-      page,
-      language: lang,
-      query: tmdbQuery,
-      region:
-        category === "nowplaying" || category === "upcoming"
-          ? getRegionFromLanguage(lang)
-          : undefined,
-      type: MediaType.Movie,
-      needbackdrop: false,
-    })) as MediaShort[];
-    return { movies, nextCursor: null };
-  }
-
-  const result = await getMoviesFirestore({
-    entriesOnPage: MEDIA_PAGE_SIZE,
-    dbName: categoryToDb(category),
-    cursor,
-    language: lang,
-    projectId,
-    databaseId,
-  });
-  const movies = (await withImages(
-    result.movies as MediaShort[],
-    lang,
-  )) as MediaShort[];
-  return { movies, nextCursor: result.nextCursor };
-};
-
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   const projectId =
@@ -110,7 +42,7 @@ export const useContentLoader = routeLoader$(async (event) => {
   }
 
   try {
-    const result = await fetchMovieCategoryPage({
+    const result = await loadMovieCategoryPage({
       page: 1,
       category,
       lang,
@@ -126,7 +58,7 @@ export const useContentLoader = routeLoader$(async (event) => {
 
 export default component$(() => {
   const resource = useContentLoader();
-  const movieItemsSig = useSignal(resource.value.movies as MediaShort[]);
+  const movieItemsSig = useSignal(resource.value.movies as MovieCategoryItem[]);
   const isLoadingMovies = useSignal(false);
   const pageSig = useSignal(1);
   const cursorSig = useSignal<string | null>(resource.value.nextCursor);
@@ -146,7 +78,7 @@ export default component$(() => {
     const projectId =
       this.env.get("GCP_PROJECT") ?? this.env.get("GOOGLE_CLOUD_PROJECT") ?? "";
     const databaseId = this.env.get("FIRESTORE_DATABASE") ?? "moviestracker";
-    return await fetchMovieCategoryPage({
+    return await loadMovieCategoryPage({
       page,
       category,
       lang,
@@ -170,7 +102,7 @@ export default component$(() => {
         resource.value.lang,
         cursorSig.value,
       );
-      const nextMovies = nextResult.movies as MediaShort[];
+      const nextMovies = nextResult.movies as MovieCategoryItem[];
 
       if (nextMovies.length === 0) {
         hasMoreMovies.value = false;

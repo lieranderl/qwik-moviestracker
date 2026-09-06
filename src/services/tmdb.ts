@@ -2,9 +2,7 @@ import { formatYear } from "~/utils/format";
 import type {
   CertificationList,
   Collection,
-  Images,
   MediaCollection,
-  MediaShort,
   MediaShortStrict,
   MovieShort,
   MovieFull,
@@ -31,7 +29,6 @@ const MOVIE_DETAIL_APPEND_RESPONSE =
 const TV_DETAIL_APPEND_RESPONSE =
   "videos,credits,images,external_ids,content_ratings";
 const PERSON_DETAIL_APPEND_RESPONSE = "images,external_ids";
-type BackdropMediaType = MediaType.Movie | MediaType.Tv;
 
 const tmdbClient = createJsonApiClient({
   baseUrl: TMDB_API_BASE_URL,
@@ -42,37 +39,12 @@ const tmdbClient = createJsonApiClient({
   },
 });
 
-const isBackdropMediaType = (
-  type: Exclude<MediaType, MediaType.Seasons>,
-): type is BackdropMediaType =>
-  type === MediaType.Movie || type === MediaType.Tv;
-
 const fetchTMDB = async <T = unknown>(
   path: string,
   search: Record<string, boolean | number | string | undefined> = {},
 ): Promise<T> => {
   return tmdbClient.request<T>(path, { search });
 };
-
-const withBackdrops = async <T extends MediaShortStrict<BackdropMediaType>>(
-  media: T[],
-  type: BackdropMediaType,
-  setMediaType = false,
-) =>
-  await Promise.all(
-    media.map(async (item) => {
-      const [backdropPath] = await getImages({
-        id: item.id,
-        media_type: type,
-        langString: DEFAULT_IMAGE_LANGUAGE,
-      });
-      return {
-        ...item,
-        backdrop_path: backdropPath,
-        ...(setMediaType ? { media_type: type } : {}),
-      } as T;
-    }),
-  );
 
 const sortByYearDesc = <T>(
   items: T[],
@@ -86,13 +58,11 @@ type GetTrendingMedia = {
   page: number;
   language: string;
   type: Exclude<MediaType, MediaType.Seasons>;
-  needbackdrop: boolean;
 };
 export const getTrendingMedia = async ({
   page,
   language,
   type,
-  needbackdrop,
 }: GetTrendingMedia) => {
   const result = await fetchTMDB<
     MediaCollection<MediaShortStrict<typeof type>>
@@ -100,76 +70,7 @@ export const getTrendingMedia = async ({
     page: String(page),
     language,
   });
-  if (result.total_results === 0) return result.results;
-  if (!needbackdrop || !isBackdropMediaType(type)) {
-    return result.results;
-  }
-  return withBackdrops(
-    result.results as MediaShortStrict<BackdropMediaType>[],
-    type,
-  );
-};
-
-export const getImages = async ({
-  id,
-  media_type,
-  langString,
-}: {
-  id: number;
-  media_type: MediaType;
-  langString: string;
-}): Promise<[string, string]> => {
-  try {
-    const fallbackLang = DEFAULT_IMAGE_LANGUAGE;
-    const primaryLang = langString.split("-")[0];
-
-    const fetchImages = async (lang: string) =>
-      await fetchTMDB<Images>(`${media_type}/${id}/images`, {
-        include_image_language: lang,
-      });
-
-    const images = await fetchImages(primaryLang);
-
-    const getFilePath = (
-      items: { file_path: string }[],
-      fallbackItems: { file_path: string }[],
-    ) => {
-      if (items.length > 0) return items[0].file_path;
-      if (langString !== fallbackLang && fallbackItems.length > 0)
-        return fallbackItems[0].file_path;
-      return "";
-    };
-
-    const fallbackImages =
-      langString !== fallbackLang
-        ? await fetchImages(fallbackLang)
-        : { backdrops: [], posters: [] };
-
-    const backdrop = getFilePath(images.backdrops, fallbackImages.backdrops);
-    const poster = getFilePath(images.posters, fallbackImages.posters);
-
-    return [backdrop, poster];
-  } catch (error) {
-    console.error("Unable to fetch TMDB images", error);
-    return ["", ""];
-  }
-};
-
-export const withImages = async (movies: MediaShort[], lang: string) => {
-  return Promise.all(
-    movies.map(async (item) => {
-      const [backdrop, poster] = await getImages({
-        id: item.id,
-        media_type: MediaType.Movie,
-        langString: lang,
-      });
-      return {
-        ...item,
-        backdrop_path: backdrop,
-        poster_path: poster,
-      };
-    }),
-  );
+  return result.results;
 };
 
 type GetMedias = {
@@ -177,7 +78,6 @@ type GetMedias = {
   page: number;
   language: string;
   type: Exclude<MediaType, MediaType.Seasons>;
-  needbackdrop: boolean;
   region?: string;
 };
 export const getMedias = async ({
@@ -185,7 +85,6 @@ export const getMedias = async ({
   page,
   language,
   type,
-  needbackdrop,
   region,
 }: GetMedias) => {
   const result = await fetchTMDB<
@@ -196,15 +95,7 @@ export const getMedias = async ({
     ...(region ? { region } : {}),
   });
 
-  if (result.total_results === 0) return result.results;
-  if (!needbackdrop || !isBackdropMediaType(type)) {
-    return result.results;
-  }
-  return withBackdrops(
-    result.results as MediaShortStrict<BackdropMediaType>[],
-    type,
-    true,
-  );
+  return result.results;
 };
 
 type GetDetailType = {
@@ -279,22 +170,11 @@ export const getMediaRecom = async ({
     language,
   });
 
-  if (result.total_results === 0) return result.results;
-  if (!isBackdropMediaType(type)) {
-    return result.results;
-  }
-
-  const media = await withBackdrops(
-    result.results as MediaShortStrict<BackdropMediaType>[],
-    type,
-    true,
-  );
-
   if (type === MediaType.Movie) {
-    return sortByYearDesc(media, (item) => item.release_date);
+    return sortByYearDesc(result.results, (item) => item.release_date);
   }
 
-  return sortByYearDesc(media, (item) => item.first_air_date);
+  return sortByYearDesc(result.results, (item) => item.first_air_date);
 };
 
 type GetColMoviesType = {
@@ -308,28 +188,7 @@ export const getCollectionMovies = async ({
   const result = await fetchTMDB<Collection>(`collection/${id}`, {
     language,
   });
-  if (result.parts.length === 0) return result.parts;
-  try {
-    const parts = await Promise.all(
-      result.parts.map(async (item) => {
-        const [backdropPath] = await getImages({
-          id: item.id,
-          media_type: MediaType.Movie,
-          langString: DEFAULT_IMAGE_LANGUAGE,
-        });
-
-        return {
-          ...item,
-          backdrop_path: backdropPath,
-        };
-      }),
-    );
-
-    return sortByYearDesc(parts, (item) => item.release_date);
-  } catch (error) {
-    console.error("Unable to fetch collection movie backdrops", error);
-  }
-  return result.parts;
+  return sortByYearDesc(result.parts, (item) => item.release_date);
 };
 
 type GetPerson = {

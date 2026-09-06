@@ -6,16 +6,9 @@ import { QuickFilterStrip } from "~/components/discovery/quick-filter-strip";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
 import { ErrorState, SectionHeading } from "~/components/page-feedback";
-import type { MediaShort, MovieShort } from "~/services/models";
+import type { MovieCatalog, MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
-import { DbType, getMoviesFirestore } from "~/services/firestore";
-import {
-  getMedias,
-  getRegionFromLanguage,
-  getTrendingMedia,
-  withImages,
-} from "~/services/tmdb";
-import { MEDIA_PAGE_SIZE } from "~/utils/constants";
+import { loadMovieCollections } from "~/services/feed-loaders";
 import { formatYear } from "~/utils/format";
 import {
   langDiscoverMovies,
@@ -40,9 +33,9 @@ type MovieCollectionsData =
       popularMovies: MovieShort[];
       nowPlayingMovies: MovieShort[];
       upcomingMovies: MovieShort[];
-      torMovies: MediaShort[];
-      hdrMovies: MediaShort[];
-      dolbyMovies: MediaShort[];
+      torMovies: MovieCatalog[];
+      hdrMovies: MovieCatalog[];
+      dolbyMovies: MovieCatalog[];
     }
   | {
       status: "error";
@@ -54,10 +47,8 @@ export const useMovieCollectionsLoader = routeLoader$(async (event) => {
   const projectId =
     event.env.get("GCP_PROJECT") ?? event.env.get("GOOGLE_CLOUD_PROJECT") ?? "";
   const databaseId = event.env.get("FIRESTORE_DATABASE") ?? "moviestracker";
-  const region = getRegionFromLanguage(lang);
-
   try {
-    const [
+    const {
       movies,
       popularMovies,
       nowPlayingMovies,
@@ -65,73 +56,7 @@ export const useMovieCollectionsLoader = routeLoader$(async (event) => {
       torMovies,
       hdrMovies,
       dolbyMovies,
-    ] = await Promise.all([
-      getTrendingMedia({
-        page: 1,
-        language: lang,
-        type: MediaType.Movie,
-        needbackdrop: true,
-      }),
-      getMedias({
-        page: 1,
-        query: "popular",
-        language: lang,
-        type: MediaType.Movie,
-        needbackdrop: true,
-      }),
-      getMedias({
-        page: 1,
-        query: "now_playing",
-        language: lang,
-        region,
-        type: MediaType.Movie,
-        needbackdrop: true,
-      }),
-      getMedias({
-        page: 1,
-        query: "upcoming",
-        language: lang,
-        region,
-        type: MediaType.Movie,
-        needbackdrop: true,
-      }),
-      withImages(
-        (
-          await getMoviesFirestore({
-            entriesOnPage: MEDIA_PAGE_SIZE,
-            language: lang,
-            dbName: DbType.LastMovies,
-            projectId,
-            databaseId,
-          })
-        ).movies as MediaShort[],
-        lang,
-      ),
-      withImages(
-        (
-          await getMoviesFirestore({
-            entriesOnPage: MEDIA_PAGE_SIZE,
-            language: lang,
-            dbName: DbType.HDR10,
-            projectId,
-            databaseId,
-          })
-        ).movies as MediaShort[],
-        lang,
-      ),
-      withImages(
-        (
-          await getMoviesFirestore({
-            entriesOnPage: MEDIA_PAGE_SIZE,
-            language: lang,
-            dbName: DbType.DV,
-            projectId,
-            databaseId,
-          })
-        ).movies as MediaShort[],
-        lang,
-      ),
-    ]);
+    } = await loadMovieCollections({ lang, projectId, databaseId });
 
     return {
       status: "ready",

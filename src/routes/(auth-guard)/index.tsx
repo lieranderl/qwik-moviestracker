@@ -11,16 +11,9 @@ import {
   createDevHomeFeed,
   DEV_SESSION_BYPASS_COOKIE,
 } from "~/routes/dev-session";
-import type {
-  MediaShort,
-  MovieCatalog,
-  MovieShort,
-  TvShort,
-} from "~/services/models";
+import type { MovieCatalog, MovieShort, TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
-import { DbType, getMoviesFirestore } from "~/services/firestore";
-import { getTrendingMedia, withImages } from "~/services/tmdb";
-import { MEDIA_PAGE_SIZE } from "~/utils/constants";
+import { loadHomeFeed } from "~/services/feed-loaders";
 import { formatYear } from "~/utils/format";
 import {
   langLatestMovies,
@@ -77,39 +70,18 @@ export const useHomeFeedLoader = routeLoader$(async (event) => {
   }
 
   try {
-    const [m, t, tm] = await Promise.all([
-      getTrendingMedia({
-        page: 1,
-        language: lang,
-        type: MediaType.Movie,
-        needbackdrop: true,
-      }),
-      getTrendingMedia({
-        page: 1,
-        language: lang,
-        type: MediaType.Tv,
-        needbackdrop: true,
-      }),
-      withImages(
-        (
-          await getMoviesFirestore({
-            entriesOnPage: MEDIA_PAGE_SIZE,
-            language: lang,
-            dbName: DbType.LastMovies,
-            projectId,
-            databaseId,
-          })
-        ).movies as MediaShort[],
-        lang,
-      ),
-    ]);
+    const { movies, tv, torMovies } = await loadHomeFeed({
+      lang,
+      projectId,
+      databaseId,
+    });
 
     return {
       status: "ready",
       lang,
-      movies: m as MovieShort[],
-      tv: t as TvShort[],
-      torMovies: tm as MovieCatalog[],
+      movies,
+      tv,
+      torMovies,
     } satisfies HomeFeedData;
   } catch (error) {
     console.error(error);

@@ -5,18 +5,12 @@ import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import type { TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
-import { getMedias, getTrendingMedia } from "~/services/tmdb";
+import { loadTvCategoryPage } from "~/services/feed-loaders";
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import { createInfiniteScrollObserver } from "~/utils/infinite-scroll";
 import { langText } from "~/utils/languages";
 import { categoryToTitle, paths } from "~/utils/paths";
-
-type FetchTvCategoryPageArgs = {
-  category: string;
-  lang: string;
-  page: number;
-};
 
 const TV_CATEGORY_QUERIES: Record<string, string | null> = {
   trending: null,
@@ -24,35 +18,6 @@ const TV_CATEGORY_QUERIES: Record<string, string | null> = {
   popular: "popular",
   airingtoday: "airing_today",
   ontheair: "on_the_air",
-};
-
-const fetchTvCategoryPage = async ({
-  category,
-  lang,
-  page,
-}: FetchTvCategoryPageArgs): Promise<TvShort[]> => {
-  const tmdbQuery = TV_CATEGORY_QUERIES[category];
-
-  if (tmdbQuery === null) {
-    return (await getTrendingMedia({
-      page,
-      language: lang,
-      type: MediaType.Tv,
-      needbackdrop: false,
-    })) as TvShort[];
-  }
-
-  if (tmdbQuery) {
-    return (await getMedias({
-      page,
-      language: lang,
-      query: tmdbQuery,
-      type: MediaType.Tv,
-      needbackdrop: false,
-    })) as TvShort[];
-  }
-
-  return [];
 };
 
 const isSupportedTvCategory = (category: string) =>
@@ -67,7 +32,7 @@ export const useContentLoader = routeLoader$(async (event) => {
   }
 
   try {
-    const tv = await fetchTvCategoryPage({
+    const tv = await loadTvCategoryPage({
       page: 1,
       category,
       lang,
@@ -88,7 +53,7 @@ export default component$(() => {
 
   const fetchTvPage = server$(
     async (page: number, category: string, lang: string) =>
-      await fetchTvCategoryPage({
+      await loadTvCategoryPage({
         page,
         category,
         lang,

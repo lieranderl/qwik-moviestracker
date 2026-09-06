@@ -1,4 +1,5 @@
 import { describe, expect, it } from "bun:test";
+import { DbType } from "./firestore";
 import {
   MediaType,
   type MovieCatalog,
@@ -13,6 +14,14 @@ import {
   loadTvCollections,
   type FeedLoaderDependencies,
 } from "./feed-loaders";
+import {
+  isMovieCategory,
+  isTvCategory,
+  MOVIE_CATEGORIES,
+  TV_CATEGORIES,
+  type MovieCategory,
+  type TvCategory,
+} from "./media-categories";
 
 const movie = {
   id: 1,
@@ -30,21 +39,33 @@ const catalogMovie = { ...movie, year: "1979" } as MovieCatalog;
 
 const createDependencies = () => {
   const counts = { firestore: 0, tmdb: 0 };
+  const calls = {
+    firestore: [] as Array<
+      Parameters<FeedLoaderDependencies["getMoviesFirestore"]>[0]
+    >,
+    medias: [] as Array<Parameters<FeedLoaderDependencies["getMedias"]>[0]>,
+    trending: [] as Array<
+      Parameters<FeedLoaderDependencies["getTrendingMedia"]>[0]
+    >,
+  };
   const dependencies: FeedLoaderDependencies = {
-    getTrendingMedia: async ({ type }) => {
+    getTrendingMedia: async (args) => {
       counts.tmdb += 1;
-      return type === MediaType.Movie ? [movie] : [tv];
+      calls.trending.push(args);
+      return args.type === MediaType.Movie ? [movie] : [tv];
     },
-    getMedias: async ({ type }) => {
+    getMedias: async (args) => {
       counts.tmdb += 1;
-      return type === MediaType.Movie ? [movie] : [tv];
+      calls.medias.push(args);
+      return args.type === MediaType.Movie ? [movie] : [tv];
     },
-    getMoviesFirestore: async () => {
+    getMoviesFirestore: async (args) => {
       counts.firestore += 1;
+      calls.firestore.push(args);
       return { movies: [catalogMovie], nextCursor: null };
     },
   };
-  return { counts, dependencies };
+  return { calls, counts, dependencies };
 };
 
 describe("feed loaders", () => {
@@ -85,44 +106,87 @@ describe("feed loaders", () => {
     expect(result.tvontheair).toEqual([tv]);
   });
 
-  it("loads each TMDB category page with one upstream request", async () => {
-    const { counts, dependencies } = createDependencies();
+  const movieCases: Array<{
+    category: MovieCategory;
+    source: "firestore" | "medias" | "trending";
+    mapping: DbType | null | string;
+  }> = [
+    { category: "trending", source: "trending", mapping: null },
+    { category: "popular", source: "medias", mapping: "popular" },
+    { category: "nowplaying", source: "medias", mapping: "now_playing" },
+    { category: "upcoming", source: "medias", mapping: "upcoming" },
+    { category: "updated", source: "firestore", mapping: DbType.LastMovies },
+    { category: "hdr10", source: "firestore", mapping: DbType.HDR10 },
+    { category: "dolbyvision", source: "firestore", mapping: DbType.DV },
+  ];
 
-    const moviePage = await loadMovieCategoryPage(
-      {
-        category: "popular",
-        databaseId: "moviestracker",
-        lang: "en-US",
-        page: 2,
-        projectId: "project",
-      },
-      dependencies,
+  for (const testCase of movieCases) {
+    it(`maps movie category ${testCase.category} to one ${testCase.source} request`, async () => {
+      const { calls, counts, dependencies } = createDependencies();
+      const page = await loadMovieCategoryPage(
+        {
+          category: testCase.category,
+          databaseId: "moviestracker",
+          lang: "en-US",
+          page: 2,
+          projectId: "project",
+        },
+        dependencies,
+      );
+
+      expect(counts.tmdb + counts.firestore).toBe(1);
+      expect((calls.trending[0]?.type ?? null) as unknown).toBe(
+        testCase.source === "trending" ? MediaType.Movie : null,
+      );
+      expect((calls.medias[0]?.query ?? null) as unknown).toBe(
+        testCase.source === "medias" ? testCase.mapping : null,
+      );
+      expect((calls.firestore[0]?.dbName ?? null) as unknown).toBe(
+        testCase.source === "firestore" ? testCase.mapping : null,
+      );
+      expect(page.movies[0]?.backdrop_path).toBe("/alien-backdrop.jpg");
+    });
+  }
+
+  const tvCases: Array<{
+    category: TvCategory;
+    source: "medias" | "trending";
+    query: null | string;
+  }> = [
+    { category: "trending", source: "trending", query: null },
+    { category: "toprated", source: "medias", query: "top_rated" },
+    { category: "popular", source: "medias", query: "popular" },
+    { category: "airingtoday", source: "medias", query: "airing_today" },
+    { category: "ontheair", source: "medias", query: "on_the_air" },
+  ];
+
+  for (const testCase of tvCases) {
+    it(`maps TV category ${testCase.category} to one ${testCase.source} request`, async () => {
+      const { calls, counts, dependencies } = createDependencies();
+      const page = await loadTvCategoryPage(
+        { category: testCase.category, lang: "en-US", page: 2 },
+        dependencies,
+      );
+
+      expect(counts.tmdb + counts.firestore).toBe(1);
+      expect((calls.trending[0]?.type ?? null) as unknown).toBe(
+        testCase.source === "trending" ? MediaType.Tv : null,
+      );
+      expect((calls.medias[0]?.query ?? null) as unknown).toBe(testCase.query);
+      expect(page).toEqual([tv]);
+    });
+  }
+
+  it("uses category definitions as the validation source of truth", () => {
+    expect(Object.keys(MOVIE_CATEGORIES)).toEqual(
+      movieCases.map(({ category }) => category),
     );
-    const tvPage = await loadTvCategoryPage(
-      { category: "toprated", lang: "en-US", page: 2 },
-      dependencies,
+    expect(Object.keys(TV_CATEGORIES)).toEqual(
+      tvCases.map(({ category }) => category),
     );
-
-    expect(counts).toEqual({ tmdb: 2, firestore: 0 });
-    expect(moviePage.movies[0]?.backdrop_path).toBe("/alien-backdrop.jpg");
-    expect(tvPage).toEqual([tv]);
-  });
-
-  it("loads each Firestore category page once without changing stored images", async () => {
-    const { counts, dependencies } = createDependencies();
-
-    const page = await loadMovieCategoryPage(
-      {
-        category: "updated",
-        databaseId: "moviestracker",
-        lang: "en-US",
-        page: 1,
-        projectId: "project",
-      },
-      dependencies,
-    );
-
-    expect(counts).toEqual({ tmdb: 0, firestore: 1 });
-    expect(page.movies[0]?.backdrop_path).toBe("/alien-backdrop.jpg");
+    expect(isMovieCategory("dolbyvision")).toBe(true);
+    expect(isMovieCategory("unknown")).toBe(false);
+    expect(isTvCategory("ontheair")).toBe(true);
+    expect(isTvCategory("unknown")).toBe(false);
   });
 });

@@ -1,17 +1,10 @@
-type AuthenticatedCachePolicy = {
-  public: false;
-  maxAge: 0;
-  sMaxAge: 0;
-  staleWhileRevalidate: 0;
-};
+import type { CacheControl } from "@builder.io/qwik-city/middleware/request-handler";
 
 export const applyAuthenticatedCachePolicy = (
-  cacheControl: (policy: AuthenticatedCachePolicy) => void,
+  cacheControl: (policy: CacheControl) => void,
 ) => {
   cacheControl({
-    public: false,
-    maxAge: 0,
-    sMaxAge: 0,
-    staleWhileRevalidate: 0,
+    private: true,
+    noStore: true,
   });
 };

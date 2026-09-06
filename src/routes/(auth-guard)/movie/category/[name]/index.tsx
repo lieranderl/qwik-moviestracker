@@ -8,27 +8,19 @@ import {
   loadMovieCategoryPage,
   type MovieCategoryItem,
 } from "~/services/feed-loaders";
+import {
+  isMovieCategory,
+  MOVIE_CATEGORIES,
+  type MovieCategory,
+} from "~/services/media-categories";
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import { createInfiniteScrollObserver } from "~/utils/infinite-scroll";
 import { langText } from "~/utils/languages";
 import { categoryToTitle, paths } from "~/utils/paths";
 
-const MOVIE_TMDB_CATEGORY_QUERIES: Record<string, string | null> = {
-  trending: null,
-  popular: "popular",
-  nowplaying: "now_playing",
-  upcoming: "upcoming",
-};
-
-const isSupportedMovieCategory = (category: string) =>
-  category in MOVIE_TMDB_CATEGORY_QUERIES ||
-  category === "updated" ||
-  category === "hdr10" ||
-  category === "dolbyvision";
-
-const isFirestoreCategory = (category: string) =>
-  category === "updated" || category === "hdr10" || category === "dolbyvision";
+const isFirestoreCategory = (category: MovieCategory) =>
+  MOVIE_CATEGORIES[category].source === "firestore";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
@@ -37,7 +29,7 @@ export const useContentLoader = routeLoader$(async (event) => {
   const databaseId = event.env.get("FIRESTORE_DATABASE") ?? "moviestracker";
   const category = event.params.name;
 
-  if (!isSupportedMovieCategory(category)) {
+  if (!isMovieCategory(category)) {
     throw event.redirect(302, paths.notFound(lang));
   }
 
@@ -71,7 +63,7 @@ export default component$(() => {
 
   const fetchMovies = server$(async function (
     page: number,
-    category: string,
+    category: MovieCategory,
     lang: string,
     cursor: string | null,
   ) {

@@ -1,8 +1,13 @@
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
-import { categoryToDb } from "~/utils/paths";
 import { DbType, getMoviesFirestore } from "./firestore";
 import type { MovieShort, TvShort } from "./models";
 import { MediaType } from "./models";
+import {
+  MOVIE_CATEGORIES,
+  TV_CATEGORIES,
+  type MovieCategory,
+  type TvCategory,
+} from "./media-categories";
 import { getMedias, getRegionFromLanguage, getTrendingMedia } from "./tmdb";
 
 export type FeedLoaderDependencies = {
@@ -148,23 +153,8 @@ export const loadTvCollections = async (
   };
 };
 
-const MOVIE_CATEGORY_QUERIES: Record<string, string | null> = {
-  trending: null,
-  popular: "popular",
-  nowplaying: "now_playing",
-  upcoming: "upcoming",
-};
-
-const TV_CATEGORY_QUERIES: Record<string, string | null> = {
-  trending: null,
-  toprated: "top_rated",
-  popular: "popular",
-  airingtoday: "airing_today",
-  ontheair: "on_the_air",
-};
-
 type MovieCategoryContext = CatalogContext & {
-  category: string;
+  category: MovieCategory;
   cursor?: string | null;
   page: number;
 };
@@ -175,8 +165,8 @@ export const loadMovieCategoryPage = async (
   context: MovieCategoryContext,
   dependencies = defaultDependencies,
 ): Promise<{ movies: MovieCategoryItem[]; nextCursor: string | null }> => {
-  const query = MOVIE_CATEGORY_QUERIES[context.category];
-  if (query === null) {
+  const definition = MOVIE_CATEGORIES[context.category];
+  if (definition.source === "trending") {
     const movies = await dependencies.getTrendingMedia({
       page: context.page,
       language: context.lang,
@@ -184,13 +174,13 @@ export const loadMovieCategoryPage = async (
     });
     return { movies: movies as MovieCategoryItem[], nextCursor: null };
   }
-  if (query) {
+  if (definition.source === "tmdb") {
     const movies = await dependencies.getMedias({
       page: context.page,
       language: context.lang,
-      query,
+      query: definition.query,
       region:
-        context.category === "nowplaying" || context.category === "upcoming"
+        "useRegion" in definition && definition.useRegion
           ? getRegionFromLanguage(context.lang)
           : undefined,
       type: MediaType.Movie,
@@ -200,7 +190,7 @@ export const loadMovieCategoryPage = async (
 
   const result = await dependencies.getMoviesFirestore({
     entriesOnPage: MEDIA_PAGE_SIZE,
-    dbName: categoryToDb(context.category),
+    dbName: definition.dbName,
     cursor: context.cursor,
     language: context.lang,
     projectId: context.projectId,
@@ -210,22 +200,21 @@ export const loadMovieCategoryPage = async (
 };
 
 export const loadTvCategoryPage = async (
-  context: { category: string; lang: string; page: number },
+  context: { category: TvCategory; lang: string; page: number },
   dependencies = defaultDependencies,
 ): Promise<TvShort[]> => {
-  const query = TV_CATEGORY_QUERIES[context.category];
-  if (query === null) {
+  const definition = TV_CATEGORIES[context.category];
+  if (definition.source === "trending") {
     return (await dependencies.getTrendingMedia({
       page: context.page,
       language: context.lang,
       type: MediaType.Tv,
     })) as TvShort[];
   }
-  if (!query) return [];
   return (await dependencies.getMedias({
     page: context.page,
     language: context.lang,
-    query,
+    query: definition.query,
     type: MediaType.Tv,
   })) as TvShort[];
 };

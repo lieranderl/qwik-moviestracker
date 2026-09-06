@@ -6,28 +6,18 @@ import { MediaGrid } from "~/components/media-grid";
 import type { TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { loadTvCategoryPage } from "~/services/feed-loaders";
+import { isTvCategory, type TvCategory } from "~/services/media-categories";
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import { createInfiniteScrollObserver } from "~/utils/infinite-scroll";
 import { langText } from "~/utils/languages";
 import { categoryToTitle, paths } from "~/utils/paths";
 
-const TV_CATEGORY_QUERIES: Record<string, string | null> = {
-  trending: null,
-  toprated: "top_rated",
-  popular: "popular",
-  airingtoday: "airing_today",
-  ontheair: "on_the_air",
-};
-
-const isSupportedTvCategory = (category: string) =>
-  category in TV_CATEGORY_QUERIES;
-
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   const category = event.params.name;
 
-  if (!isSupportedTvCategory(category)) {
+  if (!isTvCategory(category)) {
     throw event.redirect(302, paths.notFound(lang));
   }
 
@@ -52,7 +42,7 @@ export default component$(() => {
   const sentinelRef = useSignal<Element>();
 
   const fetchTvPage = server$(
-    async (page: number, category: string, lang: string) =>
+    async (page: number, category: TvCategory, lang: string) =>
       await loadTvCategoryPage({
         page,
         category,

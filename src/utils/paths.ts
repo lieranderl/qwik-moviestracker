@@ -10,17 +10,6 @@ import {
   langText,
 } from "./languages";
 
-const CATEGORY_TO_DB: Record<string, string> = {
-  updated: "latesttorrentsmovies",
-  hdr10: "hdr10movies",
-  dolbyvision: "dvmovies",
-  trending: "trending",
-};
-
-export const categoryToDb = (category: string) => {
-  return CATEGORY_TO_DB[category] ?? CATEGORY_TO_DB.updated;
-};
-
 export const categoryToTitle = (
   category: string,
   type: "movie" | "tv",

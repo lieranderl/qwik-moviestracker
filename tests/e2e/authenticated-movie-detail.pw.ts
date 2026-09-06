@@ -24,9 +24,15 @@ test.describe("authenticated movie detail", () => {
         name: openImdbPagePattern,
       }),
     ).toBeVisible();
-    await expect(page.getByText("PG-13 • US")).toBeVisible();
+    const availability = page
+      .getByRole("heading", { name: "Availability" })
+      .locator("..");
+    await expect(availability).toContainText("PG-13");
+    await expect(availability).toContainText("Region: US");
     await expect(
-      page.locator("span:not([aria-hidden])").filter({ hasText: /^Netflix$/ }),
+      availability
+        .locator("span:not([aria-hidden])")
+        .filter({ hasText: /^Netflix$/ }),
     ).toBeVisible();
     await expect(
       page.getByRole("link", {

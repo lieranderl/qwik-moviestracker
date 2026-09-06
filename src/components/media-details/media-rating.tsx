@@ -1,40 +1,31 @@
-import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { component$, Resource, useResource$ } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
 
 import { RatingStar } from "~/components/rating-star";
-import { getOptionalImdbRating } from "~/services/cloud-func-api";
-import type { ImdbRating } from "~/services/models";
+import {
+  getImdbRatingResult,
+  type ImdbLookupResult,
+} from "~/services/cloud-func-api";
 import { formatRating } from "~/utils/format";
+import { langText } from "~/utils/languages";
 import { Imdb } from "../imdb";
 
 export type MediaRatingProps = {
   vote_average?: number;
   vote_count?: number;
   imdbId?: string | null;
+  lang: string;
 };
 
 const fetchImdbRating = server$(async (imdbId: string) => {
-  return getOptionalImdbRating(imdbId);
+  return getImdbRatingResult(imdbId);
 });
 
 export const MediaRating = component$<MediaRatingProps>(
-  ({ vote_average, vote_count, imdbId }) => {
-    const imdb = useSignal<ImdbRating | null>(null);
-    const loading = useSignal(!!imdbId);
-
-    // eslint-disable-next-line qwik/no-use-visible-task
-    useVisibleTask$(async () => {
-      if (!imdbId) {
-        loading.value = false;
-        return;
-      }
-      try {
-        const result = await fetchImdbRating(imdbId);
-        imdb.value = result ?? null;
-      } finally {
-        loading.value = false;
-      }
-    });
+  ({ vote_average, vote_count, imdbId, lang }) => {
+    const imdb = useResource$<ImdbLookupResult>(async () =>
+      imdbId ? fetchImdbRating(imdbId) : { status: "not-found" },
+    );
 
     return (
       <div class="flex items-center gap-2">
@@ -51,10 +42,26 @@ export const MediaRating = component$<MediaRatingProps>(
             )}
           </div>
         )}
-        {loading.value && (
-          <span class="loading loading-ring loading-sm" />
-        )}
-        {!loading.value && imdb.value && <Imdb imdb={imdb.value} />}
+        <Resource
+          value={imdb}
+          onPending={() => <span class="loading loading-ring loading-sm" />}
+          onRejected={() => (
+            <span class="text-xs opacity-60">
+              {langText(lang, "IMDb unavailable", "IMDb недоступен")}
+            </span>
+          )}
+          onResolved={(result) =>
+            result.status === "found" ? (
+              <Imdb imdb={result.rating} />
+            ) : (
+              <span class="text-xs opacity-60">
+                {result.status === "not-found"
+                  ? langText(lang, "IMDb not found", "IMDb не найден")
+                  : langText(lang, "IMDb unavailable", "IMDb недоступен")}
+              </span>
+            )
+          }
+        />
       </div>
     );
   },

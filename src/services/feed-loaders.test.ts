@@ -81,7 +81,67 @@ describe("feed loaders", () => {
       movies: [movie],
       tv: [tv],
       torMovies: [catalogMovie],
+      failures: {
+        movies: undefined,
+        tv: undefined,
+        torMovies: undefined,
+      },
     });
+  });
+
+  it("keeps successful home sections when one provider fails", async () => {
+    const { counts, dependencies } = createDependencies();
+    dependencies.getTrendingMedia = async (args) => {
+      counts.tmdb += 1;
+      if (args.type === MediaType.Movie) throw new TypeError("network");
+      return [tv];
+    };
+
+    const result = await loadHomeFeed(
+      { lang: "en-US", projectId: "project", databaseId: "moviestracker" },
+      dependencies,
+    );
+
+    expect(counts).toEqual({ tmdb: 2, firestore: 1 });
+    expect(result.movies).toEqual([]);
+    expect(result.tv).toEqual([tv]);
+    expect(result.torMovies).toEqual([catalogMovie]);
+    expect(result.failures.movies).toMatchObject({
+      source: "tmdb",
+      kind: "unavailable",
+    });
+  });
+
+  it("settles every movie and TV collection independently", async () => {
+    const movieDeps = createDependencies();
+    movieDeps.dependencies.getMedias = async (args) => {
+      movieDeps.counts.tmdb += 1;
+      if (args.query === "popular") throw new TypeError("network");
+      return [movie];
+    };
+    const movies = await loadMovieCollections(
+      { lang: "en-US", projectId: "project", databaseId: "moviestracker" },
+      movieDeps.dependencies,
+    );
+    expect(movieDeps.counts).toEqual({ tmdb: 4, firestore: 3 });
+    expect(movies.popularMovies).toEqual([]);
+    expect(movies.movies).toEqual([movie]);
+    expect(movies.failures.popularMovies?.source).toBe("tmdb");
+
+    const tvDeps = createDependencies();
+    tvDeps.dependencies.getMedias = async (args) => {
+      tvDeps.counts.tmdb += 1;
+      if (args.query === "top_rated") throw new TypeError("network");
+      return [tv];
+    };
+    const television = await loadTvCollections(
+      { lang: "en-US" },
+      tvDeps.dependencies,
+    );
+    expect(tvDeps.counts).toEqual({ tmdb: 5, firestore: 0 });
+    expect(television.tvtoprated).toEqual([]);
+    expect(television.tvpopular).toEqual([tv]);
+    expect(television.failures.tvtoprated?.source).toBe("tmdb");
   });
 
   it("loads movies with four TMDB requests and three Firestore requests", async () => {

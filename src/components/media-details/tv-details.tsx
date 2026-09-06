@@ -42,8 +42,7 @@ interface TvDetailsProps {
   lang: string;
 }
 
-const sectionCardClass =
-  "card border-base-200 bg-base-100/95 border shadow-sm";
+const sectionCardClass = "card border-base-200 bg-base-100/95 border shadow-sm";
 const sectionBodyClass = "card-body gap-4 p-4 md:p-6";
 
 export const TvDetails = component$(
@@ -68,8 +67,7 @@ export const TvDetails = component$(
       });
     });
 
-    const hasActions =
-      (tv.videos && tv.videos.results.length > 0) || true;
+    const hasActions = (tv.videos && tv.videos.results.length > 0) || true;
 
     return (
       <DetailPageContainer>
@@ -86,17 +84,17 @@ export const TvDetails = component$(
               />
             ) : (
               <div class="bg-base-200 rounded-box flex aspect-2/3 w-full items-center justify-center">
-                <span class="text-base-content/20 text-5xl select-none" aria-hidden="true">
+                <span
+                  class="text-base-content/20 text-5xl select-none"
+                  aria-hidden="true"
+                >
                   📺
                 </span>
               </div>
             )}
           </figure>
           <div class={`${sectionBodyClass} min-w-0 flex-1`}>
-            <MediaTitle
-              name={tv.name ?? ""}
-              original_name={tv.original_name}
-            />
+            <MediaTitle name={tv.name ?? ""} original_name={tv.original_name} />
 
             {tv.tagline && (
               <p class="text-base-content/70 -mt-1 italic md:text-lg">
@@ -151,6 +149,7 @@ export const TvDetails = component$(
               vote_average={tv.vote_average}
               vote_count={tv.vote_count}
               imdbId={imdbId}
+              lang={lang}
             />
 
             {/* Primary actions */}
@@ -236,9 +235,7 @@ export const TvDetails = component$(
                 <div class="stat-title">
                   {langText(lang, "Episodes", "Серии")}
                 </div>
-                <div class="stat-value text-lg">
-                  {tv.number_of_episodes}
-                </div>
+                <div class="stat-value text-lg">{tv.number_of_episodes}</div>
               </div>
               <div class="stat px-0 py-3">
                 <div class="stat-title">
@@ -255,11 +252,7 @@ export const TvDetails = component$(
         <div class="divider" />
 
         {/* ── EXTERNAL LINKS ── */}
-        <ExternalIds
-          external_ids={tv.external_ids}
-          lang={lang}
-          type={"tv"}
-        />
+        <ExternalIds external_ids={tv.external_ids} lang={lang} type={"tv"} />
 
         <div class="divider" />
 

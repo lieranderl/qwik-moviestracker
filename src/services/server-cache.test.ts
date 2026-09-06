@@ -74,6 +74,29 @@ describe("BoundedAsyncCache", () => {
     expect(loads).toBe(1);
   });
 
+  it("keeps a slow in-flight load coalesced past the eventual TTL", async () => {
+    let now = 0;
+    let resolveLoad!: (value: string) => void;
+    let loads = 0;
+    const cache = new BoundedAsyncCache({ now: () => now });
+    const load = () => {
+      loads += 1;
+      return new Promise<string>((resolve) => {
+        resolveLoad = resolve;
+      });
+    };
+
+    const first = cache.getOrLoad("slow", 10, load);
+    await Promise.resolve();
+    now = 50;
+    const second = cache.getOrLoad("slow", 10, load);
+    resolveLoad("value");
+
+    expect((await first).cache.status).toBe("miss");
+    expect((await second).cache.status).toBe("coalesced");
+    expect(loads).toBe(1);
+  });
+
   it("removes rejected loads so the next request can recover", async () => {
     let loads = 0;
     const cache = new BoundedAsyncCache();

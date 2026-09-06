@@ -36,7 +36,10 @@ describe("detail route server data boundaries", () => {
     expect(movieRouteSource).not.toContain("getOptionalImdbRating");
     expect(tvRouteSource).not.toContain("getOptionalImdbRating");
     expect(ratingComponentSource).toContain("server$");
-    expect(ratingComponentSource).toContain("getOptionalImdbRating");
+    expect(ratingComponentSource).toContain("getImdbRatingResult");
+    expect(ratingComponentSource).toContain("<Resource");
+    expect(ratingComponentSource).toContain("not-found");
+    expect(ratingComponentSource).toContain("unavailable");
   });
 
   it("writes recent activity from browser-only visible tasks after resume", async () => {

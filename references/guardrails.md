@@ -101,9 +101,9 @@
 
 ## Repo Sharp Edges
 
-- `dist/**` and `server/**` are committed generated output.
+- `dist/**` and `server/**` are ignored generated output. Never commit them.
 - The repo has a small Bun-based test surface, but coverage is still narrow.
-- `adapters/cloud-run/vite.config.ts` references a missing entry file.
+- Bun is the only supported SSR adapter.
 - Keep Docker's Bun image pinned to the same tested Bun version as CI. Floating
   `oven/bun:1` can pick up Linux runtime regressions before GitHub CI sees
   them.

@@ -17,6 +17,12 @@ import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import { createInfiniteScrollObserver } from "~/utils/infinite-scroll";
 import { langText } from "~/utils/languages";
+import {
+  appendPage,
+  beginNextPage,
+  createPaginationState,
+  failPage,
+} from "~/utils/pagination-state";
 import { categoryToTitle, paths } from "~/utils/paths";
 
 const isFirestoreCategory = (category: MovieCategory) =>
@@ -50,14 +56,13 @@ export const useContentLoader = routeLoader$(async (event) => {
 
 export default component$(() => {
   const resource = useContentLoader();
-  const movieItemsSig = useSignal(resource.value.movies as MovieCategoryItem[]);
-  const isLoadingMovies = useSignal(false);
-  const pageSig = useSignal(1);
-  const cursorSig = useSignal<string | null>(resource.value.nextCursor);
-  const hasMoreMovies = useSignal(
-    isFirestoreCategory(resource.value.category)
-      ? resource.value.nextCursor !== null
-      : resource.value.movies.length >= MEDIA_PAGE_SIZE,
+  const pagination = useSignal(
+    createPaginationState<MovieCategoryItem>({
+      cursor: resource.value.nextCursor,
+      items: resource.value.movies as MovieCategoryItem[],
+      mode: isFirestoreCategory(resource.value.category) ? "cursor" : "page",
+      pageSize: MEDIA_PAGE_SIZE,
+    }),
   );
   const sentinelRef = useSignal<Element>();
 
@@ -81,34 +86,22 @@ export default component$(() => {
   });
 
   const getNewMovies = $(async () => {
-    if (isLoadingMovies.value || !hasMoreMovies.value) {
-      return;
-    }
-
-    isLoadingMovies.value = true;
+    const next = beginNextPage(pagination.value);
+    if (!next.request) return;
+    pagination.value = next.state;
     try {
-      const nextPage = pageSig.value + 1;
       const nextResult = await fetchMovies(
-        nextPage,
+        next.request.page,
         resource.value.category,
         resource.value.lang,
-        cursorSig.value,
+        next.request.cursor,
       );
-      const nextMovies = nextResult.movies as MovieCategoryItem[];
-
-      if (nextMovies.length === 0) {
-        hasMoreMovies.value = false;
-        return;
-      }
-
-      movieItemsSig.value = [...movieItemsSig.value, ...nextMovies];
-      pageSig.value = nextPage;
-      cursorSig.value = nextResult.nextCursor;
-      hasMoreMovies.value = isFirestoreCategory(resource.value.category)
-        ? nextResult.nextCursor !== null
-        : nextMovies.length >= MEDIA_PAGE_SIZE;
-    } finally {
-      isLoadingMovies.value = false;
+      pagination.value = appendPage(pagination.value, {
+        cursor: nextResult.nextCursor,
+        items: nextResult.movies as MovieCategoryItem[],
+      });
+    } catch {
+      pagination.value = failPage(pagination.value);
     }
   });
 
@@ -121,7 +114,7 @@ export default component$(() => {
 
     const observer = createInfiniteScrollObserver({
       target,
-      hasMore: hasMoreMovies.value,
+      hasMore: pagination.value.hasMore,
       onIntersect: () => {
         void getNewMovies();
       },
@@ -139,8 +132,8 @@ export default component$(() => {
       <MediaGrid
         headerBadge={langText(
           resource.value.lang,
-          `${movieItemsSig.value.length} loaded`,
-          `${movieItemsSig.value.length} загружено`,
+          `${pagination.value.items.length} loaded`,
+          `${pagination.value.items.length} загружено`,
         )}
         title={categoryToTitle(
           resource.value.category,
@@ -148,8 +141,8 @@ export default component$(() => {
           resource.value.lang,
         )}
       >
-        {movieItemsSig.value.length > 0 &&
-          movieItemsSig.value.map((m) => (
+        {pagination.value.items.length > 0 &&
+          pagination.value.items.map((m) => (
             <a
               href={paths.media(MediaType.Movie, m.id, resource.value.lang)}
               key={m.id}
@@ -169,7 +162,7 @@ export default component$(() => {
       </MediaGrid>
       <div class="flex justify-center">
         <div ref={sentinelRef} class="h-8 w-full" />
-        {isLoadingMovies.value && (
+        {pagination.value.status === "loading" && (
           <div class="border-base-200 bg-base-100/88 flex items-center gap-3 rounded-full border px-4 py-2 text-sm shadow-sm">
             <span class="loading loading-ring loading-sm" />
             <span>

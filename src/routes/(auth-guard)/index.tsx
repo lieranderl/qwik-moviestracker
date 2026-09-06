@@ -3,6 +3,7 @@ import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import { ContinueBrowsingWidget } from "~/components/discovery/continue-browsing";
 import { FeaturedSpotlight } from "~/components/discovery/featured-spotlight";
+import { FeedSectionFailure } from "~/components/feed-section-failure";
 import { QuickFilterStrip } from "~/components/discovery/quick-filter-strip";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
@@ -14,6 +15,7 @@ import {
 import type { MovieCatalog, MovieShort, TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { loadHomeFeed } from "~/services/feed-loaders";
+import type { FeedFailures } from "~/services/feed-loaders";
 import { formatYear } from "~/utils/format";
 import {
   langLatestMovies,
@@ -43,6 +45,7 @@ type HomeFeedData =
       movies: MovieShort[];
       tv: TvShort[];
       torMovies: MovieCatalog[];
+      failures: FeedFailures;
     }
   | {
       status: "error";
@@ -66,11 +69,12 @@ export const useHomeFeedLoader = routeLoader$(async (event) => {
     return {
       status: "ready",
       ...devHomeFeed,
+      failures: {} as FeedFailures,
     } satisfies HomeFeedData;
   }
 
   try {
-    const { movies, tv, torMovies } = await loadHomeFeed({
+    const { movies, tv, torMovies, failures } = await loadHomeFeed({
       lang,
       projectId,
       databaseId,
@@ -82,6 +86,7 @@ export const useHomeFeedLoader = routeLoader$(async (event) => {
       movies,
       tv,
       torMovies,
+      failures,
     } satisfies HomeFeedData;
   } catch (error) {
     console.error(error);
@@ -194,6 +199,11 @@ export default component$(() => {
           </div>
         ))}
       </MediaCarousel>
+      <FeedSectionFailure
+        failure={value.failures.torMovies}
+        lang={lang}
+        title={langLatestMovies(lang)}
+      />
       <MediaCarousel
         sectionId="trending-movies"
         title={langTrendingMovies(lang)}
@@ -219,6 +229,11 @@ export default component$(() => {
           </div>
         ))}
       </MediaCarousel>
+      <FeedSectionFailure
+        failure={value.failures.movies}
+        lang={lang}
+        title={langTrendingMovies(lang)}
+      />
       <MediaCarousel
         sectionId="trending-tv"
         title={langTrengingTVShows(lang)}
@@ -244,6 +259,11 @@ export default component$(() => {
           </div>
         ))}
       </MediaCarousel>
+      <FeedSectionFailure
+        failure={value.failures.tv}
+        lang={lang}
+        title={langTrengingTVShows(lang)}
+      />
     </div>
   );
 });

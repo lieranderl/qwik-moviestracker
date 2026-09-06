@@ -70,12 +70,14 @@ export class BoundedAsyncCache {
     }
 
     this.evictLeastRecentlyUsed();
-    const expiresAt = now + Math.max(0, ttlMs);
+    const ttl = Math.max(0, ttlMs);
     const promise = Promise.resolve().then(loader);
     const entry: CacheEntry<T> = {
       promise,
       settled: false,
-      expiresAt,
+      // An in-flight load must remain coalescible even when it takes longer
+      // than the eventual value TTL. Expiration starts only after success.
+      expiresAt: Number.POSITIVE_INFINITY,
       lastAccess: ++this.accessSequence,
     };
     this.entries.set(key, entry as CacheEntry<unknown>);
@@ -84,7 +86,11 @@ export class BoundedAsyncCache {
       const value = await promise;
       entry.value = value;
       entry.settled = true;
-      return { value, cache: { status: "miss", expiresAt } };
+      entry.expiresAt = this.now() + ttl;
+      return {
+        value,
+        cache: { status: "miss", expiresAt: entry.expiresAt },
+      };
     } catch (error) {
       if (this.entries.get(key) === entry) this.entries.delete(key);
       throw error;

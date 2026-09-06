@@ -97,7 +97,7 @@ Keep new external API access in `src/services/**`, not inside route files.
 
 - `dist/**` is build output.
 - `server/**` is generated SSR output.
-- Treat both as derived artifacts.
+- Treat both as derived, ignored artifacts; never commit them.
 
 ## Deployment Files
 
@@ -111,12 +111,12 @@ Keep new external API access in `src/services/**`, not inside route files.
 The repository supports development and production only. Production deploys are
 triggered by published GitHub releases, authenticate to GCP through GitHub OIDC
 / Workload Identity Federation, build, scan locally, push the clean image to
-Artifact Registry, deploy a no-traffic Cloud Run candidate, route 100% traffic
-to it, smoke-test via the production URL, and roll back on failure.
+Artifact Registry, deploy a no-traffic Cloud Run candidate, smoke-test its
+health endpoint, route 100% traffic to it, smoke-test via the production URL,
+and roll back on failure. OpenTofu owns service configuration, environment and
+secret bindings, IAM, and alerting; releases change only image and traffic.
 
 ## Known Gaps
 
-- `adapters/cloud-run/vite.config.ts` references a missing
-  `src/entry.cloud-run.tsx`.
 - The in-repo test surface is still small, but Bun-based route and logic tests
   now exist under `src/routes/**`.

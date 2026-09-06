@@ -17,10 +17,7 @@ env:
   GAR_REPOSITORY: ${{ vars.GAR_REPOSITORY }}
   IMAGE_NAME: ${{ vars.IMAGE_NAME }}
   PROD_SERVICE: ${{ vars.PROD_SERVICE }}
-  PROD_SERVICE_ACCOUNT: ${{ vars.PROD_SERVICE_ACCOUNT }}
   PROD_URL: ${{ vars.PROD_URL }}
-  GOOGLE_ID: ${{ vars.GOOGLE_ID }}
-  FIRESTORE_DATABASE: moviestracker
 
 jobs:
   quality:
@@ -54,12 +51,11 @@ jobs:
           WIF_PROVIDER: ${{ vars.GCP_WORKLOAD_ID_PROVIDER }}
           DEPLOYER_SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
         run: |
-          for name in GCP_PROJECT GCP_REGION GAR_REPOSITORY IMAGE_NAME PROD_SERVICE PROD_SERVICE_ACCOUNT PROD_URL GOOGLE_ID WIF_PROVIDER DEPLOYER_SERVICE_ACCOUNT; do
+          for name in GCP_PROJECT GCP_REGION GAR_REPOSITORY IMAGE_NAME PROD_SERVICE PROD_URL WIF_PROVIDER DEPLOYER_SERVICE_ACCOUNT; do
             [[ -n "${!name:-}" ]] || { echo "Missing required deployment variable: $name" >&2; exit 1; }
           done
           [[ "$WIF_PROVIDER" =~ ^projects/[0-9]+/locations/global/workloadIdentityPools/[^/]+/providers/[^/]+$ ]]
           [[ "$DEPLOYER_SERVICE_ACCOUNT" == *@"$GCP_PROJECT".iam.gserviceaccount.com ]]
-          [[ "$PROD_SERVICE_ACCOUNT" == *@"$GCP_PROJECT".iam.gserviceaccount.com ]]
           [[ "$PROD_URL" =~ ^https://[^/]+$ ]]
 
       - name: Authenticate to Google Cloud
@@ -187,17 +183,18 @@ jobs:
             --no-traffic \
             --tag="$TAG" \
             --revision-suffix="$SUFFIX" \
-            --service-account="$PROD_SERVICE_ACCOUNT" \
-            --cpu=1 \
-            --memory=512Mi \
-            --min=0 \
-            --max=2 \
-            --concurrency=40 \
-            --set-env-vars="NODE_ENV=production,AUTH_URL=$PROD_URL,GOOGLE_ID=$GOOGLE_ID,GCP_PROJECT=$GCP_PROJECT,FIRESTORE_DATABASE=$FIRESTORE_DATABASE" \
-            --set-secrets="AUTH_SECRET=AUTH_SECRET:latest,GOOGLE_SECRET=GOOGLE_SECRET:latest,TMDB_API_KEY=TMDB_API_KEY:latest,GC_API_KEY=GC_API_KEY:latest" \
             --quiet
 
-          # Route 100% traffic to the new revision, smoke-test via PROD_URL
+          # Verify the candidate revision before it receives production traffic.
+          CANDIDATE_URL=$(gcloud run services describe "$PROD_SERVICE" \
+            --region="$GCP_REGION" \
+            --project="$GCP_PROJECT" \
+            --format=json | jq -r --arg tag "$TAG" '.status.traffic[] | select(.tag == $tag) | .url')
+          test -n "$CANDIDATE_URL" && test "$CANDIDATE_URL" != "null"
+          curl --fail --silent --show-error --retry 5 --retry-all-errors \
+            --max-time 15 "$CANDIDATE_URL/healthz"
+
+          # Promote only after candidate health passes, then run full smoke tests.
           gcloud run services update-traffic "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --to-revisions="$PROD_SERVICE-$SUFFIX=100" --quiet
           ./scripts/smoke-deployment.sh "$PROD_URL"
 

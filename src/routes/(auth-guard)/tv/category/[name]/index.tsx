@@ -11,6 +11,12 @@ import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import { createInfiniteScrollObserver } from "~/utils/infinite-scroll";
 import { langText } from "~/utils/languages";
+import {
+  appendPage,
+  beginNextPage,
+  createPaginationState,
+  failPage,
+} from "~/utils/pagination-state";
 import { categoryToTitle, paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
@@ -35,10 +41,13 @@ export const useContentLoader = routeLoader$(async (event) => {
 
 export default component$(() => {
   const resource = useContentLoader();
-  const tvItemsSig = useSignal(resource.value.tv as TvShort[]);
-  const isLoadingTv = useSignal(false);
-  const pageSig = useSignal(1);
-  const hasMoreTv = useSignal(resource.value.tv.length >= MEDIA_PAGE_SIZE);
+  const pagination = useSignal(
+    createPaginationState<TvShort>({
+      items: resource.value.tv as TvShort[],
+      mode: "page",
+      pageSize: MEDIA_PAGE_SIZE,
+    }),
+  );
   const sentinelRef = useSignal<Element>();
 
   const fetchTvPage = server$(
@@ -51,29 +60,18 @@ export default component$(() => {
   );
 
   const getNewTv = $(async () => {
-    if (isLoadingTv.value || !hasMoreTv.value) {
-      return;
-    }
-
-    isLoadingTv.value = true;
+    const next = beginNextPage(pagination.value);
+    if (!next.request) return;
+    pagination.value = next.state;
     try {
-      const nextPage = pageSig.value + 1;
       const nextTv = (await fetchTvPage(
-        nextPage,
+        next.request.page,
         resource.value.category,
         resource.value.lang,
       )) as TvShort[];
-
-      if (nextTv.length === 0) {
-        hasMoreTv.value = false;
-        return;
-      }
-
-      tvItemsSig.value = [...tvItemsSig.value, ...nextTv];
-      pageSig.value = nextPage;
-      hasMoreTv.value = nextTv.length >= MEDIA_PAGE_SIZE;
-    } finally {
-      isLoadingTv.value = false;
+      pagination.value = appendPage(pagination.value, { items: nextTv });
+    } catch {
+      pagination.value = failPage(pagination.value);
     }
   });
 
@@ -86,7 +84,7 @@ export default component$(() => {
 
     const observer = createInfiniteScrollObserver({
       target,
-      hasMore: hasMoreTv.value,
+      hasMore: pagination.value.hasMore,
       onIntersect: () => {
         void getNewTv();
       },
@@ -104,8 +102,8 @@ export default component$(() => {
       <MediaGrid
         headerBadge={langText(
           resource.value.lang,
-          `${tvItemsSig.value.length} loaded`,
-          `${tvItemsSig.value.length} загружено`,
+          `${pagination.value.items.length} loaded`,
+          `${pagination.value.items.length} загружено`,
         )}
         title={categoryToTitle(
           resource.value.category,
@@ -113,8 +111,8 @@ export default component$(() => {
           resource.value.lang,
         )}
       >
-        {tvItemsSig.value.length > 0 &&
-          tvItemsSig.value.map((m) => (
+        {pagination.value.items.length > 0 &&
+          pagination.value.items.map((m) => (
             <a
               key={m.id}
               href={paths.media(MediaType.Tv, m.id, resource.value.lang)}
@@ -134,7 +132,7 @@ export default component$(() => {
       </MediaGrid>
       <div class="flex justify-center">
         <div ref={sentinelRef} class="h-8 w-full" />
-        {isLoadingTv.value && (
+        {pagination.value.status === "loading" && (
           <div class="border-base-200 bg-base-100/88 flex items-center gap-3 rounded-full border px-4 py-2 text-sm shadow-sm">
             <span class="loading loading-ring loading-sm" />
             <span>

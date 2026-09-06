@@ -6,6 +6,7 @@ import type { Account, Profile, Session } from "@auth/core/types";
 import { QwikAuth$ } from "@auth/qwik";
 import type { RequestEventCommon } from "@builder.io/qwik-city";
 import { resolveAuthTrustHost, resolveFallbackJwtSecret } from "./auth-config";
+import { allowVerifiedGoogleAccount } from "./auth-policy";
 
 export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
   (async ({ env }: RequestEventCommon) => {
@@ -70,14 +71,7 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
           account: Account | null;
           profile?: Profile;
         }) {
-          if (account?.provider !== "google" || !profile) {
-            return false;
-          }
-          const googleProfile = profile as GoogleProfile;
-          return Boolean(
-            googleProfile.email_verified &&
-            googleProfile.email?.endsWith("@gmail.com"),
-          );
+          return allowVerifiedGoogleAccount(account, profile);
         },
       },
     };

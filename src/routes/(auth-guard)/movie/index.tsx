@@ -3,12 +3,14 @@ import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import { QuickFilterStrip } from "~/components/discovery/quick-filter-strip";
+import { FeedSectionFailure } from "~/components/feed-section-failure";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
 import { ErrorState, SectionHeading } from "~/components/page-feedback";
 import type { MovieCatalog, MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { loadMovieCollections } from "~/services/feed-loaders";
+import type { FeedFailures } from "~/services/feed-loaders";
 import { formatYear } from "~/utils/format";
 import {
   langDiscoverMovies,
@@ -36,6 +38,7 @@ type MovieCollectionsData =
       torMovies: MovieCatalog[];
       hdrMovies: MovieCatalog[];
       dolbyMovies: MovieCatalog[];
+      failures: FeedFailures;
     }
   | {
       status: "error";
@@ -56,6 +59,7 @@ export const useMovieCollectionsLoader = routeLoader$(async (event) => {
       torMovies,
       hdrMovies,
       dolbyMovies,
+      failures,
     } = await loadMovieCollections({ lang, projectId, databaseId });
 
     return {
@@ -68,6 +72,7 @@ export const useMovieCollectionsLoader = routeLoader$(async (event) => {
       torMovies,
       hdrMovies,
       dolbyMovies,
+      failures,
     } satisfies MovieCollectionsData;
   } catch (error) {
     console.error(error);
@@ -158,6 +163,11 @@ export default component$(() => {
           </a>
         </div>
       </section>
+      <FeedSectionFailure
+        failure={value.failures.torMovies}
+        lang={lang}
+        title={langLatestMovies(lang)}
+      />
       <MediaCarousel
         sectionId="latest-movies"
         title={langLatestMovies(lang)}
@@ -184,6 +194,11 @@ export default component$(() => {
         ))}
       </MediaCarousel>
 
+      <FeedSectionFailure
+        failure={value.failures.popularMovies}
+        lang={lang}
+        title={langPopularMovies(lang)}
+      />
       <MediaCarousel
         sectionId="popular-movies"
         title={langPopularMovies(lang)}
@@ -210,6 +225,11 @@ export default component$(() => {
         ))}
       </MediaCarousel>
 
+      <FeedSectionFailure
+        failure={value.failures.nowPlayingMovies}
+        lang={lang}
+        title={langNowPlayingMovies(lang)}
+      />
       <MediaCarousel
         sectionId="now-playing-movies"
         title={langNowPlayingMovies(lang)}
@@ -236,6 +256,11 @@ export default component$(() => {
         ))}
       </MediaCarousel>
 
+      <FeedSectionFailure
+        failure={value.failures.upcomingMovies}
+        lang={lang}
+        title={langUpcomingMovies(lang)}
+      />
       <MediaCarousel
         sectionId="upcoming-movies"
         title={langUpcomingMovies(lang)}
@@ -262,6 +287,11 @@ export default component$(() => {
         ))}
       </MediaCarousel>
 
+      <FeedSectionFailure
+        failure={value.failures.hdrMovies}
+        lang={lang}
+        title={langLatestHDR10Movies(lang)}
+      />
       <MediaCarousel
         sectionId="hdr10-movies"
         title={langLatestHDR10Movies(lang)}
@@ -288,6 +318,11 @@ export default component$(() => {
         ))}
       </MediaCarousel>
 
+      <FeedSectionFailure
+        failure={value.failures.dolbyMovies}
+        lang={lang}
+        title={langLatestDolbyVisionMovies(lang)}
+      />
       <MediaCarousel
         sectionId="dolby-vision-movies"
         title={langLatestDolbyVisionMovies(lang)}
@@ -314,6 +349,11 @@ export default component$(() => {
         ))}
       </MediaCarousel>
 
+      <FeedSectionFailure
+        failure={value.failures.movies}
+        lang={lang}
+        title={langTrendingMovies(lang)}
+      />
       <MediaCarousel
         sectionId="trending-movies"
         title={langTrendingMovies(lang)}

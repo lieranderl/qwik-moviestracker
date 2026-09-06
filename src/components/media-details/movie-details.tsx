@@ -42,8 +42,7 @@ interface MovieDetailsProps {
   lang: string;
 }
 
-const sectionCardClass =
-  "card border-base-200 bg-base-100/95 border shadow-sm";
+const sectionCardClass = "card border-base-200 bg-base-100/95 border shadow-sm";
 const sectionBodyClass = "card-body gap-4 p-4 md:p-6";
 
 export const MovieDetails = component$(
@@ -86,12 +85,17 @@ export const MovieDetails = component$(
                 src={`https://image.tmdb.org/t/p/w342${movie.poster_path}`}
                 width={342}
                 height={513}
-                alt={movie.title ?? langText(lang, "Movie poster", "Постер фильма")}
+                alt={
+                  movie.title ?? langText(lang, "Movie poster", "Постер фильма")
+                }
                 class="rounded-box h-auto w-full shadow-lg"
               />
             ) : (
               <div class="bg-base-200 rounded-box flex aspect-2/3 w-full items-center justify-center">
-                <span class="text-base-content/20 text-5xl select-none" aria-hidden="true">
+                <span
+                  class="text-base-content/20 text-5xl select-none"
+                  aria-hidden="true"
+                >
                   🎬
                 </span>
               </div>
@@ -138,6 +142,7 @@ export const MovieDetails = component$(
               vote_average={movie.vote_average}
               vote_count={movie.vote_count}
               imdbId={imdbId}
+              lang={lang}
             />
 
             {/* Primary actions */}

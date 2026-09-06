@@ -2,6 +2,7 @@ import { component$ } from "@builder.io/qwik";
 
 import { type DocumentHead, routeLoader$ } from "@builder.io/qwik-city";
 import { QuickFilterStrip } from "~/components/discovery/quick-filter-strip";
+import { FeedSectionFailure } from "~/components/feed-section-failure";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
 import { SectionHeading } from "~/components/page-feedback";
@@ -24,8 +25,14 @@ import { paths } from "~/utils/paths";
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   try {
-    const { tvtrend, tvtoprated, tvpopular, tvairingtoday, tvontheair } =
-      await loadTvCollections({ lang });
+    const {
+      tvtrend,
+      tvtoprated,
+      tvpopular,
+      tvairingtoday,
+      tvontheair,
+      failures,
+    } = await loadTvCollections({ lang });
 
     return {
       tvtrend: tvtrend as TvShort[],
@@ -33,6 +40,7 @@ export const useContentLoader = routeLoader$(async (event) => {
       tvpopular: tvpopular as TvShort[],
       tvairingtoday: tvairingtoday as TvShort[],
       tvontheair: tvontheair as TvShort[],
+      failures,
       lang,
     };
   } catch {
@@ -73,30 +81,35 @@ export default component$(() => {
       items: value.tvtrend,
       sectionId: "trending-tv",
       title: langTrengingTVShows(lang),
+      failure: value.failures.tvtrend,
     },
     {
       category: "popular",
       items: value.tvpopular,
       sectionId: "popular-tv",
       title: langPopularTvShows(lang),
+      failure: value.failures.tvpopular,
     },
     {
       category: "toprated",
       items: value.tvtoprated,
       sectionId: "top-rated-tv",
       title: langTopRatedTvShows(lang),
+      failure: value.failures.tvtoprated,
     },
     {
       category: "airingtoday",
       items: value.tvairingtoday,
       sectionId: "airing-today-tv",
       title: langAiringTodayTvShows(lang),
+      failure: value.failures.tvairingtoday,
     },
     {
       category: "ontheair",
       items: value.tvontheair,
       sectionId: "on-the-air-tv",
       title: langOnTheAirTvShows(lang),
+      failure: value.failures.tvontheair,
     },
   ];
 
@@ -141,32 +154,38 @@ export default component$(() => {
         </div>
       </section>
       {tvSections.map((section) => (
-        <MediaCarousel
-          key={section.sectionId}
-          sectionId={section.sectionId}
-          title={section.title}
-          type={MediaType.Tv}
-          category={section.category}
-          lang={lang}
-        >
-          {section.items.map((m) => (
-            <div class="carousel-item" key={m.id}>
-              <a
-                href={paths.media(MediaType.Tv, m.id, lang)}
-                class="media-card-link block"
-              >
-                <MediaCard
-                  title={m.name ? m.name : ""}
-                  width={500}
-                  rating={m.vote_average ? m.vote_average : 0}
-                  year={formatYear(m.first_air_date)}
-                  picfile={m.backdrop_path}
-                  variant="landscape"
-                />
-              </a>
-            </div>
-          ))}
-        </MediaCarousel>
+        <div class="contents" key={section.sectionId}>
+          <FeedSectionFailure
+            failure={section.failure}
+            lang={lang}
+            title={section.title}
+          />
+          <MediaCarousel
+            sectionId={section.sectionId}
+            title={section.title}
+            type={MediaType.Tv}
+            category={section.category}
+            lang={lang}
+          >
+            {section.items.map((m) => (
+              <div class="carousel-item" key={m.id}>
+                <a
+                  href={paths.media(MediaType.Tv, m.id, lang)}
+                  class="media-card-link block"
+                >
+                  <MediaCard
+                    title={m.name ? m.name : ""}
+                    width={500}
+                    rating={m.vote_average ? m.vote_average : 0}
+                    year={formatYear(m.first_air_date)}
+                    picfile={m.backdrop_path}
+                    variant="landscape"
+                  />
+                </a>
+              </div>
+            ))}
+          </MediaCarousel>
+        </div>
       ))}
     </div>
   );

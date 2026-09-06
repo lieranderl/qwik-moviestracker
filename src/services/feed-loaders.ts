@@ -9,6 +9,25 @@ import {
   type TvCategory,
 } from "./media-categories";
 import { getMedias, getRegionFromLanguage, getTrendingMedia } from "./tmdb";
+import {
+  toUpstreamFailure,
+  type UpstreamFailureDetails,
+  type UpstreamSource,
+} from "./upstream";
+
+export type FeedFailures = Record<string, UpstreamFailureDetails | undefined>;
+
+const settleFeedSection = async <T>(
+  source: UpstreamSource,
+  load: Promise<T>,
+): Promise<{ data: T | null; failure?: UpstreamFailureDetails }> => {
+  try {
+    return { data: await load };
+  } catch (error) {
+    const result = toUpstreamFailure(error, source);
+    return { data: null, failure: result.ok ? undefined : result.error };
+  }
+};
 
 export type FeedLoaderDependencies = {
   getMedias: (args: Parameters<typeof getMedias>[0]) => Promise<unknown[]>;
@@ -35,29 +54,43 @@ export const loadHomeFeed = async (
   dependencies = defaultDependencies,
 ) => {
   const [movies, tv, torMoviesPage] = await Promise.all([
-    dependencies.getTrendingMedia({
-      page: 1,
-      language: context.lang,
-      type: MediaType.Movie,
-    }),
-    dependencies.getTrendingMedia({
-      page: 1,
-      language: context.lang,
-      type: MediaType.Tv,
-    }),
-    dependencies.getMoviesFirestore({
-      entriesOnPage: MEDIA_PAGE_SIZE,
-      language: context.lang,
-      dbName: DbType.LastMovies,
-      projectId: context.projectId,
-      databaseId: context.databaseId,
-    }),
+    settleFeedSection(
+      "tmdb",
+      dependencies.getTrendingMedia({
+        page: 1,
+        language: context.lang,
+        type: MediaType.Movie,
+      }),
+    ),
+    settleFeedSection(
+      "tmdb",
+      dependencies.getTrendingMedia({
+        page: 1,
+        language: context.lang,
+        type: MediaType.Tv,
+      }),
+    ),
+    settleFeedSection(
+      "firestore",
+      dependencies.getMoviesFirestore({
+        entriesOnPage: MEDIA_PAGE_SIZE,
+        language: context.lang,
+        dbName: DbType.LastMovies,
+        projectId: context.projectId,
+        databaseId: context.databaseId,
+      }),
+    ),
   ]);
 
   return {
-    movies: movies as MovieShort[],
-    tv: tv as TvShort[],
-    torMovies: torMoviesPage.movies,
+    movies: (movies.data ?? []) as MovieShort[],
+    tv: (tv.data ?? []) as TvShort[],
+    torMovies: torMoviesPage.data?.movies ?? [],
+    failures: {
+      movies: movies.failure,
+      tv: tv.failure,
+      torMovies: torMoviesPage.failure,
+    } satisfies FeedFailures,
   };
 };
 
@@ -75,50 +108,74 @@ export const loadMovieCollections = async (
     hdrMovies,
     dolbyMovies,
   ] = await Promise.all([
-    dependencies.getTrendingMedia({
-      page: 1,
-      language: context.lang,
-      type: MediaType.Movie,
-    }),
-    dependencies.getMedias({
-      page: 1,
-      query: "popular",
-      language: context.lang,
-      type: MediaType.Movie,
-    }),
-    dependencies.getMedias({
-      page: 1,
-      query: "now_playing",
-      language: context.lang,
-      region,
-      type: MediaType.Movie,
-    }),
-    dependencies.getMedias({
-      page: 1,
-      query: "upcoming",
-      language: context.lang,
-      region,
-      type: MediaType.Movie,
-    }),
-    ...([DbType.LastMovies, DbType.HDR10, DbType.DV] as const).map((dbName) =>
-      dependencies.getMoviesFirestore({
-        entriesOnPage: MEDIA_PAGE_SIZE,
+    settleFeedSection(
+      "tmdb",
+      dependencies.getTrendingMedia({
+        page: 1,
         language: context.lang,
-        dbName,
-        projectId: context.projectId,
-        databaseId: context.databaseId,
+        type: MediaType.Movie,
       }),
+    ),
+    settleFeedSection(
+      "tmdb",
+      dependencies.getMedias({
+        page: 1,
+        query: "popular",
+        language: context.lang,
+        type: MediaType.Movie,
+      }),
+    ),
+    settleFeedSection(
+      "tmdb",
+      dependencies.getMedias({
+        page: 1,
+        query: "now_playing",
+        language: context.lang,
+        region,
+        type: MediaType.Movie,
+      }),
+    ),
+    settleFeedSection(
+      "tmdb",
+      dependencies.getMedias({
+        page: 1,
+        query: "upcoming",
+        language: context.lang,
+        region,
+        type: MediaType.Movie,
+      }),
+    ),
+    ...([DbType.LastMovies, DbType.HDR10, DbType.DV] as const).map((dbName) =>
+      settleFeedSection(
+        "firestore",
+        dependencies.getMoviesFirestore({
+          entriesOnPage: MEDIA_PAGE_SIZE,
+          language: context.lang,
+          dbName,
+          projectId: context.projectId,
+          databaseId: context.databaseId,
+        }),
+      ),
     ),
   ]);
 
   return {
-    movies: movies as MovieShort[],
-    popularMovies: popularMovies as MovieShort[],
-    nowPlayingMovies: nowPlayingMovies as MovieShort[],
-    upcomingMovies: upcomingMovies as MovieShort[],
-    torMovies: torMovies.movies,
-    hdrMovies: hdrMovies.movies,
-    dolbyMovies: dolbyMovies.movies,
+    movies: (movies.data ?? []) as MovieShort[],
+    popularMovies: (popularMovies.data ?? []) as MovieShort[],
+    nowPlayingMovies: (nowPlayingMovies.data ?? []) as MovieShort[],
+    upcomingMovies: (upcomingMovies.data ?? []) as MovieShort[],
+    torMovies: torMovies.data?.movies ?? [],
+    hdrMovies: hdrMovies.data?.movies ?? [],
+    dolbyMovies: dolbyMovies.data?.movies ?? [],
+    failures: {
+      movies: movies.failure,
+      popularMovies: popularMovies.failure,
+      nowPlayingMovies: nowPlayingMovies.failure,
+      upcomingMovies: upcomingMovies.failure,
+      torMovies: torMovies.failure,
+      hdrMovies: hdrMovies.failure,
+      dolbyMovies: dolbyMovies.failure,
+    } satisfies FeedFailures,
   };
 };
 
@@ -128,28 +185,41 @@ export const loadTvCollections = async (
 ) => {
   const [tvtrend, tvtoprated, tvpopular, tvairingtoday, tvontheair] =
     await Promise.all([
-      dependencies.getTrendingMedia({
-        page: 1,
-        language: lang,
-        type: MediaType.Tv,
-      }),
+      settleFeedSection(
+        "tmdb",
+        dependencies.getTrendingMedia({
+          page: 1,
+          language: lang,
+          type: MediaType.Tv,
+        }),
+      ),
       ...(["top_rated", "popular", "airing_today", "on_the_air"] as const).map(
         (query) =>
-          dependencies.getMedias({
-            page: 1,
-            query,
-            language: lang,
-            type: MediaType.Tv,
-          }),
+          settleFeedSection(
+            "tmdb",
+            dependencies.getMedias({
+              page: 1,
+              query,
+              language: lang,
+              type: MediaType.Tv,
+            }),
+          ),
       ),
     ]);
 
   return {
-    tvtrend: tvtrend as TvShort[],
-    tvtoprated: tvtoprated as TvShort[],
-    tvpopular: tvpopular as TvShort[],
-    tvairingtoday: tvairingtoday as TvShort[],
-    tvontheair: tvontheair as TvShort[],
+    tvtrend: (tvtrend.data ?? []) as TvShort[],
+    tvtoprated: (tvtoprated.data ?? []) as TvShort[],
+    tvpopular: (tvpopular.data ?? []) as TvShort[],
+    tvairingtoday: (tvairingtoday.data ?? []) as TvShort[],
+    tvontheair: (tvontheair.data ?? []) as TvShort[],
+    failures: {
+      tvtrend: tvtrend.failure,
+      tvtoprated: tvtoprated.failure,
+      tvpopular: tvpopular.failure,
+      tvairingtoday: tvairingtoday.failure,
+      tvontheair: tvontheair.failure,
+    } satisfies FeedFailures,
   };
 };
 

@@ -7,9 +7,12 @@
 [![Stars](https://img.shields.io/github/stars/lieranderl/qwik-moviestracker)](https://github.com/lieranderl/qwik-moviestracker/stargazers)
 [![Top Language](https://img.shields.io/github/languages/top/lieranderl/qwik-moviestracker)](https://github.com/lieranderl/qwik-moviestracker)
 
-Private Qwik City app for discovering movies and TV shows, opening rich detail
+Authenticated Qwik City app for discovering movies and TV shows, opening rich detail
 pages, authenticating with Google, reading curated/latest items from Firestore,
 and managing a connected TorrServer library.
+
+Any Google account with a verified email address may sign in. This is broad
+authenticated access, not a private email allowlist.
 
 ## Stack
 
@@ -68,9 +71,15 @@ bunx playwright install chromium
 
 Production deploys run automatically when a GitHub release is published. The
 pipeline builds the app into a Docker image, scans it for vulnerabilities, pushes
-it to Google Artifact Registry, deploys to Cloud Run, and verifies the
+it to Google Artifact Registry, updates only the immutable Cloud Run image
+revision, verifies the candidate health endpoint, and then verifies the
 production URL with a smoke test. If anything fails, traffic rolls back to the
 last healthy revision automatically.
+
+OpenTofu in the backend infrastructure directory owns Cloud Run configuration,
+runtime environment and secret bindings, IAM, and alerting. IMDb calls use the
+private service URL and Google ID tokens; GC_API_KEY exists only during the
+one-release gateway fallback.
 
 - Only one production path exists: GitHub Actions → Artifact Registry → Cloud Run
 - GCP authentication uses Workload Identity Federation — no service-account keys

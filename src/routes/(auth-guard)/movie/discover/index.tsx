@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
@@ -25,21 +26,7 @@ import {
   type MovieDiscoverFilters,
 } from "~/utils/discover";
 import { formatYear } from "~/utils/format";
-import {
-  langAllCertifications,
-  langAllProviders,
-  langApplyFilters,
-  langCertification,
-  langDiscoverMovies,
-  langMinimumVotes,
-  langRegion,
-  langResetFilters,
-  langSortBy,
-  langStreamingProvider,
-  langText,
-  langReleaseYear,
-  langMovieDiscoverSortLabel,
-} from "~/utils/languages";
+import { langMovieDiscoverSortLabel } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
 type MovieDiscoverPageData =
@@ -143,15 +130,10 @@ export default component$(() => {
   if (value.status !== "ready") {
     return (
       <ErrorState
-        title={langText(
+        title={message(value.lang, "ui.movieDiscoverIsUnavailable")}
+        description={message(
           value.lang,
-          "Movie discover is unavailable",
-          "Поиск фильмов недоступен",
-        )}
-        description={langText(
-          value.lang,
-          "Please refresh the page or try again later.",
-          "Обновите страницу или попробуйте позже.",
+          "ui.pleaseRefreshThePageOrTryAgainLater",
         )}
         compact={true}
       />
@@ -166,36 +148,34 @@ export default component$(() => {
     (option) => option.value === value.filters.providerId,
   );
   const activeFilters = [
-    `${langRegion(value.lang)} ${value.filters.region}`,
+    `${message(value.lang, "langRegion")} ${value.filters.region}`,
     value.filters.certification
-      ? `${langCertification(value.lang)} ${value.filters.certification}`
+      ? `${message(value.lang, "langCertification")} ${value.filters.certification}`
       : null,
     selectedProvider?.label ?? null,
     value.filters.year
-      ? `${langReleaseYear(value.lang)} ${value.filters.year}`
+      ? `${message(value.lang, "langReleaseYear")} ${value.filters.year}`
       : null,
-    `${langMinimumVotes(value.lang)} ${value.filters.minVotes}+`,
-    `${langSortBy(value.lang)} ${sortLabel}`,
+    `${message(value.lang, "langMinimumVotes")} ${value.filters.minVotes}+`,
+    `${message(value.lang, "langSortBy")} ${sortLabel}`,
   ].filter(Boolean) as string[];
 
   return (
     <div class="space-y-8">
-      <SectionHeading title={langDiscoverMovies(value.lang)} />
+      <SectionHeading title={message(value.lang, "langDiscoverMovies")} />
 
       <section class="card border-base-200 bg-base-100 border shadow-sm">
         <div class="card-body gap-5">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div class="space-y-1">
               <h2 class="text-base font-semibold">
-                {langText(value.lang, "Filters", "Фильтры")}
+                {message(value.lang, "ui.filters")}
               </h2>
             </div>
             <div class="badge badge-outline shrink-0">
-              {langText(
-                value.lang,
-                `${value.results.total_results} matches`,
-                `${value.results.total_results} совпадений`,
-              )}
+              {message(value.lang, "search.matches", {
+                count: value.results.total_results,
+              })}
             </div>
           </div>
 
@@ -205,7 +185,7 @@ export default component$(() => {
             <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               <label class="form-control w-full gap-2">
                 <span class="label-text text-sm font-medium">
-                  {langRegion(value.lang)}
+                  {message(value.lang, "langRegion")}
                 </span>
                 <select
                   class="select select-bordered w-full text-base"
@@ -222,14 +202,16 @@ export default component$(() => {
 
               <label class="form-control w-full gap-2">
                 <span class="label-text text-sm font-medium">
-                  {langCertification(value.lang)}
+                  {message(value.lang, "langCertification")}
                 </span>
                 <select
                   class="select select-bordered w-full text-base"
                   name="certification"
                   value={value.filters.certification ?? ""}
                 >
-                  <option value="">{langAllCertifications(value.lang)}</option>
+                  <option value="">
+                    {message(value.lang, "langAllCertifications")}
+                  </option>
                   {value.certificationOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.meaning
@@ -242,7 +224,7 @@ export default component$(() => {
 
               <label class="form-control w-full gap-2">
                 <span class="label-text text-sm font-medium">
-                  {langStreamingProvider(value.lang)}
+                  {message(value.lang, "langStreamingProvider")}
                 </span>
                 <select
                   class="select select-bordered w-full text-base"
@@ -253,7 +235,9 @@ export default component$(() => {
                       : ""
                   }
                 >
-                  <option value="">{langAllProviders(value.lang)}</option>
+                  <option value="">
+                    {message(value.lang, "langAllProviders")}
+                  </option>
                   {value.providerOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -264,7 +248,7 @@ export default component$(() => {
 
               <label class="form-control w-full gap-2">
                 <span class="label-text text-sm font-medium">
-                  {langReleaseYear(value.lang)}
+                  {message(value.lang, "langReleaseYear")}
                 </span>
                 <input
                   class="input input-bordered w-full text-base"
@@ -278,7 +262,7 @@ export default component$(() => {
 
               <label class="form-control w-full gap-2">
                 <span class="label-text text-sm font-medium">
-                  {langMinimumVotes(value.lang)}
+                  {message(value.lang, "langMinimumVotes")}
                 </span>
                 <input
                   class="input input-bordered w-full text-base"
@@ -291,7 +275,7 @@ export default component$(() => {
 
               <label class="form-control w-full gap-2">
                 <span class="label-text text-sm font-medium">
-                  {langSortBy(value.lang)}
+                  {message(value.lang, "langSortBy")}
                 </span>
                 <select
                   class="select select-bordered w-full text-base"
@@ -310,7 +294,7 @@ export default component$(() => {
             {value.certificationOptions.length > 0 && (
               <div class="bg-base-200/40 rounded-box space-y-3 p-3">
                 <p class="text-base-content/60 text-xs font-semibold tracking-[0.08em] uppercase">
-                  {langText(value.lang, "Ratings", "Рейтинги")}
+                  {message(value.lang, "ui.ratings")}
                 </p>
                 <div class="flex flex-wrap gap-2">
                   <a
@@ -325,7 +309,7 @@ export default component$(() => {
                         : "btn-primary btn-soft",
                     ]}
                   >
-                    {langAllCertifications(value.lang)}
+                    {message(value.lang, "langAllCertifications")}
                   </a>
                   {value.certificationOptions.map((option) => (
                     <a
@@ -360,19 +344,19 @@ export default component$(() => {
                   type="submit"
                   class="btn btn-primary btn-sm w-full sm:w-auto"
                 >
-                  {langApplyFilters(value.lang)}
+                  {message(value.lang, "langApplyFilters")}
                 </button>
                 <a
                   href={paths.movieDiscover(value.lang)}
                   class="btn btn-ghost btn-sm w-full sm:w-auto"
                 >
-                  {langResetFilters(value.lang)}
+                  {message(value.lang, "langResetFilters")}
                 </a>
                 <a
                   href={paths.movie(value.lang)}
                   class="btn btn-outline btn-sm w-full sm:w-auto"
                 >
-                  {langText(value.lang, "Movies", "Фильмы")}
+                  {message(value.lang, "ui.movies")}
                 </a>
               </div>
             </div>
@@ -383,16 +367,13 @@ export default component$(() => {
       {value.results.total_results > 0 ? (
         <>
           <MediaGrid
-            headerBadge={langText(
-              value.lang,
-              `Page ${value.results.page} of ${value.results.total_pages}`,
-              `Страница ${value.results.page} из ${value.results.total_pages}`,
-            )}
-            title={langText(
-              value.lang,
-              `Movies (${value.results.total_results})`,
-              `Фильмы (${value.results.total_results})`,
-            )}
+            headerBadge={message(value.lang, "pagination.pageOf", {
+              page: value.results.page,
+              total: value.results.total_pages,
+            })}
+            title={message(value.lang, "media.moviesCount", {
+              count: value.results.total_results,
+            })}
           >
             {value.results.results.map((movie) => (
               <a
@@ -417,7 +398,7 @@ export default component$(() => {
             <div class="flex flex-wrap items-center justify-between gap-3">
               {value.filters.page <= 1 ? (
                 <span aria-disabled="true" class="btn btn-outline btn-disabled">
-                  {langText(value.lang, "Previous page", "Предыдущая страница")}
+                  {message(value.lang, "ui.previousPage")}
                 </span>
               ) : (
                 <a
@@ -426,19 +407,18 @@ export default component$(() => {
                   })}
                   class="btn btn-outline"
                 >
-                  {langText(value.lang, "Previous page", "Предыдущая страница")}
+                  {message(value.lang, "ui.previousPage")}
                 </a>
               )}
               <span class="text-base-content/60 text-sm">
-                {langText(
-                  value.lang,
-                  `Page ${value.results.page} of ${value.results.total_pages}`,
-                  `Страница ${value.results.page} из ${value.results.total_pages}`,
-                )}
+                {message(value.lang, "pagination.pageOf", {
+                  page: value.results.page,
+                  total: value.results.total_pages,
+                })}
               </span>
               {value.filters.page >= value.results.total_pages ? (
                 <span aria-disabled="true" class="btn btn-outline btn-disabled">
-                  {langText(value.lang, "Next page", "Следующая страница")}
+                  {message(value.lang, "ui.nextPage")}
                 </span>
               ) : (
                 <a
@@ -447,7 +427,7 @@ export default component$(() => {
                   })}
                   class="btn btn-outline"
                 >
-                  {langText(value.lang, "Next page", "Следующая страница")}
+                  {message(value.lang, "ui.nextPage")}
                 </a>
               )}
             </div>
@@ -455,15 +435,10 @@ export default component$(() => {
         </>
       ) : (
         <EmptyState
-          title={langText(
+          title={message(value.lang, "ui.noMovieMatchesForTheseFilters")}
+          description={message(
             value.lang,
-            "No movie matches for these filters",
-            "По этим фильтрам фильмы не найдены",
-          )}
-          description={langText(
-            value.lang,
-            "Try a broader provider, remove the certification, or lower the vote threshold.",
-            "Попробуйте более широкий выбор провайдера, уберите сертификат или снизьте порог голосов.",
+            "ui.tryABroaderProviderRemoveTheCertificationOrLowerTheVoteThreshold",
           )}
           compact={true}
         />
@@ -476,19 +451,11 @@ export const head: DocumentHead = ({ url }) => {
   const lang = url.searchParams.get("lang") || "en-US";
 
   return {
-    title: `Moviestracker | ${langText(
-      lang,
-      "Movie discovery",
-      "Поиск фильмов",
-    )}`,
+    title: `Moviestracker | ${message(lang, "ui.movieDiscovery")}`,
     meta: [
       {
         name: "description",
-        content: langText(
-          lang,
-          "Movie discovery with TMDB filters",
-          "Поиск фильмов с фильтрами TMDB",
-        ),
+        content: message(lang, "ui.movieDiscoveryWithTmdbFilters"),
       },
     ],
   };

@@ -15,7 +15,6 @@
 - Preview build: `bun preview`
 - Serve Bun SSR output: `bun run serve`
 - Optional formatting: `bun run fmt`
-- Optional Biome pass: `bun run biome`
 - Deployment smoke check: `./scripts/smoke-deployment.sh <url> [prod_host]`
 
 ## Minimum Verification
@@ -42,8 +41,7 @@ when the task touches:
 Optional frontend verification:
 
 5. `bun run test:e2e:smoke` for the stable CI browser smoke subset
-6. `bun run test:e2e` for broader browser coverage after repairing or accepting
-   currently red full-suite expectations
+6. `bun run test:e2e` for the complete fixture-backed desktop/mobile suite
 
 For DevOps, dependency, Docker, workflow, or broad app changes, run:
 
@@ -107,7 +105,10 @@ Required Secret Manager secret names expected by the deploy workflow:
 - `AUTH_SECRET`
 - `GOOGLE_SECRET`
 - `TMDB_API_KEY`
-- `GC_API_KEY`
+- `GC_API_KEY` only while the one-release API Gateway fallback is enabled
+
+OpenTofu binds `IMDB_SERVICE_URL` directly on the frontend Cloud Run service;
+it is not a GitHub deployment variable or a secret.
 
 ## Agent Workflow
 

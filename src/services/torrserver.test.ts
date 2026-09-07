@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import {
+  activateTorrent,
   buildBrowserPlaybackHint,
   buildTorrServerDownloadTestUrl,
   buildTorrentPlayUrl,
@@ -7,12 +8,22 @@ import {
   buildTorrentStreamUrl,
   getDefaultPlayableFile,
   isBrowserLikelyToPlayVideo,
+  normalizeTorrentStatus,
   primeTorrentPlayback,
   TORR_SERVER_UPLOAD_MAX_BYTES,
+  TorrServerHttpError,
   validateTorrServerUploadFile,
 } from "./torrserver";
 
 describe("torrserver helpers", () => {
+  it("rejects malformed status payloads before normalization", () => {
+    expect(() =>
+      normalizeTorrentStatus({
+        file_stats: [{ id: 0, length: "large", path: "Alien.mkv" }],
+      } as never),
+    ).toThrow();
+  });
+
   it("builds playlist URLs for a saved torrent hash", () => {
     expect(
       buildTorrentPlaylistUrl("http://192.168.0.109:8090", "abc123", {
@@ -55,15 +66,15 @@ describe("torrserver helpers", () => {
   });
 
   it("builds /play URL for torrent priming", () => {
-    expect(
-      buildTorrentPlayUrl("http://192.168.0.109:8090", "abc123", 4),
-    ).toBe("http://192.168.0.109:8090/play/abc123/4");
+    expect(buildTorrentPlayUrl("http://192.168.0.109:8090", "abc123", 4)).toBe(
+      "http://192.168.0.109:8090/play/abc123/4",
+    );
   });
 
   it("builds /download URL for throughput probing", () => {
-    expect(buildTorrServerDownloadTestUrl("http://192.168.0.109:8090", 64)).toBe(
-      "http://192.168.0.109:8090/download/64",
-    );
+    expect(
+      buildTorrServerDownloadTestUrl("http://192.168.0.109:8090", 64),
+    ).toBe("http://192.168.0.109:8090/download/64");
   });
 
   it("accepts a clean .torrent upload with bittorrent MIME", () => {
@@ -119,6 +130,21 @@ describe("torrserver helpers", () => {
       expect(ok).toBe(true);
       expect(receivedUrl).toBe("http://192.168.0.109:8090/play/abc123/2");
       expect(receivedRange).toBe("bytes=0-1");
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it("throws a typed validation error when activation has no status", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (async () =>
+      new Response("null", {
+        headers: { "Content-Type": "application/json" },
+      })) as unknown as typeof fetch;
+    try {
+      await expect(
+        activateTorrent("http://192.168.0.109:8090", "abc123"),
+      ).rejects.toBeInstanceOf(TorrServerHttpError);
     } finally {
       globalThis.fetch = originalFetch;
     }

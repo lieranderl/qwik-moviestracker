@@ -32,7 +32,7 @@ test.describe("authenticated home", () => {
     await expect(page).toHaveURL(/\/\?lang=en-US$/);
     await expect(
       page.getByRole("heading", {
-        name: /your movie and series dashboard/i,
+        name: /^home$/i,
       }),
     ).toBeVisible();
     await expect(
@@ -62,7 +62,7 @@ test.describe("authenticated home", () => {
     ).toBeVisible();
     await expect(
       page.getByRole("region", {
-        name: /trending tv shows/i,
+        name: /trending series/i,
       }),
     ).toBeVisible();
     await expect(

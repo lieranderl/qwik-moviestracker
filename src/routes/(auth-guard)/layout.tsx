@@ -6,6 +6,8 @@ import {
   createDevSession,
   DEV_SESSION_BYPASS_COOKIE,
 } from "~/routes/dev-session";
+import { applyAuthenticatedCachePolicy } from "~/routes/authenticated-cache";
+import { buildAuthRedirectPath } from "~/routes/auth-redirect";
 
 export const useQueryParamsLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
@@ -13,23 +15,12 @@ export const useQueryParamsLoader = routeLoader$(async (event) => {
 });
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
-  // Control caching for this request for best performance and to reduce hosting costs:
-  // https://qwik.builder.io/docs/caching/
-  cacheControl({
-    // Serve stale cache for up to 1 hour before requiring a fresh fetch
-    staleWhileRevalidate: 3600,
-    // Max once every 5 seconds, revalidate on the server to get a fresh version of this page
-    maxAge: 5,
-  });
+  applyAuthenticatedCachePolicy(cacheControl);
 };
 
 //auth guard
 export const onRequest: RequestHandler = (event) => {
-  event.cacheControl({
-    staleWhileRevalidate: 3600,
-    // Max once every 5 seconds, revalidate on the server to get a fresh version of this page
-    maxAge: 5,
-  });
+  applyAuthenticatedCachePolicy(event.cacheControl);
 
   let session: Session | null = event.sharedMap.get("session");
   if (!session) {
@@ -49,7 +40,7 @@ export const onRequest: RequestHandler = (event) => {
 
   if (!session || new Date(session.expires) < new Date() || session.error) {
     const lang = event.url.searchParams.get("lang");
-    const authPath = lang ? `/auth/?lang=${encodeURIComponent(lang)}` : "/auth";
+    const authPath = buildAuthRedirectPath(lang);
     throw event.redirect(302, authPath);
   }
 };

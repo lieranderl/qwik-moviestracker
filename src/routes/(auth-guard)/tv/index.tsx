@@ -1,66 +1,30 @@
+import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 
 import { type DocumentHead, routeLoader$ } from "@builder.io/qwik-city";
 import { QuickFilterStrip } from "~/components/discovery/quick-filter-strip";
+import { FeedSectionFailure } from "~/components/feed-section-failure";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
 import { SectionHeading } from "~/components/page-feedback";
 import type { TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
-import { getMedias, getTrendingMedia } from "~/services/tmdb";
+import { loadTvCollections } from "~/services/feed-loaders";
 import { formatYear } from "~/utils/format";
-import {
-  langAiringTodayTvShows,
-  langDiscoverTv,
-  langOnTheAirTvShows,
-  langPopularTvShows,
-  langQuickFilters,
-  langText,
-  langTopRatedTvShows,
-  langTrengingTVShows,
-} from "~/utils/languages";
+
 import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   try {
-    const [tvtrend, tvtoprated, tvpopular, tvairingtoday, tvontheair] =
-      await Promise.all([
-        getTrendingMedia({
-          page: 1,
-          language: lang,
-          type: MediaType.Tv,
-          needbackdrop: true,
-        }),
-        getMedias({
-          page: 1,
-          query: "top_rated",
-          language: lang,
-          type: MediaType.Tv,
-          needbackdrop: true,
-        }),
-        getMedias({
-          page: 1,
-          query: "popular",
-          language: lang,
-          type: MediaType.Tv,
-          needbackdrop: true,
-        }),
-        getMedias({
-          page: 1,
-          query: "airing_today",
-          language: lang,
-          type: MediaType.Tv,
-          needbackdrop: true,
-        }),
-        getMedias({
-          page: 1,
-          query: "on_the_air",
-          language: lang,
-          type: MediaType.Tv,
-          needbackdrop: true,
-        }),
-      ]);
+    const {
+      tvtrend,
+      tvtoprated,
+      tvpopular,
+      tvairingtoday,
+      tvontheair,
+      failures,
+    } = await loadTvCollections({ lang });
 
     return {
       tvtrend: tvtrend as TvShort[],
@@ -68,6 +32,7 @@ export const useContentLoader = routeLoader$(async (event) => {
       tvpopular: tvpopular as TvShort[],
       tvairingtoday: tvairingtoday as TvShort[],
       tvontheair: tvontheair as TvShort[],
+      failures,
       lang,
     };
   } catch {
@@ -83,23 +48,23 @@ export default component$(() => {
     {
       active: true,
       href: "#trending-tv",
-      label: langTrengingTVShows(lang),
+      label: message(lang, "langTrengingTVShows"),
     },
     {
       href: "#popular-tv",
-      label: langPopularTvShows(lang),
+      label: message(lang, "langPopularTvShows"),
     },
     {
       href: "#top-rated-tv",
-      label: langTopRatedTvShows(lang),
+      label: message(lang, "langTopRatedTvShows"),
     },
     {
       href: "#airing-today-tv",
-      label: langAiringTodayTvShows(lang),
+      label: message(lang, "langAiringTodayTvShows"),
     },
     {
       href: "#on-the-air-tv",
-      label: langOnTheAirTvShows(lang),
+      label: message(lang, "langOnTheAirTvShows"),
     },
   ];
   const tvSections = [
@@ -107,101 +72,107 @@ export default component$(() => {
       category: "trending",
       items: value.tvtrend,
       sectionId: "trending-tv",
-      title: langTrengingTVShows(lang),
+      title: message(lang, "langTrengingTVShows"),
+      failure: value.failures.tvtrend,
     },
     {
       category: "popular",
       items: value.tvpopular,
       sectionId: "popular-tv",
-      title: langPopularTvShows(lang),
+      title: message(lang, "langPopularTvShows"),
+      failure: value.failures.tvpopular,
     },
     {
       category: "toprated",
       items: value.tvtoprated,
       sectionId: "top-rated-tv",
-      title: langTopRatedTvShows(lang),
+      title: message(lang, "langTopRatedTvShows"),
+      failure: value.failures.tvtoprated,
     },
     {
       category: "airingtoday",
       items: value.tvairingtoday,
       sectionId: "airing-today-tv",
-      title: langAiringTodayTvShows(lang),
+      title: message(lang, "langAiringTodayTvShows"),
+      failure: value.failures.tvairingtoday,
     },
     {
       category: "ontheair",
       items: value.tvontheair,
       sectionId: "on-the-air-tv",
-      title: langOnTheAirTvShows(lang),
+      title: message(lang, "langOnTheAirTvShows"),
+      failure: value.failures.tvontheair,
     },
   ];
 
   return (
     <div class="space-y-8">
       <SectionHeading
-        eyebrow={langText(lang, "TV collections", "Коллекции сериалов")}
-        title={langText(lang, "Series", "Сериалы")}
-        description={langText(
+        eyebrow={message(lang, "ui.tvCollections")}
+        title={message(lang, "ui.series2")}
+        description={message(
           lang,
-          "Browse trending, popular, top-rated, airing today, and on-the-air series collections.",
-          "Просматривайте трендовые, популярные, рейтинговые, сегодняшние и актуальные коллекции сериалов.",
+          "ui.browseTrendingPopularTopRatedAiringTodayAndOnTheAirSeriesCollections",
         )}
       />
       <QuickFilterStrip
-        label={langQuickFilters(lang)}
+        label={message(lang, "langQuickFilters")}
         items={quickFilterItems}
       />
       <section
-        aria-label={langDiscoverTv(lang)}
+        aria-label={message(lang, "langDiscoverTv")}
         class="section-reveal card border-base-200 bg-base-100 border shadow-sm"
       >
         <div class="card-body items-start gap-3 p-4 sm:flex-row sm:items-center sm:justify-between md:p-6">
           <div class="space-y-1">
             <h2 class="card-title text-base">
-              {langText(lang, "TV discovery", "Поиск сериалов")}
+              {message(lang, "ui.tvDiscovery")}
             </h2>
             <p class="text-base-content/65 text-sm leading-relaxed">
-              {langText(
-                lang,
-                "Filter series by region, year, providers, and rating.",
-                "Фильтруйте сериалы по региону, году, провайдерам и рейтингу.",
-              )}
+              {message(lang, "ui.filterSeriesByRegionYearProvidersAndRating")}
             </p>
           </div>
           <a
             href={paths.tvDiscover(lang)}
             class="btn btn-primary btn-sm w-full rounded-full sm:w-auto"
           >
-            {langDiscoverTv(lang)}
+            {message(lang, "langDiscoverTv")}
           </a>
         </div>
       </section>
       {tvSections.map((section) => (
-        <MediaCarousel
-          key={section.sectionId}
-          sectionId={section.sectionId}
-          title={section.title}
-          type={MediaType.Tv}
-          category={section.category}
-          lang={lang}
-        >
-          {section.items.map((m) => (
-            <div class="carousel-item" key={m.id}>
-              <a
-                href={paths.media(MediaType.Tv, m.id, lang)}
-                class="media-card-link block"
-              >
-                <MediaCard
-                  title={m.name ? m.name : ""}
-                  width={500}
-                  rating={m.vote_average ? m.vote_average : 0}
-                  year={formatYear(m.first_air_date)}
-                  picfile={m.backdrop_path}
-                  variant="landscape"
-                />
-              </a>
-            </div>
-          ))}
-        </MediaCarousel>
+        <div class="contents" key={section.sectionId}>
+          <FeedSectionFailure
+            failure={section.failure}
+            lang={lang}
+            title={section.title}
+          />
+          <MediaCarousel
+            sectionId={section.sectionId}
+            title={section.title}
+            type={MediaType.Tv}
+            category={section.category}
+            lang={lang}
+          >
+            {section.items.map((m) => (
+              <div class="carousel-item" key={m.id}>
+                <a
+                  href={paths.media(MediaType.Tv, m.id, lang)}
+                  class="media-card-link block"
+                >
+                  <MediaCard
+                    title={m.name ? m.name : ""}
+                    width={500}
+                    rating={m.vote_average ? m.vote_average : 0}
+                    year={formatYear(m.first_air_date)}
+                    picfile={m.backdrop_path}
+                    variant="landscape"
+                  />
+                </a>
+              </div>
+            ))}
+          </MediaCarousel>
+        </div>
       ))}
     </div>
   );
@@ -211,19 +182,11 @@ export const head: DocumentHead = ({ url }) => {
   const lang = url.searchParams.get("lang") || "en-US";
 
   return {
-    title: `Moviestracker | ${langText(
-      lang,
-      "TV collections",
-      "Коллекции сериалов",
-    )}`,
+    title: `Moviestracker | ${message(lang, "ui.tvCollections")}`,
     meta: [
       {
         name: "description",
-        content: langText(
-          lang,
-          "Browse TV collections",
-          "Просмотр коллекций сериалов",
-        ),
+        content: message(lang, "ui.browseTvCollections"),
       },
     ],
   };

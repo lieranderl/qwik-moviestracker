@@ -162,9 +162,5 @@ export const InlineFilterGroup = component$(() => {
 });
 
 export const FilterChip = component$<{ label: string }>(({ label }) => {
-  return (
-    <span class="badge badge-ghost pointer-events-none">
-      {label}
-    </span>
-  );
+  return <span class="badge badge-ghost pointer-events-none">{label}</span>;
 });

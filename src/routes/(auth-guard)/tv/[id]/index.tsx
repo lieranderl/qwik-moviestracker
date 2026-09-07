@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
@@ -23,7 +24,6 @@ import {
   resolveRegionalWatchProviders,
   resolveTvCertification,
 } from "~/services/tmdb";
-import { langText } from "~/utils/languages";
 
 type TvDetailData =
   | {
@@ -111,15 +111,10 @@ export default component$(() => {
   if (value.status !== "ready") {
     return (
       <ErrorState
-        title={langText(
+        title={message(value.lang, "ui.tvDetailsAreUnavailable")}
+        description={message(
           value.lang,
-          "TV details are unavailable",
-          "Детали сериала недоступны",
-        )}
-        description={langText(
-          value.lang,
-          "Please refresh the page or return to the previous screen.",
-          "Обновите страницу или вернитесь на предыдущий экран.",
+          "ui.pleaseRefreshThePageOrReturnToThePreviousScreen",
         )}
       />
     );
@@ -143,15 +138,11 @@ export const head: DocumentHead = ({ url }) => {
   const lang = url.searchParams.get("lang") || "en-US";
 
   return {
-    title: `Moviestracker | ${langText(
-      lang,
-      "TV details",
-      "Детали сериала",
-    )}`,
+    title: `Moviestracker | ${message(lang, "ui.tvDetails")}`,
     meta: [
       {
         name: "description",
-        content: langText(lang, "TV details", "Детали сериала"),
+        content: message(lang, "ui.tvDetails"),
       },
     ],
   };

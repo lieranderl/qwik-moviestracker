@@ -1,8 +1,10 @@
+import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import { ContinueBrowsingWidget } from "~/components/discovery/continue-browsing";
 import { FeaturedSpotlight } from "~/components/discovery/featured-spotlight";
+import { FeedSectionFailure } from "~/components/feed-section-failure";
 import { QuickFilterStrip } from "~/components/discovery/quick-filter-strip";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
@@ -11,36 +13,12 @@ import {
   createDevHomeFeed,
   DEV_SESSION_BYPASS_COOKIE,
 } from "~/routes/dev-session";
-import type {
-  MediaShort,
-  MovieCatalog,
-  MovieShort,
-  TvShort,
-} from "~/services/models";
+import type { MovieCatalog, MovieShort, TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
-import { DbType, getMoviesFirestore } from "~/services/firestore";
-import { getTrendingMedia, withImages } from "~/services/tmdb";
-import { MEDIA_PAGE_SIZE } from "~/utils/constants";
+import { loadHomeFeed } from "~/services/feed-loaders";
+import type { FeedFailures } from "~/services/feed-loaders";
 import { formatYear } from "~/utils/format";
-import {
-  langLatestMovies,
-  langContinueBrowsing,
-  langDiscoverMovies,
-  langDiscoverTv,
-  langFeaturedSpotlight,
-  langFeaturedSpotlightDescription,
-  langHomeDashboardDescription,
-  langHomeDashboardTitle,
-  langHomeFeedUnavailable,
-  langJumpBackIn,
-  langOpenDetails,
-  langQuickFilters,
-  langRecentSearches,
-  langResume,
-  langTrendingMovies,
-  langTrengingTVShows,
-  langPleaseRefreshOrTryAgain,
-} from "~/utils/languages";
+
 import { paths } from "~/utils/paths";
 
 type HomeFeedData =
@@ -50,6 +28,7 @@ type HomeFeedData =
       movies: MovieShort[];
       tv: TvShort[];
       torMovies: MovieCatalog[];
+      failures: FeedFailures;
     }
   | {
       status: "error";
@@ -73,43 +52,24 @@ export const useHomeFeedLoader = routeLoader$(async (event) => {
     return {
       status: "ready",
       ...devHomeFeed,
+      failures: {} as FeedFailures,
     } satisfies HomeFeedData;
   }
 
   try {
-    const [m, t, tm] = await Promise.all([
-      getTrendingMedia({
-        page: 1,
-        language: lang,
-        type: MediaType.Movie,
-        needbackdrop: true,
-      }),
-      getTrendingMedia({
-        page: 1,
-        language: lang,
-        type: MediaType.Tv,
-        needbackdrop: true,
-      }),
-      withImages(
-        (
-          await getMoviesFirestore({
-            entriesOnPage: MEDIA_PAGE_SIZE,
-            language: lang,
-            dbName: DbType.LastMovies,
-            projectId,
-            databaseId,
-          })
-        ).movies as MediaShort[],
-        lang,
-      ),
-    ]);
+    const { movies, tv, torMovies, failures } = await loadHomeFeed({
+      lang,
+      projectId,
+      databaseId,
+    });
 
     return {
       status: "ready",
       lang,
-      movies: m as MovieShort[],
-      tv: t as TvShort[],
-      torMovies: tm as MovieCatalog[],
+      movies,
+      tv,
+      torMovies,
+      failures,
     } satisfies HomeFeedData;
   } catch (error) {
     console.error(error);
@@ -127,8 +87,8 @@ export default component$(() => {
   if (value.status !== "ready") {
     return (
       <ErrorState
-        title={langHomeFeedUnavailable(lang)}
-        description={langPleaseRefreshOrTryAgain(lang)}
+        title={message(lang, "langHomeFeedUnavailable")}
+        description={message(lang, "langPleaseRefreshOrTryAgain")}
         compact={true}
       />
     );
@@ -140,66 +100,70 @@ export default component$(() => {
     <div class="space-y-5">
       <div class="section-reveal flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <h1 class="text-3xl font-semibold tracking-tight md:text-4xl">
-          {langHomeDashboardTitle(lang)}
+          {message(lang, "langHomeDashboardTitle")}
         </h1>
         <div class="flex flex-wrap items-center gap-2">
           <a
             href={paths.movieDiscover(lang)}
             class="btn btn-primary btn-sm h-10 min-h-10 rounded-full"
           >
-            {langDiscoverMovies(lang)}
+            {message(lang, "langDiscoverMovies")}
           </a>
           <a
             href={paths.tvDiscover(lang)}
             class="btn btn-outline btn-sm h-10 min-h-10 rounded-full"
           >
-            {langDiscoverTv(lang)}
+            {message(lang, "langDiscoverTv")}
           </a>
         </div>
       </div>
       <QuickFilterStrip
-        label={langQuickFilters(lang)}
+        label={message(lang, "langQuickFilters")}
         items={[
           {
             active: true,
             href: "#featured-spotlight",
-            label: langFeaturedSpotlight(lang),
+            label: message(lang, "langFeaturedSpotlight"),
           },
           {
             href: "#continue-browsing",
-            label: langContinueBrowsing(lang),
+            label: message(lang, "langContinueBrowsing"),
           },
-          { href: "#latest-movies", label: langLatestMovies(lang) },
-          { href: "#trending-movies", label: langTrendingMovies(lang) },
-          { href: "#trending-tv", label: langTrengingTVShows(lang) },
+          { href: "#latest-movies", label: message(lang, "langLatestMovies") },
+          {
+            href: "#trending-movies",
+            label: message(lang, "langTrendingMovies"),
+          },
+          { href: "#trending-tv", label: message(lang, "langTrengingTVShows") },
         ]}
       />
       {value.movies.length > 0 && featuredMovie && (
         <FeaturedSpotlight
-          ctaLabel={langOpenDetails(lang)}
+          ctaLabel={message(lang, "langOpenDetails")}
           description={
-            featuredMovie.overview || langFeaturedSpotlightDescription(lang)
+            featuredMovie.overview ||
+            message(lang, "langFeaturedSpotlightDescription")
           }
           href={paths.media(MediaType.Movie, featuredMovie.id, lang)}
           imagePath={featuredMovie.backdrop_path}
           meta={[
-            langTrendingMovies(lang),
+            message(lang, "langTrendingMovies"),
             String(formatYear(featuredMovie.release_date) || "2026"),
           ]}
-          overline={langFeaturedSpotlight(lang)}
+          overline={message(lang, "langFeaturedSpotlight")}
           rating={featuredMovie.vote_average}
           title={featuredMovie.title || "Featured release"}
         />
       )}
       <ContinueBrowsingWidget
         lang={lang}
-        lastViewedLabel={langJumpBackIn(lang)}
-        recentSearchesLabel={langRecentSearches(lang)}
-        resumeLabel={langResume(lang)}
+        lastViewedLabel={message(lang, "langJumpBackIn")}
+        recentSearchesLabel={message(lang, "langRecentSearches")}
+        resumeLabel={message(lang, "langResume")}
       />
       <MediaCarousel
         sectionId="latest-movies"
-        title={langLatestMovies(lang)}
+        title={message(lang, "langLatestMovies")}
         type={MediaType.Movie}
         category="updated"
         lang={lang}
@@ -222,9 +186,14 @@ export default component$(() => {
           </div>
         ))}
       </MediaCarousel>
+      <FeedSectionFailure
+        failure={value.failures.torMovies}
+        lang={lang}
+        title={message(lang, "langLatestMovies")}
+      />
       <MediaCarousel
         sectionId="trending-movies"
-        title={langTrendingMovies(lang)}
+        title={message(lang, "langTrendingMovies")}
         type={MediaType.Movie}
         category="trending"
         lang={lang}
@@ -247,9 +216,14 @@ export default component$(() => {
           </div>
         ))}
       </MediaCarousel>
+      <FeedSectionFailure
+        failure={value.failures.movies}
+        lang={lang}
+        title={message(lang, "langTrendingMovies")}
+      />
       <MediaCarousel
         sectionId="trending-tv"
-        title={langTrengingTVShows(lang)}
+        title={message(lang, "langTrengingTVShows")}
         type={MediaType.Tv}
         category="trending"
         lang={lang}
@@ -272,6 +246,11 @@ export default component$(() => {
           </div>
         ))}
       </MediaCarousel>
+      <FeedSectionFailure
+        failure={value.failures.tv}
+        lang={lang}
+        title={message(lang, "langTrengingTVShows")}
+      />
     </div>
   );
 });
@@ -280,11 +259,11 @@ export const head: DocumentHead = ({ url }) => {
   const lang = url.searchParams.get("lang") || "en-US";
 
   return {
-    title: `Moviestracker | ${langHomeDashboardTitle(lang)}`,
+    title: `Moviestracker | ${message(lang, "langHomeDashboardTitle")}`,
     meta: [
       {
         name: "description",
-        content: langHomeDashboardDescription(lang),
+        content: message(lang, "langHomeDashboardDescription"),
       },
     ],
   };

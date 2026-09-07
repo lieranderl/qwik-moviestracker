@@ -4,7 +4,7 @@
 
 - Framework: Qwik / Qwik City 1.x
 - Runtime path: Bun SSR
-- Tooling baseline: Bun + Vite 7 + Biome 2
+- Tooling baseline: Bun + Vite 7 + ESLint + Prettier
 - Deploy path: Docker -> GitHub Actions -> Artifact Registry -> Cloud Run
 - Styling stack: Tailwind CSS v4 + daisyUI 5 + Catppuccin themes
 
@@ -65,7 +65,8 @@
 ## Service Boundaries
 
 - TMDB client: `src/services/tmdb.ts`
-- Cloud gateway client: `src/services/cloud-func-api.ts`
+- Private IMDb Cloud Run client with temporary gateway fallback:
+  `src/services/cloud-func-api.ts`
 - JacRed torrent-search adapter: `src/services/torrent-search.ts`
 - Firestore Native reads: `src/services/firestore.ts`
 - TorrServer client: `src/services/torrserver.ts`
@@ -82,8 +83,9 @@ Keep new external API access in `src/services/**`, not inside route files.
 - Do not serialize secret env values through route loader return values.
 - Firestore-backed pages use ADC on the server boundary and return fetched data
   plus opaque pagination cursors, never credentials.
-- Protected movie, TV, and person detail routes should fetch TMDB and IMDb data
-  inside `routeLoader$` and pass plain data into presentational components.
+- Protected detail routes fetch their primary TMDB data in `routeLoader$`.
+  Movie IMDb enrichment starts from a browser-visible resource after primary
+  content renders, so an IMDb cold start never blocks SSR or the detail page.
 - Movie and TV detail loaders now normalize TMDB region-specific certifications
   and watch-provider availability before rendering the detail UI.
 - Movie `nowplaying` and `upcoming` shelves now pass the region derived from
@@ -97,7 +99,7 @@ Keep new external API access in `src/services/**`, not inside route files.
 
 - `dist/**` is build output.
 - `server/**` is generated SSR output.
-- Treat both as derived artifacts.
+- Treat both as derived, ignored artifacts; never commit them.
 
 ## Deployment Files
 
@@ -111,12 +113,12 @@ Keep new external API access in `src/services/**`, not inside route files.
 The repository supports development and production only. Production deploys are
 triggered by published GitHub releases, authenticate to GCP through GitHub OIDC
 / Workload Identity Federation, build, scan locally, push the clean image to
-Artifact Registry, deploy a no-traffic Cloud Run candidate, route 100% traffic
-to it, smoke-test via the production URL, and roll back on failure.
+Artifact Registry, deploy a no-traffic Cloud Run candidate, smoke-test its
+health endpoint, route 100% traffic to it, smoke-test via the production URL,
+and roll back on failure. OpenTofu owns service configuration, environment and
+secret bindings, IAM, and alerting; releases change only image and traffic.
 
 ## Known Gaps
 
-- `adapters/cloud-run/vite.config.ts` references a missing
-  `src/entry.cloud-run.tsx`.
 - The in-repo test surface is still small, but Bun-based route and logic tests
   now exist under `src/routes/**`.

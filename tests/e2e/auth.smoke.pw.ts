@@ -22,7 +22,9 @@ test.describe("auth page smoke", () => {
       }),
     ).toBeVisible();
 
-    await expect(page.getByText(privateMovieHubPattern)).toBeVisible();
+    await expect(
+      page.getByText(privateMovieHubPattern, { exact: true }),
+    ).toBeVisible();
     await expect(page.getByText(whyPeopleUseItPattern)).toBeVisible();
   });
 

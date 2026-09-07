@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import { $, component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, server$ } from "@builder.io/qwik-city";
@@ -5,69 +6,29 @@ import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
 import type { TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
-import { getMedias, getTrendingMedia } from "~/services/tmdb";
+import { loadTvCategoryPage } from "~/services/feed-loaders";
+import { isTvCategory, type TvCategory } from "~/services/media-categories";
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import { createInfiniteScrollObserver } from "~/utils/infinite-scroll";
-import { langText } from "~/utils/languages";
+import {
+  appendPage,
+  beginNextPage,
+  createPaginationState,
+  failPage,
+} from "~/utils/pagination-state";
 import { categoryToTitle, paths } from "~/utils/paths";
-
-type FetchTvCategoryPageArgs = {
-  category: string;
-  lang: string;
-  page: number;
-};
-
-const TV_CATEGORY_QUERIES: Record<string, string | null> = {
-  trending: null,
-  toprated: "top_rated",
-  popular: "popular",
-  airingtoday: "airing_today",
-  ontheair: "on_the_air",
-};
-
-const fetchTvCategoryPage = async ({
-  category,
-  lang,
-  page,
-}: FetchTvCategoryPageArgs): Promise<TvShort[]> => {
-  const tmdbQuery = TV_CATEGORY_QUERIES[category];
-
-  if (tmdbQuery === null) {
-    return (await getTrendingMedia({
-      page,
-      language: lang,
-      type: MediaType.Tv,
-      needbackdrop: false,
-    })) as TvShort[];
-  }
-
-  if (tmdbQuery) {
-    return (await getMedias({
-      page,
-      language: lang,
-      query: tmdbQuery,
-      type: MediaType.Tv,
-      needbackdrop: false,
-    })) as TvShort[];
-  }
-
-  return [];
-};
-
-const isSupportedTvCategory = (category: string) =>
-  category in TV_CATEGORY_QUERIES;
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
   const category = event.params.name;
 
-  if (!isSupportedTvCategory(category)) {
+  if (!isTvCategory(category)) {
     throw event.redirect(302, paths.notFound(lang));
   }
 
   try {
-    const tv = await fetchTvCategoryPage({
+    const tv = await loadTvCategoryPage({
       page: 1,
       category,
       lang,
@@ -80,15 +41,18 @@ export const useContentLoader = routeLoader$(async (event) => {
 
 export default component$(() => {
   const resource = useContentLoader();
-  const tvItemsSig = useSignal(resource.value.tv as TvShort[]);
-  const isLoadingTv = useSignal(false);
-  const pageSig = useSignal(1);
-  const hasMoreTv = useSignal(resource.value.tv.length >= MEDIA_PAGE_SIZE);
+  const pagination = useSignal(
+    createPaginationState<TvShort>({
+      items: resource.value.tv as TvShort[],
+      mode: "page",
+      pageSize: MEDIA_PAGE_SIZE,
+    }),
+  );
   const sentinelRef = useSignal<Element>();
 
   const fetchTvPage = server$(
-    async (page: number, category: string, lang: string) =>
-      await fetchTvCategoryPage({
+    async (page: number, category: TvCategory, lang: string) =>
+      await loadTvCategoryPage({
         page,
         category,
         lang,
@@ -96,29 +60,18 @@ export default component$(() => {
   );
 
   const getNewTv = $(async () => {
-    if (isLoadingTv.value || !hasMoreTv.value) {
-      return;
-    }
-
-    isLoadingTv.value = true;
+    const next = beginNextPage(pagination.value);
+    if (!next.request) return;
+    pagination.value = next.state;
     try {
-      const nextPage = pageSig.value + 1;
       const nextTv = (await fetchTvPage(
-        nextPage,
+        next.request.page,
         resource.value.category,
         resource.value.lang,
       )) as TvShort[];
-
-      if (nextTv.length === 0) {
-        hasMoreTv.value = false;
-        return;
-      }
-
-      tvItemsSig.value = [...tvItemsSig.value, ...nextTv];
-      pageSig.value = nextPage;
-      hasMoreTv.value = nextTv.length >= MEDIA_PAGE_SIZE;
-    } finally {
-      isLoadingTv.value = false;
+      pagination.value = appendPage(pagination.value, { items: nextTv });
+    } catch {
+      pagination.value = failPage(pagination.value);
     }
   });
 
@@ -131,7 +84,7 @@ export default component$(() => {
 
     const observer = createInfiniteScrollObserver({
       target,
-      hasMore: hasMoreTv.value,
+      hasMore: pagination.value.hasMore,
       onIntersect: () => {
         void getNewTv();
       },
@@ -147,19 +100,17 @@ export default component$(() => {
   return (
     <div class="space-y-6 pb-10">
       <MediaGrid
-        headerBadge={langText(
-          resource.value.lang,
-          `${tvItemsSig.value.length} loaded`,
-          `${tvItemsSig.value.length} загружено`,
-        )}
+        headerBadge={message(resource.value.lang, "pagination.loaded", {
+          count: pagination.value.items.length,
+        })}
         title={categoryToTitle(
           resource.value.category,
           MediaType.Tv,
           resource.value.lang,
         )}
       >
-        {tvItemsSig.value.length > 0 &&
-          tvItemsSig.value.map((m) => (
+        {pagination.value.items.length > 0 &&
+          pagination.value.items.map((m) => (
             <a
               key={m.id}
               href={paths.media(MediaType.Tv, m.id, resource.value.lang)}
@@ -179,16 +130,10 @@ export default component$(() => {
       </MediaGrid>
       <div class="flex justify-center">
         <div ref={sentinelRef} class="h-8 w-full" />
-        {isLoadingTv.value && (
+        {pagination.value.status === "loading" && (
           <div class="border-base-200 bg-base-100/88 flex items-center gap-3 rounded-full border px-4 py-2 text-sm shadow-sm">
             <span class="loading loading-ring loading-sm" />
-            <span>
-              {langText(
-                resource.value.lang,
-                "Loading more series…",
-                "Загружаем еще сериалы…",
-              )}
-            </span>
+            <span>{message(resource.value.lang, "ui.loadingMoreSeries")}</span>
           </div>
         )}
       </div>
@@ -200,15 +145,11 @@ export const head: DocumentHead = ({ url }) => {
   const lang = url.searchParams.get("lang") || "en-US";
 
   return {
-    title: `Moviestracker | ${langText(
-      lang,
-      "TV catalog",
-      "Каталог сериалов",
-    )}`,
+    title: `Moviestracker | ${message(lang, "ui.tvCatalog")}`,
     meta: [
       {
         name: "description",
-        content: langText(lang, "Catalog of TV shows", "Каталог сериалов"),
+        content: message(lang, "ui.catalogOfTvShows"),
       },
     ],
   };

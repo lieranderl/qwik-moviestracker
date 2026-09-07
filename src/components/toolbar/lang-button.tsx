@@ -1,13 +1,13 @@
+import { message } from "~/utils/i18n";
 import { $, component$ } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
 import { writeStorageString } from "~/utils/browser";
-import { langLanguage, langLanguageName } from "~/utils/languages";
 
 export const LangButton = component$(() => {
   const loc = useLocation();
   const currentLang = loc.url.searchParams.get("lang") || "en-US";
   const nextLang = currentLang === "en-US" ? "ru-RU" : "en-US";
-  const languageLabel = langLanguage(currentLang);
+  const languageLabel = message(currentLang, "langLanguage");
   const nextQueryParams = new URLSearchParams(loc.url.searchParams);
   nextQueryParams.set("lang", nextLang);
   const nextHref = `${loc.url.pathname}?${nextQueryParams.toString()}`;
@@ -25,7 +25,7 @@ export const LangButton = component$(() => {
       >
         <span>{languageLabel}</span>
         <span class="badge badge-outline badge-xs rounded-full px-3 py-3 font-medium">
-          {langLanguageName(currentLang)}
+          {message(currentLang, "langLanguageName")}
         </span>
       </a>
     </li>

@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import { component$, type PropFunction } from "@builder.io/qwik";
 import {
   LuFolderOpen,
@@ -13,7 +14,7 @@ import {
   buildTorrentPlaylistUrl,
 } from "~/services/torrserver";
 import { formatYear } from "~/utils/format";
-import { langText } from "~/utils/languages";
+import { langFilesCount } from "~/utils/languages";
 import {
   formatTorrentSize,
   formatTransferSpeed,
@@ -54,17 +55,17 @@ export const TorrentCard = component$(
           <div class="flex flex-wrap items-center gap-2">
             <span class="badge badge-outline badge-sm">
               {torrent.mediaKind === "tv"
-                ? langText(lang, "Series", "Сериал")
+                ? message(lang, "ui.series")
                 : torrent.mediaKind === "movie"
-                  ? langText(lang, "Movie", "Фильм")
-                  : langText(lang, "Other", "Другое")}
+                  ? message(lang, "ui.movie")
+                  : message(lang, "ui.other")}
             </span>
             <span class="badge badge-ghost badge-sm">
               {statusBucket === "active"
-                ? langText(lang, "Active", "Активный")
+                ? message(lang, "ui.active2")
                 : statusBucket === "database"
-                  ? langText(lang, "Stored", "В базе")
-                  : langText(lang, "Other", "Другое")}
+                  ? message(lang, "ui.stored")
+                  : message(lang, "ui.other")}
             </span>
             {torrent.statusLabel && (
               <span class="badge badge-outline badge-sm whitespace-normal">
@@ -75,11 +76,7 @@ export const TorrentCard = component$(
               {formatTorrentSize(torrent.torrent_size)}
             </span>
             <span class="badge badge-outline badge-sm">
-              {langText(
-                lang,
-                `${torrent.fileCount} files`,
-                `${torrent.fileCount} файлов`,
-              )}
+              {langFilesCount(lang, torrent.fileCount)}
             </span>
           </div>
 
@@ -89,11 +86,7 @@ export const TorrentCard = component$(
               target="_blank"
               rel="noreferrer"
               class="block min-w-0"
-              aria-label={langText(
-                lang,
-                `Open details for ${title}`,
-                `Открыть детали: ${title}`,
-              )}
+              aria-label={message(lang, "torrserver.openDetails", { title })}
             >
               <MediaCard
                 title={title}
@@ -123,22 +116,18 @@ export const TorrentCard = component$(
             <div class="stats stats-vertical border-base-200 bg-base-200/40 sm:stats-horizontal w-full border shadow-none">
               <div class="stat min-w-0 overflow-hidden px-4 py-3">
                 <div class="stat-title text-xs">
-                  {langText(lang, "Peers", "Пиры")}
+                  {message(lang, "ui.peers")}
                 </div>
                 <div class="stat-value text-sm">{torrent.total_peers || 0}</div>
               </div>
               <div class="stat min-w-0 overflow-hidden px-4 py-3">
-                <div class="stat-title text-xs">
-                  {langText(lang, "Down", "Скач.")}
-                </div>
+                <div class="stat-title text-xs">{message(lang, "ui.down")}</div>
                 <div class="stat-value text-success text-sm">
                   {formatTransferSpeed(torrent.download_speed)}
                 </div>
               </div>
               <div class="stat min-w-0 overflow-hidden px-4 py-3">
-                <div class="stat-title text-xs">
-                  {langText(lang, "Up", "Отд.")}
-                </div>
+                <div class="stat-title text-xs">{message(lang, "ui.up")}</div>
                 <div class="stat-value text-info text-sm">
                   {formatTransferSpeed(torrent.upload_speed)}
                 </div>
@@ -156,35 +145,29 @@ export const TorrentCard = component$(
                 onClick$={() => onOpenFiles$(torrent)}
               >
                 <LuFolderOpen class="text-base" />
-                <span>{langText(lang, "Files", "Файлы")}</span>
+                <span>{message(lang, "ui.files")}</span>
               </button>
               <a
                 href={buildTorrentPlaylistUrl(serverUrl, torrent.hash)}
                 target="_blank"
                 rel="noreferrer"
                 class="btn btn-outline min-h-11 flex-1 sm:flex-none"
-                aria-label={langText(
-                  lang,
-                  `Open playlist for ${title}`,
-                  `Открыть плейлист: ${title}`,
-                )}
+                aria-label={message(lang, "torrserver.openPlaylist", {
+                  title,
+                })}
               >
                 <LuListMusic class="text-base" />
-                <span>{langText(lang, "Playlist", "Плейлист")}</span>
+                <span>{message(lang, "ui.playlist")}</span>
               </a>
               <a
                 href={buildMagnetFromHash(torrent.hash)}
                 target="_blank"
                 rel="noreferrer"
                 class="btn btn-info btn-outline min-h-11 flex-1 sm:flex-none"
-                aria-label={langText(
-                  lang,
-                  `Open magnet link for ${title}`,
-                  `Открыть magnet ссылку: ${title}`,
-                )}
+                aria-label={message(lang, "torrserver.openMagnet", { title })}
               >
                 <LuMagnet class="text-base" />
-                <span>{langText(lang, "Magnet", "Магнет")}</span>
+                <span>{message(lang, "ui.magnet")}</span>
               </a>
               <button
                 type="button"
@@ -192,7 +175,7 @@ export const TorrentCard = component$(
                 onClick$={() => onDrop$(torrent)}
               >
                 <LuPause class="text-base" />
-                <span>{langText(lang, "Drop", "Стоп")}</span>
+                <span>{message(lang, "ui.drop")}</span>
               </button>
               <button
                 type="button"
@@ -200,7 +183,7 @@ export const TorrentCard = component$(
                 onClick$={() => onRemove$(torrent)}
               >
                 <LuTrash2 class="text-base" />
-                <span>{langText(lang, "Remove", "Удалить")}</span>
+                <span>{message(lang, "ui.remove")}</span>
               </button>
             </div>
           </div>

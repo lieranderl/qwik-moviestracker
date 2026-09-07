@@ -1,4 +1,18 @@
-import { component$, type PropFunction, type Signal } from "@builder.io/qwik";
+import {
+  $,
+  component$,
+  type PropFunction,
+  type Signal,
+  useContext,
+  useSignal,
+} from "@builder.io/qwik";
+import { ToastManagerContext } from "qwik-toasts";
+import { validateTorrServerUploadFile } from "~/services/torrserver";
+import { message } from "~/utils/i18n";
+import {
+  torrServerLibraryClient,
+  torrServerSearchClient,
+} from "~/services/torrserver/clients";
 import { TorrServerModal } from "./torrserver-modal";
 
 export type TorrServerApiSearchResult = {
@@ -11,10 +25,6 @@ export type TorrServerApiSearchResult = {
   seeders?: number;
   torrent?: string;
 };
-
-function lt(lang: string, en: string, ru: string): string {
-  return lang.startsWith("ru") ? ru : en;
-}
 
 /* ── Add torrent by link ─────────────────────────────────── */
 
@@ -41,20 +51,19 @@ const AddLinkSection = component$(
     <section class="card border-base-200 bg-base-200/40 border shadow-none">
       <div class="card-body gap-3 p-4">
         <h3 class="font-semibold">
-          {lt(lang, "Add torrent by link", "Добавить торрент по ссылке")}
+          {message(lang, "torrserver.tools.addTorrentByLink")}
         </h3>
         <form preventdefault:submit onSubmit$={onAddLink$} class="grid gap-3">
           <label class="form-control">
             <span class="label label-text px-0 pb-1 text-sm font-medium">
-              {lt(lang, "Torrent or magnet link", "Torrent или magnet ссылка")}
+              {message(lang, "torrserver.tools.torrentOrMagnetLink")}
             </span>
             <input
               type="text"
               class="input input-bordered min-h-11 w-full"
-              placeholder={lt(
+              placeholder={message(
                 lang,
-                "magnet:?xt=... or http(s)://...",
-                "magnet:?xt=... или http(s)://...",
+                "torrserver.tools.torrentOrMagnetPlaceholder",
               )}
               value={linkValue.value}
               onInput$={(_, el) => {
@@ -64,16 +73,12 @@ const AddLinkSection = component$(
           </label>
           <label class="form-control">
             <span class="label label-text px-0 pb-1 text-sm font-medium">
-              {lt(lang, "Title", "Заголовок")}
+              {message(lang, "torrserver.tools.title")}
             </span>
             <input
               type="text"
               class="input input-bordered min-h-11 w-full"
-              placeholder={lt(
-                lang,
-                "Optional title",
-                "Необязательный заголовок",
-              )}
+              placeholder={message(lang, "torrserver.tools.optionalTitle")}
               value={titleValue.value}
               onInput$={(_, el) => {
                 titleValue.value = el.value;
@@ -83,7 +88,7 @@ const AddLinkSection = component$(
           <div class="grid gap-2 sm:grid-cols-2">
             <label class="form-control">
               <span class="label label-text px-0 pb-1 text-sm font-medium">
-                {lt(lang, "Category", "Категория")}
+                {message(lang, "torrserver.tools.category")}
               </span>
               <select
                 class="select select-bordered min-h-11 w-full"
@@ -92,10 +97,18 @@ const AddLinkSection = component$(
                   categoryValue.value = el.value;
                 }}
               >
-                <option value="other">{lt(lang, "Other", "Другое")}</option>
-                <option value="movie">{lt(lang, "Movie", "Фильм")}</option>
-                <option value="tv">{lt(lang, "TV", "Сериал")}</option>
-                <option value="music">{lt(lang, "Music", "Музыка")}</option>
+                <option value="other">
+                  {message(lang, "torrserver.tools.other")}
+                </option>
+                <option value="movie">
+                  {message(lang, "torrserver.tools.movie")}
+                </option>
+                <option value="tv">
+                  {message(lang, "torrserver.tools.tv")}
+                </option>
+                <option value="music">
+                  {message(lang, "torrserver.tools.music")}
+                </option>
               </select>
             </label>
             <label class="label rounded-box border-base-200 min-h-11 cursor-pointer justify-start gap-2 border px-3">
@@ -108,7 +121,7 @@ const AddLinkSection = component$(
                 }}
               />
               <span class="label-text text-sm">
-                {lt(lang, "Save in DB", "Сохранить в БД")}
+                {message(lang, "torrserver.tools.saveInDatabase")}
               </span>
             </label>
           </div>
@@ -118,8 +131,8 @@ const AddLinkSection = component$(
             disabled={!serverUrl || addLinkBusy}
           >
             {addLinkBusy
-              ? lt(lang, "Adding...", "Добавление...")
-              : lt(lang, "Add link", "Добавить ссылку")}
+              ? message(lang, "torrserver.tools.adding")
+              : message(lang, "torrserver.tools.addLink")}
           </button>
         </form>
       </div>
@@ -150,11 +163,11 @@ const UploadSection = component$(
     <section class="card border-base-200 bg-base-200/40 border shadow-none">
       <div class="card-body gap-3 p-4">
         <h3 class="font-semibold">
-          {lt(lang, "Upload .torrent file", "Загрузить .torrent файл")}
+          {message(lang, "torrserver.tools.uploadTorrentFile")}
         </h3>
         <label class="form-control">
           <span class="label label-text px-0 pb-1 text-sm font-medium">
-            {lt(lang, ".torrent file", ".torrent файл")}
+            {message(lang, "torrserver.tools.torrentFile")}
           </span>
           <input
             type="file"
@@ -172,7 +185,7 @@ const UploadSection = component$(
         >
           {uploadValidationMessage ||
             uploadFileName ||
-            lt(lang, "No file selected", "Файл не выбран")}
+            message(lang, "torrserver.tools.noFileSelected")}
         </p>
         <button
           type="button"
@@ -186,8 +199,8 @@ const UploadSection = component$(
           onClick$={onUpload$}
         >
           {uploadBusy
-            ? lt(lang, "Uploading...", "Загрузка...")
-            : lt(lang, "Upload", "Загрузить")}
+            ? message(lang, "torrserver.tools.uploading")
+            : message(lang, "torrserver.tools.upload")}
         </button>
       </div>
     </section>
@@ -223,17 +236,17 @@ const SearchSection = component$(
     <section class="card border-base-200 bg-base-200/40 border shadow-none">
       <div class="card-body gap-3 p-4">
         <h3 class="font-semibold">
-          {lt(lang, "Search and diagnostics", "Поиск и диагностика")}
+          {message(lang, "torrserver.tools.searchAndDiagnostics")}
         </h3>
         <label class="form-control">
           <span class="label label-text px-0 pb-1 text-sm font-medium">
-            {lt(lang, "Search query", "Поисковый запрос")}
+            {message(lang, "torrserver.tools.searchQuery")}
           </span>
           <input
             type="text"
             class="input input-bordered min-h-11 w-full"
             value={apiQuery.value}
-            placeholder={lt(lang, "Search query", "Поисковый запрос")}
+            placeholder={message(lang, "torrserver.tools.searchQuery")}
             onInput$={(_, element) => {
               apiQuery.value = element.value;
             }}
@@ -263,18 +276,13 @@ const SearchSection = component$(
         </div>
         <p class="text-base-content/60 text-xs">
           {searchBusy
-            ? lt(lang, "Searching...", "Поиск...")
+            ? message(lang, "torrserver.tools.searching")
             : searchSource
-              ? lt(
-                  lang,
-                  `Results from ${searchSource}: ${searchResults.length}`,
-                  `Результаты из ${searchSource}: ${searchResults.length}`,
-                )
-              : lt(
-                  lang,
-                  "Run /search or /torznab to load results here.",
-                  "Запустите /search или /torznab, чтобы увидеть результаты здесь.",
-                )}
+              ? message(lang, "torrserver.tools.searchResults", {
+                  source: searchSource,
+                  count: searchResults.length,
+                })
+              : message(lang, "torrserver.tools.searchHint")}
         </p>
         <div class="max-h-48 space-y-2 overflow-auto">
           {searchResults.slice(0, 12).map((result, index) => (
@@ -288,7 +296,7 @@ const SearchSection = component$(
               <div class="mt-2 flex items-center justify-between gap-2">
                 <span class="text-base-content/60 text-xs">
                   {result.seed || result.seeders || result.peer || 0}{" "}
-                  {lt(lang, "seeders", "сидеров")}
+                  {message(lang, "torrserver.tools.seeders")}
                 </span>
                 <button
                   type="button"
@@ -298,7 +306,7 @@ const SearchSection = component$(
                     await onAddSearchResult$(result);
                   }}
                 >
-                  {lt(lang, "Add", "Добавить")}
+                  {message(lang, "torrserver.tools.add")}
                 </button>
               </div>
             </div>
@@ -338,11 +346,7 @@ const SearchSection = component$(
         </div>
         <p class="text-base-content/60 line-clamp-4 text-xs leading-relaxed">
           {(statsText || "").slice(0, 420) ||
-            lt(
-              lang,
-              "Statistics text from /stat will appear here after connection.",
-              "Текст статистики из /stat появится здесь после подключения.",
-            )}
+            message(lang, "torrserver.tools.statsHint")}
         </p>
       </div>
     </section>
@@ -352,79 +356,195 @@ const SearchSection = component$(
 /* ── Main modal ──────────────────────────────────────────── */
 
 export interface TorrServerApiToolsModalProps {
-  addLinkBusy: boolean;
-  apiQuery: Signal<string>;
-  categoryValue: Signal<string>;
   lang: string;
-  linkValue: Signal<string>;
-  onAddLink$: PropFunction<() => void>;
-  onAddSearchResult$: PropFunction<(result: TorrServerApiSearchResult) => void>;
   onClose$: PropFunction<() => void>;
-  onSearch$: PropFunction<(source: "rutor" | "torznab") => void>;
-  onUpload$: PropFunction<() => void>;
-  onUploadFileChange$: PropFunction<(file: File | null) => void>;
+  onLibraryChanged$: PropFunction<() => void>;
   open: boolean;
-  saveToDbValue: Signal<boolean>;
-  searchBusy: boolean;
-  searchResults: TorrServerApiSearchResult[];
-  searchSource: "rutor" | "torznab" | null;
   serverUrl: string;
   statsText: string;
-  titleValue: Signal<string>;
-  uploadBusy: boolean;
-  uploadFileName: string;
-  uploadValidationMessage?: string;
 }
 
 export const TorrServerApiToolsModal = component$(
   (props: TorrServerApiToolsModalProps) => {
+    const toastManager = useContext(ToastManagerContext);
+    const apiQuery = useSignal("");
+    const addLinkBusy = useSignal(false);
+    const uploadBusy = useSignal(false);
+    const uploadFile = useSignal<File | null>(null);
+    const uploadValidationMessage = useSignal("");
+    const searchBusy = useSignal(false);
+    const searchSource = useSignal<"rutor" | "torznab" | null>(null);
+    const searchResults = useSignal<TorrServerApiSearchResult[]>([]);
+    const linkValue = useSignal("");
+    const titleValue = useSignal("");
+    const categoryValue = useSignal("other");
+    const saveToDbValue = useSignal(true);
+
+    const notify = $(
+      (message: string, type: "error" | "success" | "warning") => {
+        toastManager.addToast({ message, type, autocloseTime: 5_000 });
+      },
+    );
+
+    const addLink = $(async () => {
+      const link = linkValue.value.trim();
+      if (!props.serverUrl || !link) {
+        notify(message(props.lang, "torrserver.tools.provideLink"), "error");
+        return;
+      }
+      addLinkBusy.value = true;
+      try {
+        await torrServerLibraryClient.addByLink(props.serverUrl, {
+          category: categoryValue.value || "other",
+          link,
+          saveToDb: saveToDbValue.value,
+          title: titleValue.value.trim() || link,
+        });
+        linkValue.value = "";
+        titleValue.value = "";
+        notify(message(props.lang, "torrserver.tools.linkSent"), "success");
+        await props.onLibraryChanged$();
+      } catch (error) {
+        console.error(error);
+        notify(message(props.lang, "torrserver.tools.addLinkFailed"), "error");
+      } finally {
+        addLinkBusy.value = false;
+      }
+    });
+
+    const onUploadFileChange = $((file: File | null) => {
+      if (!file) {
+        uploadFile.value = null;
+        uploadValidationMessage.value = "";
+        return;
+      }
+      const validation = validateTorrServerUploadFile(file, file.name);
+      uploadFile.value = validation.ok ? file : null;
+      uploadValidationMessage.value = validation.ok ? "" : validation.message;
+    });
+
+    const upload = $(async () => {
+      const file = uploadFile.value;
+      if (!props.serverUrl || !file) return;
+      const validation = validateTorrServerUploadFile(file, file.name);
+      if (!validation.ok) {
+        uploadValidationMessage.value = validation.message;
+        notify(validation.message, "error");
+        return;
+      }
+      uploadBusy.value = true;
+      try {
+        await torrServerLibraryClient.upload(props.serverUrl, {
+          category: "other",
+          file,
+          fileName: validation.fileName,
+          saveToDb: true,
+          title: validation.fileName,
+        });
+        uploadFile.value = null;
+        uploadValidationMessage.value = "";
+        notify(
+          message(props.lang, "torrserver.tools.uploadSucceeded"),
+          "success",
+        );
+        await props.onLibraryChanged$();
+      } catch (error) {
+        console.error(error);
+        notify(message(props.lang, "torrserver.tools.uploadFailed"), "error");
+      } finally {
+        uploadBusy.value = false;
+      }
+    });
+
+    const search = $(async (source: "rutor" | "torznab") => {
+      const query = apiQuery.value.trim();
+      if (!props.serverUrl || !query) return;
+      searchBusy.value = true;
+      searchSource.value = source;
+      try {
+        searchResults.value =
+          source === "rutor"
+            ? await torrServerSearchClient.rutor(props.serverUrl, query)
+            : await torrServerSearchClient.torznab(props.serverUrl, query);
+      } catch (error) {
+        console.error(error);
+        searchResults.value = [];
+        notify(message(props.lang, "torrserver.tools.searchFailed"), "error");
+      } finally {
+        searchBusy.value = false;
+      }
+    });
+
+    const addSearchResult = $(async (result: TorrServerApiSearchResult) => {
+      const link = result.magnet || result.link || result.torrent;
+      if (!props.serverUrl || !link) {
+        notify(
+          message(props.lang, "torrserver.tools.resultMissingLink"),
+          "warning",
+        );
+        return;
+      }
+      addLinkBusy.value = true;
+      try {
+        await torrServerLibraryClient.addByLink(props.serverUrl, {
+          category: "other",
+          link,
+          poster: result.poster || "",
+          saveToDb: true,
+          title: result.name || link,
+        });
+        notify(message(props.lang, "torrserver.tools.resultAdded"), "success");
+        await props.onLibraryChanged$();
+      } catch (error) {
+        console.error(error);
+        notify(
+          message(props.lang, "torrserver.tools.addResultFailed"),
+          "error",
+        );
+      } finally {
+        addLinkBusy.value = false;
+      }
+    });
+
     return (
       <TorrServerModal
         open={props.open}
-        closeLabel={lt(
-          props.lang,
-          "Close API tools",
-          "Закрыть API-инструменты",
-        )}
-        title={lt(props.lang, "Tools", "Инструменты")}
-        subtitle={lt(
-          props.lang,
-          "Add torrents, search, and manage playlists.",
-          "Добавляйте торренты, ищите и управляйте плейлистами.",
-        )}
+        closeLabel={message(props.lang, "torrserver.tools.close")}
+        title={message(props.lang, "torrserver.tools.heading")}
+        subtitle={message(props.lang, "torrserver.tools.subtitle")}
         onClose$={props.onClose$}
       >
         <div class="grid min-w-0 gap-4 lg:grid-cols-2">
           <AddLinkSection
-            addLinkBusy={props.addLinkBusy}
-            categoryValue={props.categoryValue}
+            addLinkBusy={addLinkBusy.value}
+            categoryValue={categoryValue}
             lang={props.lang}
-            linkValue={props.linkValue}
-            onAddLink$={props.onAddLink$}
-            saveToDbValue={props.saveToDbValue}
+            linkValue={linkValue}
+            onAddLink$={addLink}
+            saveToDbValue={saveToDbValue}
             serverUrl={props.serverUrl}
-            titleValue={props.titleValue}
+            titleValue={titleValue}
           />
 
           <UploadSection
             lang={props.lang}
-            onUpload$={props.onUpload$}
-            onUploadFileChange$={props.onUploadFileChange$}
+            onUpload$={upload}
+            onUploadFileChange$={onUploadFileChange}
             serverUrl={props.serverUrl}
-            uploadBusy={props.uploadBusy}
-            uploadFileName={props.uploadFileName}
-            uploadValidationMessage={props.uploadValidationMessage}
+            uploadBusy={uploadBusy.value}
+            uploadFileName={uploadFile.value?.name ?? ""}
+            uploadValidationMessage={uploadValidationMessage.value}
           />
 
           <SearchSection
-            addLinkBusy={props.addLinkBusy}
-            apiQuery={props.apiQuery}
+            addLinkBusy={addLinkBusy.value}
+            apiQuery={apiQuery}
             lang={props.lang}
-            onAddSearchResult$={props.onAddSearchResult$}
-            onSearch$={props.onSearch$}
-            searchBusy={props.searchBusy}
-            searchResults={props.searchResults}
-            searchSource={props.searchSource}
+            onAddSearchResult$={addSearchResult}
+            onSearch$={search}
+            searchBusy={searchBusy.value}
+            searchResults={searchResults.value}
+            searchSource={searchSource.value}
             serverUrl={props.serverUrl}
             statsText={props.statsText}
           />

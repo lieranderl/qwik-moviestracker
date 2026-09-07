@@ -50,7 +50,8 @@ export const createRecentSearchHref = ({
 }: {
   lang: string;
   query: string;
-}) => `${paths.search(lang)}&q=${encodeURIComponent(normalizeRecentSearchQuery(query))}`;
+}) =>
+  `${paths.search(lang)}&q=${encodeURIComponent(normalizeRecentSearchQuery(query))}`;
 
 export const createRecentSearch = ({
   lang,

@@ -1,5 +1,6 @@
+import { message } from "~/utils/i18n";
 import { component$, type Signal, useId } from "@builder.io/qwik";
-import { langText } from "~/utils/languages";
+
 import {
   SORT_OPTIONS,
   STATUS_FILTERS,
@@ -13,26 +14,26 @@ const getStatusFilterLabel = (
 ): string => {
   switch (filter) {
     case "active":
-      return langText(lang, "Active", "Активные");
+      return message(lang, "ui.active");
     case "database":
-      return langText(lang, "In database", "В базе");
+      return message(lang, "ui.inDatabase");
     case "other":
-      return langText(lang, "Other", "Другое");
+      return message(lang, "ui.other");
     default:
-      return langText(lang, "All", "Все");
+      return message(lang, "ui.all");
   }
 };
 
 const getSortLabel = (sortKey: TorrServerSortKey, lang: string): string => {
   switch (sortKey) {
     case "peers":
-      return langText(lang, "Peers", "Пиры");
+      return message(lang, "ui.peers");
     case "preload":
-      return langText(lang, "Preload", "Предзагрузка");
+      return message(lang, "ui.preload");
     case "title":
-      return langText(lang, "Title", "Название");
+      return message(lang, "ui.title");
     default:
-      return langText(lang, "Recent", "Недавние");
+      return message(lang, "ui.recent");
   }
 };
 
@@ -56,14 +57,10 @@ export const TorrServerFilters = component$(
           <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div class="space-y-1">
               <h2 id={headingId} class="card-title md:text-2xl">
-                {langText(lang, "Filters", "Фильтры")}
+                {message(lang, "ui.filters")}
               </h2>
               <p class="text-base-content/65 text-sm leading-relaxed">
-                {langText(
-                  lang,
-                  "Filter torrents by status.",
-                  "Фильтруйте торренты по статусу.",
-                )}
+                {message(lang, "ui.filterTorrentsByStatus")}
               </p>
             </div>
 
@@ -71,16 +68,12 @@ export const TorrServerFilters = component$(
               <label class="form-control gap-2">
                 <span class="label px-0 py-0">
                   <span class="label-text font-medium">
-                    {langText(lang, "Sort", "Сортировка")}
+                    {message(lang, "ui.sort")}
                   </span>
                 </span>
                 <select
                   value={sortKeySig.value}
-                  aria-label={langText(
-                    lang,
-                    "Sort TorrServer torrents",
-                    "Сортировать торренты TorrServer",
-                  )}
+                  aria-label={message(lang, "ui.sortTorrserverTorrents")}
                   class="select select-bordered min-h-11"
                   onChange$={(_, element) => {
                     sortKeySig.value = element.value as TorrServerSortKey;
@@ -102,7 +95,7 @@ export const TorrServerFilters = component$(
             class="flex flex-col gap-2"
           >
             <p id={statusGroupId} class="text-sm font-medium">
-              {langText(lang, "Status", "Статус")}
+              {message(lang, "ui.status")}
             </p>
             <div class="flex flex-wrap gap-2">
               {STATUS_FILTERS.map((filter) => (

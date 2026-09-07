@@ -1,102 +1,32 @@
+import { message } from "~/utils/i18n";
 import { $, component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, server$ } from "@builder.io/qwik-city";
 import { MediaCard } from "~/components/media-card";
 import { MediaGrid } from "~/components/media-grid";
-import type { MediaShort } from "~/services/models";
 import { MediaType } from "~/services/models";
-import { getMoviesFirestore } from "~/services/firestore";
 import {
-  getMedias,
-  getRegionFromLanguage,
-  getTrendingMedia,
-  withImages,
-} from "~/services/tmdb";
+  loadMovieCategoryPage,
+  type MovieCategoryItem,
+} from "~/services/feed-loaders";
+import {
+  isMovieCategory,
+  MOVIE_CATEGORIES,
+  type MovieCategory,
+} from "~/services/media-categories";
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import { createInfiniteScrollObserver } from "~/utils/infinite-scroll";
-import { langText } from "~/utils/languages";
-import { categoryToDb, categoryToTitle, paths } from "~/utils/paths";
+import {
+  appendPage,
+  beginNextPage,
+  createPaginationState,
+  failPage,
+} from "~/utils/pagination-state";
+import { categoryToTitle, paths } from "~/utils/paths";
 
-type FetchMovieCategoryPageArgs = {
-  category: string;
-  cursor?: string | null;
-  databaseId: string;
-  lang: string;
-  page: number;
-  projectId: string;
-};
-
-type MovieCategoryPage = {
-  movies: MediaShort[];
-  nextCursor: string | null;
-};
-
-const MOVIE_TMDB_CATEGORY_QUERIES: Record<string, string | null> = {
-  trending: null,
-  popular: "popular",
-  nowplaying: "now_playing",
-  upcoming: "upcoming",
-};
-
-const isSupportedMovieCategory = (category: string) =>
-  category in MOVIE_TMDB_CATEGORY_QUERIES ||
-  category === "updated" ||
-  category === "hdr10" ||
-  category === "dolbyvision";
-
-const isFirestoreCategory = (category: string) =>
-  category === "updated" || category === "hdr10" || category === "dolbyvision";
-
-const fetchMovieCategoryPage = async ({
-  category,
-  cursor,
-  databaseId,
-  lang,
-  page,
-  projectId,
-}: FetchMovieCategoryPageArgs): Promise<MovieCategoryPage> => {
-  const tmdbQuery = MOVIE_TMDB_CATEGORY_QUERIES[category];
-
-  if (tmdbQuery === null) {
-    const movies = (await getTrendingMedia({
-      page,
-      language: lang,
-      type: MediaType.Movie,
-      needbackdrop: false,
-    })) as MediaShort[];
-    return { movies, nextCursor: null };
-  }
-
-  if (tmdbQuery) {
-    const movies = (await getMedias({
-      page,
-      language: lang,
-      query: tmdbQuery,
-      region:
-        category === "nowplaying" || category === "upcoming"
-          ? getRegionFromLanguage(lang)
-          : undefined,
-      type: MediaType.Movie,
-      needbackdrop: false,
-    })) as MediaShort[];
-    return { movies, nextCursor: null };
-  }
-
-  const result = await getMoviesFirestore({
-    entriesOnPage: MEDIA_PAGE_SIZE,
-    dbName: categoryToDb(category),
-    cursor,
-    language: lang,
-    projectId,
-    databaseId,
-  });
-  const movies = (await withImages(
-    result.movies as MediaShort[],
-    lang,
-  )) as MediaShort[];
-  return { movies, nextCursor: result.nextCursor };
-};
+const isFirestoreCategory = (category: MovieCategory) =>
+  MOVIE_CATEGORIES[category].source === "firestore";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
@@ -105,12 +35,12 @@ export const useContentLoader = routeLoader$(async (event) => {
   const databaseId = event.env.get("FIRESTORE_DATABASE") ?? "moviestracker";
   const category = event.params.name;
 
-  if (!isSupportedMovieCategory(category)) {
+  if (!isMovieCategory(category)) {
     throw event.redirect(302, paths.notFound(lang));
   }
 
   try {
-    const result = await fetchMovieCategoryPage({
+    const result = await loadMovieCategoryPage({
       page: 1,
       category,
       lang,
@@ -126,27 +56,26 @@ export const useContentLoader = routeLoader$(async (event) => {
 
 export default component$(() => {
   const resource = useContentLoader();
-  const movieItemsSig = useSignal(resource.value.movies as MediaShort[]);
-  const isLoadingMovies = useSignal(false);
-  const pageSig = useSignal(1);
-  const cursorSig = useSignal<string | null>(resource.value.nextCursor);
-  const hasMoreMovies = useSignal(
-    isFirestoreCategory(resource.value.category)
-      ? resource.value.nextCursor !== null
-      : resource.value.movies.length >= MEDIA_PAGE_SIZE,
+  const pagination = useSignal(
+    createPaginationState<MovieCategoryItem>({
+      cursor: resource.value.nextCursor,
+      items: resource.value.movies as MovieCategoryItem[],
+      mode: isFirestoreCategory(resource.value.category) ? "cursor" : "page",
+      pageSize: MEDIA_PAGE_SIZE,
+    }),
   );
   const sentinelRef = useSignal<Element>();
 
   const fetchMovies = server$(async function (
     page: number,
-    category: string,
+    category: MovieCategory,
     lang: string,
     cursor: string | null,
   ) {
     const projectId =
       this.env.get("GCP_PROJECT") ?? this.env.get("GOOGLE_CLOUD_PROJECT") ?? "";
     const databaseId = this.env.get("FIRESTORE_DATABASE") ?? "moviestracker";
-    return await fetchMovieCategoryPage({
+    return await loadMovieCategoryPage({
       page,
       category,
       lang,
@@ -157,34 +86,22 @@ export default component$(() => {
   });
 
   const getNewMovies = $(async () => {
-    if (isLoadingMovies.value || !hasMoreMovies.value) {
-      return;
-    }
-
-    isLoadingMovies.value = true;
+    const next = beginNextPage(pagination.value);
+    if (!next.request) return;
+    pagination.value = next.state;
     try {
-      const nextPage = pageSig.value + 1;
       const nextResult = await fetchMovies(
-        nextPage,
+        next.request.page,
         resource.value.category,
         resource.value.lang,
-        cursorSig.value,
+        next.request.cursor,
       );
-      const nextMovies = nextResult.movies as MediaShort[];
-
-      if (nextMovies.length === 0) {
-        hasMoreMovies.value = false;
-        return;
-      }
-
-      movieItemsSig.value = [...movieItemsSig.value, ...nextMovies];
-      pageSig.value = nextPage;
-      cursorSig.value = nextResult.nextCursor;
-      hasMoreMovies.value = isFirestoreCategory(resource.value.category)
-        ? nextResult.nextCursor !== null
-        : nextMovies.length >= MEDIA_PAGE_SIZE;
-    } finally {
-      isLoadingMovies.value = false;
+      pagination.value = appendPage(pagination.value, {
+        cursor: nextResult.nextCursor,
+        items: nextResult.movies as MovieCategoryItem[],
+      });
+    } catch {
+      pagination.value = failPage(pagination.value);
     }
   });
 
@@ -197,7 +114,7 @@ export default component$(() => {
 
     const observer = createInfiniteScrollObserver({
       target,
-      hasMore: hasMoreMovies.value,
+      hasMore: pagination.value.hasMore,
       onIntersect: () => {
         void getNewMovies();
       },
@@ -213,19 +130,17 @@ export default component$(() => {
   return (
     <div class="space-y-6 pb-10">
       <MediaGrid
-        headerBadge={langText(
-          resource.value.lang,
-          `${movieItemsSig.value.length} loaded`,
-          `${movieItemsSig.value.length} загружено`,
-        )}
+        headerBadge={message(resource.value.lang, "pagination.loaded", {
+          count: pagination.value.items.length,
+        })}
         title={categoryToTitle(
           resource.value.category,
           MediaType.Movie,
           resource.value.lang,
         )}
       >
-        {movieItemsSig.value.length > 0 &&
-          movieItemsSig.value.map((m) => (
+        {pagination.value.items.length > 0 &&
+          pagination.value.items.map((m) => (
             <a
               href={paths.media(MediaType.Movie, m.id, resource.value.lang)}
               key={m.id}
@@ -245,16 +160,10 @@ export default component$(() => {
       </MediaGrid>
       <div class="flex justify-center">
         <div ref={sentinelRef} class="h-8 w-full" />
-        {isLoadingMovies.value && (
+        {pagination.value.status === "loading" && (
           <div class="border-base-200 bg-base-100/88 flex items-center gap-3 rounded-full border px-4 py-2 text-sm shadow-sm">
             <span class="loading loading-ring loading-sm" />
-            <span>
-              {langText(
-                resource.value.lang,
-                "Loading more movies…",
-                "Загружаем еще фильмы…",
-              )}
-            </span>
+            <span>{message(resource.value.lang, "ui.loadingMoreMovies")}</span>
           </div>
         )}
       </div>
@@ -266,15 +175,11 @@ export const head: DocumentHead = ({ url }) => {
   const lang = url.searchParams.get("lang") || "en-US";
 
   return {
-    title: `Moviestracker | ${langText(
-      lang,
-      "Movie catalog",
-      "Каталог фильмов",
-    )}`,
+    title: `Moviestracker | ${message(lang, "ui.movieCatalog")}`,
     meta: [
       {
         name: "description",
-        content: langText(lang, "Catalog of movies", "Каталог фильмов"),
+        content: message(lang, "ui.catalogOfMovies"),
       },
     ],
   };

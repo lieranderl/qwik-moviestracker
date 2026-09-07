@@ -20,9 +20,15 @@ test.describe("authenticated tv detail", () => {
     await expect(
       page.getByRole("link", { name: openImdbPagePattern }),
     ).toBeVisible();
-    await expect(page.getByText("TV-14 • US")).toBeVisible();
+    const availability = page
+      .getByRole("heading", { name: "Availability" })
+      .locator("..");
+    await expect(availability).toContainText("TV-14");
+    await expect(availability).toContainText("Region: US");
     await expect(
-      page.locator("span:not([aria-hidden])").filter({ hasText: /^Hulu$/ }),
+      availability
+        .locator("span:not([aria-hidden])")
+        .filter({ hasText: /^Hulu$/ }),
     ).toBeVisible();
     await expect(page.getByText("Returning Series")).toBeVisible();
     await expect(

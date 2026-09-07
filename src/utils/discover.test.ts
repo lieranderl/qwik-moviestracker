@@ -1,5 +1,8 @@
 import { describe, expect, it } from "bun:test";
-import type { CertificationList, WatchProviderCatalog } from "~/services/models";
+import type {
+  CertificationList,
+  WatchProviderCatalog,
+} from "~/services/models";
 import {
   createMovieDiscoverFilters,
   createTvDiscoverFilters,

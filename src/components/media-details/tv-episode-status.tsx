@@ -1,12 +1,6 @@
+import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 import type { LastEpisodeToAir } from "~/services/models";
-import {
-  langCurrentSeason,
-  langEnded,
-  langLastEpisode,
-  langNextEpisode,
-  langTvShowEnded,
-} from "~/utils/languages";
 
 export type TvEpisodeStatusProps = {
   lang: string;
@@ -17,8 +11,7 @@ export type TvEpisodeStatusProps = {
 
 export const TvEpisodeStatus = component$<TvEpisodeStatusProps>(
   ({ lang, last_episode_to_air, next_episode_to_air, in_production }) => {
-    const episodeStatusTitle =
-      lang === "en-US" ? "Episode status" : "Статус эпизодов";
+    const episodeStatusTitle = message(lang, "media.episodeStatus");
 
     return (
       <section class="card border-base-200 bg-base-100/95 border shadow-sm">
@@ -32,7 +25,7 @@ export const TvEpisodeStatus = component$<TvEpisodeStatusProps>(
                 {last_episode_to_air && (
                   <tr>
                     <td>
-                      {langLastEpisode(lang)}
+                      {message(lang, "langLastEpisode")}
                       <span class="ps-1">
                         {" "}
                         {last_episode_to_air.season_number}.
@@ -45,15 +38,16 @@ export const TvEpisodeStatus = component$<TvEpisodeStatusProps>(
                 {!next_episode_to_air && last_episode_to_air && (
                   <tr>
                     <td>
-                      {langCurrentSeason(lang)} (
-                      {last_episode_to_air.season_number}) {langEnded(lang)}.
+                      {message(lang, "langCurrentSeason")} (
+                      {last_episode_to_air.season_number}){" "}
+                      {message(lang, "langEnded")}.
                     </td>
                   </tr>
                 )}
                 {next_episode_to_air && (
                   <tr>
                     <td>
-                      {langNextEpisode(lang)}
+                      {message(lang, "langNextEpisode")}
                       <span class="ps-1">
                         {next_episode_to_air.season_number}.
                         {next_episode_to_air.episode_number}:
@@ -72,7 +66,7 @@ export const TvEpisodeStatus = component$<TvEpisodeStatusProps>(
                 {last_episode_to_air && (
                   <tr>
                     <td>
-                      {langLastEpisode(lang)}
+                      {message(lang, "langLastEpisode")}
                       <span class="ps-1">
                         {last_episode_to_air.season_number}.
                         {last_episode_to_air.episode_number}:
@@ -82,7 +76,7 @@ export const TvEpisodeStatus = component$<TvEpisodeStatusProps>(
                   </tr>
                 )}
                 <tr>
-                  <td>{langTvShowEnded(lang)}</td>
+                  <td>{message(lang, "langTvShowEnded")}</td>
                 </tr>
               </tbody>
             </table>

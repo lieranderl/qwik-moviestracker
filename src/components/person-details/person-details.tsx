@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import { component$, useVisibleTask$ } from "@builder.io/qwik";
 import {
   BsGenderFemale,
@@ -9,7 +10,7 @@ import { DetailPageContainer } from "~/components/detail-page-layout";
 import type { PersonMedia } from "~/services/models";
 import { MediaType, type PersonFull } from "~/services/models";
 import { formatYear } from "~/utils/format";
-import { langText } from "~/utils/languages";
+
 import { paths } from "~/utils/paths";
 import { writeLastViewed } from "~/utils/recent-activity";
 import { ExternalIds } from "../external_ids";
@@ -25,8 +26,7 @@ interface MovieDetailsProps {
   lang: string;
 }
 
-const sectionCardClass =
-  "card border-base-200 bg-base-100/95 border shadow-sm";
+const sectionCardClass = "card border-base-200 bg-base-100/95 border shadow-sm";
 const sectionBodyClass = "card-body gap-4 p-4 md:p-6";
 
 export const PersonDetails = component$(
@@ -35,9 +35,9 @@ export const PersonDetails = component$(
     useVisibleTask$(() => {
       writeLastViewed({
         href: paths.media(MediaType.Person, person.id, lang),
-        title: person.name ?? langText(lang, "Person details", "Детали персоны"),
+        title: person.name ?? message(lang, "ui.personDetails"),
         kind: "person",
-        meta: person.known_for_department || langText(lang, "Person", "Персона"),
+        meta: person.known_for_department || message(lang, "ui.person"),
         imagePath: person.profile_path,
       });
     });
@@ -57,7 +57,10 @@ export const PersonDetails = component$(
               />
             ) : (
               <div class="bg-base-200 rounded-box flex aspect-2/3 w-full items-center justify-center">
-                <span class="text-base-content/20 text-5xl select-none" aria-hidden="true">
+                <span
+                  class="text-base-content/20 text-5xl select-none"
+                  aria-hidden="true"
+                >
                   👤
                 </span>
               </div>
@@ -84,8 +87,8 @@ export const PersonDetails = component$(
 
             {/* Personal Info */}
             <div class="space-y-3">
-              <h2 class="text-base-content/70 text-sm font-semibold uppercase tracking-wide">
-                {langText(lang, "Personal info", "Личная информация")}
+              <h2 class="text-base-content/70 text-sm font-semibold tracking-wide uppercase">
+                {message(lang, "ui.personalInfo")}
               </h2>
               <PersonDate
                 place_of_birth={person.place_of_birth}
@@ -110,9 +113,7 @@ export const PersonDetails = component$(
         {/* ── BIOGRAPHY ── */}
         <section class={sectionCardClass}>
           <div class={sectionBodyClass}>
-            <h2 class="card-title text-xl">
-              {langText(lang, "Biography", "Биография")}
-            </h2>
+            <h2 class="card-title text-xl">{message(lang, "ui.biography")}</h2>
             <PersonBio biography={person.biography} lang={lang} />
           </div>
         </section>
@@ -123,7 +124,7 @@ export const PersonDetails = component$(
         <div class="space-y-6">
           {perMovies.cast.length > 0 && (
             <MediaCarousel
-              title={langText(lang, "Actor in movies", "Актер в фильмах")}
+              title={message(lang, "ui.actorInMovies")}
               type={MediaType.Person}
               category="updated"
               lang={lang}
@@ -151,7 +152,7 @@ export const PersonDetails = component$(
 
           {perTv.cast.length > 0 && (
             <MediaCarousel
-              title={langText(lang, "Actor in TV shows", "Актер в сериалах")}
+              title={message(lang, "ui.actorInTvShows")}
               type={MediaType.Person}
               category="updated"
               lang={lang}
@@ -179,7 +180,7 @@ export const PersonDetails = component$(
 
           {perMovies.crew.length > 0 && (
             <MediaCarousel
-              title={langText(lang, "Production movies", "Работы в кино")}
+              title={message(lang, "ui.productionMovies")}
               type={MediaType.Person}
               category="updated"
               lang={lang}
@@ -207,7 +208,7 @@ export const PersonDetails = component$(
 
           {perTv.crew.length > 0 && (
             <MediaCarousel
-              title={langText(lang, "Production TV shows", "Работы в сериалах")}
+              title={message(lang, "ui.productionTvShows")}
               type={MediaType.Person}
               category="updated"
               lang={lang}

@@ -45,7 +45,9 @@ export const filterAndSortTorrents = (
     filtered = filtered.filter((t) => t.Voices?.includes(filterState.voice));
   }
   if (filterState.category) {
-    filtered = filtered.filter((t) => t.Categories?.includes(filterState.category));
+    filtered = filtered.filter((t) =>
+      t.Categories?.includes(filterState.category),
+    );
   }
   if (filterState.season) {
     filtered = filtered.filter((t) =>

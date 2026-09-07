@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
@@ -24,19 +25,7 @@ import {
   type TvDiscoverFilters,
 } from "~/utils/discover";
 import { formatYear } from "~/utils/format";
-import {
-  langAllProviders,
-  langApplyFilters,
-  langDiscoverTv,
-  langFirstAirYear,
-  langMinimumVotes,
-  langRegion,
-  langResetFilters,
-  langSortBy,
-  langStreamingProvider,
-  langText,
-  langTvDiscoverSortLabel,
-} from "~/utils/languages";
+import { langTvDiscoverSortLabel } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
 type TvDiscoverPageData =
@@ -129,15 +118,10 @@ export default component$(() => {
   if (value.status !== "ready") {
     return (
       <ErrorState
-        title={langText(
+        title={message(value.lang, "ui.tvDiscoverIsUnavailable")}
+        description={message(
           value.lang,
-          "TV discover is unavailable",
-          "Поиск сериалов недоступен",
-        )}
-        description={langText(
-          value.lang,
-          "Please refresh the page or try again later.",
-          "Обновите страницу или попробуйте позже.",
+          "ui.pleaseRefreshThePageOrTryAgainLater",
         )}
         compact={true}
       />
@@ -149,33 +133,31 @@ export default component$(() => {
     (option) => option.value === value.filters.providerId,
   );
   const activeFilters = [
-    `${langRegion(value.lang)} ${value.filters.region}`,
+    `${message(value.lang, "langRegion")} ${value.filters.region}`,
     selectedProvider?.label ?? null,
     value.filters.year
-      ? `${langFirstAirYear(value.lang)} ${value.filters.year}`
+      ? `${message(value.lang, "langFirstAirYear")} ${value.filters.year}`
       : null,
-    `${langMinimumVotes(value.lang)} ${value.filters.minVotes}+`,
-    `${langSortBy(value.lang)} ${sortLabel}`,
+    `${message(value.lang, "langMinimumVotes")} ${value.filters.minVotes}+`,
+    `${message(value.lang, "langSortBy")} ${sortLabel}`,
   ].filter(Boolean) as string[];
 
   return (
     <div class="space-y-8">
-      <SectionHeading title={langDiscoverTv(value.lang)} />
+      <SectionHeading title={message(value.lang, "langDiscoverTv")} />
 
       <section class="card border-base-200 bg-base-100 border shadow-sm">
         <div class="card-body gap-5">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div class="space-y-1">
               <h2 class="text-base font-semibold">
-                {langText(value.lang, "Filters", "Фильтры")}
+                {message(value.lang, "ui.filters")}
               </h2>
             </div>
             <div class="badge badge-outline shrink-0">
-              {langText(
-                value.lang,
-                `${value.results.total_results} matches`,
-                `${value.results.total_results} совпадений`,
-              )}
+              {message(value.lang, "search.matches", {
+                count: value.results.total_results,
+              })}
             </div>
           </div>
 
@@ -185,7 +167,7 @@ export default component$(() => {
             <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               <label class="form-control w-full gap-2">
                 <span class="label-text text-sm font-medium">
-                  {langRegion(value.lang)}
+                  {message(value.lang, "langRegion")}
                 </span>
                 <select
                   class="select select-bordered w-full text-base"
@@ -202,7 +184,7 @@ export default component$(() => {
 
               <label class="form-control w-full gap-2">
                 <span class="label-text text-sm font-medium">
-                  {langStreamingProvider(value.lang)}
+                  {message(value.lang, "langStreamingProvider")}
                 </span>
                 <select
                   class="select select-bordered w-full text-base"
@@ -213,7 +195,9 @@ export default component$(() => {
                       : ""
                   }
                 >
-                  <option value="">{langAllProviders(value.lang)}</option>
+                  <option value="">
+                    {message(value.lang, "langAllProviders")}
+                  </option>
                   {value.providerOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -224,7 +208,7 @@ export default component$(() => {
 
               <label class="form-control w-full gap-2">
                 <span class="label-text text-sm font-medium">
-                  {langFirstAirYear(value.lang)}
+                  {message(value.lang, "langFirstAirYear")}
                 </span>
                 <input
                   class="input input-bordered w-full text-base"
@@ -238,7 +222,7 @@ export default component$(() => {
 
               <label class="form-control w-full gap-2">
                 <span class="label-text text-sm font-medium">
-                  {langMinimumVotes(value.lang)}
+                  {message(value.lang, "langMinimumVotes")}
                 </span>
                 <input
                   class="input input-bordered w-full text-base"
@@ -251,7 +235,7 @@ export default component$(() => {
 
               <label class="form-control w-full gap-2">
                 <span class="label-text text-sm font-medium">
-                  {langSortBy(value.lang)}
+                  {message(value.lang, "langSortBy")}
                 </span>
                 <select
                   class="select select-bordered w-full text-base"
@@ -278,19 +262,19 @@ export default component$(() => {
                   type="submit"
                   class="btn btn-primary btn-sm w-full sm:w-auto"
                 >
-                  {langApplyFilters(value.lang)}
+                  {message(value.lang, "langApplyFilters")}
                 </button>
                 <a
                   href={paths.tvDiscover(value.lang)}
                   class="btn btn-ghost btn-sm w-full sm:w-auto"
                 >
-                  {langResetFilters(value.lang)}
+                  {message(value.lang, "langResetFilters")}
                 </a>
                 <a
                   href={paths.tv(value.lang)}
                   class="btn btn-outline btn-sm w-full sm:w-auto"
                 >
-                  {langText(value.lang, "Series", "Сериалы")}
+                  {message(value.lang, "ui.series2")}
                 </a>
               </div>
             </div>
@@ -301,16 +285,13 @@ export default component$(() => {
       {value.results.total_results > 0 ? (
         <>
           <MediaGrid
-            headerBadge={langText(
-              value.lang,
-              `Page ${value.results.page} of ${value.results.total_pages}`,
-              `Страница ${value.results.page} из ${value.results.total_pages}`,
-            )}
-            title={langText(
-              value.lang,
-              `Series (${value.results.total_results})`,
-              `Сериалы (${value.results.total_results})`,
-            )}
+            headerBadge={message(value.lang, "pagination.pageOf", {
+              page: value.results.page,
+              total: value.results.total_pages,
+            })}
+            title={message(value.lang, "media.seriesCount", {
+              count: value.results.total_results,
+            })}
           >
             {value.results.results.map((tvShow) => (
               <a
@@ -335,7 +316,7 @@ export default component$(() => {
             <div class="flex flex-wrap items-center justify-between gap-3">
               {value.filters.page <= 1 ? (
                 <span aria-disabled="true" class="btn btn-outline btn-disabled">
-                  {langText(value.lang, "Previous page", "Предыдущая страница")}
+                  {message(value.lang, "ui.previousPage")}
                 </span>
               ) : (
                 <a
@@ -344,19 +325,18 @@ export default component$(() => {
                   })}
                   class="btn btn-outline"
                 >
-                  {langText(value.lang, "Previous page", "Предыдущая страница")}
+                  {message(value.lang, "ui.previousPage")}
                 </a>
               )}
               <span class="text-base-content/60 text-sm">
-                {langText(
-                  value.lang,
-                  `Page ${value.results.page} of ${value.results.total_pages}`,
-                  `Страница ${value.results.page} из ${value.results.total_pages}`,
-                )}
+                {message(value.lang, "pagination.pageOf", {
+                  page: value.results.page,
+                  total: value.results.total_pages,
+                })}
               </span>
               {value.filters.page >= value.results.total_pages ? (
                 <span aria-disabled="true" class="btn btn-outline btn-disabled">
-                  {langText(value.lang, "Next page", "Следующая страница")}
+                  {message(value.lang, "ui.nextPage")}
                 </span>
               ) : (
                 <a
@@ -365,7 +345,7 @@ export default component$(() => {
                   })}
                   class="btn btn-outline"
                 >
-                  {langText(value.lang, "Next page", "Следующая страница")}
+                  {message(value.lang, "ui.nextPage")}
                 </a>
               )}
             </div>
@@ -373,15 +353,10 @@ export default component$(() => {
         </>
       ) : (
         <EmptyState
-          title={langText(
+          title={message(value.lang, "ui.noSeriesMatchForTheseFilters")}
+          description={message(
             value.lang,
-            "No series match for these filters",
-            "По этим фильтрам сериалы не найдены",
-          )}
-          description={langText(
-            value.lang,
-            "Try a broader provider, reset the year, or lower the vote threshold.",
-            "Попробуйте более широкий выбор провайдера, сбросьте год или снизьте порог голосов.",
+            "ui.tryABroaderProviderResetTheYearOrLowerTheVoteThreshold",
           )}
           compact={true}
         />
@@ -394,19 +369,11 @@ export const head: DocumentHead = ({ url }) => {
   const lang = url.searchParams.get("lang") || "en-US";
 
   return {
-    title: `Moviestracker | ${langText(
-      lang,
-      "TV discovery",
-      "Поиск сериалов",
-    )}`,
+    title: `Moviestracker | ${message(lang, "ui.tvDiscovery")}`,
     meta: [
       {
         name: "description",
-        content: langText(
-          lang,
-          "TV discovery with TMDB filters",
-          "Поиск сериалов с фильтрами TMDB",
-        ),
+        content: message(lang, "ui.tvDiscoveryWithTmdbFilters"),
       },
     ],
   };

@@ -14,6 +14,6 @@ describe("media carousel structure", () => {
     expect(source).toContain("ResizeObserver");
     expect(source).toContain("aria-labelledby={headingId}");
     expect(source).toContain("aria-controls={trackId}");
-    expect(source).toContain('id={trackId}');
+    expect(source).toContain("id={trackId}");
   });
 });

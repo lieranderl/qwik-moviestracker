@@ -21,8 +21,8 @@
 
 ## Service Layer
 
-- TMDB, Firestore, Cloud gateway, and TorrServer access belongs in
-  `src/services/**`.
+- TMDB, Firestore, private IMDb Cloud Run, JacRed, and TorrServer access belongs
+  in `src/services/**`.
 - Route files should compose data, not create duplicate clients.
 
 ## Commercial Boundary
@@ -101,9 +101,11 @@
 
 ## Repo Sharp Edges
 
-- `dist/**` and `server/**` are committed generated output.
-- The repo has a small Bun-based test surface, but coverage is still narrow.
-- `adapters/cloud-run/vite.config.ts` references a missing entry file.
+- `dist/**` and `server/**` are ignored generated output. Never commit them.
+- Keep frontend service/domain line and function coverage at or above 80%, with
+  the TorrServer transport, normalizers, and state transitions individually at
+  or above 80%.
+- Bun is the only supported SSR adapter.
 - Keep Docker's Bun image pinned to the same tested Bun version as CI. Floating
   `oven/bun:1` can pick up Linux runtime regressions before GitHub CI sees
   them.

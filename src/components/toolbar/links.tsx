@@ -1,11 +1,7 @@
+import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
-import {
-  langMovies,
-  langSearch,
-  langSeries,
-  langTorrServer,
-} from "~/utils/languages";
+
 import { paths } from "~/utils/paths";
 import type { ToolbarProps } from "./toolbar";
 
@@ -51,10 +47,10 @@ export const ToolbarLinks = component$(
   ({ lang, mobile }: ToolbarLinksProps) => {
     const pathname = useLocation().url.pathname;
     const navItems = [
-      { text: langMovies(lang), path: paths.movie(lang) },
-      { text: langSeries(lang), path: paths.tv(lang) },
-      { text: langSearch(lang), path: paths.search(lang) },
-      { text: langTorrServer(lang), path: paths.torrserver(lang) },
+      { text: message(lang, "langMovies"), path: paths.movie(lang) },
+      { text: message(lang, "langSeries"), path: paths.tv(lang) },
+      { text: message(lang, "langSearch"), path: paths.search(lang) },
+      { text: message(lang, "langTorrServer"), path: paths.torrserver(lang) },
     ];
 
     return (

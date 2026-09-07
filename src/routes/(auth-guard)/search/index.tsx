@@ -1,6 +1,8 @@
+import { message } from "~/utils/i18n";
 import {
   component$,
   Resource,
+  sync$,
   useResource$,
   useSignal,
   useVisibleTask$,
@@ -24,22 +26,9 @@ import {
   type RecentSearch,
 } from "~/utils/recent-activity";
 import {
-  langFetchingMatchingTitlesAndPeople,
-  langLoadingSearchResults,
-  langNoResults,
-  langRecentSearches,
-  langResults,
-  langSearch,
-  langSearchAssist,
   langSearchBecomesAvailableAfterCharacters,
   langSearchMatchesCount,
-  langSearchResults,
-  langSearchForATitleOnceAndItWillShowUpHere,
   langSearchStartsAfterCharacters,
-  langSearchTitlesCastCrew,
-  langSearchMoviesSeriesPeople,
-  langSearchUnavailableRightNow,
-  langStartWithATitleActorOrDirector,
   langTryABroaderTitleAPersonNameOrDifferentSpelling,
 } from "~/utils/languages";
 import {
@@ -61,6 +50,66 @@ const runSearch = server$(async (request: SearchRequest) => {
   });
 });
 
+type SearchFormProps = {
+  lang: string;
+  query: string;
+  shortQueryMessage: string | null;
+};
+
+const SearchForm = component$<SearchFormProps>(
+  ({ lang, query, shortQueryMessage }) => (
+    <section class="card border-base-200 bg-base-100 border shadow-sm">
+      <div class="card-body gap-4 p-4 md:p-6">
+        <form class="flex flex-col gap-3 md:flex-row md:items-end" method="get">
+          <input type="hidden" name="lang" value={lang} />
+          <label class="form-control flex-1 gap-2" for="search-query">
+            <span class="label-text text-sm font-medium">
+              {message(lang, "langSearchMoviesSeriesPeople")}
+            </span>
+            <input
+              id="search-query"
+              name="q"
+              inputMode="search"
+              autoComplete="off"
+              spellcheck={false}
+              aria-describedby="search-query-help"
+              aria-invalid={Boolean(shortQueryMessage)}
+              placeholder={message(lang, "langSearchTitlesCastCrew")}
+              class="input input-bordered focus-ringable h-11 min-h-11 w-full text-base"
+              {...(query ? { value: query } : {})}
+              onInput$={sync$((_event, target) => {
+                target.setAttribute("value", target.value);
+              })}
+            />
+          </label>
+
+          <button
+            type="submit"
+            class="btn btn-primary h-11 min-h-11 gap-2 md:min-w-40"
+          >
+            <HiMagnifyingGlassOutline aria-hidden="true" class="h-5 w-5" />
+            {message(lang, "langSearch")}
+          </button>
+        </form>
+
+        <p id="search-query-help" class="text-base-content/65 text-sm">
+          {langSearchStartsAfterCharacters(lang, MIN_SEARCH_QUERY_LENGTH)}
+        </p>
+
+        {shortQueryMessage && (
+          <div
+            class="alert alert-warning alert-soft text-sm"
+            role="status"
+            aria-live="polite"
+          >
+            <span>{shortQueryMessage}</span>
+          </div>
+        )}
+      </div>
+    </section>
+  ),
+);
+
 export default component$(() => {
   const resource = useQueryParamsLoader();
   const loc = useLocation();
@@ -74,7 +123,10 @@ export default component$(() => {
   // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(() => {
     if (!formModel.searchPhrase) {
-      recentSearches.value = readRecentSearches();
+      const storedSearches = readRecentSearches();
+      // Avoid a no-op rerender racing with native form input before Qwik has
+      // resumed. An empty list is already the serialized initial state.
+      if (storedSearches.length > 0) recentSearches.value = storedSearches;
       return;
     }
 
@@ -97,90 +149,55 @@ export default component$(() => {
       });
     } catch (error) {
       console.error(error);
-      throw new Error(langSearchUnavailableRightNow(resource.value.lang), {
-        cause: error,
-      });
+      throw new Error(
+        message(resource.value.lang, "langSearchUnavailableRightNow"),
+        {
+          cause: error,
+        },
+      );
     }
   });
 
   return (
     <div class="space-y-6 pb-8">
-      <SectionHeading title={langSearch(resource.value.lang)} />
+      <SectionHeading title={message(resource.value.lang, "langSearch")} />
 
-      <section class="card border-base-200 bg-base-100 border shadow-sm">
-        <div class="card-body gap-4 p-4 md:p-6">
-          <form
-            class="flex flex-col gap-3 md:flex-row md:items-end"
-            method="get"
-          >
-            <input type="hidden" name="lang" value={resource.value.lang} />
-            <label class="form-control flex-1 gap-2" for="search-query">
-              <span class="label-text text-sm font-medium">
-                {langSearchMoviesSeriesPeople(resource.value.lang)}
-              </span>
-              <input
-                id="search-query"
-                name="q"
-                type="search"
-                inputMode="search"
-                autoComplete="off"
-                spellcheck={false}
-                aria-describedby="search-query-help"
-                aria-invalid={Boolean(formModel.shortQueryMessage)}
-                placeholder={langSearchTitlesCastCrew(resource.value.lang)}
-                class="input input-bordered focus-ringable h-11 min-h-11 w-full text-base"
-                value={formModel.query}
-              />
-            </label>
-
-            <button type="submit" class="btn btn-primary h-11 min-h-11 gap-2 md:min-w-40">
-              <HiMagnifyingGlassOutline aria-hidden="true" class="h-5 w-5" />
-              {langSearch(resource.value.lang)}
-            </button>
-          </form>
-
-          <p id="search-query-help" class="text-base-content/65 text-sm">
-            {langSearchStartsAfterCharacters(
-              resource.value.lang,
-              MIN_SEARCH_QUERY_LENGTH,
-            )}
-          </p>
-
-          {formModel.shortQueryMessage && (
-            <div
-              class="alert alert-warning alert-soft text-sm"
-              role="status"
-              aria-live="polite"
-            >
-              <span>{formModel.shortQueryMessage}</span>
-            </div>
-          )}
-        </div>
-      </section>
+      <SearchForm
+        lang={resource.value.lang}
+        query={formModel.query}
+        shortQueryMessage={formModel.shortQueryMessage}
+      />
 
       <SearchAssist
         categoryLinks={assistLinks}
-        emptyRecentSearchesMessage={langSearchForATitleOnceAndItWillShowUpHere(
+        emptyRecentSearchesMessage={message(
           resource.value.lang,
+          "langSearchForATitleOnceAndItWillShowUpHere",
         )}
         lang={resource.value.lang}
         recentSearches={recentSearches.value}
-        recentSearchesLabel={langRecentSearches(resource.value.lang)}
-        searchTipsLabel={langSearchAssist(resource.value.lang)}
+        recentSearchesLabel={message(resource.value.lang, "langRecentSearches")}
+        searchTipsLabel={message(resource.value.lang, "langSearchAssist")}
       />
 
       <Resource
         value={searchResource}
         onPending={() => (
           <LoadingState
-            title={langLoadingSearchResults(resource.value.lang)}
-            description={langFetchingMatchingTitlesAndPeople(resource.value.lang)}
+            title={message(resource.value.lang, "langLoadingSearchResults")}
+            description={message(
+              resource.value.lang,
+              "langFetchingMatchingTitlesAndPeople",
+            )}
             compact={true}
           />
         )}
         onRejected={(error) => (
           <ErrorState
-            title={langSearchUnavailableRightNow(resource.value.lang)}
+            title={message(
+              resource.value.lang,
+              "langSearchUnavailableRightNow",
+            )}
             description={error.message}
             compact={true}
           />
@@ -189,7 +206,10 @@ export default component$(() => {
           if (!movies) {
             return (
               <EmptyState
-                title={langStartWithATitleActorOrDirector(resource.value.lang)}
+                title={message(
+                  resource.value.lang,
+                  "langStartWithATitleActorOrDirector",
+                )}
                 description={langSearchBecomesAvailableAfterCharacters(
                   resource.value.lang,
                   MIN_SEARCH_QUERY_LENGTH,
@@ -207,12 +227,12 @@ export default component$(() => {
           if (normalizedResults.length > 0) {
             return (
               <MediaGrid
-                eyebrow={langResults(resource.value.lang)}
+                eyebrow={message(resource.value.lang, "langResults")}
                 headerBadge={langSearchMatchesCount(
                   resource.value.lang,
                   movies.total_results,
                 )}
-                title={langSearchResults(resource.value.lang)}
+                title={message(resource.value.lang, "langSearchResults")}
               >
                 {normalizedResults.map((result) => (
                   <a
@@ -237,7 +257,7 @@ export default component$(() => {
 
           return (
             <EmptyState
-              title={langNoResults(resource.value.lang)}
+              title={message(resource.value.lang, "langNoResults")}
               description={langTryABroaderTitleAPersonNameOrDifferentSpelling(
                 resource.value.lang,
               )}

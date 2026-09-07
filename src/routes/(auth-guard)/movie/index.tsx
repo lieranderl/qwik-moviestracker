@@ -1,35 +1,19 @@
+import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import { QuickFilterStrip } from "~/components/discovery/quick-filter-strip";
+import { FeedSectionFailure } from "~/components/feed-section-failure";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
 import { ErrorState, SectionHeading } from "~/components/page-feedback";
-import type { MediaShort, MovieShort } from "~/services/models";
+import type { MovieCatalog, MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
-import { DbType, getMoviesFirestore } from "~/services/firestore";
-import {
-  getMedias,
-  getRegionFromLanguage,
-  getTrendingMedia,
-  withImages,
-} from "~/services/tmdb";
-import { MEDIA_PAGE_SIZE } from "~/utils/constants";
+import { loadMovieCollections } from "~/services/feed-loaders";
+import type { FeedFailures } from "~/services/feed-loaders";
 import { formatYear } from "~/utils/format";
-import {
-  langDiscoverMovies,
-  langLatestDolbyVisionMovies,
-  langLatestHDR10Movies,
-  langLatestMovies,
-  langMovies,
-  langNowPlayingMovies,
-  langPopularMovies,
-  langQuickFilters,
-  langText,
-  langTrendingMovies,
-  langUpcomingMovies,
-} from "~/utils/languages";
+
 import { paths } from "~/utils/paths";
 
 type MovieCollectionsData =
@@ -40,9 +24,10 @@ type MovieCollectionsData =
       popularMovies: MovieShort[];
       nowPlayingMovies: MovieShort[];
       upcomingMovies: MovieShort[];
-      torMovies: MediaShort[];
-      hdrMovies: MediaShort[];
-      dolbyMovies: MediaShort[];
+      torMovies: MovieCatalog[];
+      hdrMovies: MovieCatalog[];
+      dolbyMovies: MovieCatalog[];
+      failures: FeedFailures;
     }
   | {
       status: "error";
@@ -54,10 +39,8 @@ export const useMovieCollectionsLoader = routeLoader$(async (event) => {
   const projectId =
     event.env.get("GCP_PROJECT") ?? event.env.get("GOOGLE_CLOUD_PROJECT") ?? "";
   const databaseId = event.env.get("FIRESTORE_DATABASE") ?? "moviestracker";
-  const region = getRegionFromLanguage(lang);
-
   try {
-    const [
+    const {
       movies,
       popularMovies,
       nowPlayingMovies,
@@ -65,73 +48,8 @@ export const useMovieCollectionsLoader = routeLoader$(async (event) => {
       torMovies,
       hdrMovies,
       dolbyMovies,
-    ] = await Promise.all([
-      getTrendingMedia({
-        page: 1,
-        language: lang,
-        type: MediaType.Movie,
-        needbackdrop: true,
-      }),
-      getMedias({
-        page: 1,
-        query: "popular",
-        language: lang,
-        type: MediaType.Movie,
-        needbackdrop: true,
-      }),
-      getMedias({
-        page: 1,
-        query: "now_playing",
-        language: lang,
-        region,
-        type: MediaType.Movie,
-        needbackdrop: true,
-      }),
-      getMedias({
-        page: 1,
-        query: "upcoming",
-        language: lang,
-        region,
-        type: MediaType.Movie,
-        needbackdrop: true,
-      }),
-      withImages(
-        (
-          await getMoviesFirestore({
-            entriesOnPage: MEDIA_PAGE_SIZE,
-            language: lang,
-            dbName: DbType.LastMovies,
-            projectId,
-            databaseId,
-          })
-        ).movies as MediaShort[],
-        lang,
-      ),
-      withImages(
-        (
-          await getMoviesFirestore({
-            entriesOnPage: MEDIA_PAGE_SIZE,
-            language: lang,
-            dbName: DbType.HDR10,
-            projectId,
-            databaseId,
-          })
-        ).movies as MediaShort[],
-        lang,
-      ),
-      withImages(
-        (
-          await getMoviesFirestore({
-            entriesOnPage: MEDIA_PAGE_SIZE,
-            language: lang,
-            dbName: DbType.DV,
-            projectId,
-            databaseId,
-          })
-        ).movies as MediaShort[],
-        lang,
-      ),
-    ]);
+      failures,
+    } = await loadMovieCollections({ lang, projectId, databaseId });
 
     return {
       status: "ready",
@@ -143,6 +61,7 @@ export const useMovieCollectionsLoader = routeLoader$(async (event) => {
       torMovies,
       hdrMovies,
       dolbyMovies,
+      failures,
     } satisfies MovieCollectionsData;
   } catch (error) {
     console.error(error);
@@ -160,16 +79,8 @@ export default component$(() => {
   if (value.status !== "ready") {
     return (
       <ErrorState
-        title={langText(
-          lang,
-          "Movie collections are unavailable",
-          "Коллекции фильмов недоступны",
-        )}
-        description={langText(
-          lang,
-          "Please refresh the page or try again later.",
-          "Обновите страницу или попробуйте позже.",
-        )}
+        title={message(lang, "ui.movieCollectionsAreUnavailable")}
+        description={message(lang, "ui.pleaseRefreshThePageOrTryAgainLater")}
         compact={true}
       />
     );
@@ -178,64 +89,76 @@ export default component$(() => {
   return (
     <div class="space-y-8">
       <SectionHeading
-        eyebrow={langText(lang, "Movie collections", "Коллекции фильмов")}
-        title={langMovies(lang)}
-        description={langText(
+        eyebrow={message(lang, "ui.movieCollections")}
+        title={message(lang, "langMovies")}
+        description={message(
           lang,
-          "Browse latest, popular, now playing, upcoming, HDR10, Dolby Vision, and trending movie collections.",
-          "Просматривайте новинки, популярные, идущие сейчас, будущие, HDR10, Dolby Vision и трендовые коллекции фильмов.",
+          "ui.browseLatestPopularNowPlayingUpcomingHdr10DolbyVisionAndTrendingMovieCol",
         )}
       />
       <QuickFilterStrip
-        label={langQuickFilters(lang)}
+        label={message(lang, "langQuickFilters")}
         items={[
           {
             active: true,
             href: "#latest-movies",
-            label: langLatestMovies(lang),
+            label: message(lang, "langLatestMovies"),
           },
-          { href: "#popular-movies", label: langPopularMovies(lang) },
-          { href: "#now-playing-movies", label: langNowPlayingMovies(lang) },
-          { href: "#upcoming-movies", label: langUpcomingMovies(lang) },
-          { href: "#hdr10-movies", label: langLatestHDR10Movies(lang) },
+          {
+            href: "#popular-movies",
+            label: message(lang, "langPopularMovies"),
+          },
+          {
+            href: "#now-playing-movies",
+            label: message(lang, "langNowPlayingMovies"),
+          },
+          {
+            href: "#upcoming-movies",
+            label: message(lang, "langUpcomingMovies"),
+          },
+          {
+            href: "#hdr10-movies",
+            label: message(lang, "langLatestHDR10Movies"),
+          },
           {
             href: "#dolby-vision-movies",
-            label: langLatestDolbyVisionMovies(lang),
+            label: message(lang, "langLatestDolbyVisionMovies"),
           },
           {
             href: "#trending-movies",
-            label: langTrendingMovies(lang),
+            label: message(lang, "langTrendingMovies"),
           },
         ]}
       />
       <section
-        aria-label={langDiscoverMovies(lang)}
+        aria-label={message(lang, "langDiscoverMovies")}
         class="section-reveal card border-base-200 bg-base-100 border shadow-sm"
       >
         <div class="card-body items-start gap-3 p-4 sm:flex-row sm:items-center sm:justify-between md:p-6">
           <div class="space-y-1">
             <h2 class="card-title text-base">
-              {langText(lang, "Movie discovery", "Поиск фильмов")}
+              {message(lang, "ui.movieDiscovery")}
             </h2>
             <p class="text-base-content/65 text-sm leading-relaxed">
-              {langText(
-                lang,
-                "Filter movies by region, year, providers, and rating.",
-                "Фильтруйте фильмы по региону, году, провайдерам и рейтингу.",
-              )}
+              {message(lang, "ui.filterMoviesByRegionYearProvidersAndRating")}
             </p>
           </div>
           <a
             href={paths.movieDiscover(lang)}
             class="btn btn-primary btn-sm w-full rounded-full sm:w-auto"
           >
-            {langDiscoverMovies(lang)}
+            {message(lang, "langDiscoverMovies")}
           </a>
         </div>
       </section>
+      <FeedSectionFailure
+        failure={value.failures.torMovies}
+        lang={lang}
+        title={message(lang, "langLatestMovies")}
+      />
       <MediaCarousel
         sectionId="latest-movies"
-        title={langLatestMovies(lang)}
+        title={message(lang, "langLatestMovies")}
         type={MediaType.Movie}
         category="updated"
         lang={lang}
@@ -259,9 +182,14 @@ export default component$(() => {
         ))}
       </MediaCarousel>
 
+      <FeedSectionFailure
+        failure={value.failures.popularMovies}
+        lang={lang}
+        title={message(lang, "langPopularMovies")}
+      />
       <MediaCarousel
         sectionId="popular-movies"
-        title={langPopularMovies(lang)}
+        title={message(lang, "langPopularMovies")}
         type={MediaType.Movie}
         category="popular"
         lang={lang}
@@ -285,9 +213,14 @@ export default component$(() => {
         ))}
       </MediaCarousel>
 
+      <FeedSectionFailure
+        failure={value.failures.nowPlayingMovies}
+        lang={lang}
+        title={message(lang, "langNowPlayingMovies")}
+      />
       <MediaCarousel
         sectionId="now-playing-movies"
-        title={langNowPlayingMovies(lang)}
+        title={message(lang, "langNowPlayingMovies")}
         type={MediaType.Movie}
         category="nowplaying"
         lang={lang}
@@ -311,9 +244,14 @@ export default component$(() => {
         ))}
       </MediaCarousel>
 
+      <FeedSectionFailure
+        failure={value.failures.upcomingMovies}
+        lang={lang}
+        title={message(lang, "langUpcomingMovies")}
+      />
       <MediaCarousel
         sectionId="upcoming-movies"
-        title={langUpcomingMovies(lang)}
+        title={message(lang, "langUpcomingMovies")}
         type={MediaType.Movie}
         category="upcoming"
         lang={lang}
@@ -337,9 +275,14 @@ export default component$(() => {
         ))}
       </MediaCarousel>
 
+      <FeedSectionFailure
+        failure={value.failures.hdrMovies}
+        lang={lang}
+        title={message(lang, "langLatestHDR10Movies")}
+      />
       <MediaCarousel
         sectionId="hdr10-movies"
-        title={langLatestHDR10Movies(lang)}
+        title={message(lang, "langLatestHDR10Movies")}
         type={MediaType.Movie}
         category="hdr10"
         lang={lang}
@@ -363,9 +306,14 @@ export default component$(() => {
         ))}
       </MediaCarousel>
 
+      <FeedSectionFailure
+        failure={value.failures.dolbyMovies}
+        lang={lang}
+        title={message(lang, "langLatestDolbyVisionMovies")}
+      />
       <MediaCarousel
         sectionId="dolby-vision-movies"
-        title={langLatestDolbyVisionMovies(lang)}
+        title={message(lang, "langLatestDolbyVisionMovies")}
         type={MediaType.Movie}
         category="dolbyvision"
         lang={lang}
@@ -389,9 +337,14 @@ export default component$(() => {
         ))}
       </MediaCarousel>
 
+      <FeedSectionFailure
+        failure={value.failures.movies}
+        lang={lang}
+        title={message(lang, "langTrendingMovies")}
+      />
       <MediaCarousel
         sectionId="trending-movies"
-        title={langTrendingMovies(lang)}
+        title={message(lang, "langTrendingMovies")}
         type={MediaType.Movie}
         category="trending"
         lang={lang}
@@ -422,19 +375,11 @@ export const head: DocumentHead = ({ url }) => {
   const lang = url.searchParams.get("lang") || "en-US";
 
   return {
-    title: `Moviestracker | ${langText(
-      lang,
-      "Movie collections",
-      "Коллекции фильмов",
-    )}`,
+    title: `Moviestracker | ${message(lang, "ui.movieCollections")}`,
     meta: [
       {
         name: "description",
-        content: langText(
-          lang,
-          "Browse movie collections",
-          "Просмотр коллекций фильмов",
-        ),
+        content: message(lang, "ui.browseMovieCollections"),
       },
     ],
   };

@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import {
   $,
   component$,
@@ -13,17 +14,7 @@ import {
   getTorrentDynamicRangeValue,
   type DynamicRangeFilter,
 } from "~/utils/torrent-format";
-import {
-  langDate,
-  langFound,
-  langLeeches,
-  langNotFound,
-  langSeeds,
-  langSize,
-  langSortOn,
-  langText,
-  langTorrentov,
-} from "~/utils/languages";
+
 import { TorrentBlock } from "./torrent";
 
 type SelectFilterKey =
@@ -153,14 +144,13 @@ export const TorrentList = component$(
     sourceLoaded = 0,
     sourceTotal = 0,
   }: TorrentListProps) => {
-    const resetFiltersLabel =
-      lang === "en-US" ? "Reset filters" : "Сбросить фильтры";
+    const resetFiltersLabel = message(lang, "filters.reset");
 
     const sortAttrib = [
-      { value: "Date", text: langDate(lang) },
-      { value: "Size", text: langSize(lang) },
-      { value: "Seeds", text: langSeeds(lang) },
-      { value: "Leeches", text: langLeeches(lang) },
+      { value: "Date", text: message(lang, "langDate") },
+      { value: "Size", text: message(lang, "langSize") },
+      { value: "Seeds", text: message(lang, "langSeeds") },
+      { value: "Leeches", text: message(lang, "langLeeches") },
     ];
     const initTorrents = useStore({ value: torrents as Torrent[] | null });
     const sourceStats = useStore({
@@ -216,8 +206,6 @@ export const TorrentList = component$(
 
     const formatMegaId = useId();
     const openMenuSig = useSignal<string | null>(null);
-
-
 
     useTask$((ctx) => {
       ctx.track(() => torrents);
@@ -296,19 +284,19 @@ export const TorrentList = component$(
     const advancedFilterGroups = [
       {
         key: "voice" as const,
-        label: langText(lang, "Voice", "Озвучка"),
+        label: message(lang, "ui.voice"),
         options: voiceOptions,
         value: sortFilterStore.voice,
       },
       {
         key: "category" as const,
-        label: langText(lang, "Category", "Категория"),
+        label: message(lang, "ui.category"),
         options: categoryOptions,
         value: sortFilterStore.category,
       },
       {
         key: "season" as const,
-        label: langText(lang, "Season", "Сезон"),
+        label: message(lang, "ui.season"),
         options: seasonOptions,
         value: sortFilterStore.season,
       },
@@ -320,7 +308,9 @@ export const TorrentList = component$(
           <div class="mb-4 flex min-w-0 flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <label class="form-control">
               <div class="label px-0 pt-0 pb-1">
-                <span class="label-text font-medium">{langSortOn(lang)}</span>
+                <span class="label-text font-medium">
+                  {message(lang, "langSortOn")}
+                </span>
               </div>
               <select
                 value={sortFilterStore.selectedSort}
@@ -345,7 +335,7 @@ export const TorrentList = component$(
               {(qualityOptions.length > 0 ||
                 dynamicRangeOptions.length > 0) && (
                 <div
-                  class="megamenu megamenu-sm p-2 border border-base-300 rounded-box"
+                  class="megamenu megamenu-sm border-base-300 rounded-box border p-2"
                   id={formatMegaId}
                 >
                   <span class="megamenu-active"></span>
@@ -354,23 +344,23 @@ export const TorrentList = component$(
                     <div class="relative inline-flex">
                       <button
                         type="button"
-                        class="after:content-none min-h-0 px-3"
+                        class="min-h-0 px-3 after:content-none"
                         onClick$={() =>
                           (openMenuSig.value =
                             openMenuSig.value === "quality" ? null : "quality")
                         }
                       >
-                        <span class="text-xs opacity-60 mr-1">
-                          {langText(lang, "Resolution:", "Разрешение:")}
+                        <span class="mr-1 text-xs opacity-60">
+                          {message(lang, "ui.resolution")}
                         </span>
-                        <span class="font-medium text-sm">
+                        <span class="text-sm font-medium">
                           {qualityOptions.find(
                             (o) => o.value === sortFilterStore.quality,
-                          )?.label || langText(lang, "Any", "Любое")}
+                          )?.label || message(lang, "ui.any")}
                         </span>
                       </button>
                       {openMenuSig.value === "quality" && (
-                        <ul class="menu bg-base-100 rounded-box border border-base-300 absolute top-full left-0 z-30 mt-1 w-56 shadow-lg p-2">
+                        <ul class="menu bg-base-100 rounded-box border-base-300 absolute top-full left-0 z-30 mt-1 w-56 border p-2 shadow-lg">
                           <li>
                             <button
                               type="button"
@@ -380,7 +370,7 @@ export const TorrentList = component$(
                                 openMenuSig.value = null;
                               }}
                             >
-                              {langText(lang, "Any", "Любое")}
+                              {message(lang, "ui.any")}
                             </button>
                           </li>
                           {qualityOptions.map((option) => (
@@ -410,23 +400,23 @@ export const TorrentList = component$(
                     <div class="relative inline-flex">
                       <button
                         type="button"
-                        class="after:content-none min-h-0 px-3"
+                        class="min-h-0 px-3 after:content-none"
                         onClick$={() =>
                           (openMenuSig.value =
                             openMenuSig.value === "dr" ? null : "dr")
                         }
                       >
-                        <span class="text-xs opacity-60 mr-1">
-                          {langText(lang, "HDR:", "HDR:")}
+                        <span class="mr-1 text-xs opacity-60">
+                          {message(lang, "ui.hdr")}
                         </span>
-                        <span class="font-medium text-sm">
+                        <span class="text-sm font-medium">
                           {getDynamicRangeLabel(
                             sortFilterStore.dynamicRange as DynamicRangeFilter,
-                          ) || langText(lang, "Any", "Любое")}
+                          ) || message(lang, "ui.any")}
                         </span>
                       </button>
                       {openMenuSig.value === "dr" && (
-                        <ul class="menu bg-base-100 rounded-box border border-base-300 absolute top-full left-0 z-30 mt-1 w-56 shadow-lg p-2">
+                        <ul class="menu bg-base-100 rounded-box border-base-300 absolute top-full left-0 z-30 mt-1 w-56 border p-2 shadow-lg">
                           <li>
                             <button
                               type="button"
@@ -438,7 +428,7 @@ export const TorrentList = component$(
                                 openMenuSig.value = null;
                               }}
                             >
-                              {langText(lang, "Any", "Любое")}
+                              {message(lang, "ui.any")}
                             </button>
                           </li>
                           {dynamicRangeOptions.map((option) => (
@@ -451,10 +441,7 @@ export const TorrentList = component$(
                                     : ""
                                 }
                                 onClick$={() => {
-                                  setSelectFilter(
-                                    "dynamicRange",
-                                    option.value,
-                                  );
+                                  setSelectFilter("dynamicRange", option.value);
                                   openMenuSig.value = null;
                                 }}
                               >
@@ -473,7 +460,7 @@ export const TorrentList = component$(
                 <fieldset class="fieldset">
                   <legend class="fieldset-legend">
                     <span class="label-text text-xs font-medium">
-                      {langText(lang, "Tracker", "Трекер")}
+                      {message(lang, "ui.tracker")}
                     </span>
                   </legend>
 
@@ -484,7 +471,7 @@ export const TorrentList = component$(
                       setSelectFilter("tracker", element.value);
                     }}
                   >
-                    <option value="">{langText(lang, "Any", "Любой")}</option>
+                    <option value="">{message(lang, "ui.any2")}</option>
                     {trackerOptions.map((option) => (
                       <option key={option.value} value={option.value}>
                         {`${option.label} (${option.count})`}
@@ -497,7 +484,7 @@ export const TorrentList = component$(
               <input
                 class="btn btn-ghost md:btn-sm min-h-11 rounded-full"
                 type="reset"
-                value={langText(lang, "Reset", "Сброс")}
+                value={message(lang, "ui.reset")}
                 aria-label={resetFiltersLabel}
               />
             </div>
@@ -505,7 +492,7 @@ export const TorrentList = component$(
             {advancedFilterGroups.length > 0 && (
               <details class="collapse-arrow border-base-300 bg-base-100 collapse border">
                 <summary class="collapse-title min-h-11 py-3 text-sm font-medium">
-                  {langText(lang, "Advanced filters", "Расширенные фильтры")}
+                  {message(lang, "ui.advancedFilters")}
                 </summary>
                 <div class="collapse-content">
                   <div class="grid gap-2 pt-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -524,9 +511,7 @@ export const TorrentList = component$(
                               setSelectFilter(key, element.value);
                             }}
                           >
-                            <option value="">
-                              {langText(lang, "Any", "Любой")}
-                            </option>
+                            <option value="">{message(lang, "ui.any2")}</option>
                             {options.map((option) => (
                               <option key={option.value} value={option.value}>
                                 {`${option.label} (${option.count})`}
@@ -549,17 +534,17 @@ export const TorrentList = component$(
           )}
           {sortedTorrents.value !== null &&
             sortedTorrents.value.length === 0 && (
-              <div>{langNotFound(lang)}</div>
+              <div>{message(lang, "langNotFound")}</div>
             )}
           {sortedTorrents.value !== null && sortedTorrents.value.length > 0 && (
             <div class="flex flex-wrap items-center gap-2">
               <span>
-                {langFound(lang)} {sortedTorrents.value.length}{" "}
-                {langTorrentov(lang)}
+                {message(lang, "langFound")} {sortedTorrents.value.length}{" "}
+                {message(lang, "langTorrentov")}
               </span>
               {sourceStats.total > 0 && (
                 <span class="badge badge-ghost">
-                  {langText(lang, "JacRed", "JacRed")}: {sourceStats.total}
+                  {message(lang, "ui.jacred")}: {sourceStats.total}
                   {sourceStats.loaded > 0 && ` / ${sourceStats.loaded}`}
                 </span>
               )}

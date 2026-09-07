@@ -87,4 +87,42 @@ describe("TorrServer workspace state", () => {
       }),
     ).rejects.toThrow("echo failed");
   });
+
+  test("propagates one cancellation signal to every snapshot request", async () => {
+    const controller = new AbortController();
+    const received: Array<AbortSignal | undefined> = [];
+    const capture = async (_baseUrl: string, signal?: AbortSignal) => {
+      received.push(signal);
+      return null;
+    };
+
+    await loadTorrServerWorkspace(
+      "https://server.test",
+      {
+        getVersion: async (_baseUrl, signal) => {
+          received.push(signal);
+          return "1.2.3";
+        },
+        listTorrents: async (_baseUrl, signal) => {
+          received.push(signal);
+          return [];
+        },
+        getSettings: capture,
+        getStorageSettings: capture,
+        getTmdbSettings: capture,
+        getStats: async (_baseUrl, signal) => {
+          received.push(signal);
+          return "";
+        },
+        listViewed: async (_baseUrl, signal) => {
+          received.push(signal);
+          return [];
+        },
+      },
+      controller.signal,
+    );
+
+    expect(received).toHaveLength(7);
+    expect(received.every((signal) => signal === controller.signal)).toBe(true);
+  });
 });

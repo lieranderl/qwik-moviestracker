@@ -109,15 +109,16 @@ const defaultDependencies: WorkspaceDependencies = {
 export const loadTorrServerWorkspace = async (
   baseUrl: string,
   dependencies: WorkspaceDependencies = defaultDependencies,
+  signal?: AbortSignal,
 ): Promise<TorrServerWorkspaceSnapshot> => {
   const results = await Promise.allSettled([
-    dependencies.getVersion(baseUrl),
-    dependencies.listTorrents(baseUrl),
-    dependencies.getSettings(baseUrl),
-    dependencies.getStorageSettings(baseUrl),
-    dependencies.getTmdbSettings(baseUrl),
-    dependencies.getStats(baseUrl),
-    dependencies.listViewed(baseUrl),
+    dependencies.getVersion(baseUrl, signal),
+    dependencies.listTorrents(baseUrl, signal),
+    dependencies.getSettings(baseUrl, signal),
+    dependencies.getStorageSettings(baseUrl, signal),
+    dependencies.getTmdbSettings(baseUrl, signal),
+    dependencies.getStats(baseUrl, signal),
+    dependencies.listViewed(baseUrl, signal),
   ] as const);
   const version = valueOr(results[0], "");
   if (!version)

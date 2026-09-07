@@ -9,6 +9,7 @@ const normalizeViewed = (
 
 export const listViewedTorrents = async (
   baseUrl: string,
+  signal?: AbortSignal,
 ): Promise<TorrServerViewedItem[]> => {
   try {
     return normalizeViewed(
@@ -16,6 +17,7 @@ export const listViewedTorrents = async (
         method: "POST",
         path: "viewed",
         body: { action: "list" },
+        signal,
       }),
     );
   } catch (error) {

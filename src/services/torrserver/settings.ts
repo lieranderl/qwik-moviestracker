@@ -23,12 +23,14 @@ import {
 
 export const getTorrServerSettings = async (
   baseUrl: string,
+  signal?: AbortSignal,
 ): Promise<TorrServerSettings | null> => {
   try {
     const raw = await requestTorrServer<TorrServerSettingsRaw>(baseUrl, {
       body: { action: "get" },
       method: "POST",
       path: "settings",
+      signal,
     });
     return normalizeSettings(raw);
   } catch (error) {
@@ -39,11 +41,12 @@ export const getTorrServerSettings = async (
 
 export const getTorrServerStorageSettings = async (
   baseUrl: string,
+  signal?: AbortSignal,
 ): Promise<TorrServerStorageSettings | null> => {
   try {
     const raw = await requestTorrServer<Partial<TorrServerStorageSettings>>(
       baseUrl,
-      { method: "GET", path: "storage/settings" },
+      { method: "GET", path: "storage/settings", signal },
     );
     return {
       settings: asString(raw?.settings, "json"),
@@ -79,11 +82,13 @@ export const updateTorrServerStorageSettings = async (
 
 export const getTorrServerTMDBSettings = async (
   baseUrl: string,
+  signal?: AbortSignal,
 ): Promise<TorrServerTmdbSettings | null> => {
   try {
     const raw = await requestTorrServer<TorrServerTMDBSettingsRaw>(baseUrl, {
       method: "GET",
       path: "tmdb/settings",
+      signal,
     });
     return normalizeTmdbSettings(raw);
   } catch (error) {

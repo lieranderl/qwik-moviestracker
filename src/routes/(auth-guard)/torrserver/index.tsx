@@ -2,6 +2,8 @@ import { message } from "~/utils/i18n";
 import {
   $,
   component$,
+  noSerialize,
+  type NoSerialize,
   useComputed$,
   useContext,
   useSignal,
@@ -98,6 +100,7 @@ export default component$(() => {
   const viewedItemsSig = useSignal<TorrServerViewedItem[]>([]);
   const activatingHashSig = useSignal("");
   const snapshotRequestId = useSignal(0);
+  const snapshotControllerSig = useSignal<NoSerialize<AbortController>>();
 
   const statusFilterSig = useSignal<TorrServerStatusFilter>("all");
   const sortKeySig = useSignal<TorrServerSortKey>("recent");
@@ -129,6 +132,7 @@ export default component$(() => {
   /* ── Server lifecycle ──────────────────────────────────── */
 
   const loadServerSnapshot = $(async (serverUrl: string): Promise<void> => {
+    snapshotControllerSig.value?.abort();
     const requestId = snapshotRequestId.value + 1;
     snapshotRequestId.value = requestId;
     torrentsSig.value = [];
@@ -140,6 +144,7 @@ export default component$(() => {
     viewedItemsSig.value = [];
 
     if (!serverUrl) {
+      snapshotControllerSig.value = undefined;
       connectionState.value = transitionConnection(
         connectionState.value,
         "clear",
@@ -147,13 +152,19 @@ export default component$(() => {
       return;
     }
 
+    const controller = new AbortController();
+    snapshotControllerSig.value = noSerialize(controller);
     try {
       isCheckingTorrServer.value = true;
       connectionState.value = transitionConnection(
         connectionState.value,
         "connect",
       );
-      const snapshot = await loadTorrServerWorkspace(serverUrl);
+      const snapshot = await loadTorrServerWorkspace(
+        serverUrl,
+        undefined,
+        controller.signal,
+      );
       if (requestId !== snapshotRequestId.value) return;
       serverVersion.value = snapshot.version;
       torrentsSig.value = snapshot.torrents;
@@ -168,14 +179,17 @@ export default component$(() => {
       );
     } catch (error) {
       if (requestId !== snapshotRequestId.value) return;
+      if (controller.signal.aborted) return;
       console.error(error);
       connectionState.value = transitionConnection(
         connectionState.value,
         "failure",
       );
     } finally {
-      if (requestId === snapshotRequestId.value)
+      if (requestId === snapshotRequestId.value) {
+        snapshotControllerSig.value = undefined;
         isCheckingTorrServer.value = false;
+      }
     }
   });
 
@@ -211,8 +225,7 @@ export default component$(() => {
     },
     {
       label: message(lang, "ui.version"),
-      value:
-        serverVersion.value || message(lang, "ui.notConnected"),
+      value: serverVersion.value || message(lang, "ui.notConnected"),
     },
     {
       label: message(lang, "ui.viewed"),
@@ -401,8 +414,9 @@ export default component$(() => {
   /* ── Side effects ──────────────────────────────────────── */
 
   // eslint-disable-next-line qwik/no-use-visible-task
-  useVisibleTask$(() => {
+  useVisibleTask$(({ cleanup }) => {
     hydrateServers();
+    cleanup(() => snapshotControllerSig.value?.abort());
   });
 
   useTask$(async ({ track }) => {
@@ -486,7 +500,10 @@ export default component$(() => {
       <SectionHeading
         eyebrow={message(lang, "ui.streamingLibrary")}
         title={message(lang, "langTorrServer")}
-        description={message(lang, "ui.manageSavedTorrserverEndpointsReviewServerHealthAndOpenTorrentFilesFromO")}
+        description={message(
+          lang,
+          "ui.manageSavedTorrserverEndpointsReviewServerHealthAndOpenTorrentFilesFromO",
+        )}
       />
 
       <div class="space-y-6 md:space-y-8">
@@ -501,7 +518,10 @@ export default component$(() => {
                 {message(lang, "ui.servers")}
               </h2>
               <p class="text-base-content/65 text-sm leading-relaxed">
-                {message(lang, "ui.addAnEndpointChooseTheActiveServerThenRefreshItsCurrentState")}
+                {message(
+                  lang,
+                  "ui.addAnEndpointChooseTheActiveServerThenRefreshItsCurrentState",
+                )}
               </p>
             </header>
 
@@ -608,10 +628,12 @@ export default component$(() => {
         {/* ── Summary card ─────────────────────────────────── */}
         <TorrServerSummaryCard
           title={message(lang, "ui.serverSummary")}
-          description={message(lang, "ui.currentConnectionCacheStorageAndPlaybackShortcutsForTheSelectedEndpoint")}
+          description={message(
+            lang,
+            "ui.currentConnectionCacheStorageAndPlaybackShortcutsForTheSelectedEndpoint",
+          )}
           endpoint={
-            selectedTorServer.value ||
-            message(lang, "ui.noEndpointSelected")
+            selectedTorServer.value || message(lang, "ui.noEndpointSelected")
           }
           version={serverVersion.value}
           connectionLabel={getConnectionLabel(connectionState.value, lang)}
@@ -630,13 +652,14 @@ export default component$(() => {
                       readAhead: settingsSig.value.readerReadAhead,
                       connections: settingsSig.value.connectionsLimit,
                     })
-                  : message(lang, "ui.connectAServerToInspectCacheAndNetworkTuning")}
+                  : message(
+                      lang,
+                      "ui.connectAServerToInspectCacheAndNetworkTuning",
+                    )}
               </p>
             </div>
             <div class="rounded-box border-base-200 bg-base-200/40 border p-4">
-              <p class="font-semibold">
-                {message(lang, "ui.storageAndTmdb")}
-              </p>
+              <p class="font-semibold">{message(lang, "ui.storageAndTmdb")}</p>
               <p class="text-base-content/70 mt-2 text-sm leading-relaxed">
                 {storageSettingsSig.value
                   ? message(lang, "torrserver.storageSummary", {
@@ -644,7 +667,10 @@ export default component$(() => {
                       viewed: storageSettingsSig.value.viewed,
                       count: storageSettingsSig.value.viewedCount,
                     })
-                  : message(lang, "ui.storageDetailsAreNotAvailableUntilAServerResponds")}
+                  : message(
+                      lang,
+                      "ui.storageDetailsAreNotAvailableUntilAServerResponds",
+                    )}
               </p>
             </div>
           </div>
@@ -713,7 +739,10 @@ export default component$(() => {
         ) : connectionState.value === "error" ? (
           <ErrorState
             title={message(lang, "ui.unableToLoadTheSelectedServer")}
-            description={message(lang, "ui.checkTheUrlMakeSureTorrserverIsOnlineAndTryAgain")}
+            description={message(
+              lang,
+              "ui.checkTheUrlMakeSureTorrserverIsOnlineAndTryAgain",
+            )}
             compact={true}
           />
         ) : !selectedTorServer.value ? (

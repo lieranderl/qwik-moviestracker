@@ -6,11 +6,15 @@ import {
   requestTorrServer,
 } from "./transport";
 
-export const torrServerEcho = async (baseUrl: string): Promise<string> => {
+export const torrServerEcho = async (
+  baseUrl: string,
+  signal?: AbortSignal,
+): Promise<string> => {
   const response = await requestTorrServer<string>(baseUrl, {
     method: "GET",
     path: "echo",
     responseType: "text",
+    signal,
   });
   return response.trim();
 };
@@ -25,11 +29,15 @@ export const buildTorrServerDownloadTestUrl = (
   return buildTorrServerUrl(baseUrl, ["download", String(size)]);
 };
 
-export const getTorrServerStats = async (baseUrl: string): Promise<string> =>
+export const getTorrServerStats = async (
+  baseUrl: string,
+  signal?: AbortSignal,
+): Promise<string> =>
   requestTorrServer<string>(baseUrl, {
     method: "GET",
     path: "stat",
     responseType: "text",
+    signal,
   });
 
 export const getTorrServerMagnetsPage = async (

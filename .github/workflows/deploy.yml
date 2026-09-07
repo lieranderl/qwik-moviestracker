@@ -118,7 +118,7 @@ jobs:
           subject-digest: ${{ steps.push.outputs.digest }}
 
       - name: Generate SBOM
-        uses: anchore/sbom-action@v0.20.6
+        uses: anchore/sbom-action@v0.24.2
         with:
           image: ${{ steps.image.outputs.uri }}@${{ steps.push.outputs.digest }}
           artifact-name: moviestracker-${{ github.event.release.tag_name }}.spdx.json

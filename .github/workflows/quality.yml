@@ -72,11 +72,11 @@ jobs:
         run: bunx playwright install --with-deps chromium
 
       - name: Run Playwright smoke tests
-        if: github.event_name == pull_request
+        if: github.event_name == 'pull_request'
         run: bun run test:e2e:smoke
 
       - name: Run full fixture-backed Playwright suite
-        if: github.event_name != pull_request
+        if: github.event_name != 'pull_request'
         run: bun run test:e2e
 
   secrets:

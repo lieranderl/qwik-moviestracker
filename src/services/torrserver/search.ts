@@ -1,4 +1,5 @@
 import type { TorrServerSearchResult } from "../torrserver";
+import { parseTorrServerSearchResults } from "./payloads";
 import { requestTorrServer } from "./transport";
 
 const search = async (
@@ -10,7 +11,7 @@ const search = async (
     baseUrl,
     { method: "GET", path, query: { query } },
   );
-  return Array.isArray(raw) ? raw : [];
+  return parseTorrServerSearchResults(raw);
 };
 
 export const searchRutor = (

@@ -144,8 +144,7 @@ export const TorrentList = component$(
     sourceLoaded = 0,
     sourceTotal = 0,
   }: TorrentListProps) => {
-    const resetFiltersLabel =
-      lang === "en-US" ? "Reset filters" : "Сбросить фильтры";
+    const resetFiltersLabel = message(lang, "filters.reset");
 
     const sortAttrib = [
       { value: "Date", text: message(lang, "langDate") },
@@ -512,9 +511,7 @@ export const TorrentList = component$(
                               setSelectFilter(key, element.value);
                             }}
                           >
-                            <option value="">
-                              {message(lang, "ui.any2")}
-                            </option>
+                            <option value="">{message(lang, "ui.any2")}</option>
                             {options.map((option) => (
                               <option key={option.value} value={option.value}>
                                 {`${option.label} (${option.count})`}

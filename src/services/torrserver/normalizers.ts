@@ -12,7 +12,7 @@ import type {
   TorrServerTorznabConfigRaw,
   TorrServerViewedItem,
 } from "../torrserver";
-import { parseTorrServerStatus } from "../provider-contracts";
+import { parseTorrServerStatus } from "./payloads";
 
 const VIDEO_FILE_EXTENSIONS = [
   ".mkv",

@@ -119,7 +119,10 @@ export default component$(() => {
     return (
       <ErrorState
         title={message(value.lang, "ui.tvDiscoverIsUnavailable")}
-        description={message(value.lang, "ui.pleaseRefreshThePageOrTryAgainLater")}
+        description={message(
+          value.lang,
+          "ui.pleaseRefreshThePageOrTryAgainLater",
+        )}
         compact={true}
       />
     );
@@ -351,7 +354,10 @@ export default component$(() => {
       ) : (
         <EmptyState
           title={message(value.lang, "ui.noSeriesMatchForTheseFilters")}
-          description={message(value.lang, "ui.tryABroaderProviderResetTheYearOrLowerTheVoteThreshold")}
+          description={message(
+            value.lang,
+            "ui.tryABroaderProviderResetTheYearOrLowerTheVoteThreshold",
+          )}
           compact={true}
         />
       )}

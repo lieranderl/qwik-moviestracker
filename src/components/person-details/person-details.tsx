@@ -35,11 +35,9 @@ export const PersonDetails = component$(
     useVisibleTask$(() => {
       writeLastViewed({
         href: paths.media(MediaType.Person, person.id, lang),
-        title:
-          person.name ?? message(lang, "ui.personDetails"),
+        title: person.name ?? message(lang, "ui.personDetails"),
         kind: "person",
-        meta:
-          person.known_for_department || message(lang, "ui.person"),
+        meta: person.known_for_department || message(lang, "ui.person"),
         imagePath: person.profile_path,
       });
     });
@@ -115,9 +113,7 @@ export const PersonDetails = component$(
         {/* ── BIOGRAPHY ── */}
         <section class={sectionCardClass}>
           <div class={sectionBodyClass}>
-            <h2 class="card-title text-xl">
-              {message(lang, "ui.biography")}
-            </h2>
+            <h2 class="card-title text-xl">{message(lang, "ui.biography")}</h2>
             <PersonBio biography={person.biography} lang={lang} />
           </div>
         </section>

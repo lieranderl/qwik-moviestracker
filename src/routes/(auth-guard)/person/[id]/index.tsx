@@ -16,7 +16,6 @@ import {
   getPersonTv,
 } from "~/services/tmdb";
 
-
 type PersonDetailData =
   | {
       status: "ready";
@@ -89,7 +88,10 @@ export default component$(() => {
     return (
       <ErrorState
         title={message(value.lang, "ui.personDetailsAreUnavailable")}
-        description={message(value.lang, "ui.pleaseRefreshThePageOrReturnToThePreviousScreen")}
+        description={message(
+          value.lang,
+          "ui.pleaseRefreshThePageOrReturnToThePreviousScreen",
+        )}
       />
     );
   }

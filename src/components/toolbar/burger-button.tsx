@@ -2,7 +2,6 @@ import { message } from "~/utils/i18n";
 import { component$, Slot } from "@builder.io/qwik";
 import { HiBars3Solid } from "@qwikest/icons/heroicons";
 
-
 type BurgerButtonProps = {
   lang: string;
 };

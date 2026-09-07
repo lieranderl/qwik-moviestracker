@@ -10,6 +10,7 @@ const originalConsoleError = console.error;
 const originalFetch = globalThis.fetch;
 const originalCloudApiKey = process.env.GC_API_KEY;
 const originalImdbServiceUrl = process.env.IMDB_SERVICE_URL;
+const originalPlaywrightBypass = process.env.PLAYWRIGHT_AUTH_BYPASS;
 
 const createJsonResponse = (body: unknown, status = 200) =>
   ({
@@ -31,6 +32,12 @@ afterEach(() => {
     delete process.env.GC_API_KEY;
   } else {
     process.env.GC_API_KEY = originalCloudApiKey;
+  }
+
+  if (originalPlaywrightBypass === undefined) {
+    delete process.env.PLAYWRIGHT_AUTH_BYPASS;
+  } else {
+    process.env.PLAYWRIGHT_AUTH_BYPASS = originalPlaywrightBypass;
   }
 });
 
@@ -107,6 +114,17 @@ describe("cloud function API service", () => {
     const result = await getOptionalImdbRating(null);
 
     expect(result).toBeNull();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("keeps deterministic browser fixtures isolated from external IMDb", async () => {
+    process.env.PLAYWRIGHT_AUTH_BYPASS = "1";
+    const fetchMock = mock(async () => createJsonResponse({}));
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+    expect(await getImdbRatingResult("tt0133093")).toEqual({
+      status: "unavailable",
+    });
     expect(fetchMock).not.toHaveBeenCalled();
   });
 

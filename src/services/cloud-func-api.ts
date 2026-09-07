@@ -90,6 +90,12 @@ export const getImdbRatingResult = async (
   imdbId?: null | string,
 ): Promise<ImdbLookupResult> => {
   if (!imdbId) return { status: "not-found" };
+  // Browser fixtures must remain deterministic and must never call a live
+  // provider. The Qwik server action still resolves asynchronously, so tests
+  // cover the same non-blocking UI lifecycle as production.
+  if (process.env.PLAYWRIGHT_AUTH_BYPASS === "1") {
+    return { status: "unavailable" };
+  }
   try {
     return { status: "found", rating: await getImdbRating(imdbId) };
   } catch (error) {

@@ -28,6 +28,7 @@ import {
   searchTorznab,
   updateTorrServerStorageSettings,
   uploadTorrentFile,
+  TorrServerHttpError,
 } from "../torrserver";
 
 const baseUrl = "http://127.0.0.1:8090";
@@ -91,6 +92,17 @@ describe("TorrServer domain clients", () => {
     expect(await searchTorznab(baseUrl, "series")).toHaveLength(1);
   });
 
+  it("rejects malformed list and search payloads with typed validation errors", async () => {
+    mockFetch(jsonResponse({ torrents: [] }), jsonResponse({ results: [] }));
+
+    for (const request of [
+      () => listTorrent(baseUrl),
+      () => searchRutor(baseUrl, "movie"),
+    ]) {
+      await expect(request()).rejects.toBeInstanceOf(TorrServerHttpError);
+    }
+  });
+
   it("reads and updates settings", async () => {
     mockFetch(
       jsonResponse({ FriendlyName: "Home", UseDisk: true }),
@@ -108,6 +120,35 @@ describe("TorrServer domain clients", () => {
       }),
     ).toEqual({ saved: "true" });
     expect((await getTorrServerTMDBSettings(baseUrl))?.apiKey).toBe("key");
+  });
+
+  it("rejects invalid upload input and storage update responses consistently", async () => {
+    await expect(
+      uploadTorrentFile(baseUrl, {
+        file: new Blob(["not a torrent"], { type: "text/plain" }),
+        fileName: "movie.txt",
+      }),
+    ).rejects.toMatchObject({ kind: "validation" });
+
+    mockFetch(jsonResponse({ saved: true }));
+    await expect(
+      updateTorrServerStorageSettings(baseUrl, {
+        settings: "json",
+        viewed: "bbolt",
+      }),
+    ).rejects.toMatchObject({ kind: "validation" });
+  });
+
+  it("rejects malformed settings payloads instead of applying defaults", async () => {
+    mockFetch(jsonResponse([]), jsonResponse("invalid"), jsonResponse(42));
+
+    for (const request of [
+      () => getTorrServerSettings(baseUrl),
+      () => getTorrServerStorageSettings(baseUrl),
+      () => getTorrServerTMDBSettings(baseUrl),
+    ]) {
+      await expect(request()).rejects.toMatchObject({ kind: "validation" });
+    }
   });
 
   it("lists and mutates viewed state", async () => {

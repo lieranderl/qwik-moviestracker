@@ -5,11 +5,11 @@ import type {
   MediaCollection,
   WatchProviderCatalog,
   WatchProviderResults,
-} from "./models";
+} from "./models/tmdb";
 import type { ImdbRating } from "./models/imdb";
 import type { JacRedResult, JacRedSearchResponse } from "./torrent-search";
-import type { TorrServerTorrentStatusRaw } from "./torrserver";
 import { UpstreamError, type UpstreamSource } from "./upstream";
+export { parseTorrServerStatus } from "./torrserver/payloads";
 
 const mediaSchema = v.looseObject({ id: v.number() });
 const tmdbCollectionSchema = v.looseObject({
@@ -92,18 +92,6 @@ const imdbRatingSchema = v.looseObject({
   Votes: v.optional(v.string()),
 });
 
-const torrServerFileSchema = v.looseObject({
-  id: v.number(),
-  length: v.number(),
-  path: v.string(),
-});
-const torrServerStatusSchema = v.looseObject({
-  file_stats: v.optional(v.array(torrServerFileSchema)),
-  files: v.optional(v.array(torrServerFileSchema)),
-  hash: v.optional(v.string()),
-  name: v.optional(v.string()),
-});
-
 const parse = <
   TSchema extends v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>,
 >(
@@ -164,12 +152,3 @@ export const parseImdbRating = (input: unknown): ImdbRating => {
   const result = parse(imdbRatingSchema, input, "imdb");
   return { ...result, Votes: result.Votes ?? "" };
 };
-
-export const parseTorrServerStatus = (
-  input: unknown,
-): TorrServerTorrentStatusRaw =>
-  parse(
-    torrServerStatusSchema,
-    input,
-    "torrserver",
-  ) as TorrServerTorrentStatusRaw;

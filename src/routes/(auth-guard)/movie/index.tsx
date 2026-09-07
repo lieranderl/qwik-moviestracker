@@ -91,7 +91,10 @@ export default component$(() => {
       <SectionHeading
         eyebrow={message(lang, "ui.movieCollections")}
         title={message(lang, "langMovies")}
-        description={message(lang, "ui.browseLatestPopularNowPlayingUpcomingHdr10DolbyVisionAndTrendingMovieCol")}
+        description={message(
+          lang,
+          "ui.browseLatestPopularNowPlayingUpcomingHdr10DolbyVisionAndTrendingMovieCol",
+        )}
       />
       <QuickFilterStrip
         label={message(lang, "langQuickFilters")}

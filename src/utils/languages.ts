@@ -1,4 +1,9 @@
-import { message, normalizeLocale } from "./i18n";
+import {
+  message,
+  pluralMessage,
+  type Locale,
+  type PluralMessage,
+} from "./i18n";
 
 export const languages = [
   { english_name: "No Language", iso_639_1: "xx" },
@@ -190,348 +195,110 @@ export const languages = [
   { english_name: "Yoruba", iso_639_1: "yo" },
 ];
 
-const formatCountWord = (
-  lang: string,
-  count: number,
+const pluralForms = (
   enOne: string,
-  enMany: string,
+  enOther: string,
   ruOne: string,
   ruFew: string,
   ruMany: string,
-) => {
-  const locale = normalizeLocale(lang);
-  const category = new Intl.PluralRules(locale).select(count);
-  if (locale === "en-US") return category === "one" ? enOne : enMany;
-  const russianForms: Record<Intl.LDMLPluralRule, string> = {
-    zero: ruMany,
-    one: ruOne,
-    two: ruMany,
-    few: ruFew,
-    many: ruMany,
-    other: ruMany,
-  };
-  return russianForms[category];
-};
-
-const formatCountLabel = (
-  lang: string,
-  count: number,
-  enOne: string,
-  enMany: string,
-  ruOne: string,
-  ruFew: string,
-  ruMany: string,
-) =>
-  `${count} ${formatCountWord(lang, count, enOne, enMany, ruOne, ruFew, ruMany)}`;
-
-export const langCountWord = (
-  lang: string,
-  count: number,
-  englishSingular: string,
-  englishPlural: string,
-  russianOne: string,
-  russianFew: string,
-  russianMany: string,
-) => {
-  return formatCountWord(
-    lang,
-    count,
-    englishSingular,
-    englishPlural,
-    russianOne,
-    russianFew,
-    russianMany,
-  );
-};
-
-export const langCountLabel = (
-  lang: string,
-  count: number,
-  englishSingular: string,
-  englishPlural: string,
-  russianOne: string,
-  russianFew: string,
-  russianMany: string,
-) =>
-  `${count} ${langCountWord(lang, count, englishSingular, englishPlural, russianOne, russianFew, russianMany)}`;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-export const langSignInWithProvider = (lang: string, providerName: string) => {
-  const providerLabel =
-    providerName.charAt(0).toUpperCase() + providerName.slice(1);
-
-  switch (normalizeLocale(lang)) {
-    case "en-US":
-      return `Sign in with ${providerLabel}`;
-    case "ru-RU":
-      return `Войти через ${providerLabel}`;
-    default:
-      return `Войти через ${providerLabel}`;
-  }
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-export const langSearchStartsAfterCharacters = (
-  lang: string,
-  minimumCharacters: number,
-) => {
-  switch (normalizeLocale(lang)) {
-    case "en-US":
-      return `Use at least ${minimumCharacters} characters.`;
-    case "ru-RU":
-      return `Поиск доступен после ${minimumCharacters} символов и сохраняет текущий язык в URL.`;
-    default:
-      return `Поиск доступен после ${minimumCharacters} символов и сохраняет текущий язык в URL.`;
-  }
-};
-
-
-export const langSubmitAtLeastCharactersToLoadResults = (
-  lang: string,
-  minimumCharacters: number,
-) => {
-  switch (normalizeLocale(lang)) {
-    case "en-US":
-      return `Submit at least ${minimumCharacters} characters to load results`;
-    case "ru-RU":
-      return `Введите не менее ${minimumCharacters} символов, чтобы загрузить результаты`;
-    default:
-      return `Введите не менее ${minimumCharacters} символов, чтобы загрузить результаты`;
-  }
-};
-
-
-
-
-
-
-
-
-
-
-export const langSearchBecomesAvailableAfterCharacters = (
-  lang: string,
-  minimumCharacters: number,
-) => {
-  switch (normalizeLocale(lang)) {
-    case "en-US":
-      return `Enter at least ${minimumCharacters} characters.`;
-    case "ru-RU":
-      return `Поиск становится доступен после ${minimumCharacters} и более символов.`;
-    default:
-      return `Поиск становится доступен после ${minimumCharacters} и более символов.`;
-  }
-};
-
-export const langTryABroaderTitleAPersonNameOrDifferentSpelling = (
-  lang: string,
-) => {
-  switch (normalizeLocale(lang)) {
-    case "en-US":
-      return "Try a broader title, name, or spelling.";
-    case "ru-RU":
-      return "Попробуйте более общее название, имя человека или другое написание.";
-    default:
-      return "Попробуйте более общее название, имя человека или другое написание.";
-  }
-};
-
-export const langRecentSearchesCount = (lang: string, count: number) =>
-  formatCountLabel(
-    lang,
-    count,
+): Record<Locale, PluralMessage> => ({
+  "en-US": { one: `{count} ${enOne}`, other: `{count} ${enOther}` },
+  "ru-RU": {
+    one: `{count} ${ruOne}`,
+    few: `{count} ${ruFew}`,
+    many: `{count} ${ruMany}`,
+    other: `{count} ${ruMany}`,
+  },
+});
+
+const countForms = {
+  characters: pluralForms(
+    "character",
+    "characters",
+    "символ",
+    "символа",
+    "символов",
+  ),
+  episodes: pluralForms("episode", "episodes", "серия", "серии", "серий"),
+  files: pluralForms("file", "files", "файл", "файла", "файлов"),
+  items: pluralForms("item", "items", "элемент", "элемента", "элементов"),
+  matches: pluralForms(
+    "match",
+    "matches",
+    "совпадение",
+    "совпадения",
+    "совпадений",
+  ),
+  recentSearches: pluralForms(
     "recent search",
     "recent searches",
     "недавний поиск",
     "недавних поиска",
     "недавних поисков",
-  );
+  ),
+  seasons: pluralForms("season", "seasons", "сезон", "сезона", "сезонов"),
+} as const;
 
+const countLabel = (
+  lang: string,
+  count: number,
+  forms: Record<Locale, PluralMessage>,
+) => pluralMessage(lang, count, forms);
+
+export const langCharactersCount = (lang: string, count: number) =>
+  countLabel(lang, count, countForms.characters);
+export const langEpisodesCount = (lang: string, count: number) =>
+  countLabel(lang, count, countForms.episodes);
+export const langFilesCount = (lang: string, count: number) =>
+  countLabel(lang, count, countForms.files);
+export const langItemsCount = (lang: string, count: number) =>
+  countLabel(lang, count, countForms.items);
+export const langSearchMatchesCount = (lang: string, count: number) =>
+  countLabel(lang, count, countForms.matches);
+export const langRecentSearchesCount = (lang: string, count: number) =>
+  countLabel(lang, count, countForms.recentSearches);
+export const langSeasonsCount = (lang: string, count: number) =>
+  countLabel(lang, count, countForms.seasons);
+
+export const langSignInWithProvider = (lang: string, providerName: string) => {
+  const providerLabel =
+    providerName.charAt(0).toUpperCase() + providerName.slice(1);
+  return message(lang, "auth.signInWithProvider", { provider: providerLabel });
+};
+
+export const langSearchStartsAfterCharacters = (
+  lang: string,
+  minimumCharacters: number,
+) =>
+  message(lang, "search.startsAfterCharacters", { minimum: minimumCharacters });
+
+export const langSearchBecomesAvailableAfterCharacters = (
+  lang: string,
+  minimumCharacters: number,
+) =>
+  message(lang, "search.becomesAvailableAfterCharacters", {
+    minimum: minimumCharacters,
+  });
+
+export const langTryABroaderTitleAPersonNameOrDifferentSpelling = (
+  lang: string,
+) => message(lang, "search.tryBroader");
 
 export const langSearchTooShort = (
   lang: string,
   remainingCharacters: number,
   minimumCharacters: number,
 ) => {
-  const remainingWord = formatCountWord(
-    lang,
-    remainingCharacters,
-    "character",
-    "characters",
-    "символ",
-    "символа",
-    "символов",
+  const remainingWord = langCharactersCount(lang, remainingCharacters).replace(
+    `${remainingCharacters} `,
+    "",
   );
-
-  switch (normalizeLocale(lang)) {
-    case "en-US":
-      return `Search starts after ${minimumCharacters} characters. Add ${remainingCharacters} more ${remainingWord} and submit again.`;
-    case "ru-RU":
-      return `Поиск доступен после ${minimumCharacters} символов. Добавьте еще ${remainingCharacters} ${remainingWord} и отправьте снова.`;
-    default:
-      return `Поиск доступен после ${minimumCharacters} символов. Добавьте еще ${remainingCharacters} ${remainingWord} и отправьте снова.`;
-  }
+  return message(lang, "search.tooShort", {
+    minimum: minimumCharacters,
+    remaining: remainingCharacters,
+    remainingWord,
+  });
 };
-
-export const langSearchMatchesCount = (lang: string, count: number) =>
-  formatCountLabel(
-    lang,
-    count,
-    "match",
-    "matches",
-    "совпадение",
-    "совпадения",
-    "совпадений",
-  );
-
-
-
-
-
-
-
-export const langLatestItemsCount = (lang: string, count: number) =>
-  formatCountLabel(
-    lang,
-    count,
-    "latest title",
-    "latest titles",
-    "последний релиз",
-    "последних релиза",
-    "последних релизов",
-  );
-
-export const langTrendingMoviesCount = (lang: string, count: number) =>
-  formatCountLabel(
-    lang,
-    count,
-    "trending movie",
-    "trending movies",
-    "популярный фильм",
-    "популярных фильма",
-    "популярных фильмов",
-  );
-
-export const langTrendingSeriesCount = (lang: string, count: number) =>
-  formatCountLabel(
-    lang,
-    count,
-    "trending series",
-    "trending series",
-    "популярный сериал",
-    "популярных сериала",
-    "популярных сериалов",
-  );
 
 export const langMovieDiscoverSortLabel = (lang: string, sortBy: string) => {
   switch (sortBy) {

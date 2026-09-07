@@ -3,7 +3,6 @@ import type {
   CertificationList,
   Collection,
   MediaCollection,
-  MediaShortStrict,
   MovieShort,
   MovieFull,
   PersonMedia,
@@ -12,8 +11,9 @@ import type {
   TvFull,
   WatchProviderCatalog,
   WatchProviderResults,
-} from "./models";
-import { MediaType } from "./models";
+} from "./models/tmdb";
+import { MediaType } from "./models/tmdb";
+import type { MediaShortStrict } from "./models/catalog";
 import { createJsonApiClient, getOptionalResult } from "./json-api";
 import {
   parseTmdbCertificationList,

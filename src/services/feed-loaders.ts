@@ -1,7 +1,7 @@
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { DbType, getMoviesFirestore } from "./firestore";
-import type { MovieShort, TvShort } from "./models";
-import { MediaType } from "./models";
+import type { MovieShort, TvShort } from "./models/tmdb";
+import { MediaType } from "./models/tmdb";
 import {
   MOVIE_CATEGORIES,
   TV_CATEGORIES,

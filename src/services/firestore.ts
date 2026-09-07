@@ -4,7 +4,7 @@ import {
   Timestamp,
   type DocumentData,
 } from "@google-cloud/firestore";
-import type { MovieCatalog } from "./models";
+import type { MovieCatalog } from "./models/catalog";
 import {
   parseFirestoreCursor,
   parseFirestoreMovieDocument,

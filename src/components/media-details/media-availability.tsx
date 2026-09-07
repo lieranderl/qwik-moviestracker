@@ -27,7 +27,6 @@ import type {
   WatchProvider,
 } from "~/services/models";
 
-
 type MediaAvailabilityProps = {
   certification: LocalizedCertification | null;
   lang: string;

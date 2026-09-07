@@ -33,7 +33,7 @@ import type {
 import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
 import type { TSResult } from "~/services/models";
 import {
-  activateTorrent,
+  activateTorrentUntilReady,
   buildTorrentPlaylistUrl,
   dropTorrent,
   listTorrent,
@@ -51,7 +51,7 @@ import {
   transitionConnection,
 } from "~/services/torrserver/workspace";
 import { readStorageString } from "~/utils/browser";
-import { langCountLabel } from "~/utils/languages";
+import { langItemsCount } from "~/utils/languages";
 import {
   applyServersState,
   filterTorrServerTorrents,
@@ -101,6 +101,7 @@ export default component$(() => {
   const activatingHashSig = useSignal("");
   const snapshotRequestId = useSignal(0);
   const snapshotControllerSig = useSignal<NoSerialize<AbortController>>();
+  const activationControllerSig = useSignal<NoSerialize<AbortController>>();
 
   const statusFilterSig = useSignal<TorrServerStatusFilter>("all");
   const sortKeySig = useSignal<TorrServerSortKey>("recent");
@@ -133,6 +134,7 @@ export default component$(() => {
 
   const loadServerSnapshot = $(async (serverUrl: string): Promise<void> => {
     snapshotControllerSig.value?.abort();
+    activationControllerSig.value?.abort();
     const requestId = snapshotRequestId.value + 1;
     snapshotRequestId.value = requestId;
     torrentsSig.value = [];
@@ -316,34 +318,34 @@ export default component$(() => {
     async (hash: string): Promise<TorrServerTorrentStatus | null> => {
       if (!selectedTorServer.value) return null;
       const baseUrl = selectedTorServer.value;
+      activationControllerSig.value?.abort();
+      const controller = new AbortController();
+      activationControllerSig.value = noSerialize(controller);
       activatingHashSig.value = hash;
-      const activated = await activateTorrent(baseUrl, hash);
-      if (activated && activated.files.length > 0) {
-        torrentsSig.value = torrentsSig.value.map((t) =>
-          t.hash === hash ? activated : t,
-        );
-        activatingHashSig.value = "";
-        return activated;
-      }
-      for (let i = 0; i < 15; i++) {
-        await new Promise((r) => setTimeout(r, 2000));
-        try {
-          const fresh = await activateTorrent(baseUrl, hash);
-          if (fresh) {
+      try {
+        return await activateTorrentUntilReady(baseUrl, hash, {
+          signal: controller.signal,
+          onUpdate: (fresh) => {
+            if (
+              controller.signal.aborted ||
+              selectedTorServer.value !== baseUrl
+            ) {
+              return;
+            }
             torrentsSig.value = torrentsSig.value.map((t) =>
               t.hash === hash ? fresh : t,
             );
-            if (fresh.files.length > 0) {
-              activatingHashSig.value = "";
-              return fresh;
-            }
-          }
-        } catch {
-          /* keep polling */
+          },
+        });
+      } catch (error) {
+        if (!controller.signal.aborted) throw error;
+        return null;
+      } finally {
+        if (activationControllerSig.value === controller) {
+          activationControllerSig.value = undefined;
+          activatingHashSig.value = "";
         }
       }
-      activatingHashSig.value = "";
-      return null;
     },
   );
 
@@ -416,7 +418,10 @@ export default component$(() => {
   // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(({ cleanup }) => {
     hydrateServers();
-    cleanup(() => snapshotControllerSig.value?.abort());
+    cleanup(() => {
+      snapshotControllerSig.value?.abort();
+      activationControllerSig.value?.abort();
+    });
   });
 
   useTask$(async ({ track }) => {
@@ -761,15 +766,7 @@ export default component$(() => {
           <MediaGrid
             title={message(lang, "ui.library")}
             maxColumns={4}
-            headerBadge={langCountLabel(
-              lang,
-              visibleCount,
-              "item",
-              "items",
-              "элемент",
-              "элемента",
-              "элементов",
-            )}
+            headerBadge={langItemsCount(lang, visibleCount)}
           >
             {filteredTorrentsSig.value.map((torrent) => (
               <TorrentCard
@@ -797,6 +794,7 @@ export default component$(() => {
           activatingHashSig.value !== ""
         }
         onClose$={$(() => {
+          activationControllerSig.value?.abort();
           fileModalOpen.value = false;
         })}
         onViewedChanged$={$((items) => {

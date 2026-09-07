@@ -12,7 +12,6 @@ import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
 import { showDialogById } from "~/utils/browser";
 import { formatYear } from "~/utils/format";
 
-
 export interface TorModalPros {
   title: string;
   year: number;

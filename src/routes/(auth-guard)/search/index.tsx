@@ -50,6 +50,66 @@ const runSearch = server$(async (request: SearchRequest) => {
   });
 });
 
+type SearchFormProps = {
+  lang: string;
+  query: string;
+  shortQueryMessage: string | null;
+};
+
+const SearchForm = component$<SearchFormProps>(
+  ({ lang, query, shortQueryMessage }) => (
+    <section class="card border-base-200 bg-base-100 border shadow-sm">
+      <div class="card-body gap-4 p-4 md:p-6">
+        <form class="flex flex-col gap-3 md:flex-row md:items-end" method="get">
+          <input type="hidden" name="lang" value={lang} />
+          <label class="form-control flex-1 gap-2" for="search-query">
+            <span class="label-text text-sm font-medium">
+              {message(lang, "langSearchMoviesSeriesPeople")}
+            </span>
+            <input
+              id="search-query"
+              name="q"
+              inputMode="search"
+              autoComplete="off"
+              spellcheck={false}
+              aria-describedby="search-query-help"
+              aria-invalid={Boolean(shortQueryMessage)}
+              placeholder={message(lang, "langSearchTitlesCastCrew")}
+              class="input input-bordered focus-ringable h-11 min-h-11 w-full text-base"
+              {...(query ? { value: query } : {})}
+              onInput$={sync$((_event, target) => {
+                target.setAttribute("value", target.value);
+              })}
+            />
+          </label>
+
+          <button
+            type="submit"
+            class="btn btn-primary h-11 min-h-11 gap-2 md:min-w-40"
+          >
+            <HiMagnifyingGlassOutline aria-hidden="true" class="h-5 w-5" />
+            {message(lang, "langSearch")}
+          </button>
+        </form>
+
+        <p id="search-query-help" class="text-base-content/65 text-sm">
+          {langSearchStartsAfterCharacters(lang, MIN_SEARCH_QUERY_LENGTH)}
+        </p>
+
+        {shortQueryMessage && (
+          <div
+            class="alert alert-warning alert-soft text-sm"
+            role="status"
+            aria-live="polite"
+          >
+            <span>{shortQueryMessage}</span>
+          </div>
+        )}
+      </div>
+    </section>
+  ),
+);
+
 export default component$(() => {
   const resource = useQueryParamsLoader();
   const loc = useLocation();
@@ -63,7 +123,10 @@ export default component$(() => {
   // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(() => {
     if (!formModel.searchPhrase) {
-      recentSearches.value = readRecentSearches();
+      const storedSearches = readRecentSearches();
+      // Avoid a no-op rerender racing with native form input before Qwik has
+      // resumed. An empty list is already the serialized initial state.
+      if (storedSearches.length > 0) recentSearches.value = storedSearches;
       return;
     }
 
@@ -99,64 +162,11 @@ export default component$(() => {
     <div class="space-y-6 pb-8">
       <SectionHeading title={message(resource.value.lang, "langSearch")} />
 
-      <section class="card border-base-200 bg-base-100 border shadow-sm">
-        <div class="card-body gap-4 p-4 md:p-6">
-          <form
-            class="flex flex-col gap-3 md:flex-row md:items-end"
-            method="get"
-          >
-            <input type="hidden" name="lang" value={resource.value.lang} />
-            <label class="form-control flex-1 gap-2" for="search-query">
-              <span class="label-text text-sm font-medium">
-                {message(resource.value.lang, "langSearchMoviesSeriesPeople")}
-              </span>
-              <input
-                id="search-query"
-                name="q"
-                inputMode="search"
-                autoComplete="off"
-                spellcheck={false}
-                aria-describedby="search-query-help"
-                aria-invalid={Boolean(formModel.shortQueryMessage)}
-                placeholder={message(
-                  resource.value.lang,
-                  "langSearchTitlesCastCrew",
-                )}
-                class="input input-bordered focus-ringable h-11 min-h-11 w-full text-base"
-                {...(formModel.query ? { value: formModel.query } : {})}
-                onInput$={sync$((_event, target) => {
-                  target.setAttribute("value", target.value);
-                })}
-              />
-            </label>
-
-            <button
-              type="submit"
-              class="btn btn-primary h-11 min-h-11 gap-2 md:min-w-40"
-            >
-              <HiMagnifyingGlassOutline aria-hidden="true" class="h-5 w-5" />
-              {message(resource.value.lang, "langSearch")}
-            </button>
-          </form>
-
-          <p id="search-query-help" class="text-base-content/65 text-sm">
-            {langSearchStartsAfterCharacters(
-              resource.value.lang,
-              MIN_SEARCH_QUERY_LENGTH,
-            )}
-          </p>
-
-          {formModel.shortQueryMessage && (
-            <div
-              class="alert alert-warning alert-soft text-sm"
-              role="status"
-              aria-live="polite"
-            >
-              <span>{formModel.shortQueryMessage}</span>
-            </div>
-          )}
-        </div>
-      </section>
+      <SearchForm
+        lang={resource.value.lang}
+        query={formModel.query}
+        shortQueryMessage={formModel.shortQueryMessage}
+      />
 
       <SearchAssist
         categoryLinks={assistLinks}

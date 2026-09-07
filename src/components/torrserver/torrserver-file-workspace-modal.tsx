@@ -105,9 +105,7 @@ export const TorrServerFileWorkspaceModal = component$<{
       <TorrServerFileListModal
         open={open}
         title={
-          torrent?.title ||
-          torrent?.name ||
-          message(lang, "ui.torrentFiles")
+          torrent?.title || torrent?.name || message(lang, "ui.torrentFiles")
         }
         subtitle={torrent?.hash}
         files={entries}

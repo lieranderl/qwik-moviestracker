@@ -11,7 +11,6 @@ import {
 } from "@qwikest/icons/simpleicons";
 import type { ExternalIDS } from "~/services/models";
 
-
 type ExternalIdsProps = {
   external_ids?: ExternalIDS;
   lang: string;

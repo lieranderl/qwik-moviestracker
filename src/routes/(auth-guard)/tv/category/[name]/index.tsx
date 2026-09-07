@@ -133,9 +133,7 @@ export default component$(() => {
         {pagination.value.status === "loading" && (
           <div class="border-base-200 bg-base-100/88 flex items-center gap-3 rounded-full border px-4 py-2 text-sm shadow-sm">
             <span class="loading loading-ring loading-sm" />
-            <span>
-              {message(resource.value.lang, "ui.loadingMoreSeries")}
-            </span>
+            <span>{message(resource.value.lang, "ui.loadingMoreSeries")}</span>
           </div>
         )}
       </div>

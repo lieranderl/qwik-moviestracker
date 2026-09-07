@@ -80,9 +80,7 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
                       </div>
                     </div>
                     <form method="dialog" class="modal-backdrop">
-                      <button type="submit">
-                        {message(lang, "ui.close")}
-                      </button>
+                      <button type="submit">{message(lang, "ui.close")}</button>
                     </form>
                   </dialog>
                 )}

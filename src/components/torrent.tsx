@@ -100,8 +100,7 @@ export const TorrentBlock = component$(
             </span>
 
             <span class="badge badge-error badge-soft rounded">
-              {torrent.Peers ?? torrent.Leeches}{" "}
-              {message(lang, "ui.peers2")}
+              {torrent.Peers ?? torrent.Leeches} {message(lang, "ui.peers2")}
             </span>
 
             {torrent.AvailabilityScore !== undefined && (

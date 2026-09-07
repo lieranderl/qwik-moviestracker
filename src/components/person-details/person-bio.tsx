@@ -1,7 +1,6 @@
 import { message } from "~/utils/i18n";
 import { component$, useSignal } from "@builder.io/qwik";
 
-
 export type PersonBioProps = {
   biography?: string;
   lang: string;

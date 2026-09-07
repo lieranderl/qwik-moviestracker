@@ -1,11 +1,10 @@
 import type { TorrServerViewedItem } from "../torrserver";
 import { normalizeViewedItem } from "./normalizers";
+import { parseTorrServerViewedList } from "./payloads";
 import { isOptionalTorrServerFailure, requestTorrServer } from "./transport";
 
-const normalizeViewed = (
-  raw: TorrServerViewedItem[] | null,
-): TorrServerViewedItem[] =>
-  Array.isArray(raw) ? raw.map(normalizeViewedItem) : [];
+const normalizeViewed = (raw: unknown): TorrServerViewedItem[] =>
+  parseTorrServerViewedList(raw).map(normalizeViewedItem);
 
 export const listViewedTorrents = async (
   baseUrl: string,

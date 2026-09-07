@@ -26,7 +26,6 @@ import {
   resolveRegionalWatchProviders,
 } from "~/services/tmdb";
 
-
 type MovieDetailData =
   | {
       status: "ready";
@@ -122,7 +121,10 @@ export default component$(() => {
     return (
       <ErrorState
         title={message(value.lang, "ui.movieDetailsAreUnavailable")}
-        description={message(value.lang, "ui.pleaseRefreshThePageOrReturnToThePreviousScreen")}
+        description={message(
+          value.lang,
+          "ui.pleaseRefreshThePageOrReturnToThePreviousScreen",
+        )}
       />
     );
   }

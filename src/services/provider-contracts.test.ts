@@ -145,12 +145,17 @@ describe("provider minimum-shape contracts", () => {
       hash: "ABC",
       name: "Alien",
     });
-    expectInvalidResponse(
-      () =>
-        parseTorrServerStatus({
-          file_stats: [{ id: 0, length: "large", path: "Alien.mkv" }],
-        }),
-      "torrserver",
-    );
+    expect(() =>
+      parseTorrServerStatus({
+        file_stats: [{ id: 0, length: "large", path: "Alien.mkv" }],
+      }),
+    ).toThrow();
+    try {
+      parseTorrServerStatus({
+        file_stats: [{ id: 0, length: "large", path: "Alien.mkv" }],
+      });
+    } catch (error) {
+      expect(error).toMatchObject({ kind: "validation", retryable: false });
+    }
   });
 });

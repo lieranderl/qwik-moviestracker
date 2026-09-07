@@ -14,7 +14,7 @@ import {
   buildTorrentPlaylistUrl,
 } from "~/services/torrserver";
 import { formatYear } from "~/utils/format";
-import { langCountLabel } from "~/utils/languages";
+import { langFilesCount } from "~/utils/languages";
 import {
   formatTorrentSize,
   formatTransferSpeed,
@@ -76,15 +76,7 @@ export const TorrentCard = component$(
               {formatTorrentSize(torrent.torrent_size)}
             </span>
             <span class="badge badge-outline badge-sm">
-              {langCountLabel(
-                lang,
-                torrent.fileCount,
-                "file",
-                "files",
-                "файл",
-                "файла",
-                "файлов",
-              )}
+              {langFilesCount(lang, torrent.fileCount)}
             </span>
           </div>
 
@@ -129,17 +121,13 @@ export const TorrentCard = component$(
                 <div class="stat-value text-sm">{torrent.total_peers || 0}</div>
               </div>
               <div class="stat min-w-0 overflow-hidden px-4 py-3">
-                <div class="stat-title text-xs">
-                  {message(lang, "ui.down")}
-                </div>
+                <div class="stat-title text-xs">{message(lang, "ui.down")}</div>
                 <div class="stat-value text-success text-sm">
                   {formatTransferSpeed(torrent.download_speed)}
                 </div>
               </div>
               <div class="stat min-w-0 overflow-hidden px-4 py-3">
-                <div class="stat-title text-xs">
-                  {message(lang, "ui.up")}
-                </div>
+                <div class="stat-title text-xs">{message(lang, "ui.up")}</div>
                 <div class="stat-value text-info text-sm">
                   {formatTransferSpeed(torrent.upload_speed)}
                 </div>

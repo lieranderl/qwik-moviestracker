@@ -5,7 +5,6 @@ import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
 import type { VideoResult } from "~/services/models";
 import { showDialogById } from "~/utils/browser";
 
-
 export interface TorModalPros {
   videos?: VideoResult[];
 }

@@ -7,6 +7,7 @@ import type {
   TorrServerUploadRequest,
 } from "../torrserver";
 import { inferTorrentCategory, normalizeTorrentStatus } from "./normalizers";
+import { parseTorrServerStatusList } from "./payloads";
 import {
   buildTorrServerUrl,
   fetchTorrServer,
@@ -16,10 +17,8 @@ import {
 } from "./transport";
 import { validateTorrServerUploadFile } from "./upload-validation";
 
-const normalizeTorrentList = (
-  raw: TorrServerTorrentStatusRaw[] | null,
-): TorrServerTorrentStatus[] =>
-  Array.isArray(raw) ? raw.map(normalizeTorrentStatus) : [];
+const normalizeTorrentList = (raw: unknown): TorrServerTorrentStatus[] =>
+  parseTorrServerStatusList(raw).map(normalizeTorrentStatus);
 
 export const listTorrent = async (
   baseUrl: string,
@@ -94,7 +93,9 @@ export const uploadTorrentFile = async (
     request.file,
     request.fileName,
   );
-  if (!validation.ok) throw new Error(validation.message);
+  if (!validation.ok) {
+    throw new TorrServerHttpError(validation.message, { kind: "validation" });
+  }
 
   const form = new FormData();
   form.set("file", request.file, validation.fileName);

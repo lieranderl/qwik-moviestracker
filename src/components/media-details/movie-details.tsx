@@ -77,9 +77,7 @@ export const MovieDetails = component$(
                 src={`https://image.tmdb.org/t/p/w342${movie.poster_path}`}
                 width={342}
                 height={513}
-                alt={
-                  movie.title ?? message(lang, "ui.moviePoster")
-                }
+                alt={movie.title ?? message(lang, "ui.moviePoster")}
                 class="rounded-box h-auto w-full shadow-lg"
               />
             ) : (

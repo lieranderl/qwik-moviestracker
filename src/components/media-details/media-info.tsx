@@ -24,8 +24,7 @@ export const MediaInfo = component$<MediaInfoProps>(
     lang,
     networks,
   }) => {
-    const detailsTitle =
-      lang === "en-US" ? "Production details" : "Детали производства";
+    const detailsTitle = message(lang, "media.productionDetails");
 
     return (
       <section class="card border-base-200 bg-base-100/95 border shadow-sm">

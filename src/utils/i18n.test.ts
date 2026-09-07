@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { message, normalizeLocale, pluralMessage } from "./i18n";
-import { langSignInWithProvider } from "./languages";
+import {
+  langCharactersCount,
+  langFilesCount,
+  langSignInWithProvider,
+} from "./languages";
 
 describe("i18n message catalogs", () => {
   test("falls back explicitly to English for unsupported locales", () => {
@@ -32,5 +36,13 @@ describe("i18n message catalogs", () => {
     expect(pluralMessage("en-US", 2, forms)).toBe("2 results");
     expect(pluralMessage("ru-RU", 2, forms)).toBe("2 результата");
     expect(pluralMessage("ru-RU", 11, forms)).toBe("11 результатов");
+  });
+
+  test("uses fixed type-safe forms for application counts", () => {
+    expect(langCharactersCount("en-US", 1)).toBe("1 character");
+    expect(langCharactersCount("en-US", 2)).toBe("2 characters");
+    expect(langFilesCount("ru-RU", 1)).toBe("1 файл");
+    expect(langFilesCount("ru-RU", 2)).toBe("2 файла");
+    expect(langFilesCount("ru-RU", 11)).toBe("11 файлов");
   });
 });

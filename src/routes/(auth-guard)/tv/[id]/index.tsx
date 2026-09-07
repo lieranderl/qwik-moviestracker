@@ -25,7 +25,6 @@ import {
   resolveTvCertification,
 } from "~/services/tmdb";
 
-
 type TvDetailData =
   | {
       status: "ready";
@@ -113,7 +112,10 @@ export default component$(() => {
     return (
       <ErrorState
         title={message(value.lang, "ui.tvDetailsAreUnavailable")}
-        description={message(value.lang, "ui.pleaseRefreshThePageOrReturnToThePreviousScreen")}
+        description={message(
+          value.lang,
+          "ui.pleaseRefreshThePageOrReturnToThePreviousScreen",
+        )}
       />
     );
   }

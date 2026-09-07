@@ -1,7 +1,6 @@
 import { message } from "./i18n";
 import type { MediaType } from "~/services/models";
 
-
 export const categoryToTitle = (
   category: string,
   type: "movie" | "tv",

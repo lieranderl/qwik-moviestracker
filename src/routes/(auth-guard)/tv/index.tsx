@@ -110,7 +110,10 @@ export default component$(() => {
       <SectionHeading
         eyebrow={message(lang, "ui.tvCollections")}
         title={message(lang, "ui.series2")}
-        description={message(lang, "ui.browseTrendingPopularTopRatedAiringTodayAndOnTheAirSeriesCollections")}
+        description={message(
+          lang,
+          "ui.browseTrendingPopularTopRatedAiringTodayAndOnTheAirSeriesCollections",
+        )}
       />
       <QuickFilterStrip
         label={message(lang, "langQuickFilters")}

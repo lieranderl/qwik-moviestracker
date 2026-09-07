@@ -12,7 +12,7 @@ import {
   type TvShort,
 } from "~/services/models";
 import { formatYear } from "~/utils/format";
-import { langCountLabel } from "~/utils/languages";
+import { langEpisodesCount, langSeasonsCount } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 import { writeLastViewed } from "~/utils/recent-activity";
 import { ExternalIds } from "../external_ids";
@@ -99,8 +99,7 @@ export const TvDetails = component$(
             {/* Metadata badges */}
             <div class="flex flex-wrap items-center gap-1.5">
               <span class="badge badge-ghost badge-sm">
-                {formatYear(tv.first_air_date) ||
-                  message(lang, "ui.nA")}
+                {formatYear(tv.first_air_date) || message(lang, "ui.nA")}
               </span>
               {certification && (
                 <span class="badge badge-ghost badge-sm">
@@ -109,27 +108,11 @@ export const TvDetails = component$(
               )}
               <span class="badge badge-ghost badge-sm gap-1">
                 <LuLayers3 class="text-xs" />
-                {langCountLabel(
-                  lang,
-                  tv.number_of_seasons ?? 0,
-                  "Season",
-                  "Seasons",
-                  "сезон",
-                  "сезона",
-                  "сезонов",
-                )}
+                {langSeasonsCount(lang, tv.number_of_seasons ?? 0)}
               </span>
               <span class="badge badge-ghost badge-sm gap-1">
                 <LuDisc3 class="text-xs" />
-                {langCountLabel(
-                  lang,
-                  tv.number_of_episodes ?? 0,
-                  "Episode",
-                  "Episodes",
-                  "серия",
-                  "серии",
-                  "серий",
-                )}
+                {langEpisodesCount(lang, tv.number_of_episodes ?? 0)}
               </span>
               {tv.genres?.map((g) => (
                 <span key={g.id} class="badge badge-ghost badge-sm">
@@ -216,21 +199,15 @@ export const TvDetails = component$(
             </h3>
             <div class="stats stats-vertical bg-transparent">
               <div class="stat px-0 py-3">
-                <div class="stat-title">
-                  {message(lang, "ui.seasons")}
-                </div>
+                <div class="stat-title">{message(lang, "ui.seasons")}</div>
                 <div class="stat-value text-lg">{tv.number_of_seasons}</div>
               </div>
               <div class="stat px-0 py-3">
-                <div class="stat-title">
-                  {message(lang, "ui.episodes")}
-                </div>
+                <div class="stat-title">{message(lang, "ui.episodes")}</div>
                 <div class="stat-value text-lg">{tv.number_of_episodes}</div>
               </div>
               <div class="stat px-0 py-3">
-                <div class="stat-title">
-                  {message(lang, "ui.status")}
-                </div>
+                <div class="stat-title">{message(lang, "ui.status")}</div>
                 <div class="stat-value text-lg">
                   {tv.status || message(lang, "ui.unknown")}
                 </div>

@@ -13,6 +13,12 @@ import {
   normalizeTmdbSettings,
 } from "./normalizers";
 import {
+  parseTorrServerSettings,
+  parseTorrServerStorageSettings,
+  parseTorrServerStringRecord,
+  parseTorrServerTmdbSettings,
+} from "./payloads";
+import {
   buildTorrServerUrl,
   fetchTorrServer,
   isOptionalTorrServerFailure,
@@ -32,7 +38,7 @@ export const getTorrServerSettings = async (
       path: "settings",
       signal,
     });
-    return normalizeSettings(raw);
+    return normalizeSettings(parseTorrServerSettings(raw));
   } catch (error) {
     if (isOptionalTorrServerFailure(error)) return null;
     throw error;
@@ -48,10 +54,11 @@ export const getTorrServerStorageSettings = async (
       baseUrl,
       { method: "GET", path: "storage/settings", signal },
     );
+    const settings = parseTorrServerStorageSettings(raw);
     return {
-      settings: asString(raw?.settings, "json"),
-      viewed: asString(raw?.viewed, "json"),
-      viewedCount: asNumber(raw?.viewedCount, 0),
+      settings: asString(settings.settings, "json"),
+      viewed: asString(settings.viewed, "json"),
+      viewedCount: asNumber(settings.viewedCount, 0),
     };
   } catch (error) {
     if (isOptionalTorrServerFailure(error)) return null;
@@ -77,7 +84,16 @@ export const updateTorrServerStorageSettings = async (
       status: response.status,
     });
   }
-  return (await response.json().catch(() => ({}))) as Record<string, string>;
+  let payload: unknown;
+  try {
+    payload = await response.json();
+  } catch (cause) {
+    throw new TorrServerHttpError(
+      "TorrServer storage update returned invalid JSON",
+      { cause, kind: "validation" },
+    );
+  }
+  return parseTorrServerStringRecord(payload);
 };
 
 export const getTorrServerTMDBSettings = async (
@@ -90,7 +106,7 @@ export const getTorrServerTMDBSettings = async (
       path: "tmdb/settings",
       signal,
     });
-    return normalizeTmdbSettings(raw);
+    return normalizeTmdbSettings(parseTorrServerTmdbSettings(raw));
   } catch (error) {
     if (isOptionalTorrServerFailure(error)) return null;
     throw error;

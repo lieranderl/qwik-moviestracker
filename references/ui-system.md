@@ -4,7 +4,7 @@
 
 - UI work targets Qwik / Qwik City 1.x.
 - Styling targets Tailwind CSS v4 and daisyUI 5.
-- Tooling baseline for frontend work is Bun + Vite 7 + Biome 2.
+- Tooling baseline for frontend work is Bun + Vite 7 + ESLint + Prettier.
 
 ## Qwik Patterns
 
@@ -16,8 +16,9 @@
 - Use `~/*` path aliases for imports that resolve into `src/*`.
 - Avoid `useVisibleTask$` unless client-only browser APIs are genuinely
   required. Prefer `useTask$` with server guards when possible.
-- Existing `useVisibleTask$` usage in the repo should be treated as legacy and
-  migrated opportunistically when the touched behavior allows it.
+- Keep `useVisibleTask$` for browser-only storage, visibility-aware polling,
+  and optional enrichment that must begin only after primary SSR content is
+  visible.
 
 ## DaisyUI 5
 

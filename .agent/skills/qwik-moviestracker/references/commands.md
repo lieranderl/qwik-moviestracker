@@ -16,19 +16,19 @@ and the main runtime/build path is Bun-oriented.
 
 ## Common Commands
 
-| Goal | Command |
-|------|---------|
-| Install dependencies | `bun install` |
-| Start dev server | `bun start` |
-| Run all repo tests | `bun test` |
-| Run one test file | `bun test path/to/file.test.ts` |
-| Type-check | `bun run build.types` |
-| Lint | `bun run lint` |
-| Full build | `bun run build` |
-| Preview build | `bun preview` |
-| Serve Bun SSR output | `bun run serve` |
-| Format with Prettier | `bun run fmt` |
-| Run Biome | `bun run biome` |
+| Goal                 | Command                         |
+| -------------------- | ------------------------------- |
+| Install dependencies | `bun install`                   |
+| Start dev server     | `bun start`                     |
+| Run all repo tests   | `bun test`                      |
+| Run one test file    | `bun test path/to/file.test.ts` |
+| Type-check           | `bun run build.types`           |
+| Lint                 | `bun run lint`                  |
+| Full build           | `bun run build`                 |
+| Preview build        | `bun preview`                   |
+| Serve Bun SSR output | `bun run serve`                 |
+| Format with Prettier | `bun run fmt`                   |
+| Run Biome            | `bun run biome`                 |
 
 ## Verification Baseline
 

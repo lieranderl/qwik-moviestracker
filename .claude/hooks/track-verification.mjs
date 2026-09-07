@@ -27,8 +27,8 @@ if (input.tool_name === "Bash") {
   process.exit(0);
 }
 
-const touchedPaths = collectToolPaths(projectDir, input.tool_input).filter((filePath) =>
-  isTrackedPath(filePath),
+const touchedPaths = collectToolPaths(projectDir, input.tool_input).filter(
+  (filePath) => isTrackedPath(filePath),
 );
 
 if (touchedPaths.length === 0) {

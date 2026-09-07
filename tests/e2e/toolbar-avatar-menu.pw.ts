@@ -31,8 +31,12 @@ test.describe("toolbar avatar menu", () => {
     await expect(menu).toBeVisible();
     await expect(menu.getByText("Playwright User")).toBeVisible();
     await expect(menu.getByText("playwright@local.test")).toBeVisible();
-    await expect(menu.getByRole("link", { name: languagePattern })).toBeVisible();
-    await expect(menu.getByRole("button", { name: signOutPattern })).toBeVisible();
+    await expect(
+      menu.getByRole("link", { name: languagePattern }),
+    ).toBeVisible();
+    await expect(
+      menu.getByRole("button", { name: signOutPattern }),
+    ).toBeVisible();
   });
 
   test("switches language from the account menu and persists the choice", async ({

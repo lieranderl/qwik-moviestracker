@@ -19,14 +19,14 @@ Reference: https://daisyui.com/components/
 
 ## Shared Primitives To Reuse First
 
-| Need | Prefer |
-|------|--------|
-| page title / eyebrow | `SectionHeading` in `src/components/page-feedback.tsx` |
-| loading / empty / error states | `LoadingState`, `EmptyState`, `ErrorState` |
-| detail-page framing | `DetailPageShell`, `DetailPageContainer` |
-| media lists | `MediaGrid`, `MediaCarousel`, `MediaCard` |
-| discovery/home sections | `src/components/discovery/**` |
-| app navigation | `src/components/toolbar/**` |
+| Need                           | Prefer                                                 |
+| ------------------------------ | ------------------------------------------------------ |
+| page title / eyebrow           | `SectionHeading` in `src/components/page-feedback.tsx` |
+| loading / empty / error states | `LoadingState`, `EmptyState`, `ErrorState`             |
+| detail-page framing            | `DetailPageShell`, `DetailPageContainer`               |
+| media lists                    | `MediaGrid`, `MediaCarousel`, `MediaCard`              |
+| discovery/home sections        | `src/components/discovery/**`                          |
+| app navigation                 | `src/components/toolbar/**`                            |
 
 ## Styling Conventions
 

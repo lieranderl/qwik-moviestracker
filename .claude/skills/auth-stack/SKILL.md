@@ -27,7 +27,6 @@ routes.
 - Always run:
   1. `bun run build.types`
   2. `bun run lint`
-- Also run:
-  3. `bun run build`
+- Also run: 3. `bun run build`
 
 Auth and route changes are always full-build territory in this repo.

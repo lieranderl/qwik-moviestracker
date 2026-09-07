@@ -56,7 +56,9 @@ export function normalizePath(projectDir, rawPath) {
   const absolute = path.isAbsolute(rawPath)
     ? rawPath
     : path.resolve(projectDir, rawPath);
-  const relative = path.relative(projectDir, absolute).replaceAll(path.sep, "/");
+  const relative = path
+    .relative(projectDir, absolute)
+    .replaceAll(path.sep, "/");
   if (!relative || relative.startsWith("../")) {
     return rawPath.replaceAll(path.sep, "/");
   }
@@ -130,7 +132,9 @@ export function getSessionState(state, sessionId) {
 }
 
 export function recomputeRequirements(session) {
-  const tracked = session.editedFiles.filter((filePath) => isTrackedPath(filePath));
+  const tracked = session.editedFiles.filter((filePath) =>
+    isTrackedPath(filePath),
+  );
   session.requires = {
     buildTypes: tracked.length > 0,
     lint: tracked.length > 0,

@@ -23,7 +23,7 @@ Do not load every reference by default. Open only what the task needs.
 ## Working Defaults
 
 - Stack baseline: Qwik / Qwik City 1.x, Tailwind CSS v4, daisyUI 5, Bun,
-  Vite 7, and Biome 2.
+  Vite 7, ESLint, and Prettier.
 - Use daisyUI as the primary UI vocabulary.
 - Reference: https://daisyui.com/components/
 - Edit `src/**`, `public/**`, and root config files.
@@ -32,8 +32,8 @@ Do not load every reference by default. Open only what the task needs.
   explicitly introduces a public flow.
 - Preserve the `lang` query parameter flow unless the task changes language
   behavior on purpose.
-- Keep TMDB, Firestore, Cloud gateway, and TorrServer integration logic in
-  `src/services/**`.
+- Keep TMDB, Firestore, private IMDb Cloud Run, JacRed, and TorrServer
+  integration logic in `src/services/**`.
 - For monetization or public-commercial work, apply the commercial boundary in
   `references/guardrails.md` before adding paid access, ads, affiliate links,
   or public SEO surfaces.

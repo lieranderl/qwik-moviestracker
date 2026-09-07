@@ -21,7 +21,6 @@ updates:
       test-and-build-tooling:
         dependency-type: "development"
         patterns:
-          - "@biomejs/*"
           - "@playwright/*"
           - "@types/*"
           - "typescript"

@@ -41,6 +41,9 @@ bun install
 bun run dev
 ```
 
+Development and CI use Bun 1.3.14, pinned in `packageManager`, `.mise.toml`,
+and the Docker images.
+
 Useful commands:
 
 ```bash

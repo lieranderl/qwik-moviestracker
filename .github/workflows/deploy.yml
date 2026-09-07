@@ -155,7 +155,6 @@ jobs:
       - name: Deploy, smoke-test, and promote
         env:
           IMAGE: ${{ needs.build.outputs.image }}@${{ needs.build.outputs.digest }}
-          TAG: candidate-${{ github.run_id }}
           SUFFIX: candidate-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           SERVICE_STATE=$(gcloud run services describe "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --format=json)
@@ -181,28 +180,22 @@ jobs:
             --region="$GCP_REGION" \
             --project="$GCP_PROJECT" \
             --no-traffic \
-            --tag="$TAG" \
             --revision-suffix="$SUFFIX" \
             --quiet
 
-          # Verify the candidate revision before it receives production traffic.
-          CANDIDATE_URL=$(gcloud run services describe "$PROD_SERVICE" \
+          # gcloud deploy waits for the configured startup probe to pass. Verify
+          # that this exact zero-traffic revision is Ready and was gated by /healthz.
+          CANDIDATE_REVISION="$PROD_SERVICE-$SUFFIX"
+          CANDIDATE_STATE=$(gcloud run revisions describe "$CANDIDATE_REVISION" \
             --region="$GCP_REGION" \
             --project="$GCP_PROJECT" \
-            --format=json | jq -r --arg tag "$TAG" '.status.traffic[] | select(.tag == $tag) | .url')
-          test -n "$CANDIDATE_URL" && test "$CANDIDATE_URL" != "null"
-          curl --fail --silent --show-error --retry 5 --retry-all-errors \
-            --max-time 15 "$CANDIDATE_URL/healthz"
+            --format=json)
+          jq -e '.status.conditions[] | select(.type == "Ready" and .status == "True")' <<<"$CANDIDATE_STATE" >/dev/null
+          jq -e '.spec.containers[] | select(.startupProbe.httpGet.path == "/healthz")' <<<"$CANDIDATE_STATE" >/dev/null
 
           # Promote only after candidate health passes, then run full smoke tests.
-          gcloud run services update-traffic "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --to-revisions="$PROD_SERVICE-$SUFFIX=100" --quiet
+          gcloud run services update-traffic "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --to-revisions="$CANDIDATE_REVISION=100" --quiet
           ./scripts/smoke-deployment.sh "$PROD_URL"
 
           promotion_complete=true
           trap - EXIT INT TERM
-
-      - name: Remove candidate tag
-        if: always()
-        env:
-          TAG: candidate-${{ github.run_id }}
-        run: gcloud run services update-traffic "$PROD_SERVICE" --region="$GCP_REGION" --project="$GCP_PROJECT" --remove-tags="$TAG" --quiet || true

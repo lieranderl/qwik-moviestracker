@@ -2,6 +2,7 @@ import { formatYear } from "~/utils/format";
 import type {
   CertificationList,
   Collection,
+  Images,
   MediaCollection,
   MovieShort,
   MovieFull,
@@ -19,6 +20,7 @@ import {
   parseTmdbCertificationList,
   parseTmdbCollection,
   parseTmdbDetail,
+  parseTmdbImages,
   parseTmdbProviderCatalog,
   parseTmdbWatchProviders,
 } from "./provider-contracts";
@@ -81,6 +83,56 @@ const sortByYearDesc = <T>(
   [...items].sort(
     (left, right) => formatYear(getDate(right)) - formatYear(getDate(left)),
   );
+
+const getImageLanguage = (language: string) => {
+  const primary = language.trim().toLowerCase().split(/[-_]/)[0];
+  return primary === "ru" || primary === "en"
+    ? primary
+    : DEFAULT_IMAGE_LANGUAGE;
+};
+
+export const selectHorizontalPosterPath = (
+  images: Images["backdrops"],
+  language: string,
+) => {
+  const primaryLanguage = getImageLanguage(language);
+  const languages =
+    primaryLanguage === DEFAULT_IMAGE_LANGUAGE
+      ? [DEFAULT_IMAGE_LANGUAGE]
+      : [primaryLanguage, DEFAULT_IMAGE_LANGUAGE];
+
+  for (const candidateLanguage of languages) {
+    const image = images.find(
+      ({ file_path, iso_639_1 }) =>
+        Boolean(file_path) && iso_639_1?.toLowerCase() === candidateLanguage,
+    );
+    if (image) return image.file_path;
+  }
+
+  return null;
+};
+
+export const getHorizontalPosterPath = async ({
+  id,
+  language,
+  type,
+}: {
+  id: number;
+  language: string;
+  type: MediaType.Movie | MediaType.Tv;
+}) => {
+  const primaryLanguage = getImageLanguage(language);
+  const imageLanguages =
+    primaryLanguage === DEFAULT_IMAGE_LANGUAGE
+      ? DEFAULT_IMAGE_LANGUAGE
+      : `${primaryLanguage},${DEFAULT_IMAGE_LANGUAGE}`;
+  const result = await fetchTMDB<Images>(
+    `${type}/${id}/images`,
+    { include_image_language: imageLanguages },
+    { ttl: CACHE_TTL_MS.tmdbDetail, parse: parseTmdbImages },
+  );
+  return selectHorizontalPosterPath(result.backdrops, primaryLanguage);
+};
 
 type GetTrendingMedia = {
   page: number;

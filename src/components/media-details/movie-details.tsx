@@ -303,6 +303,9 @@ export const MovieDetails = component$(
                       rating={m.vote_average ? m.vote_average : 0}
                       year={formatYear(m.release_date)}
                       picfile={m.backdrop_path}
+                      tmdbId={m.id}
+                      mediaType={MediaType.Movie}
+                      language={lang}
                       variant="landscape"
                     />
                   </a>
@@ -330,6 +333,9 @@ export const MovieDetails = component$(
                       rating={m.vote_average ? m.vote_average : 0}
                       year={formatYear(m.release_date)}
                       picfile={m.backdrop_path}
+                      tmdbId={m.id}
+                      mediaType={MediaType.Movie}
+                      language={lang}
                       variant="landscape"
                     />
                   </a>

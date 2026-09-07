@@ -6,6 +6,7 @@ import {
   getCollectionMovies,
   getMovieCertificationList,
   getMovieDetails,
+  getHorizontalPosterPath,
   getMediaRecom,
   getMedias,
   getTrendingMedia,
@@ -33,6 +34,101 @@ afterEach(() => {
 });
 
 describe("tmdb service", () => {
+  it("selects a language-specific horizontal poster before English fallback", async () => {
+    process.env.TMDB_API_KEY = "tmdb-test-key";
+    const fetchMock = mock(async () =>
+      createJsonResponse({
+        id: 95350,
+        backdrops: [
+          { file_path: "/plain.jpg", iso_639_1: null, aspect_ratio: 1.778 },
+          { file_path: "/english.jpg", iso_639_1: "en", aspect_ratio: 1.778 },
+          { file_path: "/russian.jpg", iso_639_1: "ru", aspect_ratio: 1.778 },
+        ],
+        logos: [],
+        posters: [],
+      }),
+    );
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+    const path = await getHorizontalPosterPath({
+      id: 95350,
+      language: "ru-RU",
+      type: MediaType.Tv,
+    });
+
+    expect(path).toBe("/russian.jpg");
+    const firstCall = fetchMock.mock.calls[0] as unknown[] | undefined;
+    if (!firstCall) throw new Error("Expected fetch to be called");
+    const request = new URL(String(firstCall[0]));
+    expect(request.pathname).toBe("/3/tv/95350/images");
+    expect(request.searchParams.get("include_image_language")).toBe("ru,en");
+  });
+
+  it("uses English title artwork when the requested language is unavailable", async () => {
+    process.env.TMDB_API_KEY = "tmdb-test-key";
+    globalThis.fetch = (async () =>
+      createJsonResponse({
+        id: 1,
+        backdrops: [
+          { file_path: "/plain.jpg", iso_639_1: null },
+          { file_path: "/english.jpg", iso_639_1: "en" },
+        ],
+        logos: [],
+        posters: [],
+      })) as unknown as typeof fetch;
+
+    await expect(
+      getHorizontalPosterPath({
+        id: 1,
+        language: "ru-RU",
+        type: MediaType.Movie,
+      }),
+    ).resolves.toBe("/english.jpg");
+  });
+
+  it("does not mistake a language-neutral backdrop for a horizontal poster", async () => {
+    process.env.TMDB_API_KEY = "tmdb-test-key";
+    globalThis.fetch = (async () =>
+      createJsonResponse({
+        id: 1,
+        backdrops: [{ file_path: "/plain.jpg", iso_639_1: null }],
+        logos: [],
+        posters: [],
+      })) as unknown as typeof fetch;
+
+    await expect(
+      getHorizontalPosterPath({
+        id: 1,
+        language: "en-US",
+        type: MediaType.Movie,
+      }),
+    ).resolves.toBeNull();
+  });
+
+  it("falls back to English for unsupported application locales", async () => {
+    process.env.TMDB_API_KEY = "tmdb-test-key";
+    const fetchMock = mock(async () =>
+      createJsonResponse({
+        id: 1,
+        backdrops: [{ file_path: "/english.jpg", iso_639_1: "en" }],
+        logos: [],
+        posters: [],
+      }),
+    );
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+    await getHorizontalPosterPath({
+      id: 1,
+      language: "fr-FR",
+      type: MediaType.Movie,
+    });
+
+    const firstCall = fetchMock.mock.calls[0] as unknown[] | undefined;
+    if (!firstCall) throw new Error("Expected fetch to be called");
+    const request = new URL(String(firstCall[0]));
+    expect(request.searchParams.get("include_image_language")).toBe("en");
+  });
+
   it("coalesces equivalent feed requests and validates the response", async () => {
     process.env.TMDB_API_KEY = "tmdb-test-key";
     let resolveResponse!: (value: Response) => void;

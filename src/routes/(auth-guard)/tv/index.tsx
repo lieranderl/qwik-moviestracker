@@ -166,6 +166,9 @@ export default component$(() => {
                     rating={m.vote_average ? m.vote_average : 0}
                     year={formatYear(m.first_air_date)}
                     picfile={m.backdrop_path}
+                    tmdbId={m.id}
+                    mediaType={MediaType.Tv}
+                    language={lang}
                     variant="landscape"
                   />
                 </a>

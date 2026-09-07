@@ -36,8 +36,6 @@ import {
   dropTorrent,
   listTorrent,
   removeTorrent,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- restore removeViewed UI in follow-up
-  removeViewedTorrent,
   type TorrServerSettings,
   type TorrServerStorageSettings,
   type TorrServerTmdbSettings,

@@ -2,6 +2,7 @@ import { message } from "~/utils/i18n";
 import {
   component$,
   Resource,
+  sync$,
   useResource$,
   useSignal,
   useVisibleTask$,
@@ -122,7 +123,10 @@ export default component$(() => {
                   "langSearchTitlesCastCrew",
                 )}
                 class="input input-bordered focus-ringable h-11 min-h-11 w-full text-base"
-                defaultValue={formModel.query}
+                {...(formModel.query ? { value: formModel.query } : {})}
+                onInput$={sync$((_event, target) => {
+                  target.setAttribute("value", target.value);
+                })}
               />
             </label>
 

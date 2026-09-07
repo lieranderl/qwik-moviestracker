@@ -15,7 +15,6 @@ export const SELECTED_TORR_SERVER_KEY = "selectedTorServer";
 export type ConnectionState = "idle" | "connecting" | "connected" | "error";
 export type TorrServerStatusFilter = "all" | "active" | "database" | "other";
 
-
 export type ParsedTorrentMedia = {
   id: number;
   title?: string;

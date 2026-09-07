@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import { component$, useVisibleTask$ } from "@builder.io/qwik";
 import { Image } from "@unpic/qwik";
 
@@ -10,16 +11,7 @@ import {
   type RegionalWatchProviders,
 } from "~/services/models";
 import { formatCrew, formatCurrency, formatYear } from "~/utils/format";
-import {
-  langActors,
-  langBudget,
-  langCollectionMovies,
-  langCrew,
-  langOverview,
-  langRecommendedMovies,
-  langRevenue,
-  langText,
-} from "~/utils/languages";
+
 import { paths } from "~/utils/paths";
 import { writeLastViewed } from "~/utils/recent-activity";
 import { ExternalIds } from "../external_ids";
@@ -59,11 +51,11 @@ export const MovieDetails = component$(
     useVisibleTask$(() => {
       writeLastViewed({
         href: paths.media(MediaType.Movie, movie.id, lang),
-        title: movie.title ?? langText(lang, "Movie details", "Детали фильма"),
+        title: movie.title ?? message(lang, "ui.movieDetails"),
         kind: "movie",
         meta: movie.release_date
-          ? `${formatYear(movie.release_date)} • ${langText(lang, "Movie", "Фильм")}`
-          : langText(lang, "Movie", "Фильм"),
+          ? `${formatYear(movie.release_date)} • ${message(lang, "ui.movie")}`
+          : message(lang, "ui.movie"),
         imagePath: movie.poster_path ?? movie.backdrop_path,
       });
     });
@@ -86,7 +78,7 @@ export const MovieDetails = component$(
                 width={342}
                 height={513}
                 alt={
-                  movie.title ?? langText(lang, "Movie poster", "Постер фильма")
+                  movie.title ?? message(lang, "ui.moviePoster")
                 }
                 class="rounded-box h-auto w-full shadow-lg"
               />
@@ -118,7 +110,7 @@ export const MovieDetails = component$(
               <span class="badge badge-ghost badge-sm">
                 {movie.release_date
                   ? formatYear(movie.release_date)
-                  : langText(lang, "N/A", "Нет данных")}
+                  : message(lang, "ui.nA")}
               </span>
               {certification && (
                 <span class="badge badge-ghost badge-sm">
@@ -127,7 +119,7 @@ export const MovieDetails = component$(
               )}
               {movie.runtime && movie.runtime > 0 && (
                 <span class="badge badge-ghost badge-sm">
-                  {movie.runtime} {langText(lang, "min", "мин")}
+                  {movie.runtime} {message(lang, "ui.min")}
                 </span>
               )}
               {movie.genres?.map((g) => (
@@ -169,16 +161,12 @@ export const MovieDetails = component$(
         {/* ── OVERVIEW ── */}
         <section class={sectionCardClass}>
           <div class={sectionBodyClass}>
-            <h2 class="card-title text-xl">{langOverview(lang)}</h2>
+            <h2 class="card-title text-xl">{message(lang, "langOverview")}</h2>
             {movie.overview ? (
               <p class="leading-relaxed opacity-90">{movie.overview}</p>
             ) : (
               <p class="text-base-content/50 italic">
-                {langText(
-                  lang,
-                  "No overview available.",
-                  "Описание отсутствует.",
-                )}
+                {message(lang, "ui.noOverviewAvailable")}
               </p>
             )}
           </div>
@@ -207,12 +195,12 @@ export const MovieDetails = component$(
           <section class={sectionCardClass}>
             <div class={sectionBodyClass}>
               <h3 class="card-title text-base-content/80 text-lg">
-                {langText(lang, "Box Office", "Кассовые сборы")}
+                {message(lang, "ui.boxOffice")}
               </h3>
               <div class="stats stats-vertical bg-transparent">
                 {movie.budget !== undefined && movie.budget > 0 && (
                   <div class="stat px-0 py-3">
-                    <div class="stat-title">{langBudget(lang)}</div>
+                    <div class="stat-title">{message(lang, "langBudget")}</div>
                     <div class="stat-value text-lg">
                       {formatCurrency(movie.budget, lang)}
                     </div>
@@ -220,7 +208,7 @@ export const MovieDetails = component$(
                 )}
                 {movie.revenue !== undefined && movie.revenue > 0 && (
                   <div class="stat px-0 py-3">
-                    <div class="stat-title">{langRevenue(lang)}</div>
+                    <div class="stat-title">{message(lang, "langRevenue")}</div>
                     <div class="stat-value text-lg">
                       {formatCurrency(movie.revenue, lang)}
                     </div>
@@ -245,7 +233,7 @@ export const MovieDetails = component$(
         {/* ── CAST / CREW / COLLECTION / RECOMMENDED ── */}
         <div class="space-y-6">
           <MediaCarousel
-            title={langActors(lang)}
+            title={message(lang, "langActors")}
             type={MediaType.Person}
             lang={lang}
           >
@@ -271,7 +259,7 @@ export const MovieDetails = component$(
 
           {movie.credits !== undefined && movie.credits.crew.length > 0 && (
             <MediaCarousel
-              title={langCrew(lang)}
+              title={message(lang, "langCrew")}
               type={MediaType.Person}
               lang={lang}
             >
@@ -300,7 +288,7 @@ export const MovieDetails = component$(
 
           {colMovies.length > 0 && (
             <MediaCarousel
-              title={langCollectionMovies(lang)}
+              title={message(lang, "langCollectionMovies")}
               type={MediaType.Person}
               category="updated"
               lang={lang}
@@ -327,7 +315,7 @@ export const MovieDetails = component$(
 
           {recMovies.length > 0 && (
             <MediaCarousel
-              title={langRecommendedMovies(lang)}
+              title={message(lang, "langRecommendedMovies")}
               type={MediaType.Person}
               category="updated"
               lang={lang}

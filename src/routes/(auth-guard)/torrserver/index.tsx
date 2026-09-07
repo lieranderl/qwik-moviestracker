@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import {
   $,
   component$,
@@ -50,13 +51,7 @@ import {
   transitionConnection,
 } from "~/services/torrserver/workspace";
 import { readStorageString } from "~/utils/browser";
-import {
-  langAddNewTorrServerURL,
-  langCountLabel,
-  langNoResults,
-  langText,
-  langTorrServer,
-} from "~/utils/languages";
+import { langCountLabel } from "~/utils/languages";
 import {
   applyServersState,
   filterTorrServerTorrents,
@@ -77,13 +72,13 @@ type TorrServerForm = { ipaddress: string };
 const getConnectionLabel = (state: ConnectionState, lang: string): string => {
   switch (state) {
     case "connected":
-      return langText(lang, "Connected", "Подключено");
+      return message(lang, "ui.connected");
     case "connecting":
-      return langText(lang, "Checking", "Проверка");
+      return message(lang, "ui.checking");
     case "error":
-      return langText(lang, "Failed", "Ошибка");
+      return message(lang, "ui.failed");
     default:
-      return langText(lang, "Waiting", "Ожидание");
+      return message(lang, "ui.waiting");
   }
 };
 
@@ -116,22 +111,14 @@ export default component$(() => {
     const ip = values.ipaddress?.trim() ?? "";
     if (!ip)
       return {
-        ipaddress: langText(
-          lang,
-          "Please provide a valid URL!",
-          "Укажите корректный URL!",
-        ),
+        ipaddress: message(lang, "ui.pleaseProvideAValidUrl"),
       };
     try {
       new URL(ip);
       return {};
     } catch {
       return {
-        ipaddress: langText(
-          lang,
-          "Please provide a valid URL!",
-          "Укажите корректный URL!",
-        ),
+        ipaddress: message(lang, "ui.pleaseProvideAValidUrl"),
       };
     }
   });
@@ -217,20 +204,20 @@ export default component$(() => {
 
   const summaryMetrics = useComputed$<TorrServerSummaryMetric[]>(() => [
     {
-      label: langText(lang, "Servers", "Серверы"),
+      label: message(lang, "ui.servers"),
       value: torrServerList.value.length,
     },
     {
-      label: langText(lang, "Library", "Библиотека"),
+      label: message(lang, "ui.library"),
       value: isCheckingTorrServer.value ? "..." : torrentsSig.value.length,
     },
     {
-      label: langText(lang, "Version", "Версия"),
+      label: message(lang, "ui.version"),
       value:
-        serverVersion.value || langText(lang, "Not connected", "Не подключено"),
+        serverVersion.value || message(lang, "ui.notConnected"),
     },
     {
-      label: langText(lang, "Viewed", "Просмотрено"),
+      label: message(lang, "ui.viewed"),
       value: viewedItemsSig.value.length,
     },
   ]);
@@ -240,18 +227,16 @@ export default component$(() => {
     if (settingsSig.value) {
       badges.push({
         label: settingsSig.value.useDisk
-          ? langText(lang, "Disk cache", "Дисковый кэш")
-          : langText(lang, "Memory cache", "Память"),
+          ? message(lang, "ui.diskCache")
+          : message(lang, "ui.memoryCache"),
         tone: settingsSig.value.useDisk ? "warning" : "info",
       });
     }
     if (storageSettingsSig.value) {
       badges.push({
-        label: langText(
-          lang,
-          `Viewed storage: ${storageSettingsSig.value.viewed}`,
-          `Хранилище просмотренного: ${storageSettingsSig.value.viewed}`,
-        ),
+        label: message(lang, "torrserver.viewedStorage", {
+          storage: storageSettingsSig.value.viewed,
+        }),
       });
     }
     return badges;
@@ -273,11 +258,7 @@ export default component$(() => {
     if (torrServerList.value.includes(srv)) {
       setValue(newTorrServerForm, "ipaddress", "");
       toastManager.addToast({
-        message: langText(
-          lang,
-          `TorrServer ${srv} is already in the list!`,
-          `TorrServer ${srv} уже есть в списке!`,
-        ),
+        message: message(lang, "torrserver.alreadyExists", { server: srv }),
         type: "error",
         autocloseTime: 5000,
       });
@@ -292,11 +273,7 @@ export default component$(() => {
     persistServersStorage(ns);
     setValue(newTorrServerForm, "ipaddress", "");
     toastManager.addToast({
-      message: langText(
-        lang,
-        `TorrServer ${srv} has been added.`,
-        `TorrServer ${srv} добавлен.`,
-      ),
+      message: message(lang, "torrserver.added", { server: srv }),
       type: "success",
       autocloseTime: 5000,
     });
@@ -306,11 +283,7 @@ export default component$(() => {
     const cur = selectedTorServer.value;
     if (!cur) return;
     const confirmed = globalThis.confirm(
-      langText(
-        lang,
-        `Remove TorrServer ${cur} from this browser?`,
-        `Удалить TorrServer ${cur} из этого браузера?`,
-      ),
+      message(lang, "torrserver.removeServerConfirm", { server: cur }),
     );
     if (!confirmed) return;
     const next = torrServerList.value.filter((s) => s !== cur);
@@ -322,11 +295,7 @@ export default component$(() => {
     );
     persistServersStorage(ns);
     toastManager.addToast({
-      message: langText(
-        lang,
-        `TorrServer ${cur} has been deleted.`,
-        `TorrServer ${cur} удален.`,
-      ),
+      message: message(lang, "torrserver.deleted", { server: cur }),
       type: "success",
       autocloseTime: 5000,
     });
@@ -378,28 +347,22 @@ export default component$(() => {
   const dropTorrentFromServer = $(async (torrent: TorrServerTorrentStatus) => {
     if (!selectedTorServer.value) return;
     const confirmed = globalThis.confirm(
-      langText(
-        lang,
-        `Drop "${torrent.title || torrent.name}" from active playback?`,
-        `Остановить "${torrent.title || torrent.name}" в активном воспроизведении?`,
-      ),
+      message(lang, "torrserver.dropActiveConfirm", {
+        title: torrent.title || torrent.name,
+      }),
     );
     if (!confirmed) return;
     try {
       await dropTorrent(selectedTorServer.value, torrent.hash);
       toastManager.addToast({
-        message: langText(lang, "Torrent dropped.", "Торрент остановлен."),
+        message: message(lang, "ui.torrentDropped"),
         type: "success",
         autocloseTime: 4000,
       });
     } catch (error) {
       console.error(error);
       toastManager.addToast({
-        message: langText(
-          lang,
-          "Could not drop torrent.",
-          "Не удалось остановить торрент.",
-        ),
+        message: message(lang, "ui.couldNotDropTorrent"),
         type: "error",
         autocloseTime: 5000,
       });
@@ -410,21 +373,15 @@ export default component$(() => {
     async (torrent: TorrServerTorrentStatus) => {
       if (!selectedTorServer.value) return;
       const confirmed = globalThis.confirm(
-        langText(
-          lang,
-          `Remove "${torrent.title || torrent.name}" from TorrServer?`,
-          `Удалить "${torrent.title || torrent.name}" из TorrServer?`,
-        ),
+        message(lang, "torrserver.removeTorrentConfirm", {
+          title: torrent.title || torrent.name,
+        }),
       );
       if (!confirmed) return;
       try {
         await removeTorrent(selectedTorServer.value, torrent.hash);
         toastManager.addToast({
-          message: langText(
-            lang,
-            "Torrent has been deleted!",
-            "Торрент удален!",
-          ),
+          message: message(lang, "ui.torrentHasBeenDeleted"),
           type: "success",
           autocloseTime: 5000,
         });
@@ -435,11 +392,7 @@ export default component$(() => {
           message:
             error instanceof Error
               ? error.message
-              : langText(
-                  lang,
-                  "Unable to delete torrent!",
-                  "Не удалось удалить торрент!",
-                ),
+              : message(lang, "ui.unableToDeleteTorrent"),
           type: "error",
           autocloseTime: 5000,
         });
@@ -533,13 +486,9 @@ export default component$(() => {
   return (
     <div class="mx-auto w-full max-w-7xl space-y-6 pb-10 md:space-y-8">
       <SectionHeading
-        eyebrow={langText(lang, "Streaming library", "Стриминговая библиотека")}
-        title={langTorrServer(lang)}
-        description={langText(
-          lang,
-          "Manage saved TorrServer endpoints, review server health, and open torrent files from one workspace.",
-          "Управляйте адресами TorrServer, проверяйте состояние сервера и открывайте файлы торрентов в одном рабочем пространстве.",
-        )}
+        eyebrow={message(lang, "ui.streamingLibrary")}
+        title={message(lang, "langTorrServer")}
+        description={message(lang, "ui.manageSavedTorrserverEndpointsReviewServerHealthAndOpenTorrentFilesFromO")}
       />
 
       <div class="space-y-6 md:space-y-8">
@@ -551,14 +500,10 @@ export default component$(() => {
           <div class="card-body gap-5 p-4 md:gap-6 md:p-6">
             <header class="space-y-1">
               <h2 id="torrserver-servers-title" class="card-title md:text-2xl">
-                {langText(lang, "Servers", "Серверы")}
+                {message(lang, "ui.servers")}
               </h2>
               <p class="text-base-content/65 text-sm leading-relaxed">
-                {langText(
-                  lang,
-                  "Add an endpoint, choose the active server, then refresh its current state.",
-                  "Добавьте адрес, выберите активный сервер и обновите его состояние.",
-                )}
+                {message(lang, "ui.addAnEndpointChooseTheActiveServerThenRefreshItsCurrentState")}
               </p>
             </header>
 
@@ -568,7 +513,7 @@ export default component$(() => {
                   <div class="form-control gap-2">
                     <label class="label px-0 py-0" for="torrserver-url">
                       <span class="label-text font-medium">
-                        {langText(lang, "TorrServer URL", "URL TorrServer")}
+                        {message(lang, "ui.torrserverUrl")}
                       </span>
                     </label>
                     <div class="join join-vertical sm:join-horizontal w-full">
@@ -580,7 +525,7 @@ export default component$(() => {
                           {...props}
                           id="torrserver-url"
                           type="url"
-                          placeholder={langAddNewTorrServerURL(lang)}
+                          placeholder={message(lang, "langAddNewTorrServerURL")}
                           aria-describedby={
                             field.error ? "torrserver-url-error" : undefined
                           }
@@ -594,7 +539,7 @@ export default component$(() => {
                         class="btn btn-primary join-item w-full sm:w-32 sm:shrink-0"
                       >
                         <HiPlusSolid class="text-lg" />
-                        {langText(lang, "Add", "Добавить")}
+                        {message(lang, "ui.add")}
                       </button>
                     </div>
                     {field.error && (
@@ -610,18 +555,14 @@ export default component$(() => {
             <label class="form-control gap-2">
               <span class="label px-0 py-0">
                 <span class="label-text font-medium">
-                  {langText(lang, "Active server", "Активный сервер")}
+                  {message(lang, "ui.activeServer")}
                 </span>
               </span>
               <div class="join join-vertical md:join-horizontal w-full">
                 <select
                   id="active-torrserver"
                   value={selectedTorServer.value}
-                  aria-label={langText(
-                    lang,
-                    "Choose active TorrServer",
-                    "Выберите активный TorrServer",
-                  )}
+                  aria-label={message(lang, "ui.chooseActiveTorrserver")}
                   class="select select-bordered join-item min-h-11 w-full min-w-0"
                   onChange$={(_, el) => {
                     selectedTorServer.value = normalizeServer(el.value);
@@ -633,11 +574,7 @@ export default component$(() => {
                 >
                   {torrServerList.value.length === 0 && (
                     <option value="">
-                      {langText(
-                        lang,
-                        "No TorrServer added",
-                        "TorrServer не добавлен",
-                      )}
+                      {message(lang, "ui.noTorrserverAdded")}
                     </option>
                   )}
                   {torrServerList.value.map((item) => (
@@ -654,7 +591,7 @@ export default component$(() => {
                   class="btn btn-outline join-item min-h-11 w-full md:w-28 md:shrink-0"
                   onClick$={() => loadServerSnapshot(selectedTorServer.value)}
                 >
-                  {langText(lang, "Refresh", "Обновить")}
+                  {message(lang, "ui.refresh")}
                 </button>
                 <button
                   type="button"
@@ -663,7 +600,7 @@ export default component$(() => {
                   onClick$={removeActiveServer}
                 >
                   <HiMinusSolid class="text-lg" />
-                  {langText(lang, "Remove", "Удалить")}
+                  {message(lang, "ui.remove")}
                 </button>
               </div>
             </label>
@@ -672,15 +609,11 @@ export default component$(() => {
 
         {/* ── Summary card ─────────────────────────────────── */}
         <TorrServerSummaryCard
-          title={langText(lang, "Server summary", "Сводка сервера")}
-          description={langText(
-            lang,
-            "Current connection, cache, storage, and playback shortcuts for the selected endpoint.",
-            "Текущее подключение, кэш, хранилище и быстрые действия для выбранного адреса.",
-          )}
+          title={message(lang, "ui.serverSummary")}
+          description={message(lang, "ui.currentConnectionCacheStorageAndPlaybackShortcutsForTheSelectedEndpoint")}
           endpoint={
             selectedTorServer.value ||
-            langText(lang, "No endpoint selected", "Сервер не выбран")
+            message(lang, "ui.noEndpointSelected")
           }
           version={serverVersion.value}
           connectionLabel={getConnectionLabel(connectionState.value, lang)}
@@ -690,38 +623,30 @@ export default component$(() => {
           <div class="grid gap-3 md:grid-cols-2">
             <div class="rounded-box border-base-200 bg-base-200/40 border p-4">
               <p class="font-semibold">
-                {langText(lang, "Streaming profile", "Профиль стриминга")}
+                {message(lang, "ui.streamingProfile")}
               </p>
               <p class="text-base-content/70 mt-2 text-sm leading-relaxed">
                 {settingsSig.value
-                  ? langText(
-                      lang,
-                      `Preload ${settingsSig.value.preloadCache}% · Read ahead ${settingsSig.value.readerReadAhead}% · Connections ${settingsSig.value.connectionsLimit}`,
-                      `Предзагрузка ${settingsSig.value.preloadCache}% · Чтение вперед ${settingsSig.value.readerReadAhead}% · Подключения ${settingsSig.value.connectionsLimit}`,
-                    )
-                  : langText(
-                      lang,
-                      "Connect a server to inspect cache and network tuning.",
-                      "Подключите сервер, чтобы увидеть параметры кэша и сети.",
-                    )}
+                  ? message(lang, "torrserver.runtimeSettings", {
+                      preload: settingsSig.value.preloadCache,
+                      readAhead: settingsSig.value.readerReadAhead,
+                      connections: settingsSig.value.connectionsLimit,
+                    })
+                  : message(lang, "ui.connectAServerToInspectCacheAndNetworkTuning")}
               </p>
             </div>
             <div class="rounded-box border-base-200 bg-base-200/40 border p-4">
               <p class="font-semibold">
-                {langText(lang, "Storage and TMDB", "Хранилище и TMDB")}
+                {message(lang, "ui.storageAndTmdb")}
               </p>
               <p class="text-base-content/70 mt-2 text-sm leading-relaxed">
                 {storageSettingsSig.value
-                  ? langText(
-                      lang,
-                      `Settings: ${storageSettingsSig.value.settings} · Viewed: ${storageSettingsSig.value.viewed} (${storageSettingsSig.value.viewedCount})`,
-                      `Настройки: ${storageSettingsSig.value.settings} · Просмотры: ${storageSettingsSig.value.viewed} (${storageSettingsSig.value.viewedCount})`,
-                    )
-                  : langText(
-                      lang,
-                      "Storage details are not available until a server responds.",
-                      "Детали хранилища будут доступны после ответа сервера.",
-                    )}
+                  ? message(lang, "torrserver.storageSummary", {
+                      settings: storageSettingsSig.value.settings,
+                      viewed: storageSettingsSig.value.viewed,
+                      count: storageSettingsSig.value.viewedCount,
+                    })
+                  : message(lang, "ui.storageDetailsAreNotAvailableUntilAServerResponds")}
               </p>
             </div>
           </div>
@@ -736,17 +661,9 @@ export default component$(() => {
                 target="_blank"
                 rel="noreferrer"
                 class="btn btn-outline min-h-11 flex-1 sm:flex-none"
-                aria-label={langText(
-                  lang,
-                  "Open playlist for selected torrent",
-                  "Открыть плейлист выбранного торрента",
-                )}
+                aria-label={message(lang, "ui.openPlaylistForSelectedTorrent")}
               >
-                {langText(
-                  lang,
-                  "Playlist for selected",
-                  "Плейлист для выбранного",
-                )}
+                {message(lang, "ui.playlistForSelected")}
               </a>
             )}
             {selectedTorServer.value && (
@@ -755,13 +672,9 @@ export default component$(() => {
                 target="_blank"
                 rel="noreferrer"
                 class="btn btn-outline min-h-11 flex-1 sm:flex-none"
-                aria-label={langText(
-                  lang,
-                  "Open full library M3U playlist",
-                  "Открыть M3U всей библиотеки",
-                )}
+                aria-label={message(lang, "ui.openFullLibraryM3uPlaylist")}
               >
-                {langText(lang, "Full library M3U", "M3U всей библиотеки")}
+                {message(lang, "ui.fullLibraryM3u")}
               </a>
             )}
             <button
@@ -772,7 +685,7 @@ export default component$(() => {
                 apiToolsModalOpen.value = true;
               }}
             >
-              {langText(lang, "Tools", "Инструменты")}
+              {message(lang, "ui.tools")}
             </button>
           </div>
         </TorrServerSummaryCard>
@@ -789,69 +702,37 @@ export default component$(() => {
       <section>
         {isCheckingTorrServer.value ? (
           <LoadingState
-            title={langText(
-              lang,
-              "Syncing TorrServer",
-              "Синхронизация TorrServer",
-            )}
-            description={langText(
-              lang,
-              "Loading library and settings.",
-              "Загружаем библиотеку и настройки.",
-            )}
+            title={message(lang, "ui.syncingTorrserver")}
+            description={message(lang, "ui.loadingLibraryAndSettings")}
             compact={true}
           />
         ) : torrServerList.value.length === 0 ? (
           <EmptyState
-            title={langText(
-              lang,
-              "No TorrServer yet",
-              "TorrServer еще не добавлен",
-            )}
-            description={langText(
-              lang,
-              "Add a URL above to connect.",
-              "Добавьте URL выше, чтобы подключиться.",
-            )}
+            title={message(lang, "ui.noTorrserverYet")}
+            description={message(lang, "ui.addAUrlAboveToConnect")}
             compact={true}
           />
         ) : connectionState.value === "error" ? (
           <ErrorState
-            title={langText(
-              lang,
-              "Unable to load the selected server",
-              "Не удалось загрузить выбранный сервер",
-            )}
-            description={langText(
-              lang,
-              "Check the URL, make sure TorrServer is online, and try again.",
-              "Проверьте URL, убедитесь, что TorrServer доступен, и попробуйте снова.",
-            )}
+            title={message(lang, "ui.unableToLoadTheSelectedServer")}
+            description={message(lang, "ui.checkTheUrlMakeSureTorrserverIsOnlineAndTryAgain")}
             compact={true}
           />
         ) : !selectedTorServer.value ? (
           <EmptyState
-            title={langText(lang, "Select a server", "Выберите сервер")}
-            description={langText(
-              lang,
-              "Choose a saved endpoint.",
-              "Выберите сохраненный адрес.",
-            )}
+            title={message(lang, "ui.selectAServer")}
+            description={message(lang, "ui.chooseASavedEndpoint")}
             compact={true}
           />
         ) : visibleCount === 0 ? (
           <EmptyState
-            title={langNoResults(lang)}
-            description={langText(
-              lang,
-              "No torrents match these filters.",
-              "По этим фильтрам торренты не найдены.",
-            )}
+            title={message(lang, "langNoResults")}
+            description={message(lang, "ui.noTorrentsMatchTheseFilters")}
             compact={true}
           />
         ) : (
           <MediaGrid
-            title={langText(lang, "Library", "Библиотека")}
+            title={message(lang, "ui.library")}
             maxColumns={4}
             headerBadge={langCountLabel(
               lang,

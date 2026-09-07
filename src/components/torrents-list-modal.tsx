@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import { $, component$, useStore } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
 import { HiChevronDownSolid } from "@qwikest/icons/heroicons";
@@ -10,7 +11,7 @@ import {
 import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
 import { showDialogById } from "~/utils/browser";
 import { formatYear } from "~/utils/format";
-import { langSeason, langText, langTorrents } from "~/utils/languages";
+
 
 export interface TorModalPros {
   title: string;
@@ -63,14 +64,14 @@ export const TorrentsModal = component$(
             class="btn btn-outline btn-primary"
             onClick$={() => getTorrentsToggle(title, year, isMovie)}
           >
-            {langTorrents(resource.value.lang)}
+            {message(resource.value.lang, "langTorrents")}
           </button>
         )}
 
         {seasons.length > 0 && (
           <div class="dropdown dropdown-end relative z-30">
             <button type="button" class="btn btn-outline btn-primary">
-              {langTorrents(resource.value.lang)}
+              {message(resource.value.lang, "langTorrents")}
               <HiChevronDownSolid />
             </button>
             <ul class="menu dropdown-content rounded-box bg-base-100 border-base-200 z-30 mt-2 w-60 border p-2 shadow-xl">
@@ -93,7 +94,7 @@ export const TorrentsModal = component$(
                         );
                       }}
                     >
-                      {langSeason(lang)}
+                      {message(lang, "langSeason")}
                       <span class="ml-1">
                         {" "}
                         {s.season_number} ({formatYear(s.air_date)})
@@ -110,16 +111,12 @@ export const TorrentsModal = component$(
           <div class="modal-box overlay-enter border-base-200 bg-base-100 max-h-[calc(100dvh-2rem)] w-11/12 max-w-5xl overflow-y-auto border p-0 shadow-xl">
             <div class="border-base-200 bg-base-100/95 sticky top-0 z-20 flex items-center justify-between border-b px-5 py-4 backdrop-blur">
               <h3 class="text-xl font-semibold">
-                {langTorrents(resource.value.lang)}
+                {message(resource.value.lang, "langTorrents")}
               </h3>
               <form method="dialog">
                 <button
                   type="submit"
-                  aria-label={langText(
-                    lang,
-                    "Close torrents",
-                    "Закрыть торренты",
-                  )}
+                  aria-label={message(lang, "ui.closeTorrents")}
                   class="btn btn-ghost btn-circle p-0"
                 >
                   ✕
@@ -137,7 +134,7 @@ export const TorrentsModal = component$(
             </div>
           </div>
           <form method="dialog" class="modal-backdrop">
-            <button type="submit">{langText(lang, "close", "закрыть")}</button>
+            <button type="submit">{message(lang, "ui.close")}</button>
           </form>
         </dialog>
       </>

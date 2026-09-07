@@ -27,7 +27,8 @@ export const TV_DISCOVER_SORT_OPTIONS = [
 
 export type MovieDiscoverSortBy =
   (typeof MOVIE_DISCOVER_SORT_OPTIONS)[number]["value"];
-export type TvDiscoverSortBy = (typeof TV_DISCOVER_SORT_OPTIONS)[number]["value"];
+export type TvDiscoverSortBy =
+  (typeof TV_DISCOVER_SORT_OPTIONS)[number]["value"];
 
 export type DiscoverProviderOption = {
   label: string;
@@ -166,7 +167,8 @@ export const getProviderOptions = (
     .filter((provider) => provider.provider_name)
     .sort(
       (left, right) =>
-        getProviderPriority(left, region) - getProviderPriority(right, region) ||
+        getProviderPriority(left, region) -
+          getProviderPriority(right, region) ||
         (left.provider_name ?? "").localeCompare(right.provider_name ?? ""),
     )
     .map((provider) => ({

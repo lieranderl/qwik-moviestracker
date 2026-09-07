@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 import {
   SiAmazonprime,
@@ -25,15 +26,7 @@ import type {
   RegionalWatchProviders,
   WatchProvider,
 } from "~/services/models";
-import {
-  langAvailability,
-  langCertification,
-  langFree,
-  langRegion,
-  langStream,
-  langText,
-  langWatchWithAds,
-} from "~/utils/languages";
+
 
 type MediaAvailabilityProps = {
   certification: LocalizedCertification | null;
@@ -204,11 +197,17 @@ export const MediaAvailability = component$<MediaAvailabilityProps>(
 
     const providerGroups: ProviderGroup[] = watchProviders
       ? [
-          { label: langStream(lang), providers: watchProviders.flatrate },
-          { label: langFree(lang), providers: watchProviders.free },
-          { label: langWatchWithAds(lang), providers: watchProviders.ads },
           {
-            label: langText(lang, "Rent / Buy", "Аренда / Покупка"),
+            label: message(lang, "langStream"),
+            providers: watchProviders.flatrate,
+          },
+          { label: message(lang, "langFree"), providers: watchProviders.free },
+          {
+            label: message(lang, "langWatchWithAds"),
+            providers: watchProviders.ads,
+          },
+          {
+            label: message(lang, "ui.rentBuy"),
             providers: rentBuyProviders,
           },
         ].filter((group) => group.providers.length > 0)
@@ -222,21 +221,21 @@ export const MediaAvailability = component$<MediaAvailabilityProps>(
       <section class="card border-base-200 bg-base-100/95 border shadow-sm">
         <div class="card-body gap-4 p-4 md:p-6">
           <h3 class="card-title text-base-content/80 text-lg">
-            {langAvailability(lang)}
+            {message(lang, "langAvailability")}
           </h3>
 
           <section class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-3 text-sm">
             {certification && (
               <>
                 <span class="leading-7 font-bold opacity-70">
-                  {langCertification(lang)}:
+                  {message(lang, "langCertification")}:
                 </span>
                 <div class="flex flex-wrap items-center gap-2">
                   <span class="badge badge-outline badge-sm">
                     {certification.rating}
                   </span>
                   <span class="opacity-70">
-                    {langRegion(lang)} {certification.region}
+                    {message(lang, "langRegion")} {certification.region}
                   </span>
                 </div>
               </>

@@ -74,9 +74,7 @@ export const TorrServerSummaryCard = component$(
               )}
               {connectionLabel && (
                 <span class="flex items-center gap-1.5">
-                  <span
-                    class={`status ${STATUS_DOT_CLASS[statusTone]}`}
-                  ></span>
+                  <span class={`status ${STATUS_DOT_CLASS[statusTone]}`}></span>
                   <span class="text-xs font-medium">{connectionLabel}</span>
                 </span>
               )}

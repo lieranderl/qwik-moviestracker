@@ -1,20 +1,20 @@
 import { component$ } from "@builder.io/qwik";
 
 export type MediaTitleProps = {
-	name: string;
-	original_name?: string;
+  name: string;
+  original_name?: string;
 };
 export const MediaTitle = component$<MediaTitleProps>(
-	({ name, original_name }) => {
-		return (
-			<header>
-				<h1 class="me-1 text-balance text-4xl font-extrabold md:text-5xl">
-					{name}
-				</h1>
-				{original_name && original_name !== name && (
-					<p class="text-base-content/70 text-lg md:text-xl">{original_name}</p>
-				)}
-			</header>
-		);
-	},
+  ({ name, original_name }) => {
+    return (
+      <header>
+        <h1 class="me-1 text-4xl font-extrabold text-balance md:text-5xl">
+          {name}
+        </h1>
+        {original_name && original_name !== name && (
+          <p class="text-base-content/70 text-lg md:text-xl">{original_name}</p>
+        )}
+      </header>
+    );
+  },
 );

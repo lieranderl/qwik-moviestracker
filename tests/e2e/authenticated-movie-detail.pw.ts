@@ -4,6 +4,38 @@ import { openImdbPagePattern } from "./helpers/i18n";
 import { DEV_MOVIE_DETAIL_ID } from "../../src/routes/dev-session";
 
 test.describe("authenticated movie detail", () => {
+  test("renders primary details while IMDb enrichment is still pending", async ({
+    page,
+  }) => {
+    let releaseImdb!: () => void;
+    const imdbBarrier = new Promise<void>((resolve) => {
+      releaseImdb = resolve;
+    });
+    await page.route("**/*", async (route) => {
+      const requestUrl = new URL(route.request().url());
+      if (
+        route.request().method() === "POST" &&
+        requestUrl.searchParams.has("qfunc")
+      ) {
+        await imdbBarrier;
+        const response = await route.fetch();
+        await route.fulfill({ response });
+        return;
+      }
+      await route.continue();
+    });
+
+    await addBypassCookie(page);
+    await page.goto(`/movie/${DEV_MOVIE_DETAIL_ID}/?lang=en-US`);
+
+    await expect(
+      page.getByRole("heading", { name: "Playwright in Paris" }),
+    ).toBeVisible();
+    await expect(page.getByLabel("IMDb loading")).toBeVisible();
+    releaseImdb();
+    await expect(page.getByText(/IMDb (not found|unavailable)/)).toBeVisible();
+  });
+
   test("renders the dev fixture and writes last viewed state", async ({
     page,
   }) => {
@@ -39,6 +71,7 @@ test.describe("authenticated movie detail", () => {
         name: /assertions at dawn/i,
       }),
     ).toBeVisible();
+    await expect(page.getByLabel("IMDb loading")).not.toBeVisible();
 
     await expect
       .poll(async () => {

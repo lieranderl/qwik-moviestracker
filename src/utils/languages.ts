@@ -224,9 +224,6 @@ const formatCountLabel = (
 ) =>
   `${count} ${formatCountWord(lang, count, enOne, enMany, ruOne, ruFew, ruMany)}`;
 
-export const langText = (lang: string, english: string, russian: string) =>
-  normalizeLocale(lang) === "ru-RU" ? russian : english;
-
 export const langCountWord = (
   lang: string,
   count: number,
@@ -258,355 +255,101 @@ export const langCountLabel = (
 ) =>
   `${count} ${langCountWord(lang, count, englishSingular, englishPlural, russianOne, russianFew, russianMany)}`;
 
-/** @deprecated Prefer message(locale, key). */
-export const langBudget = (lang: string) => message(lang, "langBudget");
 
-/** @deprecated Prefer message(locale, key). */
-export const langRevenue = (lang: string) => message(lang, "langRevenue");
 
-/** @deprecated Prefer message(locale, key). */
-export const langMovies = (lang: string) => message(lang, "langMovies");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSeries = (lang: string) => message(lang, "langSeries");
 
-/** @deprecated Prefer message(locale, key). */
-export const langPeople = (lang: string) => message(lang, "langPeople");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSearch = (lang: string) => message(lang, "langSearch");
 
-/** @deprecated Prefer message(locale, key). */
-export const langTorrServer = (lang: string) => message(lang, "langTorrServer");
 
-/** @deprecated Prefer message(locale, key). */
-export const langExploreAll = (lang: string) => message(lang, "langExploreAll");
 
-/** @deprecated Prefer message(locale, key). */
-export const langLatestMovies = (lang: string) =>
-  message(lang, "langLatestMovies");
 
-/** @deprecated Prefer message(locale, key). */
-export const langTrendingMovies = (lang: string) =>
-  message(lang, "langTrendingMovies");
 
-/** @deprecated Prefer message(locale, key). */
-export const langNowPlayingMovies = (lang: string) =>
-  message(lang, "langNowPlayingMovies");
 
-/** @deprecated Prefer message(locale, key). */
-export const langUpcomingMovies = (lang: string) =>
-  message(lang, "langUpcomingMovies");
 
-/** @deprecated Prefer message(locale, key). */
-export const langPopularMovies = (lang: string) =>
-  message(lang, "langPopularMovies");
 
-/** @deprecated Prefer message(locale, key). */
-export const langTrengingTVShows = (lang: string) =>
-  message(lang, "langTrengingTVShows");
 
-/** @deprecated Prefer message(locale, key). */
-export const langAiringTodayTvShows = (lang: string) =>
-  message(lang, "langAiringTodayTvShows");
 
-/** @deprecated Prefer message(locale, key). */
-export const langOnTheAirTvShows = (lang: string) =>
-  message(lang, "langOnTheAirTvShows");
 
-/** @deprecated Prefer message(locale, key). */
-export const langPopularTvShows = (lang: string) =>
-  message(lang, "langPopularTvShows");
 
-/** @deprecated Prefer message(locale, key). */
-export const langLatestHDR10Movies = (lang: string) =>
-  message(lang, "langLatestHDR10Movies");
 
-/** @deprecated Prefer message(locale, key). */
-export const langLatestDolbyVisionMovies = (lang: string) =>
-  message(lang, "langLatestDolbyVisionMovies");
 
-/** @deprecated Prefer message(locale, key). */
-export const langTopRatedTvShows = (lang: string) =>
-  message(lang, "langTopRatedTvShows");
 
-/** @deprecated Prefer message(locale, key). */
-export const langAll = (lang: string) => message(lang, "langAll");
 
-/** @deprecated Prefer message(locale, key). */
-export const langNoResults = (lang: string) => message(lang, "langNoResults");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSearchResults = (lang: string) =>
-  message(lang, "langSearchResults");
 
-/** @deprecated Prefer message(locale, key). */
-export const langResults = (lang: string) => message(lang, "langResults");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSingOut = (lang: string) => message(lang, "langSingOut");
 
-/** @deprecated Prefer message(locale, key). */
-export const langAddNewTorrServerURL = (lang: string) =>
-  message(lang, "langAddNewTorrServerURL");
 
-/** @deprecated Prefer message(locale, key). */
-export const langTorrents = (lang: string) => message(lang, "langTorrents");
 
-/** @deprecated Prefer message(locale, key). */
-export const langTrailers = (lang: string) => message(lang, "langTrailers");
 
-/** @deprecated Prefer message(locale, key). */
-export const langActors = (lang: string) => message(lang, "langActors");
 
-/** @deprecated Prefer message(locale, key). */
-export const langCrew = (lang: string) => message(lang, "langCrew");
-/** @deprecated Prefer message(locale, key). */
-export const langCollectionMovies = (lang: string) =>
-  message(lang, "langCollectionMovies");
-/** @deprecated Prefer message(locale, key). */
-export const langRecommendedMovies = (lang: string) =>
-  message(lang, "langRecommendedMovies");
-/** @deprecated Prefer message(locale, key). */
-export const langRecommendedTvShows = (lang: string) =>
-  message(lang, "langRecommendedTvShows");
 
-/** @deprecated Prefer message(locale, key). */
-export const langLastEpisode = (lang: string) =>
-  message(lang, "langLastEpisode");
 
-/** @deprecated Prefer message(locale, key). */
-export const langTvShowEnded = (lang: string) =>
-  message(lang, "langTvShowEnded");
 
-/** @deprecated Prefer message(locale, key). */
-export const langNextEpisode = (lang: string) =>
-  message(lang, "langNextEpisode");
-/** @deprecated Prefer message(locale, key). */
-export const langCurrentSeason = (lang: string) =>
-  message(lang, "langCurrentSeason");
 
-/** @deprecated Prefer message(locale, key). */
-export const langEnded = (lang: string) => message(lang, "langEnded");
 
-/** @deprecated Prefer message(locale, key). */
-export const langCreatedby = (lang: string) => message(lang, "langCreatedby");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSeasons = (lang: string) => message(lang, "langSeasons");
 
-/** @deprecated Prefer message(locale, key). */
-export const langEpisodesCount = (lang: string) =>
-  message(lang, "langEpisodesCount");
-/** @deprecated Prefer message(locale, key). */
-export const langOverview = (lang: string) => message(lang, "langOverview");
 
-/** @deprecated Prefer message(locale, key). */
-export const langDate = (lang: string) => message(lang, "langDate");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSize = (lang: string) => message(lang, "langSize");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSeeds = (lang: string) => message(lang, "langSeeds");
 
-/** @deprecated Prefer message(locale, key). */
-export const langLeeches = (lang: string) => message(lang, "langLeeches");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSortOn = (lang: string) => message(lang, "langSortOn");
 
-/** @deprecated Prefer message(locale, key). */
-export const langFound = (lang: string) => message(lang, "langFound");
 
-/** @deprecated Prefer message(locale, key). */
-export const langTorrentov = (lang: string) => message(lang, "langTorrentov");
 
-/** @deprecated Prefer message(locale, key). */
-export const langNotFound = (lang: string) => message(lang, "langNotFound");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSeason = (lang: string) => message(lang, "langSeason");
 
-/** @deprecated Prefer message(locale, key). */
-export const langRelease = (lang: string) => message(lang, "langRelease");
 
-/** @deprecated Prefer message(locale, key). */
-export const langCountries = (lang: string) => message(lang, "langCountries");
 
-/** @deprecated Prefer message(locale, key). */
-export const langLanguages = (lang: string) => message(lang, "langLanguages");
 
-/** @deprecated Prefer message(locale, key). */
-export const langNetworks = (lang: string) => message(lang, "langNetworks");
 
-/** @deprecated Prefer message(locale, key). */
-export const langAvailability = (lang: string) =>
-  message(lang, "langAvailability");
 
-/** @deprecated Prefer message(locale, key). */
-export const langWhereToWatch = (lang: string) =>
-  message(lang, "langWhereToWatch");
 
-/** @deprecated Prefer message(locale, key). */
-export const langCertification = (lang: string) =>
-  message(lang, "langCertification");
 
-/** @deprecated Prefer message(locale, key). */
-export const langRegion = (lang: string) => message(lang, "langRegion");
 
-/** @deprecated Prefer message(locale, key). */
-export const langStream = (lang: string) => message(lang, "langStream");
 
-/** @deprecated Prefer message(locale, key). */
-export const langFree = (lang: string) => message(lang, "langFree");
 
-/** @deprecated Prefer message(locale, key). */
-export const langWatchWithAds = (lang: string) =>
-  message(lang, "langWatchWithAds");
 
-/** @deprecated Prefer message(locale, key). */
-export const langRent = (lang: string) => message(lang, "langRent");
 
-/** @deprecated Prefer message(locale, key). */
-export const langBuy = (lang: string) => message(lang, "langBuy");
 
-/** @deprecated Prefer message(locale, key). */
-export const langOpenOnTmdb = (lang: string) => message(lang, "langOpenOnTmdb");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSupportedByTmdb = (lang: string) =>
-  message(lang, "langSupportedByTmdb");
 
-/** @deprecated Prefer message(locale, key). */
-export const langQuickFilters = (lang: string) =>
-  message(lang, "langQuickFilters");
 
-/** @deprecated Prefer message(locale, key). */
-export const langDiscoverMovies = (lang: string) =>
-  message(lang, "langDiscoverMovies");
 
-/** @deprecated Prefer message(locale, key). */
-export const langDiscoverTv = (lang: string) => message(lang, "langDiscoverTv");
 
-/** @deprecated Prefer message(locale, key). */
-export const langApplyFilters = (lang: string) =>
-  message(lang, "langApplyFilters");
 
-/** @deprecated Prefer message(locale, key). */
-export const langResetFilters = (lang: string) =>
-  message(lang, "langResetFilters");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSortBy = (lang: string) => message(lang, "langSortBy");
 
-/** @deprecated Prefer message(locale, key). */
-export const langMinimumVotes = (lang: string) =>
-  message(lang, "langMinimumVotes");
 
-/** @deprecated Prefer message(locale, key). */
-export const langReleaseYear = (lang: string) =>
-  message(lang, "langReleaseYear");
 
-/** @deprecated Prefer message(locale, key). */
-export const langFirstAirYear = (lang: string) =>
-  message(lang, "langFirstAirYear");
 
-/** @deprecated Prefer message(locale, key). */
-export const langStreamingProvider = (lang: string) =>
-  message(lang, "langStreamingProvider");
 
-/** @deprecated Prefer message(locale, key). */
-export const langAllProviders = (lang: string) =>
-  message(lang, "langAllProviders");
 
-/** @deprecated Prefer message(locale, key). */
-export const langAllCertifications = (lang: string) =>
-  message(lang, "langAllCertifications");
 
-/** @deprecated Prefer message(locale, key). */
-export const langFeaturedSpotlight = (lang: string) =>
-  message(lang, "langFeaturedSpotlight");
 
-/** @deprecated Prefer message(locale, key). */
-export const langOpenDetails = (lang: string) =>
-  message(lang, "langOpenDetails");
 
-/** @deprecated Prefer message(locale, key). */
-export const langContinueBrowsing = (lang: string) =>
-  message(lang, "langContinueBrowsing");
 
-/** @deprecated Prefer message(locale, key). */
-export const langJumpBackIn = (lang: string) => message(lang, "langJumpBackIn");
 
-/** @deprecated Prefer message(locale, key). */
-export const langResume = (lang: string) => message(lang, "langResume");
 
-/** @deprecated Prefer message(locale, key). */
-export const langRecentSearches = (lang: string) =>
-  message(lang, "langRecentSearches");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSearchAssist = (lang: string) =>
-  message(lang, "langSearchAssist");
 
-/** @deprecated Prefer message(locale, key). */
-export const langBrowseHome = (lang: string) => message(lang, "langBrowseHome");
 
-/** @deprecated Prefer message(locale, key). */
-export const langBrowseMovies = (lang: string) =>
-  message(lang, "langBrowseMovies");
 
-/** @deprecated Prefer message(locale, key). */
-export const langBrowseTv = (lang: string) => message(lang, "langBrowseTv");
 
-/** @deprecated Prefer message(locale, key). */
-export const langQuickActions = (lang: string) =>
-  message(lang, "langQuickActions");
 
-/** @deprecated Prefer message(locale, key). */
-export const langExternalLinks = (lang: string) =>
-  message(lang, "langExternalLinks");
 
-/** @deprecated Prefer message(locale, key). */
-export const langAccount = (lang: string) => message(lang, "langAccount");
 
-/** @deprecated Prefer message(locale, key). */
-export const langPreferences = (lang: string) =>
-  message(lang, "langPreferences");
 
-/** @deprecated Prefer message(locale, key). */
-export const langOpenAccountMenu = (lang: string) =>
-  message(lang, "langOpenAccountMenu");
 
-/** @deprecated Prefer message(locale, key). */
-export const langAccountMenu = (lang: string) =>
-  message(lang, "langAccountMenu");
 
-/** @deprecated Prefer message(locale, key). */
-export const langPrimaryNavigation = (lang: string) =>
-  message(lang, "langPrimaryNavigation");
 
-/** @deprecated Prefer message(locale, key). */
-export const langLanguage = (lang: string) => message(lang, "langLanguage");
 
-/** @deprecated Prefer message(locale, key). */
-export const langLanguageName = (lang: string) =>
-  message(lang, "langLanguageName");
 
-/** @deprecated Prefer message(locale, key). */
-export const langHome = (lang: string) => message(lang, "langHome");
 
-/** @deprecated Prefer message(locale, key). */
-export const langPageNotFound = (lang: string) =>
-  message(lang, "langPageNotFound");
 
-/** @deprecated Prefer message(locale, key). */
-export const langPageNotFoundDescription = (lang: string) =>
-  message(lang, "langPageNotFoundDescription");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSigningIn = (lang: string) => message(lang, "langSigningIn");
 
 export const langSignInWithProvider = (lang: string, providerName: string) => {
   const providerLabel =
@@ -622,66 +365,21 @@ export const langSignInWithProvider = (lang: string, providerName: string) => {
   }
 };
 
-/** @deprecated Prefer message(locale, key). */
-export const langPersonalWatchlist = (lang: string) =>
-  message(lang, "langPersonalWatchlist");
 
-/** @deprecated Prefer message(locale, key). */
-export const langPrivateMovieHub = (lang: string) =>
-  message(lang, "langPrivateMovieHub");
 
-/** @deprecated Prefer message(locale, key). */
-export const langTrackMoviesAndTvShowsPrefix = (lang: string) =>
-  message(lang, "langTrackMoviesAndTvShowsPrefix");
 
-/** @deprecated Prefer message(locale, key). */
-export const langTrackMoviesAndTvShowsAccent = (lang: string) =>
-  message(lang, "langTrackMoviesAndTvShowsAccent");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSimplePlaceToDiscoverTitles = (lang: string) =>
-  message(lang, "langSimplePlaceToDiscoverTitles");
 
-/** @deprecated Prefer message(locale, key). */
-export const langWhyPeopleUseIt = (lang: string) =>
-  message(lang, "langWhyPeopleUseIt");
 
-/** @deprecated Prefer message(locale, key). */
-export const langFastSearch = (lang: string) => message(lang, "langFastSearch");
 
-/** @deprecated Prefer message(locale, key). */
-export const langFastSearchDescription = (lang: string) =>
-  message(lang, "langFastSearchDescription");
 
-/** @deprecated Prefer message(locale, key). */
-export const langClearDetails = (lang: string) =>
-  message(lang, "langClearDetails");
 
-/** @deprecated Prefer message(locale, key). */
-export const langClearDetailsDescription = (lang: string) =>
-  message(lang, "langClearDetailsDescription");
 
-/** @deprecated Prefer message(locale, key). */
-export const langOneWatchlist = (lang: string) =>
-  message(lang, "langOneWatchlist");
 
-/** @deprecated Prefer message(locale, key). */
-export const langOneWatchlistDescription = (lang: string) =>
-  message(lang, "langOneWatchlistDescription");
 
-/** @deprecated Prefer message(locale, key). */
-export const langNew = (lang: string) => message(lang, "langNew");
 
-/** @deprecated Prefer message(locale, key). */
-export const langDiscovery = (lang: string) => message(lang, "langDiscovery");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSearchMoviesSeriesPeople = (lang: string) =>
-  message(lang, "langSearchMoviesSeriesPeople");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSearchTitlesCastCrew = (lang: string) =>
-  message(lang, "langSearchTitlesCastCrew");
 
 export const langSearchStartsAfterCharacters = (
   lang: string,
@@ -697,8 +395,6 @@ export const langSearchStartsAfterCharacters = (
   }
 };
 
-/** @deprecated Prefer message(locale, key). */
-export const langSearchTips = (lang: string) => message(lang, "langSearchTips");
 
 export const langSubmitAtLeastCharactersToLoadResults = (
   lang: string,
@@ -714,41 +410,14 @@ export const langSubmitAtLeastCharactersToLoadResults = (
   }
 };
 
-/** @deprecated Prefer message(locale, key). */
-export const langSearchesMoviesTvAndPeople = (lang: string) =>
-  message(lang, "langSearchesMoviesTvAndPeople");
 
-/** @deprecated Prefer message(locale, key). */
-export const langResultsUpdateWhenYouSubmit = (lang: string) =>
-  message(lang, "langResultsUpdateWhenYouSubmit");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSearchForATitleOnceAndItWillShowUpHere = (lang: string) =>
-  message(lang, "langSearchForATitleOnceAndItWillShowUpHere");
 
-/** @deprecated Prefer message(locale, key). */
-export const langHomeFeedUnavailable = (lang: string) =>
-  message(lang, "langHomeFeedUnavailable");
 
-/** @deprecated Prefer message(locale, key). */
-export const langPleaseRefreshOrTryAgain = (lang: string) =>
-  message(lang, "langPleaseRefreshOrTryAgain");
 
-/** @deprecated Prefer message(locale, key). */
-export const langLoadingSearchResults = (lang: string) =>
-  message(lang, "langLoadingSearchResults");
 
-/** @deprecated Prefer message(locale, key). */
-export const langFetchingMatchingTitlesAndPeople = (lang: string) =>
-  message(lang, "langFetchingMatchingTitlesAndPeople");
 
-/** @deprecated Prefer message(locale, key). */
-export const langSearchUnavailableRightNow = (lang: string) =>
-  message(lang, "langSearchUnavailableRightNow");
 
-/** @deprecated Prefer message(locale, key). */
-export const langStartWithATitleActorOrDirector = (lang: string) =>
-  message(lang, "langStartWithATitleActorOrDirector");
 
 export const langSearchBecomesAvailableAfterCharacters = (
   lang: string,
@@ -788,9 +457,6 @@ export const langRecentSearchesCount = (lang: string, count: number) =>
     "недавних поисков",
   );
 
-/** @deprecated Prefer message(locale, key). */
-export const langNoRecentSearches = (lang: string) =>
-  message(lang, "langNoRecentSearches");
 
 export const langSearchTooShort = (
   lang: string,
@@ -828,27 +494,11 @@ export const langSearchMatchesCount = (lang: string, count: number) =>
     "совпадений",
   );
 
-/** @deprecated Prefer message(locale, key). */
-export const langHomeDashboardTitle = (lang: string) =>
-  message(lang, "langHomeDashboardTitle");
 
-/** @deprecated Prefer message(locale, key). */
-export const langHomeDashboardDescription = (lang: string) =>
-  message(lang, "langHomeDashboardDescription");
 
-/** @deprecated Prefer message(locale, key). */
-export const langFeaturedSpotlightDescription = (lang: string) =>
-  message(lang, "langFeaturedSpotlightDescription");
 
-/** @deprecated Prefer message(locale, key). */
-export const langPrivateCatalogAccessForSignedInUsers = (lang: string) =>
-  message(lang, "langPrivateCatalogAccessForSignedInUsers");
 
-/** @deprecated Prefer message(locale, key). */
-export const langGoogleLogo = (lang: string) => message(lang, "langGoogleLogo");
 
-/** @deprecated Prefer message(locale, key). */
-export const langAvatar = (lang: string) => message(lang, "langAvatar");
 
 export const langLatestItemsCount = (lang: string, count: number) =>
   formatCountLabel(
@@ -886,27 +536,27 @@ export const langTrendingSeriesCount = (lang: string, count: number) =>
 export const langMovieDiscoverSortLabel = (lang: string, sortBy: string) => {
   switch (sortBy) {
     case "vote_average.desc":
-      return langText(lang, "Highest Rated", "Сначала высокий рейтинг");
+      return message(lang, "sort.highestRated");
     case "primary_release_date.desc":
-      return langText(lang, "Newest Releases", "Сначала новые релизы");
+      return message(lang, "sort.newestReleases");
     case "primary_release_date.asc":
-      return langText(lang, "Oldest Releases", "Сначала старые релизы");
+      return message(lang, "sort.oldestReleases");
     case "popularity.desc":
     default:
-      return langText(lang, "Popularity", "Популярность");
+      return message(lang, "sort.popularity");
   }
 };
 
 export const langTvDiscoverSortLabel = (lang: string, sortBy: string) => {
   switch (sortBy) {
     case "vote_average.desc":
-      return langText(lang, "Highest Rated", "Сначала высокий рейтинг");
+      return message(lang, "sort.highestRated");
     case "first_air_date.desc":
-      return langText(lang, "Newest Premieres", "Сначала новые премьеры");
+      return message(lang, "sort.newestPremieres");
     case "first_air_date.asc":
-      return langText(lang, "Oldest Premieres", "Сначала старые премьеры");
+      return message(lang, "sort.oldestPremieres");
     case "popularity.desc":
     default:
-      return langText(lang, "Popularity", "Популярность");
+      return message(lang, "sort.popularity");
   }
 };

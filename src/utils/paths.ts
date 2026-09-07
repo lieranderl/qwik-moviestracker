@@ -1,54 +1,46 @@
+import { message } from "./i18n";
 import type { MediaType } from "~/services/models";
-import {
-  langAll,
-  langLatestDolbyVisionMovies,
-  langLatestHDR10Movies,
-  langLatestMovies,
-  langTopRatedTvShows,
-  langTrendingMovies,
-  langTrengingTVShows,
-  langText,
-} from "./languages";
+
 
 export const categoryToTitle = (
   category: string,
   type: "movie" | "tv",
   lang: string,
 ) => {
-  const allLabel = langAll(lang);
+  const allLabel = message(lang, "langAll");
 
   if (type === "movie") {
     switch (category) {
       case "hdr10":
-        return `${allLabel} ${langLatestHDR10Movies(lang)}`;
+        return `${allLabel} ${message(lang, "langLatestHDR10Movies")}`;
       case "dolbyvision":
-        return `${allLabel} ${langLatestDolbyVisionMovies(lang)}`;
+        return `${allLabel} ${message(lang, "langLatestDolbyVisionMovies")}`;
       case "popular":
-        return `${allLabel} ${langText(lang, "popular movies", "популярные фильмы")}`;
+        return `${allLabel} ${message(lang, "ui.popularMovies")}`;
       case "nowplaying":
-        return `${allLabel} ${langText(lang, "now playing", "фильмы в прокате")}`;
+        return `${allLabel} ${message(lang, "ui.nowPlaying")}`;
       case "upcoming":
-        return `${allLabel} ${langText(lang, "upcoming movies", "ожидаемые фильмы")}`;
+        return `${allLabel} ${message(lang, "ui.upcomingMovies")}`;
       case "trending":
-        return `${allLabel} ${langTrendingMovies(lang)}`;
+        return `${allLabel} ${message(lang, "langTrendingMovies")}`;
       case "updated":
       default:
-        return `${allLabel} ${langLatestMovies(lang)}`;
+        return `${allLabel} ${message(lang, "langLatestMovies")}`;
     }
   }
 
   switch (category) {
     case "popular":
-      return `${allLabel} ${langText(lang, "popular series", "популярные сериалы")}`;
+      return `${allLabel} ${message(lang, "ui.popularSeries")}`;
     case "airingtoday":
-      return `${allLabel} ${langText(lang, "airing today", "сериалы сегодня")}`;
+      return `${allLabel} ${message(lang, "ui.airingToday")}`;
     case "ontheair":
-      return `${allLabel} ${langText(lang, "on the air", "сериалы в эфире")}`;
+      return `${allLabel} ${message(lang, "ui.onTheAir")}`;
     case "toprated":
-      return `${allLabel} ${langTopRatedTvShows(lang)}`;
+      return `${allLabel} ${message(lang, "langTopRatedTvShows")}`;
     case "trending":
     default:
-      return `${allLabel} ${langTrengingTVShows(lang)}`;
+      return `${allLabel} ${message(lang, "langTrengingTVShows")}`;
   }
 };
 

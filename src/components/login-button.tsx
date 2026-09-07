@@ -1,7 +1,8 @@
+import { message } from "~/utils/i18n";
 import type { QwikIntrinsicElements } from "@builder.io/qwik";
 import { $, component$, Slot, useSignal } from "@builder.io/qwik";
 import { useSignIn } from "~/routes/plugin@auth";
-import { langSignInWithProvider, langSigningIn } from "~/utils/languages";
+import { langSignInWithProvider } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 
 export type LoginButtonProps = QwikIntrinsicElements["button"] & {
@@ -38,11 +39,11 @@ export const LoginButton = component$<LoginButtonProps>((props) => {
           providerId: providerName,
         });
       })}
-      >
+    >
       {isloading.value && (
         <span aria-live="polite" class="inline-flex items-center gap-2">
           <span class="loading loading-spinner loading-sm" />
-          <span>{langSigningIn(lang)}</span>
+          <span>{message(lang, "langSigningIn")}</span>
         </span>
       )}
       {!isloading.value && (
@@ -50,9 +51,7 @@ export const LoginButton = component$<LoginButtonProps>((props) => {
           <span class="text-xl">
             <Slot />
           </span>
-          <span>
-            {langSignInWithProvider(lang, providerLabel)}
-          </span>
+          <span>{langSignInWithProvider(lang, providerLabel)}</span>
         </span>
       )}
     </button>

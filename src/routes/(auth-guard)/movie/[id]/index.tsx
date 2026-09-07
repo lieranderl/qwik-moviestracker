@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
@@ -24,7 +25,7 @@ import {
   resolveMovieCertification,
   resolveRegionalWatchProviders,
 } from "~/services/tmdb";
-import { langText } from "~/utils/languages";
+
 
 type MovieDetailData =
   | {
@@ -74,25 +75,24 @@ export const useMovieDetailLoader = routeLoader$(async (event) => {
     });
     const region = getRegionFromLanguage(lang);
 
-    const [recMovies, colMovies, watchProviderResults] =
-      await Promise.all([
-        getMediaRecom({
-          id,
-          language: lang,
-          type: MediaType.Movie,
-          query: "recommendations",
-        }) as Promise<MovieShort[]>,
-        movie.belongs_to_collection
-          ? getCollectionMovies({
-              id: movie.belongs_to_collection.id,
-              language: lang,
-            })
-          : Promise.resolve([] as MovieShort[]),
-        getOptionalWatchProviders({
-          id,
-          type: MediaType.Movie,
-        }),
-      ]);
+    const [recMovies, colMovies, watchProviderResults] = await Promise.all([
+      getMediaRecom({
+        id,
+        language: lang,
+        type: MediaType.Movie,
+        query: "recommendations",
+      }) as Promise<MovieShort[]>,
+      movie.belongs_to_collection
+        ? getCollectionMovies({
+            id: movie.belongs_to_collection.id,
+            language: lang,
+          })
+        : Promise.resolve([] as MovieShort[]),
+      getOptionalWatchProviders({
+        id,
+        type: MediaType.Movie,
+      }),
+    ]);
 
     return {
       status: "ready",
@@ -121,16 +121,8 @@ export default component$(() => {
   if (value.status !== "ready") {
     return (
       <ErrorState
-        title={langText(
-          value.lang,
-          "Movie details are unavailable",
-          "Детали фильма недоступны",
-        )}
-        description={langText(
-          value.lang,
-          "Please refresh the page or return to the previous screen.",
-          "Обновите страницу или вернитесь на предыдущий экран.",
-        )}
+        title={message(value.lang, "ui.movieDetailsAreUnavailable")}
+        description={message(value.lang, "ui.pleaseRefreshThePageOrReturnToThePreviousScreen")}
       />
     );
   }
@@ -141,7 +133,7 @@ export default component$(() => {
         movie={value.movie}
         recMovies={value.recMovies}
         colMovies={value.colMovies}
-        imdbId={value.movie.imdb_id}
+        imdbId={value.movie.external_ids?.imdb_id}
         certification={value.certification}
         watchProviders={value.watchProviders}
         lang={value.lang}
@@ -154,15 +146,11 @@ export const head: DocumentHead = ({ url }) => {
   const lang = url.searchParams.get("lang") || "en-US";
 
   return {
-    title: `Moviestracker | ${langText(
-      lang,
-      "Movie details",
-      "Детали фильма",
-    )}`,
+    title: `Moviestracker | ${message(lang, "ui.movieDetails")}`,
     meta: [
       {
         name: "description",
-        content: langText(lang, "Movie details", "Детали фильма"),
+        content: message(lang, "ui.movieDetails"),
       },
     ],
   };

@@ -79,7 +79,10 @@ export default component$(() => {
         )}
         <RouterHead />
         <ParamsLauncher nonce={scriptNonce} />
-        <script nonce={scriptNonce} dangerouslySetInnerHTML={THEME_LAUNCHER_SCRIPT} />
+        <script
+          nonce={scriptNonce}
+          dangerouslySetInnerHTML={THEME_LAUNCHER_SCRIPT}
+        />
         {!isDev && <ServiceWorkerRegister nonce={scriptNonce} />}
       </head>
       <body class="font-montserrat antialiased" lang="en-US">

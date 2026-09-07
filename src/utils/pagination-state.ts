@@ -33,7 +33,10 @@ export const createPaginationState = <T extends { id: number | string }>({
 
 export const beginNextPage = <T extends { id: number | string }>(
   state: PaginationState<T>,
-): { state: PaginationState<T>; request: { cursor: string | null; page: number } | null } => {
+): {
+  state: PaginationState<T>;
+  request: { cursor: string | null; page: number } | null;
+} => {
   if (state.status === "loading" || !state.hasMore) {
     return { state, request: null };
   }

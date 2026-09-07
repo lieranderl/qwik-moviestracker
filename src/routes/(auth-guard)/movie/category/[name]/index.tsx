@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import { $, component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, server$ } from "@builder.io/qwik-city";
@@ -16,7 +17,6 @@ import {
 import { MEDIA_PAGE_SIZE } from "~/utils/constants";
 import { formatYear } from "~/utils/format";
 import { createInfiniteScrollObserver } from "~/utils/infinite-scroll";
-import { langText } from "~/utils/languages";
 import {
   appendPage,
   beginNextPage,
@@ -130,11 +130,9 @@ export default component$(() => {
   return (
     <div class="space-y-6 pb-10">
       <MediaGrid
-        headerBadge={langText(
-          resource.value.lang,
-          `${pagination.value.items.length} loaded`,
-          `${pagination.value.items.length} загружено`,
-        )}
+        headerBadge={message(resource.value.lang, "pagination.loaded", {
+          count: pagination.value.items.length,
+        })}
         title={categoryToTitle(
           resource.value.category,
           MediaType.Movie,
@@ -166,11 +164,7 @@ export default component$(() => {
           <div class="border-base-200 bg-base-100/88 flex items-center gap-3 rounded-full border px-4 py-2 text-sm shadow-sm">
             <span class="loading loading-ring loading-sm" />
             <span>
-              {langText(
-                resource.value.lang,
-                "Loading more movies…",
-                "Загружаем еще фильмы…",
-              )}
+              {message(resource.value.lang, "ui.loadingMoreMovies")}
             </span>
           </div>
         )}
@@ -183,15 +177,11 @@ export const head: DocumentHead = ({ url }) => {
   const lang = url.searchParams.get("lang") || "en-US";
 
   return {
-    title: `Moviestracker | ${langText(
-      lang,
-      "Movie catalog",
-      "Каталог фильмов",
-    )}`,
+    title: `Moviestracker | ${message(lang, "ui.movieCatalog")}`,
     meta: [
       {
         name: "description",
-        content: langText(lang, "Catalog of movies", "Каталог фильмов"),
+        content: message(lang, "ui.catalogOfMovies"),
       },
     ],
   };

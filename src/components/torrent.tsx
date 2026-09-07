@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import { $, component$, useContext } from "@builder.io/qwik";
 import {
   BsBoxArrowUpRight,
@@ -9,7 +10,7 @@ import type { MediaDetails, Torrent } from "~/services/models";
 import { addTorrent } from "~/services/torrserver";
 import { readStorageString } from "~/utils/browser";
 import { formatRating } from "~/utils/format";
-import { langText } from "~/utils/languages";
+
 import {
   getTorrentBadges,
   type TorrentBadgeTone,
@@ -56,9 +57,10 @@ export const TorrentBlock = component$(
     const displayTitle = getDisplayTitle(torrent);
     const secondaryTitle = getSecondaryTitle(torrent);
     const dateLabel = getDateLabel(torrent);
-    const categoryBadges = (torrent.CategoryLabels?.length
-      ? torrent.CategoryLabels
-      : torrent.Categories
+    const categoryBadges = (
+      torrent.CategoryLabels?.length
+        ? torrent.CategoryLabels
+        : torrent.Categories
     )?.slice(0, 3);
     const voiceBadges = torrent.Voices?.slice(0, 3);
     const seasonBadges = torrent.Seasons?.slice(0, 3);
@@ -77,7 +79,7 @@ export const TorrentBlock = component$(
                 ))}
               </div>
 
-              <h4 class="text-base font-semibold leading-snug break-words">
+              <h4 class="text-base leading-snug font-semibold break-words">
                 {displayTitle}
               </h4>
               {secondaryTitle && (
@@ -94,17 +96,18 @@ export const TorrentBlock = component$(
             </span>
 
             <span class="badge badge-success badge-soft rounded">
-              {torrent.Seeds} {langText(lang, "seeds", "сидов")}
+              {torrent.Seeds} {message(lang, "ui.seeds")}
             </span>
 
             <span class="badge badge-error badge-soft rounded">
-              {torrent.Peers ?? torrent.Leeches} {langText(lang, "peers", "пиров")}
+              {torrent.Peers ?? torrent.Leeches}{" "}
+              {message(lang, "ui.peers2")}
             </span>
 
             {torrent.AvailabilityScore !== undefined && (
               <span class="badge badge-warning badge-soft rounded">
                 {formatAvailability(torrent.AvailabilityScore)}{" "}
-                {langText(lang, "availability", "доступность")}
+                {message(lang, "ui.availability")}
               </span>
             )}
 
@@ -113,20 +116,31 @@ export const TorrentBlock = component$(
             )}
           </div>
 
-          {(categoryBadges?.length || voiceBadges?.length || seasonBadges?.length) && (
+          {(categoryBadges?.length ||
+            voiceBadges?.length ||
+            seasonBadges?.length) && (
             <div class="flex flex-wrap items-center gap-2">
               {categoryBadges?.map((category) => (
-                <span class="badge badge-ghost border-base-300" key={`category-${category}`}>
+                <span
+                  class="badge badge-ghost border-base-300"
+                  key={`category-${category}`}
+                >
                   {category}
                 </span>
               ))}
               {voiceBadges?.map((voice) => (
-                <span class="badge badge-ghost border-base-300" key={`voice-${voice}`}>
+                <span
+                  class="badge badge-ghost border-base-300"
+                  key={`voice-${voice}`}
+                >
                   {voice}
                 </span>
               ))}
               {seasonBadges?.map((season) => (
-                <span class="badge badge-ghost border-base-300" key={`season-${season}`}>
+                <span
+                  class="badge badge-ghost border-base-300"
+                  key={`season-${season}`}
+                >
                   S{season}
                 </span>
               ))}
@@ -151,7 +165,7 @@ export const TorrentBlock = component$(
                 class="btn btn-outline btn-sm"
               >
                 <BsBoxArrowUpRight class="h-4 w-4" />
-                {langText(lang, "Source", "Источник")}
+                {message(lang, "ui.source")}
               </a>
             )}
             <button

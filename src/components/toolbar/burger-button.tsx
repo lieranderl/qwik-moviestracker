@@ -1,17 +1,14 @@
+import { message } from "~/utils/i18n";
 import { component$, Slot } from "@builder.io/qwik";
 import { HiBars3Solid } from "@qwikest/icons/heroicons";
-import { langText } from "~/utils/languages";
+
 
 type BurgerButtonProps = {
   lang: string;
 };
 
 export const BurgerButton = component$<BurgerButtonProps>(({ lang }) => {
-  const openNavigationLabel = langText(
-    lang,
-    "Open navigation menu",
-    "Открыть меню навигации",
-  );
+  const openNavigationLabel = message(lang, "ui.openNavigationMenu");
 
   return (
     <details class="dropdown dropdown-end dropdown-bottom md:hidden">

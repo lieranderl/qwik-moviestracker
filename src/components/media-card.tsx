@@ -101,9 +101,7 @@ export const MediaCard = component$(
     });
     const safeYear =
       typeof year === "number" && Number.isFinite(year) && year > 0 ? year : 0;
-    const height = isLandscape
-      ? (imageWidth * 9) / 16
-      : (imageWidth * 3) / 2;
+    const height = isLandscape ? (imageWidth * 9) / 16 : (imageWidth * 3) / 2;
     const cardWidthClass = getCardWidthClass({
       variant,
       layout,
@@ -129,9 +127,7 @@ export const MediaCard = component$(
             {metaLabel}
           </span>
         )}
-        {!metaLabel && (
-          <span aria-hidden="true" class={META_ROW_CLASS} />
-        )}
+        {!metaLabel && <span aria-hidden="true" class={META_ROW_CLASS} />}
         <div class={cardClass}>
           <figure class={`relative w-full overflow-hidden ${aspectClass}`}>
             {hasPoster ? (

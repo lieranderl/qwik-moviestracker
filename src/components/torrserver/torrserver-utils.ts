@@ -1,4 +1,5 @@
-export type TorrServerTone = "neutral" | "info" | "success" | "warning" | "error";
+export type TorrServerTone =
+  "neutral" | "info" | "success" | "warning" | "error";
 
 const TONE_BADGE_CLASSES: Record<TorrServerTone, string> = {
   neutral: "badge-ghost border-base-300 text-base-content/75",

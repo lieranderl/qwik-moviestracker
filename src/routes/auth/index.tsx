@@ -1,16 +1,8 @@
+import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
 import { HiFilmOutline } from "@qwikest/icons/heroicons";
 import { LoginButton } from "~/components/login-button";
-import {
-  langPersonalWatchlist,
-  langPrivateCatalogAccessForSignedInUsers,
-  langPrivateMovieHub,
-  langSimplePlaceToDiscoverTitles,
-  langTrackMoviesAndTvShowsAccent,
-  langTrackMoviesAndTvShowsPrefix,
-  langGoogleLogo,
-} from "~/utils/languages";
 
 export default component$(() => {
   const location = useLocation();
@@ -56,7 +48,7 @@ export default component$(() => {
             </span>
           </div>
           <span class="badge badge-sm border-base-300/80 bg-base-100/85 px-3 text-xs font-medium backdrop-blur-sm">
-            {langPersonalWatchlist(lang)}
+            {message(lang, "langPersonalWatchlist")}
           </span>
         </header>
 
@@ -66,16 +58,16 @@ export default component$(() => {
           class="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center px-4 pt-8 pb-16 text-center sm:px-6 lg:pt-12 lg:pb-24"
         >
           <div class="section-reveal badge badge-sm bg-base-200/80 mb-6 border-0 px-4 text-xs font-semibold tracking-wider uppercase">
-            {langPrivateMovieHub(lang)}
+            {message(lang, "langPrivateMovieHub")}
           </div>
 
           <h1
             class="section-reveal text-base-content mb-5 text-4xl leading-[1.04] font-black tracking-tight sm:text-5xl md:mb-6 md:text-7xl lg:text-8xl"
             style={{ "--motion-delay": "80ms" }}
           >
-            {langTrackMoviesAndTvShowsPrefix(lang)}{" "}
+            {message(lang, "langTrackMoviesAndTvShowsPrefix")}{" "}
             <span class="bg-linear-to-r from-(--auth-accent-from) via-(--auth-accent-via) to-(--auth-accent-to) bg-clip-text text-transparent">
-              {langTrackMoviesAndTvShowsAccent(lang)}
+              {message(lang, "langTrackMoviesAndTvShowsAccent")}
             </span>
           </h1>
 
@@ -83,7 +75,7 @@ export default component$(() => {
             class="section-reveal text-base-content/65 mb-8 max-w-xl text-base leading-relaxed sm:text-lg md:mb-10 md:text-xl"
             style={{ "--motion-delay": "140ms" }}
           >
-            {langSimplePlaceToDiscoverTitles(lang)}
+            {message(lang, "langSimplePlaceToDiscoverTitles")}
           </p>
 
           <div class="section-reveal" style={{ "--motion-delay": "180ms" }}>
@@ -93,7 +85,7 @@ export default component$(() => {
               class="min-h-14 rounded-2xl border-0 bg-linear-to-r from-(--auth-primary-from) to-(--auth-primary-to) px-6 text-base font-semibold text-white shadow-[0_20px_50px_var(--auth-primary-shadow)] transition-all duration-200 hover:scale-[1.02] hover:from-(--auth-primary-from-hover) hover:to-(--auth-primary-to-hover) hover:shadow-[0_24px_56px_var(--auth-primary-shadow)] sm:px-8"
             >
               <svg
-                aria-label={langGoogleLogo(lang)}
+                aria-label={message(lang, "langGoogleLogo")}
                 width="24"
                 height="24"
                 xmlns="http://www.w3.org/2000/svg"
@@ -127,7 +119,7 @@ export default component$(() => {
         <footer class="border-base-200/70 bg-base-100/70 border-t backdrop-blur-sm">
           <div class="text-base-content/55 mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-2 px-4 py-4 text-center text-sm sm:flex-row sm:gap-3 sm:px-6 sm:text-left">
             <p>&copy; 2026 Moviestracker</p>
-            <p>{langPrivateCatalogAccessForSignedInUsers(lang)}</p>
+            <p>{message(lang, "langPrivateCatalogAccessForSignedInUsers")}</p>
           </div>
         </footer>
       </div>

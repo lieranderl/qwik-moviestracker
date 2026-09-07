@@ -1,10 +1,11 @@
+import { message } from "~/utils/i18n";
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import {
   HiClockSolid,
   HiMagnifyingGlassSolid,
   HiPlaySolid,
 } from "@qwikest/icons/heroicons";
-import { langText } from "~/utils/languages";
+
 import {
   readLastViewed,
   readRecentSearches,
@@ -19,20 +20,18 @@ type ContinueBrowsingWidgetProps = {
 };
 
 export const ContinueBrowsingWidget = component$<ContinueBrowsingWidgetProps>(
-  ({
-    lang,
-    lastViewedLabel,
-    recentSearchesLabel,
-    resumeLabel,
-  }) => {
+  ({ lang, lastViewedLabel, recentSearchesLabel, resumeLabel }) => {
     const lastViewed = useSignal<LastViewedItem | null>(null);
     const recentSearches = useSignal<ReturnType<typeof readRecentSearches>>([]);
 
     // eslint-disable-next-line qwik/no-use-visible-task
-    useVisibleTask$(() => {
-      lastViewed.value = readLastViewed();
-      recentSearches.value = readRecentSearches();
-    }, { strategy: "document-ready" });
+    useVisibleTask$(
+      () => {
+        lastViewed.value = readLastViewed();
+        recentSearches.value = readRecentSearches();
+      },
+      { strategy: "document-ready" },
+    );
 
     return (
       <section id="continue-browsing" class="section-reveal scroll-mt-28">
@@ -40,9 +39,7 @@ export const ContinueBrowsingWidget = component$<ContinueBrowsingWidgetProps>(
           <div class="card-body gap-4 p-4 md:p-6">
             <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
               <div>
-                <h2 class="card-title">
-                  {lastViewedLabel}
-                </h2>
+                <h2 class="card-title">{lastViewedLabel}</h2>
               </div>
               {recentSearches.value.length > 0 && (
                 <div class="badge badge-ghost gap-2">
@@ -82,11 +79,7 @@ export const ContinueBrowsingWidget = component$<ContinueBrowsingWidgetProps>(
                 <div class="alert">
                   <HiClockSolid class="text-primary h-5 w-5" />
                   <span>
-                    {langText(
-                      lang,
-                      "Open a title and it will appear here.",
-                      "Откройте тайтл, и он появится здесь.",
-                    )}
+                    {message(lang, "ui.openATitleAndItWillAppearHere")}
                   </span>
                 </div>
               )}
@@ -110,11 +103,7 @@ export const ContinueBrowsingWidget = component$<ContinueBrowsingWidgetProps>(
                       ))
                     ) : (
                       <span class="text-base-content/60 text-sm">
-                        {langText(
-                          lang,
-                          "Your searches will appear here.",
-                          "Ваши поиски появятся здесь.",
-                        )}
+                        {message(lang, "ui.yourSearchesWillAppearHere")}
                       </span>
                     )}
                   </div>

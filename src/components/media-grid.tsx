@@ -33,7 +33,7 @@ export const MediaGrid = component$(
       >
         {title && (
           <header class="card border-base-200 bg-base-100 border shadow-sm">
-            <div class="card-body gap-3 p-4 md:p-6 sm:flex-row sm:items-end sm:justify-between">
+            <div class="card-body gap-3 p-4 sm:flex-row sm:items-end sm:justify-between md:p-6">
               <div class="space-y-2">
                 {eyebrow && (
                   <p class="text-base-content/55 text-xs font-semibold tracking-[0.12em] uppercase">
@@ -50,9 +50,7 @@ export const MediaGrid = component$(
                 )}
               </div>
               {headerBadge && (
-                <span class="badge badge-ghost">
-                  {headerBadge}
-                </span>
+                <span class="badge badge-ghost">{headerBadge}</span>
               )}
             </div>
           </header>

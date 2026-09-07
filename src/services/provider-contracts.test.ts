@@ -62,9 +62,11 @@ describe("provider minimum-shape contracts", () => {
     expect(parseTmdbCertificationList({ certifications: { US: [] } })).toEqual({
       certifications: { US: [] },
     });
-    expect(parseTmdbProviderCatalog({ results: [{ provider_id: 8 }] })).toEqual({
-      results: [{ provider_id: 8 }],
-    });
+    expect(parseTmdbProviderCatalog({ results: [{ provider_id: 8 }] })).toEqual(
+      {
+        results: [{ provider_id: 8 }],
+      },
+    );
     expect(parseTmdbWatchProviders({ id: 1, results: {} })).toEqual({
       id: 1,
       results: {},

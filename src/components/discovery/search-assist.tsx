@@ -48,9 +48,7 @@ export const SearchAssist = component$<SearchAssistProps>(
                   </a>
                 ))
               ) : (
-                <div class="alert w-full">
-                  {emptyRecentSearchesMessage}
-                </div>
+                <div class="alert w-full">{emptyRecentSearchesMessage}</div>
               )}
             </div>
           </div>

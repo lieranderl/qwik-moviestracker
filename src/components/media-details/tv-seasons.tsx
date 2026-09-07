@@ -1,14 +1,10 @@
+import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 import type { Season } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { formatYear } from "~/utils/format";
 import { showDialogById } from "~/utils/browser";
-import {
-  langEpisodesCount,
-  langOverview,
-  langSeasons,
-  langText,
-} from "~/utils/languages";
+
 import { MediaCard } from "../media-card";
 import { MediaCarousel } from "../media-carousel";
 
@@ -21,7 +17,7 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
     <section>
       {seasons.length > 0 && (
         <MediaCarousel
-          title={langSeasons(lang)}
+          title={message(lang, "langSeasons")}
           type={MediaType.Seasons}
           lang={lang}
         >
@@ -49,7 +45,7 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
                   <MediaCard
                     metaLabel={
                       s.episode_count
-                        ? `${langEpisodesCount(lang)} ${s.episode_count.toString()}`
+                        ? `${message(lang, "langEpisodesCount")} ${s.episode_count.toString()}`
                         : ""
                     }
                     title={s.name ?? ""}
@@ -64,15 +60,13 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
                   <dialog id={`season-modal-${s.id.toString()}`} class="modal">
                     <div class="modal-box overlay-enter border-base-200 bg-base-100 max-h-[calc(100dvh-2rem)] max-w-2xl overflow-y-auto border p-0 shadow-xl">
                       <div class="border-base-200 bg-base-100/95 sticky top-0 z-20 flex items-start justify-between gap-4 border-b px-4 py-4 backdrop-blur sm:px-6">
-                        <h3 class="text-lg font-bold">{langOverview(lang)}</h3>
+                        <h3 class="text-lg font-bold">
+                          {message(lang, "langOverview")}
+                        </h3>
                         <form method="dialog">
                           <button
                             type="submit"
-                            aria-label={langText(
-                              lang,
-                              "Close season overview",
-                              "Закрыть описание сезона",
-                            )}
+                            aria-label={message(lang, "ui.closeSeasonOverview")}
                             class="btn btn-ghost btn-circle min-h-11 w-11 p-0"
                           >
                             ✕
@@ -87,7 +81,7 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
                     </div>
                     <form method="dialog" class="modal-backdrop">
                       <button type="submit">
-                        {langText(lang, "close", "закрыть")}
+                        {message(lang, "ui.close")}
                       </button>
                     </form>
                   </dialog>

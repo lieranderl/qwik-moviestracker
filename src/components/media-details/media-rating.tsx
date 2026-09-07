@@ -1,4 +1,4 @@
-import { component$, Resource, useResource$ } from "@builder.io/qwik";
+import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
 
 import { RatingStar } from "~/components/rating-star";
@@ -17,15 +17,36 @@ export type MediaRatingProps = {
   lang: string;
 };
 
+type ImdbDisplayState = ImdbLookupResult | { status: "loading" };
+
 const fetchImdbRating = server$(async (imdbId: string) => {
   return getImdbRatingResult(imdbId);
 });
 
 export const MediaRating = component$<MediaRatingProps>(
   ({ vote_average, vote_count, imdbId, lang }) => {
-    const imdb = useResource$<ImdbLookupResult>(async () =>
-      imdbId ? fetchImdbRating(imdbId) : { status: "not-found" },
+    const imdb = useSignal<ImdbDisplayState>(
+      imdbId ? { status: "loading" } : { status: "not-found" },
     );
+
+    // IMDb is optional enrichment. Start it only after the primary SSR page is
+    // visible so a service cold start can never delay detail-page HTML.
+    // eslint-disable-next-line qwik/no-use-visible-task
+    useVisibleTask$(({ cleanup }) => {
+      if (!imdbId) return;
+
+      let cancelled = false;
+      void fetchImdbRating(imdbId)
+        .then((result) => {
+          if (!cancelled) imdb.value = result;
+        })
+        .catch(() => {
+          if (!cancelled) imdb.value = { status: "unavailable" };
+        });
+      cleanup(() => {
+        cancelled = true;
+      });
+    });
 
     return (
       <div class="flex items-center gap-2">
@@ -42,26 +63,20 @@ export const MediaRating = component$<MediaRatingProps>(
             )}
           </div>
         )}
-        <Resource
-          value={imdb}
-          onPending={() => <span class="loading loading-ring loading-sm" />}
-          onRejected={() => (
-            <span class="text-xs opacity-60">
-              {message(lang, "imdb.unavailable")}
-            </span>
-          )}
-          onResolved={(result) =>
-            result.status === "found" ? (
-              <Imdb imdb={result.rating} />
-            ) : (
-              <span class="text-xs opacity-60">
-                {result.status === "not-found"
-                  ? message(lang, "imdb.notFound")
-                  : message(lang, "imdb.unavailable")}
-              </span>
-            )
-          }
-        />
+        {imdb.value.status === "loading" ? (
+          <span
+            aria-label="IMDb loading"
+            class="loading loading-ring loading-sm"
+          />
+        ) : imdb.value.status === "found" ? (
+          <Imdb imdb={imdb.value.rating} />
+        ) : (
+          <span class="text-xs opacity-60">
+            {imdb.value.status === "not-found"
+              ? message(lang, "imdb.notFound")
+              : message(lang, "imdb.unavailable")}
+          </span>
+        )}
       </div>
     );
   },

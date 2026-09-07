@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import {
   $,
   component$,
@@ -16,7 +17,6 @@ import {
   getDefaultPlayableFile,
   markViewedTorrent,
 } from "~/services/torrserver";
-import { langText } from "~/utils/languages";
 import type { TorrServerFileEntry } from "./torrserver-file-list-modal";
 import { TorrServerFileListModal } from "./torrserver-file-list-modal";
 
@@ -51,11 +51,7 @@ export const TorrServerFileWorkspaceModal = component$<{
         isPrimary: file.id === selectedFileId.value,
         note:
           torrent?.playableFile?.id === file.id
-            ? langText(
-                lang,
-                "Default playback candidate for this torrent.",
-                "Файл по умолчанию для воспроизведения этого торрента.",
-              )
+            ? message(lang, "ui.defaultPlaybackCandidateForThisTorrent")
             : undefined,
         path: file.path,
         size: file.length,
@@ -88,21 +84,13 @@ export const TorrServerFileWorkspaceModal = component$<{
       try {
         await navigator.clipboard.writeText(file.streamUrl);
         toastManager.addToast({
-          message: langText(
-            lang,
-            "Stream URL copied.",
-            "Ссылка потока скопирована.",
-          ),
+          message: message(lang, "ui.streamUrlCopied"),
           type: "success",
           autocloseTime: 4_000,
         });
       } catch {
         toastManager.addToast({
-          message: langText(
-            lang,
-            "Could not copy the stream URL.",
-            "Не удалось скопировать ссылку потока.",
-          ),
+          message: message(lang, "ui.couldNotCopyTheStreamUrl"),
           type: "error",
           autocloseTime: 4_000,
         });
@@ -119,32 +107,26 @@ export const TorrServerFileWorkspaceModal = component$<{
         title={
           torrent?.title ||
           torrent?.name ||
-          langText(lang, "Torrent files", "Файлы торрента")
+          message(lang, "ui.torrentFiles")
         }
         subtitle={torrent?.hash}
         files={entries}
         loading={loading}
         loadingLabel={
           torrent
-            ? langText(
-                lang,
-                `Activating · Peers: ${torrent.total_peers || 0}`,
-                `Активация · Пиры: ${torrent.total_peers || 0}`,
-              )
-            : langText(lang, "Activating torrent...", "Активация торрента...")
+            ? message(lang, "torrserver.activatingPeers", {
+                peers: torrent.total_peers || 0,
+              })
+            : message(lang, "ui.activatingTorrent")
         }
         loadingProgress={loadingProgress}
         onClose$={onClose$}
         onSelectFile$={selectFile}
-        selectActionLabel={langText(
-          lang,
-          "Select for viewed",
-          "Выбрать для отметки",
-        )}
-        selectedLabel={langText(lang, "Selected", "Выбран")}
+        selectActionLabel={message(lang, "ui.selectForViewed")}
+        selectedLabel={message(lang, "ui.selected")}
         onCopyStreamUrl$={copyStreamUrl}
-        streamActionLabel={langText(lang, "Stream", "Поток")}
-        copyActionLabel={langText(lang, "Copy URL", "Копировать")}
+        streamActionLabel={message(lang, "ui.stream")}
+        copyActionLabel={message(lang, "ui.copyUrl")}
       />
     );
   },

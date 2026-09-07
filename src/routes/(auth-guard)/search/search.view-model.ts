@@ -1,12 +1,6 @@
+import { message } from "~/utils/i18n";
 import { MediaType } from "~/services/models";
-import {
-  langBrowseHome,
-  langBrowseMovies,
-  langBrowseTv,
-  langDiscoverMovies,
-  langDiscoverTv,
-  langSearchTooShort,
-} from "~/utils/languages";
+import { langSearchTooShort } from "~/utils/languages";
 import { formatYear } from "~/utils/format";
 import { paths } from "~/utils/paths";
 import {
@@ -48,7 +42,9 @@ type SearchResultLike = {
   vote_average?: number;
 };
 
-const resolveSearchResultMediaType = (mediaType: SearchResultLike["media_type"]) => {
+const resolveSearchResultMediaType = (
+  mediaType: SearchResultLike["media_type"],
+) => {
   switch (mediaType) {
     case MediaType.Tv:
       return MediaType.Tv;
@@ -92,23 +88,23 @@ export const createSearchAssistLinks = (lang: string): SearchAssistLink[] => {
   return [
     {
       href: paths.index(lang),
-      label: langBrowseHome(lang),
+      label: message(lang, "langBrowseHome"),
     },
     {
       href: paths.movie(lang),
-      label: langBrowseMovies(lang),
+      label: message(lang, "langBrowseMovies"),
     },
     {
       href: paths.movieDiscover(lang),
-      label: langDiscoverMovies(lang),
+      label: message(lang, "langDiscoverMovies"),
     },
     {
       href: paths.tv(lang),
-      label: langBrowseTv(lang),
+      label: message(lang, "langBrowseTv"),
     },
     {
       href: paths.tvDiscover(lang),
-      label: langDiscoverTv(lang),
+      label: message(lang, "langDiscoverTv"),
     },
   ];
 };

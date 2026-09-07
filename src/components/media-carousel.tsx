@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import {
   $,
   component$,
@@ -11,7 +12,7 @@ import {
   HiChevronRightSolid,
 } from "@qwikest/icons/heroicons";
 import { MediaType } from "~/services/models";
-import { langExploreAll } from "~/utils/languages";
+
 import { paths } from "~/utils/paths";
 
 interface MediaCarouselProps {
@@ -23,13 +24,7 @@ interface MediaCarouselProps {
 }
 
 export const MediaCarousel = component$(
-  ({
-    title,
-    type,
-    category,
-    lang,
-    sectionId,
-  }: MediaCarouselProps) => {
+  ({ title, type, category, lang, sectionId }: MediaCarouselProps) => {
     const carouselId = useId();
     const trackRef = useSignal<HTMLDivElement>();
     const scrollRatio = useSignal(0);
@@ -135,7 +130,7 @@ export const MediaCarousel = component$(
                       href={paths.category(type, category, lang)}
                       class="btn btn-ghost btn-sm min-h-11"
                     >
-                      {langExploreAll(lang)}
+                      {message(lang, "langExploreAll")}
                     </a>
                   )}
               </div>

@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import { component$, useVisibleTask$ } from "@builder.io/qwik";
 import { Image } from "@unpic/qwik";
 
@@ -11,14 +12,7 @@ import {
   type TvShort,
 } from "~/services/models";
 import { formatYear } from "~/utils/format";
-import {
-  langActors,
-  langCreatedby,
-  langOverview,
-  langRecommendedTvShows,
-  langCountLabel,
-  langText,
-} from "~/utils/languages";
+import { langCountLabel } from "~/utils/languages";
 import { paths } from "~/utils/paths";
 import { writeLastViewed } from "~/utils/recent-activity";
 import { ExternalIds } from "../external_ids";
@@ -58,11 +52,11 @@ export const TvDetails = component$(
     useVisibleTask$(() => {
       writeLastViewed({
         href: paths.media(MediaType.Tv, tv.id, lang),
-        title: tv.name ?? langText(lang, "TV details", "Детали сериала"),
+        title: tv.name ?? message(lang, "ui.tvDetails"),
         kind: "tv",
         meta: tv.first_air_date
-          ? `${formatYear(tv.first_air_date)} • ${langText(lang, "TV", "Сериал")}`
-          : langText(lang, "TV", "Сериал"),
+          ? `${formatYear(tv.first_air_date)} • ${message(lang, "ui.tv")}`
+          : message(lang, "ui.tv"),
         imagePath: tv.poster_path ?? tv.backdrop_path,
       });
     });
@@ -79,7 +73,7 @@ export const TvDetails = component$(
                 src={`https://image.tmdb.org/t/p/w342${tv.poster_path}`}
                 width={342}
                 height={513}
-                alt={tv.name ?? langText(lang, "TV poster", "Постер сериала")}
+                alt={tv.name ?? message(lang, "ui.tvPoster")}
                 class="rounded-box h-auto w-full shadow-lg"
               />
             ) : (
@@ -106,7 +100,7 @@ export const TvDetails = component$(
             <div class="flex flex-wrap items-center gap-1.5">
               <span class="badge badge-ghost badge-sm">
                 {formatYear(tv.first_air_date) ||
-                  langText(lang, "N/A", "Нет данных")}
+                  message(lang, "ui.nA")}
               </span>
               {certification && (
                 <span class="badge badge-ghost badge-sm">
@@ -176,16 +170,12 @@ export const TvDetails = component$(
         {/* ── OVERVIEW ── */}
         <section class={sectionCardClass}>
           <div class={sectionBodyClass}>
-            <h2 class="card-title text-xl">{langOverview(lang)}</h2>
+            <h2 class="card-title text-xl">{message(lang, "langOverview")}</h2>
             {tv.overview ? (
               <p class="leading-relaxed opacity-90">{tv.overview}</p>
             ) : (
               <p class="text-base-content/50 italic">
-                {langText(
-                  lang,
-                  "No overview available.",
-                  "Описание отсутствует.",
-                )}
+                {message(lang, "ui.noOverviewAvailable")}
               </p>
             )}
           </div>
@@ -222,27 +212,27 @@ export const TvDetails = component$(
         <section class={sectionCardClass}>
           <div class={sectionBodyClass}>
             <h3 class="card-title text-base-content/80 text-lg">
-              {langText(lang, "Series Stats", "Статистика сериала")}
+              {message(lang, "ui.seriesStats")}
             </h3>
             <div class="stats stats-vertical bg-transparent">
               <div class="stat px-0 py-3">
                 <div class="stat-title">
-                  {langText(lang, "Seasons", "Сезоны")}
+                  {message(lang, "ui.seasons")}
                 </div>
                 <div class="stat-value text-lg">{tv.number_of_seasons}</div>
               </div>
               <div class="stat px-0 py-3">
                 <div class="stat-title">
-                  {langText(lang, "Episodes", "Серии")}
+                  {message(lang, "ui.episodes")}
                 </div>
                 <div class="stat-value text-lg">{tv.number_of_episodes}</div>
               </div>
               <div class="stat px-0 py-3">
                 <div class="stat-title">
-                  {langText(lang, "Status", "Статус")}
+                  {message(lang, "ui.status")}
                 </div>
                 <div class="stat-value text-lg">
-                  {tv.status || langText(lang, "Unknown", "Неизвестно")}
+                  {tv.status || message(lang, "ui.unknown")}
                 </div>
               </div>
             </div>
@@ -262,7 +252,7 @@ export const TvDetails = component$(
 
           {tv.created_by.length > 0 && (
             <MediaCarousel
-              title={langCreatedby(lang)}
+              title={message(lang, "langCreatedby")}
               type={MediaType.Person}
               lang={lang}
             >
@@ -287,7 +277,7 @@ export const TvDetails = component$(
           )}
 
           <MediaCarousel
-            title={langActors(lang)}
+            title={message(lang, "langActors")}
             type={MediaType.Person}
             lang={lang}
           >
@@ -313,7 +303,7 @@ export const TvDetails = component$(
 
           {recTv.length > 0 && (
             <MediaCarousel
-              title={langRecommendedTvShows(lang)}
+              title={message(lang, "langRecommendedTvShows")}
               type={MediaType.Person}
               category="updated"
               lang={lang}

@@ -1,9 +1,10 @@
+import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 import { Image } from "@unpic/qwik";
 import { useQueryParamsLoader } from "~/routes/(auth-guard)/layout";
 import type { VideoResult } from "~/services/models";
 import { showDialogById } from "~/utils/browser";
-import { langText, langTrailers } from "~/utils/languages";
+
 
 export interface TorModalPros {
   videos?: VideoResult[];
@@ -21,18 +22,18 @@ export const TrailersModal = component$(({ videos }: TorModalPros) => {
           showDialogById("trailersModal");
         }}
       >
-        {langTrailers(resource.value.lang)}
+        {message(resource.value.lang, "langTrailers")}
       </button>
       <dialog id="trailersModal" class="modal">
         <div class="modal-box overlay-enter border-base-200 bg-base-100 max-h-[calc(100dvh-2rem)] max-w-4xl overflow-y-auto border p-0 shadow-xl">
           <div class="border-base-200 bg-base-100/95 sticky top-0 z-20 flex items-center justify-between border-b px-5 py-4 backdrop-blur">
             <h3 class="text-lg font-bold">
-              {langTrailers(resource.value.lang)}
+              {message(resource.value.lang, "langTrailers")}
             </h3>
             <form method="dialog">
               <button
                 type="submit"
-                aria-label={langText(resource.value.lang, "Close trailers", "Закрыть трейлеры")}
+                aria-label={message(resource.value.lang, "ui.closeTrailers")}
                 class="btn btn-ghost btn-circle min-h-11 w-11 p-0"
               >
                 ✕
@@ -73,14 +74,14 @@ export const TrailersModal = component$(({ videos }: TorModalPros) => {
               </section>
             ) : (
               <div class="text-base-content/70 rounded-box border-base-200 bg-base-200/40 border p-4 text-sm">
-                {langText(resource.value.lang, "No trailers found.", "Трейлеры не найдены.")}
+                {message(resource.value.lang, "ui.noTrailersFound")}
               </div>
             )}
           </div>
         </div>
         <form method="dialog" class="modal-backdrop">
           <button type="submit">
-            {langText(resource.value.lang, "close", "закрыть")}
+            {message(resource.value.lang, "ui.close")}
           </button>
         </form>
       </dialog>

@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
@@ -14,7 +15,7 @@ import {
   getPersonMovies,
   getPersonTv,
 } from "~/services/tmdb";
-import { langText } from "~/utils/languages";
+
 
 type PersonDetailData =
   | {
@@ -87,16 +88,8 @@ export default component$(() => {
   if (value.status !== "ready") {
     return (
       <ErrorState
-        title={langText(
-          value.lang,
-          "Person details are unavailable",
-          "Детали персоны недоступны",
-        )}
-        description={langText(
-          value.lang,
-          "Please refresh the page or return to the previous screen.",
-          "Обновите страницу или вернитесь на предыдущий экран.",
-        )}
+        title={message(value.lang, "ui.personDetailsAreUnavailable")}
+        description={message(value.lang, "ui.pleaseRefreshThePageOrReturnToThePreviousScreen")}
       />
     );
   }
@@ -117,15 +110,11 @@ export const head: DocumentHead = ({ url }) => {
   const lang = url.searchParams.get("lang") || "en-US";
 
   return {
-    title: `Moviestracker | ${langText(
-      lang,
-      "Person details",
-      "Детали персоны",
-    )}`,
+    title: `Moviestracker | ${message(lang, "ui.personDetails")}`,
     meta: [
       {
         name: "description",
-        content: langText(lang, "Person details", "Детали персоны"),
+        content: message(lang, "ui.personDetails"),
       },
     ],
   };

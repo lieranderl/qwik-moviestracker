@@ -1,3 +1,4 @@
+import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 import type {
   Network,
@@ -5,12 +6,6 @@ import type {
   ProductionCountry,
 } from "~/services/models";
 import { formatDate, formatLanguage } from "~/utils/format";
-import {
-  langCountries,
-  langLanguages,
-  langNetworks,
-  langRelease,
-} from "~/utils/languages";
 
 export type MediaInfoProps = {
   release_date?: string;
@@ -41,14 +36,18 @@ export const MediaInfo = component$<MediaInfoProps>(
           <section class="grid grid-cols-1 gap-3 text-sm">
             {release_date && (
               <div class="flex items-center gap-2">
-                <span class="font-bold opacity-70">{langRelease(lang)}:</span>
+                <span class="font-bold opacity-70">
+                  {message(lang, "langRelease")}:
+                </span>
                 <span>{formatDate(release_date, lang)}</span>
               </div>
             )}
 
             {production_countries && (
               <div class="col-span-full flex flex-wrap items-center gap-2">
-                <span class="font-bold opacity-70">{langCountries(lang)}:</span>
+                <span class="font-bold opacity-70">
+                  {message(lang, "langCountries")}:
+                </span>
                 {production_countries.map((c) => (
                   <span key={c.iso_3166_1} class="badge badge-outline badge-sm">
                     {c.name}
@@ -59,7 +58,9 @@ export const MediaInfo = component$<MediaInfoProps>(
 
             {original_language && (
               <div class="flex items-center gap-2">
-                <span class="font-bold opacity-70">{langLanguages(lang)}:</span>
+                <span class="font-bold opacity-70">
+                  {message(lang, "langLanguages")}:
+                </span>
                 <span class="text-sm uppercase">
                   {formatLanguage(original_language)}
                 </span>
@@ -70,7 +71,7 @@ export const MediaInfo = component$<MediaInfoProps>(
             {networks && networks.length > 0 && (
               <div class="flex items-center gap-2">
                 <span class="text-sm font-bold opacity-70">
-                  {langNetworks(lang)}:
+                  {message(lang, "langNetworks")}:
                 </span>
                 <span class="text-sm font-bold">
                   {networks.map((n) => n.name).join(", ")}

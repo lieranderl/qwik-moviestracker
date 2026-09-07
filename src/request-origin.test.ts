@@ -1,11 +1,29 @@
 import { describe, expect, it } from "bun:test";
 import {
+  isHealthCheckRequest,
   resolveRequestOrigin,
   resolveTrustedOrigins,
   updateRequestOrigin,
 } from "./request-origin";
 
 describe("request origin resolution", () => {
+  it("allows only the exact GET health endpoint before origin validation", () => {
+    expect(isHealthCheckRequest(new Request("http://internal/healthz"))).toBe(
+      true,
+    );
+    expect(isHealthCheckRequest(new Request("http://internal/healthz/"))).toBe(
+      true,
+    );
+    expect(
+      isHealthCheckRequest(
+        new Request("http://internal/healthz", { method: "POST" }),
+      ),
+    ).toBe(false);
+    expect(
+      isHealthCheckRequest(new Request("http://internal/healthz/status")),
+    ).toBe(false);
+  });
+
   it("pins request origin to AUTH_URL when the host is trusted", () => {
     const request = new Request("http://127.0.0.1/callback?code=abc", {
       headers: {

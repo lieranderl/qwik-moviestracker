@@ -14,6 +14,7 @@ import { manifest } from "@qwik-client-manifest";
 import render from "./entry.ssr";
 import {
   UntrustedRequestOriginError,
+  isHealthCheckRequest,
   updateRequestOrigin,
 } from "./request-origin";
 import { applySecurityHeaders } from "./utils/security-headers";
@@ -32,6 +33,16 @@ console.log(`Server started: http://localhost:${port}/`);
 
 Bun.serve({
   async fetch(request: Request) {
+    if (isHealthCheckRequest(request)) {
+      return new Response("ok", {
+        status: 200,
+        headers: {
+          "Cache-Control": "no-store",
+          "Content-Type": "text/plain; charset=utf-8",
+        },
+      });
+    }
+
     let updatedRequest: Request;
     try {
       updatedRequest = updateRequestOrigin(request, Bun.env);

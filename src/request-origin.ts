@@ -100,6 +100,12 @@ export const resolveRequestOrigin = (
   return matchingOrigin;
 };
 
+export const isHealthCheckRequest = (request: Request) => {
+  if (request.method !== "GET") return false;
+  const pathname = new URL(request.url).pathname;
+  return pathname === "/healthz" || pathname === "/healthz/";
+};
+
 export const updateRequestOrigin = (
   request: Request,
   env: RuntimeOriginEnv = {},

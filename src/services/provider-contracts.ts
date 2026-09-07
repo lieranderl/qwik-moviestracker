@@ -2,6 +2,7 @@ import * as v from "valibot";
 import type { DocumentData } from "@google-cloud/firestore";
 import type {
   CertificationList,
+  Images,
   MediaCollection,
   WatchProviderCatalog,
   WatchProviderResults,
@@ -30,6 +31,21 @@ const tmdbProviderCatalogSchema = v.looseObject({
 const tmdbWatchProvidersSchema = v.looseObject({
   id: v.number(),
   results: v.record(v.string(), v.looseObject({})),
+});
+const tmdbImageSchema = v.looseObject({
+  aspect_ratio: v.optional(v.number()),
+  file_path: v.pipe(v.string(), v.minLength(1)),
+  height: v.optional(v.number()),
+  iso_639_1: v.optional(v.nullable(v.string())),
+  vote_average: v.optional(v.number()),
+  vote_count: v.optional(v.number()),
+  width: v.optional(v.number()),
+});
+const tmdbImagesSchema = v.looseObject({
+  id: v.number(),
+  backdrops: v.array(tmdbImageSchema),
+  logos: v.optional(v.array(tmdbImageSchema), []),
+  posters: v.optional(v.array(tmdbImageSchema), []),
 });
 
 const firestoreCursorSchema = v.object({
@@ -125,6 +141,9 @@ export const parseTmdbProviderCatalog = (
 
 export const parseTmdbWatchProviders = (input: unknown): WatchProviderResults =>
   parse(tmdbWatchProvidersSchema, input, "tmdb") as WatchProviderResults;
+
+export const parseTmdbImages = (input: unknown): Images =>
+  parse(tmdbImagesSchema, input, "tmdb") as Images;
 
 export const parseFirestoreCursor = (input: unknown) =>
   parse(firestoreCursorSchema, input, "firestore");

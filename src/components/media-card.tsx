@@ -1,6 +1,8 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { Image } from "@unpic/qwik";
 import { RatingStar } from "~/components/rating-star";
+import { loadHorizontalPosterPath } from "~/services/horizontal-poster";
+import { MediaType } from "~/services/models";
 import { TMDB_IMAGE_BASE_URL } from "~/utils/constants";
 
 export type MediaCardVariant = "landscape" | "poster" | "person";
@@ -16,6 +18,9 @@ interface MediaCardProps {
   year?: number | null | undefined;
   variant?: MediaCardVariant;
   layout?: MediaCardLayout;
+  language?: string;
+  mediaType?: MediaType.Movie | MediaType.Tv;
+  tmdbId?: number | string;
 }
 
 const META_ROW_CLASS =
@@ -91,9 +96,35 @@ export const MediaCard = component$(
     year,
     variant = "poster",
     layout = "carousel",
+    language,
+    mediaType,
+    tmdbId,
   }: MediaCardProps) => {
-    const hasPoster = Boolean(picfile);
     const isLandscape = variant === "landscape";
+    const selectedImage = useSignal(picfile);
+    const hasPoster = Boolean(selectedImage.value);
+
+    // Language-specific title artwork is optional enhancement. Waiting until
+    // the card enters the viewport keeps it out of the SSR/feed critical path.
+    // eslint-disable-next-line qwik/no-use-visible-task
+    useVisibleTask$(async ({ cleanup }) => {
+      let active = true;
+      cleanup(() => {
+        active = false;
+      });
+      if (!isLandscape || !language || !mediaType || !tmdbId) return;
+
+      try {
+        const horizontalPoster = await loadHorizontalPosterPath({
+          id: tmdbId,
+          language,
+          type: mediaType,
+        });
+        if (active && horizontalPoster) selectedImage.value = horizontalPoster;
+      } catch {
+        // Keep the feed backdrop as a resilient visual fallback.
+      }
+    });
     const imageWidth = getMediaCardImageWidth({
       layout,
       variant,
@@ -133,7 +164,7 @@ export const MediaCard = component$(
             {hasPoster ? (
               <Image
                 class="media-card-poster absolute inset-0 h-full w-full transform-gpu object-cover"
-                src={`${TMDB_IMAGE_BASE_URL}w${imageWidth}${picfile}`}
+                src={`${TMDB_IMAGE_BASE_URL}w${imageWidth}${selectedImage.value}`}
                 width={imageWidth}
                 height={height}
                 alt=""

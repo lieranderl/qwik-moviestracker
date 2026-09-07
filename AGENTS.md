@@ -91,6 +91,15 @@ Do not load every reference by default. Open only what the task needs.
   Dependabot, and explicit Docker image tags.
 - Secrets never belong in source, image layers, workflow logs, CLI output, or
   Markdown. Name missing variables without printing values.
+- The production Secret Manager inventory is exactly `AUTH_SECRET`,
+  `GOOGLE_SECRET`, `TMDB_API_KEY`, and backend-owned `TMDBAPIKEY`. The frontend
+  consumes the first three; backend catalog jobs consume `TMDBAPIKEY`.
+- `GC_API_KEY`, `FIREBASEADMIN_CONFIG`, `VITE_FIREBASE_CONFIG`, and the legacy
+  Cloud Build GitHub OAuth token are retired. Do not recreate them. Any
+  remaining source, workflow, or OpenTofu reference is cleanup debt, not an
+  active contract.
+- IMDb access is server-to-server through the IAM-private Cloud Run service and
+  `IMDB_SERVICE_URL`. Do not restore API Gateway or query-string/API-key auth.
 - Extend pipelines by adding focused jobs or reusable workflows with minimal
   permissions, concurrency controls, timeouts, immutable artifact references,
   and environment protection for production.

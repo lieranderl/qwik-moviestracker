@@ -65,8 +65,8 @@
 ## Service Boundaries
 
 - TMDB client: `src/services/tmdb.ts`
-- Private IMDb Cloud Run client with temporary gateway fallback:
-  `src/services/cloud-func-api.ts`
+- IAM-private IMDb Cloud Run client: `src/services/cloud-func-api.ts`. API
+  Gateway and `GC_API_KEY` are retired and must not be restored.
 - JacRed torrent-search adapter: `src/services/torrent-search.ts`
 - Firestore Native reads: `src/services/firestore.ts`
 - TorrServer client: `src/services/torrserver.ts`

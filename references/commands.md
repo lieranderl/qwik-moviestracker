@@ -105,7 +105,10 @@ Required Secret Manager secret names expected by the deploy workflow:
 - `AUTH_SECRET`
 - `GOOGLE_SECRET`
 - `TMDB_API_KEY`
-- `GC_API_KEY` only while the one-release API Gateway fallback is enabled
+
+Backend catalog jobs separately require `TMDBAPIKEY`. `GC_API_KEY`, Firebase
+configuration secrets, and the legacy Cloud Build GitHub OAuth token are
+retired and must not be recreated.
 
 OpenTofu binds `IMDB_SERVICE_URL` directly on the frontend Cloud Run service;
 it is not a GitHub deployment variable or a secret.

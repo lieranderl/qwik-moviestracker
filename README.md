@@ -81,8 +81,8 @@ last healthy revision automatically.
 
 OpenTofu in the backend infrastructure directory owns Cloud Run configuration,
 runtime environment and secret bindings, IAM, and alerting. IMDb calls use the
-private service URL and Google ID tokens; GC_API_KEY exists only during the
-one-release gateway fallback.
+private service URL and Google ID tokens. API Gateway and `GC_API_KEY` are
+retired.
 
 Measure authenticated SSR before and after a release with
 `SSR_BENCH_COOKIE=... bun run bench:ssr -- https://service.example`. Preserve

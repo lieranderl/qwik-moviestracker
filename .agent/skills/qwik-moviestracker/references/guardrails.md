@@ -19,7 +19,12 @@ Expected environment variables include:
 - `GCP_PROJECT`
 - `FIRESTORE_DATABASE`
 - `TMDB_API_KEY`
-- `GC_API_KEY`
+- `IMDB_SERVICE_URL` (non-secret)
+
+The complete production Secret Manager inventory is `AUTH_SECRET`,
+`GOOGLE_SECRET`, `TMDB_API_KEY`, and backend-owned `TMDBAPIKEY`. Do not recreate
+retired `GC_API_KEY`, Firebase configuration secrets, or the Cloud Build GitHub
+OAuth token.
 
 Rules:
 
@@ -52,6 +57,8 @@ Do not move server-side env reads into browser-only code.
 - Preserve the `lang` query parameter flow unless the task intentionally
   changes language behavior.
 - Keep external API access centralized in `src/services/**`.
+- IMDb calls must use the IAM-private Cloud Run service. Do not restore API
+  Gateway or API-key authentication.
 - Firestore must use Application Default Credentials on the server; never
   serialize credentials or cursors' decoded internals to the browser.
 - JacRed is the only supported torrent-search backend. Do not restore the

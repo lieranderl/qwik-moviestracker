@@ -54,7 +54,7 @@ Protected routes live under `src/routes/(auth-guard)/`.
 | Concern                  | File                             | Notes                                                      |
 | ------------------------ | -------------------------------- | ---------------------------------------------------------- |
 | TMDB client              | `src/services/tmdb.ts`           | trending, search, details, recommendations, images         |
-| Google Cloud gateway     | `src/services/cloud-func-api.ts` | IMDb ratings only                                          |
+| Private IMDb Cloud Run   | `src/services/cloud-func-api.ts` | IAM-authenticated, non-blocking IMDb ratings               |
 | Firestore latest content | `src/services/firestore.ts`      | ADC-backed curated/latest movie data and cursor pagination |
 | TorrServer API           | `src/services/torrserver.ts`     | echo, list, add, remove with timeout handling              |
 
@@ -79,6 +79,8 @@ patterns.
   `(auth-guard)` layout loaders in `src/routes/(auth-guard)/layout.tsx`.
 - Auth redirect enforcement happens in the `(auth-guard)` layout, not each page.
 - External API logic is already centralized in services; keep it there.
+- IMDb is an IAM-private Cloud Run integration. API Gateway and `GC_API_KEY`
+  are retired and must not be restored.
 - Auth.js always uses signed JWT sessions; no database adapter is loaded.
 - JacRed is the only torrent-search integration.
 - Search behavior is split between:

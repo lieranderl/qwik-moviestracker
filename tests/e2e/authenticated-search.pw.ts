@@ -41,8 +41,10 @@ test.describe("authenticated search", () => {
     await addBypassCookie(page);
     await page.goto("/search/?lang=en-US");
 
-    await page.getByLabel(searchInputPattern).fill("ab");
-    await page.getByRole("button", { name: /^search$/i }).click();
+    const searchInput = page.getByLabel(searchInputPattern);
+    await searchInput.pressSequentially("ab");
+    await expect(searchInput).toHaveValue("ab");
+    await searchInput.press("Enter");
 
     await expect(page).toHaveURL(/\/search\/?\?lang=en-US&q=ab$/);
     await expect(

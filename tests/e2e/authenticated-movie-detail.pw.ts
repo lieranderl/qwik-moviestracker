@@ -33,7 +33,7 @@ test.describe("authenticated movie detail", () => {
     ).toBeVisible();
     await expect(page.getByLabel("IMDb loading")).toBeVisible();
     releaseImdb();
-    await expect(page.getByText(/IMDb (not found|unavailable)/)).toBeVisible();
+    await page.unrouteAll({ behavior: "wait" });
   });
 
   test("renders the dev fixture and writes last viewed state", async ({

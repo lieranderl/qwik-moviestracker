@@ -39,10 +39,12 @@ test.describe("authenticated movie collections", () => {
     await expectFeaturedSlidesAligned(page, "4K HDR / Dolby Vision");
     const hdrFigures = page.locator("#hdr10-movies figure");
     await page.waitForLoadState("networkidle");
-    await page.getByRole("link", { name: "HDR10", exact: true }).click();
-    await expect
-      .poll(() => artworkIds.has("990001") && artworkIds.has("990003"))
-      .toBe(true);
+    await hdrFigures.first().scrollIntoViewIfNeeded();
+    await expect(hdrFigures.first()).toBeInViewport();
+    await expect.poll(() => artworkIds.has("990001")).toBe(true);
+    await hdrFigures.nth(1).scrollIntoViewIfNeeded();
+    await expect(hdrFigures.nth(1)).toBeInViewport();
+    await expect.poll(() => artworkIds.has("990003")).toBe(true);
     await expect(hdrFigures.first().locator("img")).toHaveCount(1);
     await expect(hdrFigures.nth(1)).not.toContainText("Cache Me If You Can");
 

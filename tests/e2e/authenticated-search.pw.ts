@@ -44,6 +44,10 @@ test.describe("authenticated search", () => {
     const searchInput = page.getByLabel(searchInputPattern);
     await searchInput.pressSequentially("ab");
     await expect(searchInput).toHaveValue("ab");
+    await expect(page.locator("html")).toHaveAttribute(
+      "q:container",
+      "resumed",
+    );
     await searchInput.press("Enter");
 
     await expect(page).toHaveURL(/\/search\/?\?lang=en-US&q=ab$/);

@@ -78,6 +78,8 @@ patterns.
 - Language is derived from the `lang` query parameter through the
   `(auth-guard)` layout loaders in `src/routes/(auth-guard)/layout.tsx`.
 - Auth redirect enforcement happens in the `(auth-guard)` layout, not each page.
+- Every Google sign-in attempt starts with a fresh, non-persisted content-use
+  disclaimer acceptance in `src/components/login-button.tsx`.
 - External API logic is already centralized in services; keep it there.
 - IMDb is an IAM-private Cloud Run integration. API Gateway and `GC_API_KEY`
   are retired and must not be restored.

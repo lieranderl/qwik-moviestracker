@@ -92,6 +92,33 @@ const enUS = {
   "torrserver.tools.heading": "Tools",
   "torrserver.tools.subtitle": "Add torrents, search, and manage playlists.",
   "auth.signInWithProvider": "Sign in with {provider}",
+  "auth.disclaimer.aboutHeading": "About Moviestracker",
+  "auth.disclaimer.aboutText":
+    "Moviestracker is a free, non-commercial personal catalog for discovering and organizing movies and TV series.",
+  "auth.disclaimer.agree":
+    "I have read and agree to use Moviestracker only in accordance with applicable law and third-party terms.",
+  "auth.disclaimer.cancel": "Cancel",
+  "auth.disclaimer.close": "Close the use and content notice",
+  "auth.disclaimer.continueWithProvider": "Agree and continue with {provider}",
+  "auth.disclaimer.jacredHeading": "JacRed",
+  "auth.disclaimer.jacredLink": "Visit JacRed",
+  "auth.disclaimer.jacredText":
+    "Torrent search results, including magnet links and source-page links, are supplied by the third-party JacRed API (jacred.su). Moviestracker does not create or verify these listings and does not permanently store their underlying .torrent files or media.",
+  "auth.disclaimer.noHostingHeading": "No media hosting",
+  "auth.disclaimer.noHostingText":
+    "This web app does not host, upload, seed, or distribute video files. Playback and download actions are handled by third-party services or a TorrServer endpoint configured by the user.",
+  "auth.disclaimer.responsibility":
+    "BitTorrent technology has lawful and unlawful uses. Access only material you own, that is in the public domain, or that you are otherwise authorized to use. You are responsible for complying with the laws and third-party terms that apply in your jurisdiction.",
+  "auth.disclaimer.subtitle":
+    "Review how Moviestracker provides information and handles torrent links.",
+  "auth.disclaimer.title": "Before you sign in",
+  "auth.disclaimer.tmdbAttribution":
+    "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+  "auth.disclaimer.tmdbHeading": "The Movie Database (TMDB)",
+  "auth.disclaimer.tmdbLink": "Visit TMDB",
+  "auth.disclaimer.tmdbLogo": "TMDB logo",
+  "auth.disclaimer.tmdbText":
+    "Movie and TV metadata, images, and related media are retrieved through the TMDB API.",
   "search.startsAfterCharacters": "Use at least {minimum} characters.",
   "search.becomesAvailableAfterCharacters":
     "Enter at least {minimum} characters.",
@@ -101,6 +128,8 @@ const enUS = {
   "filters.reset": "Reset filters",
   "media.productionDetails": "Production details",
   "media.episodeStatus": "Episode status",
+  "media.socialMedia": "Social media",
+  langDaysUntilNextEpisode: "Days until next episode",
 } as const;
 
 type MessageKey = keyof typeof enUS;
@@ -188,6 +217,34 @@ const ruRU = {
   "torrserver.tools.subtitle":
     "Добавляйте торренты, ищите и управляйте плейлистами.",
   "auth.signInWithProvider": "Войти через {provider}",
+  "auth.disclaimer.aboutHeading": "О Moviestracker",
+  "auth.disclaimer.aboutText":
+    "Moviestracker — бесплатный некоммерческий персональный каталог для поиска и организации информации о фильмах и сериалах.",
+  "auth.disclaimer.agree":
+    "Я прочитал(а) уведомление и согласен(на) использовать Moviestracker только в соответствии с применимым законодательством и условиями сторонних сервисов.",
+  "auth.disclaimer.cancel": "Отмена",
+  "auth.disclaimer.close": "Закрыть уведомление об использовании и контенте",
+  "auth.disclaimer.continueWithProvider":
+    "Согласиться и продолжить через {provider}",
+  "auth.disclaimer.jacredHeading": "JacRed",
+  "auth.disclaimer.jacredLink": "Открыть JacRed",
+  "auth.disclaimer.jacredText":
+    "Результаты поиска торрентов, включая magnet-ссылки и ссылки на страницы источников, предоставляются сторонним API JacRed (jacred.su). Moviestracker не создаёт и не проверяет эти списки и не хранит постоянно исходные .torrent-файлы или медиаконтент.",
+  "auth.disclaimer.noHostingHeading": "Без размещения медиаконтента",
+  "auth.disclaimer.noHostingText":
+    "Веб-приложение не размещает, не загружает, не раздаёт и не распространяет видеофайлы. Воспроизведение и загрузка выполняются сторонними сервисами или сервером TorrServer, который настроил пользователь.",
+  "auth.disclaimer.responsibility":
+    "Технология BitTorrent может использоваться законно и незаконно. Получайте доступ только к материалам, которыми вы владеете, находящимся в общественном достоянии или на использование которых у вас есть разрешение. Вы обязаны соблюдать законодательство и условия сторонних сервисов, применимые в вашей юрисдикции.",
+  "auth.disclaimer.subtitle":
+    "Ознакомьтесь с тем, как Moviestracker получает информацию и обрабатывает торрент-ссылки.",
+  "auth.disclaimer.title": "Перед входом",
+  "auth.disclaimer.tmdbAttribution":
+    "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+  "auth.disclaimer.tmdbHeading": "The Movie Database (TMDB)",
+  "auth.disclaimer.tmdbLink": "Открыть TMDB",
+  "auth.disclaimer.tmdbLogo": "Логотип TMDB",
+  "auth.disclaimer.tmdbText":
+    "Метаданные, изображения и связанные материалы о фильмах и сериалах приложение получает через API TMDB.",
   "search.startsAfterCharacters": "Используйте не менее {minimum} символов.",
   "search.becomesAvailableAfterCharacters":
     "Введите не менее {minimum} символов.",
@@ -198,6 +255,8 @@ const ruRU = {
   "filters.reset": "Сбросить фильтры",
   "media.productionDetails": "Детали производства",
   "media.episodeStatus": "Статус эпизодов",
+  "media.socialMedia": "Социальные сети",
+  langDaysUntilNextEpisode: "Дней до следующего эпизода",
 } as const satisfies MessageCatalog;
 
 const catalogs: Record<Locale, MessageCatalog> = {

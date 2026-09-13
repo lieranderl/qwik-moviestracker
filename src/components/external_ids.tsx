@@ -46,7 +46,7 @@ export const ExternalIds = component$(
     return (
       <>
         {external_ids && (
-          <div class="my-2 flex flex-wrap gap-2 text-xl">
+          <div class="flex flex-wrap gap-2 text-xl">
             {external_ids.facebook_id && (
               <a
                 href={`https://facebook.com/${external_ids.facebook_id}`}

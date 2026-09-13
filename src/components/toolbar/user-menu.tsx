@@ -1,10 +1,74 @@
 import { message } from "~/utils/i18n";
-import { $, component$ } from "@builder.io/qwik";
-import { Image } from "@unpic/qwik";
+import { $, component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { useSession, useSignOut } from "~/routes/plugin@auth";
 
 import { LangButton } from "./lang-button";
 import type { ToolbarProps } from "./toolbar";
+
+type UserAvatarProps = {
+  alt: string;
+  imageUrl: string;
+  initials: string;
+  size: "menu" | "toolbar";
+};
+
+const UserAvatar = component$<UserAvatarProps>(
+  ({ alt, imageUrl, initials, size }) => {
+    const imageFailed = useSignal(false);
+    const imageRef = useSignal<HTMLImageElement>();
+    const showImage = Boolean(imageUrl) && !imageFailed.value;
+    const dimension = size === "toolbar" ? 40 : 44;
+
+    // Image errors do not bubble and can fire before Qwik resumes this component.
+    // eslint-disable-next-line qwik/no-use-visible-task
+    useVisibleTask$(
+      ({ cleanup }) => {
+        const image = imageRef.value;
+        if (!image) return;
+
+        const showFallback = () => {
+          imageFailed.value = true;
+        };
+
+        if (image.complete && image.naturalWidth === 0) {
+          showFallback();
+        }
+        image.addEventListener("error", showFallback);
+        cleanup(() => image.removeEventListener("error", showFallback));
+      },
+      { strategy: "document-ready" },
+    );
+
+    return (
+      <div class={["avatar", !showImage && "avatar-placeholder"]}>
+        <div
+          class={[
+            "border-base-200 relative grid shrink-0 place-items-center overflow-hidden rounded-full border text-sm font-semibold shadow-sm",
+            size === "toolbar" ? "h-10 w-10" : "h-11 w-11",
+            showImage
+              ? "bg-base-100"
+              : "bg-base-300 text-base-content",
+          ]}
+        >
+          {showImage ? (
+            <img
+              ref={imageRef}
+              src={imageUrl}
+              width={dimension}
+              height={dimension}
+              alt={alt}
+              class="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            <span aria-hidden="true" class="leading-none">
+              {initials}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  },
+);
 
 export const UserMenu = component$(({ lang }: ToolbarProps) => {
   const session = useSession();
@@ -15,7 +79,13 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
   const userImage = user?.image?.trim() ?? "";
   const userLabel = userName || userEmail || message(lang, "langAccount");
   const userSecondaryLabel = userName && userEmail ? userEmail : "";
-  const userInitial = userLabel.charAt(0).toUpperCase();
+  const userInitials = userLabel
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0))
+    .join("")
+    .toUpperCase();
   const authRedirectHref = lang
     ? `/auth/?lang=${encodeURIComponent(lang)}`
     : "/auth";
@@ -43,23 +113,12 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
           role="button"
           class="btn btn-ghost btn-circle avatar focus-visible:outline-primary min-h-11 w-11 list-none border-none bg-transparent p-0 shadow-none transition-transform duration-200 hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden"
         >
-          {userImage ? (
-            <div class="border-base-200 bg-base-100 h-10 w-10 overflow-hidden rounded-full border shadow-sm">
-              <Image
-                src={userImage}
-                width={40}
-                height={40}
-                alt={`${userLabel} ${message(lang, "langAvatar")}`}
-                class="h-full w-full object-cover"
-              />
-            </div>
-          ) : (
-            <div class="avatar placeholder">
-              <div class="border-base-200 bg-base-200 text-base-content h-10 w-10 rounded-full border text-sm font-semibold shadow-sm">
-                <span>{userInitial}</span>
-              </div>
-            </div>
-          )}
+          <UserAvatar
+            alt={`${userLabel} ${message(lang, "langAvatar")}`}
+            imageUrl={userImage}
+            initials={userInitials}
+            size="toolbar"
+          />
         </summary>
         <ul
           id="toolbar-account-menu"
@@ -70,25 +129,12 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
         >
           <li class="pointer-events-none mb-1 px-3 py-3">
             <div class="rounded-box border-base-200 bg-base-200/60 flex items-center gap-3 border px-3 py-3 shadow-sm">
-              {userImage ? (
-                <div class="avatar">
-                  <div class="h-11 w-11 overflow-hidden rounded-full">
-                    <Image
-                      src={userImage}
-                      width={44}
-                      height={44}
-                      alt={`${userLabel} ${message(lang, "langAvatar")}`}
-                      class="h-full w-full object-cover"
-                    />
-                  </div>
-                </div>
-              ) : (
-                <div class="avatar placeholder">
-                  <div class="border-base-200 bg-base-300 text-base-content h-11 w-11 rounded-full border text-sm font-semibold shadow-sm">
-                    <span>{userInitial}</span>
-                  </div>
-                </div>
-              )}
+              <UserAvatar
+                alt={`${userLabel} ${message(lang, "langAvatar")}`}
+                imageUrl={userImage}
+                initials={userInitials}
+                size="menu"
+              />
               <div class="min-w-0">
                 <span class="text-base-content block truncate text-sm font-semibold">
                   {userLabel}

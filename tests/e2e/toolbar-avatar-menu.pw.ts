@@ -45,6 +45,48 @@ test.describe("toolbar avatar menu", () => {
     ).toBeVisible();
   });
 
+  test("centers initials when the profile image cannot load", async ({
+    page,
+  }) => {
+    await page.route("**/*", (route) =>
+      route.request().resourceType() === "image"
+        ? route.abort("failed")
+        : route.continue(),
+    );
+    await page.goto("/search/?lang=en-US");
+
+    const trigger = page.getByRole("button", {
+      name: openAccountMenuPattern,
+    });
+
+    const toolbarInitials = trigger.getByText("PU", { exact: true });
+    await expect(toolbarInitials).toBeVisible();
+    await trigger.click();
+
+    const menu = page.getByRole("menu", { name: accountMenuPattern });
+    const menuInitials = menu.getByText("PU", { exact: true });
+    await expect(menuInitials).toBeVisible();
+    await expect(trigger.getByRole("img")).toHaveCount(0);
+    await expect(menu.getByRole("img")).toHaveCount(0);
+
+    for (const initials of [toolbarInitials, menuInitials]) {
+      const centerOffset = await initials.evaluate((element) => {
+        const text = element.getBoundingClientRect();
+        const circle = element.parentElement!.getBoundingClientRect();
+
+        return {
+          x: Math.abs(text.x + text.width / 2 - (circle.x + circle.width / 2)),
+          y: Math.abs(
+            text.y + text.height / 2 - (circle.y + circle.height / 2),
+          ),
+        };
+      });
+
+      expect(centerOffset.x).toBeLessThanOrEqual(1);
+      expect(centerOffset.y).toBeLessThanOrEqual(1);
+    }
+  });
+
   test("switches language from the account menu and persists the choice", async ({
     page,
   }) => {

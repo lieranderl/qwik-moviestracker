@@ -104,9 +104,33 @@
 
 - Prefer daisyUI shells first: `card`, `rounded-box`, `badge`, `btn`,
   `dropdown`, `modal-box`, and `tabs-box`.
+- The shared `FeaturedCarousel` rotates every eight seconds, pauses for
+  hover/focus/hidden tabs, and disables autoplay for reduced motion. Home uses
+  up to eight complete weekly-trending TMDB movies; the movie landing uses up
+  to eight unique entries alternated from its HDR10 and Dolby Vision
+  collections; the series landing uses up to eight unique entries alternated
+  from Trending and Popular series, starting with Trending. Featured slide
+  labels, title/logo slots, metadata, descriptions, and actions reserve
+  consistent responsive rows so content remains vertically aligned across the
+  rotation. Desktop shows direct slide indicators; mobile uses the Previous and
+  Next controls with a compact position counter so eight indicators never
+  overflow narrow screens. Each `FeaturedSpotlight` uses a cinematic,
+  theme-independent dark treatment without a foreground poster. Its TMDB image
+  request is intentionally unfiltered: select only a language-neutral backdrop
+  to avoid embedded movie names, then select the logo in the active `en` or
+  `ru` language. Show only the real localized TMDB overview;
+  never substitute generic description copy, and omit the description when the
+  overview is empty. Omit empty and zero metadata.
 - `MediaCard` uses an explicit `variant` prop with `poster`, `landscape`, or
   `person`. Do not reintroduce boolean shape flags such as `isHorizontal` or
   `isPerson`.
+- Every landscape `MediaCard` lazily enriches its feed image through the shared
+  TMDB artwork endpoint. Prefer a backdrop tagged with the selected `en` or
+  `ru` language, allow only a language-neutral backdrop as fallback, and never
+  substitute artwork tagged with the other language. Do not add a logo or text
+  title over regular rail backdrops; branded title treatment belongs only in
+  the large Featured carousels. Empty labels, invalid years, and missing or
+  zero ratings must not render.
 - `MediaCard` metadata rows should use the `metaLabel` prop instead of route-
   level ad hoc character/job prop names.
 - Treat `rounded-box` as the default radius for cards, alerts, dropdown panes,

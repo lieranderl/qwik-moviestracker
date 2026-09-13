@@ -8,7 +8,13 @@ import {
   type MovieCategory,
   type TvCategory,
 } from "./media-categories";
-import { getMedias, getRegionFromLanguage, getTrendingMedia } from "./tmdb";
+import {
+  getFeaturedArtwork,
+  getMedias,
+  getRegionFromLanguage,
+  getTrendingMedia,
+  type FeaturedArtwork,
+} from "./tmdb";
 import {
   toUpstreamFailure,
   type UpstreamFailureDetails,
@@ -30,6 +36,7 @@ const settleFeedSection = async <T>(
 };
 
 export type FeedLoaderDependencies = {
+  getFeaturedArtwork: typeof getFeaturedArtwork;
   getMedias: (args: Parameters<typeof getMedias>[0]) => Promise<unknown[]>;
   getMoviesFirestore: typeof getMoviesFirestore;
   getTrendingMedia: (
@@ -38,6 +45,7 @@ export type FeedLoaderDependencies = {
 };
 
 const defaultDependencies: FeedLoaderDependencies = {
+  getFeaturedArtwork,
   getMedias,
   getMoviesFirestore,
   getTrendingMedia,
@@ -47,6 +55,160 @@ type CatalogContext = {
   databaseId: string;
   lang: string;
   projectId: string;
+};
+
+const FEATURED_ITEM_LIMIT = 8;
+
+export const selectFeaturedMovieCandidates = (
+  movies: MovieShort[],
+  limit = FEATURED_ITEM_LIMIT,
+) =>
+  movies
+    .map((movie, index) => ({
+      index,
+      movie,
+      quality:
+        Number(Boolean(movie.poster_path)) + Number(Boolean(movie.overview)),
+    }))
+    .filter(
+      ({ movie }) =>
+        Boolean(movie.title?.trim()) && Boolean(movie.backdrop_path),
+    )
+    .sort(
+      (left, right) => right.quality - left.quality || left.index - right.index,
+    )
+    .slice(0, Math.max(0, limit))
+    .map(({ movie }) => movie);
+
+export type FeaturedMovie = {
+  artwork: FeaturedArtwork;
+  movie: MovieShort;
+};
+
+export type FeaturedTv = {
+  artwork: FeaturedArtwork;
+  tv: TvShort;
+};
+
+const enrichFeaturedMovies = async (
+  movies: MovieShort[],
+  language: string,
+  loadArtwork: typeof getFeaturedArtwork,
+): Promise<FeaturedMovie[]> => {
+  const results = await Promise.allSettled(
+    movies.map(async (movie) => ({
+      artwork: await loadArtwork({
+        id: movie.id,
+        language,
+        type: MediaType.Movie,
+      }),
+      movie,
+    })),
+  );
+
+  return results.flatMap((result) =>
+    result.status === "fulfilled" && result.value.artwork.backdropPath
+      ? [result.value]
+      : [],
+  );
+};
+
+export const loadFeaturedMovies = async (
+  movies: MovieShort[],
+  language: string,
+  loadArtwork: typeof getFeaturedArtwork = getFeaturedArtwork,
+): Promise<FeaturedMovie[]> =>
+  enrichFeaturedMovies(
+    selectFeaturedMovieCandidates(movies),
+    language,
+    loadArtwork,
+  );
+
+const selectFeaturedTvCandidates = (
+  items: TvShort[],
+  limit = FEATURED_ITEM_LIMIT,
+) =>
+  items
+    .map((tv, index) => ({
+      index,
+      quality: Number(Boolean(tv.poster_path)) + Number(Boolean(tv.overview)),
+      tv,
+    }))
+    .filter(({ tv }) => Boolean(tv.name?.trim()) && Boolean(tv.backdrop_path))
+    .sort(
+      (left, right) => right.quality - left.quality || left.index - right.index,
+    )
+    .slice(0, Math.max(0, limit))
+    .map(({ tv }) => tv);
+
+const interleaveUniqueMedia = <T extends { id: number }>(
+  sources: T[][],
+  limit: number,
+) => {
+  const positions = sources.map(() => 0);
+  const selected: T[] = [];
+  const selectedIds = new Set<number>();
+
+  while (
+    selected.length < limit &&
+    sources.some((source, index) => positions[index] < source.length)
+  ) {
+    for (let sourceIndex = 0; sourceIndex < sources.length; sourceIndex += 1) {
+      const source = sources[sourceIndex];
+      while (positions[sourceIndex] < source.length) {
+        const item = source[positions[sourceIndex]];
+        positions[sourceIndex] += 1;
+        if (!selectedIds.has(item.id)) {
+          selected.push(item);
+          selectedIds.add(item.id);
+          break;
+        }
+      }
+      if (selected.length >= limit) break;
+    }
+  }
+
+  return selected;
+};
+
+const selectHdrDolbyFeaturedMovies = (
+  hdrMovies: MovieShort[],
+  dolbyMovies: MovieShort[],
+  limit = FEATURED_ITEM_LIMIT,
+) => {
+  const sources = [
+    selectFeaturedMovieCandidates(hdrMovies, limit),
+    selectFeaturedMovieCandidates(dolbyMovies, limit),
+  ];
+  return interleaveUniqueMedia(sources, limit);
+};
+
+const loadFeaturedTv = async (
+  trending: TvShort[],
+  popular: TvShort[],
+  language: string,
+  loadArtwork: typeof getFeaturedArtwork,
+): Promise<FeaturedTv[]> => {
+  const selected = interleaveUniqueMedia(
+    [selectFeaturedTvCandidates(trending), selectFeaturedTvCandidates(popular)],
+    FEATURED_ITEM_LIMIT,
+  );
+  const results = await Promise.allSettled(
+    selected.map(async (tv) => ({
+      artwork: await loadArtwork({
+        id: tv.id,
+        language,
+        type: MediaType.Tv,
+      }),
+      tv,
+    })),
+  );
+
+  return results.flatMap((result) =>
+    result.status === "fulfilled" && result.value.artwork.backdropPath
+      ? [result.value]
+      : [],
+  );
 };
 
 export const loadHomeFeed = async (
@@ -82,8 +244,16 @@ export const loadHomeFeed = async (
     ),
   ]);
 
+  const homeMovies = (movies.data ?? []) as MovieShort[];
+  const featuredMovies = await loadFeaturedMovies(
+    homeMovies,
+    context.lang,
+    dependencies.getFeaturedArtwork,
+  );
+
   return {
-    movies: (movies.data ?? []) as MovieShort[],
+    featuredMovies,
+    movies: homeMovies,
     tv: (tv.data ?? []) as TvShort[],
     torMovies: torMoviesPage.data?.movies ?? [],
     failures: {
@@ -99,78 +269,57 @@ export const loadMovieCollections = async (
   dependencies = defaultDependencies,
 ) => {
   const region = getRegionFromLanguage(context.lang);
-  const [
-    movies,
-    popularMovies,
-    nowPlayingMovies,
-    upcomingMovies,
-    torMovies,
-    hdrMovies,
-    dolbyMovies,
-  ] = await Promise.all([
-    settleFeedSection(
-      "tmdb",
-      dependencies.getTrendingMedia({
-        page: 1,
-        language: context.lang,
-        type: MediaType.Movie,
-      }),
-    ),
-    settleFeedSection(
-      "tmdb",
-      dependencies.getMedias({
-        page: 1,
-        query: "popular",
-        language: context.lang,
-        type: MediaType.Movie,
-      }),
-    ),
-    settleFeedSection(
-      "tmdb",
-      dependencies.getMedias({
-        page: 1,
-        query: "now_playing",
-        language: context.lang,
-        region,
-        type: MediaType.Movie,
-      }),
-    ),
-    settleFeedSection(
-      "tmdb",
-      dependencies.getMedias({
-        page: 1,
-        query: "upcoming",
-        language: context.lang,
-        region,
-        type: MediaType.Movie,
-      }),
-    ),
-    ...([DbType.LastMovies, DbType.HDR10, DbType.DV] as const).map((dbName) =>
+  const [movies, upcomingMovies, torMovies, hdrMovies, dolbyMovies] =
+    await Promise.all([
       settleFeedSection(
-        "firestore",
-        dependencies.getMoviesFirestore({
-          entriesOnPage: MEDIA_PAGE_SIZE,
+        "tmdb",
+        dependencies.getTrendingMedia({
+          page: 1,
           language: context.lang,
-          dbName,
-          projectId: context.projectId,
-          databaseId: context.databaseId,
+          type: MediaType.Movie,
         }),
       ),
-    ),
-  ]);
+      settleFeedSection(
+        "tmdb",
+        dependencies.getMedias({
+          page: 1,
+          query: "upcoming",
+          language: context.lang,
+          region,
+          type: MediaType.Movie,
+        }),
+      ),
+      ...([DbType.LastMovies, DbType.HDR10, DbType.DV] as const).map((dbName) =>
+        settleFeedSection(
+          "firestore",
+          dependencies.getMoviesFirestore({
+            entriesOnPage: MEDIA_PAGE_SIZE,
+            language: context.lang,
+            dbName,
+            projectId: context.projectId,
+            databaseId: context.databaseId,
+          }),
+        ),
+      ),
+    ]);
+
+  const hdrMovieItems = hdrMovies.data?.movies ?? [];
+  const dolbyMovieItems = dolbyMovies.data?.movies ?? [];
+  const featuredMovies = await enrichFeaturedMovies(
+    selectHdrDolbyFeaturedMovies(hdrMovieItems, dolbyMovieItems),
+    context.lang,
+    dependencies.getFeaturedArtwork,
+  );
 
   return {
+    featuredMovies,
     movies: (movies.data ?? []) as MovieShort[],
-    popularMovies: (popularMovies.data ?? []) as MovieShort[],
-    nowPlayingMovies: (nowPlayingMovies.data ?? []) as MovieShort[],
     upcomingMovies: (upcomingMovies.data ?? []) as MovieShort[],
     torMovies: torMovies.data?.movies ?? [],
-    hdrMovies: hdrMovies.data?.movies ?? [],
-    dolbyMovies: dolbyMovies.data?.movies ?? [],
+    hdrMovies: hdrMovieItems,
+    dolbyMovies: dolbyMovieItems,
     failures: {
       movies: movies.failure,
-      popularMovies: popularMovies.failure,
-      nowPlayingMovies: nowPlayingMovies.failure,
       upcomingMovies: upcomingMovies.failure,
       torMovies: torMovies.failure,
       hdrMovies: hdrMovies.failure,
@@ -183,41 +332,47 @@ export const loadTvCollections = async (
   { lang }: { lang: string },
   dependencies = defaultDependencies,
 ) => {
-  const [tvtrend, tvtoprated, tvpopular, tvairingtoday, tvontheair] =
-    await Promise.all([
+  const [tvtrend, tvtoprated, tvpopular, tvontheair] = await Promise.all([
+    settleFeedSection(
+      "tmdb",
+      dependencies.getTrendingMedia({
+        page: 1,
+        language: lang,
+        type: MediaType.Tv,
+      }),
+    ),
+    ...(["top_rated", "popular", "on_the_air"] as const).map((query) =>
       settleFeedSection(
         "tmdb",
-        dependencies.getTrendingMedia({
+        dependencies.getMedias({
           page: 1,
+          query,
           language: lang,
           type: MediaType.Tv,
         }),
       ),
-      ...(["top_rated", "popular", "airing_today", "on_the_air"] as const).map(
-        (query) =>
-          settleFeedSection(
-            "tmdb",
-            dependencies.getMedias({
-              page: 1,
-              query,
-              language: lang,
-              type: MediaType.Tv,
-            }),
-          ),
-      ),
-    ]);
+    ),
+  ]);
+
+  const trendingItems = (tvtrend.data ?? []) as TvShort[];
+  const popularItems = (tvpopular.data ?? []) as TvShort[];
+  const featuredTv = await loadFeaturedTv(
+    trendingItems,
+    popularItems,
+    lang,
+    dependencies.getFeaturedArtwork,
+  );
 
   return {
-    tvtrend: (tvtrend.data ?? []) as TvShort[],
+    featuredTv,
+    tvtrend: trendingItems,
     tvtoprated: (tvtoprated.data ?? []) as TvShort[],
-    tvpopular: (tvpopular.data ?? []) as TvShort[],
-    tvairingtoday: (tvairingtoday.data ?? []) as TvShort[],
+    tvpopular: popularItems,
     tvontheair: (tvontheair.data ?? []) as TvShort[],
     failures: {
       tvtrend: tvtrend.failure,
       tvtoprated: tvtoprated.failure,
       tvpopular: tvpopular.failure,
-      tvairingtoday: tvairingtoday.failure,
       tvontheair: tvontheair.failure,
     } satisfies FeedFailures,
   };

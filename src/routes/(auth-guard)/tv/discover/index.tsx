@@ -302,7 +302,7 @@ export default component$(() => {
                 <MediaCard
                   title={tvShow.name ?? ""}
                   width={300}
-                  rating={tvShow.vote_average ?? 0}
+                  rating={tvShow.vote_average}
                   year={formatYear(tvShow.first_air_date)}
                   picfile={tvShow.poster_path}
                   variant="poster"

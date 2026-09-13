@@ -384,7 +384,7 @@ export default component$(() => {
                 <MediaCard
                   title={movie.title ?? ""}
                   width={300}
-                  rating={movie.vote_average ?? 0}
+                  rating={movie.vote_average}
                   year={formatYear(movie.release_date)}
                   picfile={movie.poster_path}
                   variant="poster"

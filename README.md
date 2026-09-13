@@ -11,6 +11,8 @@ Authenticated Qwik City app for discovering movies and TV shows, opening rich de
 pages, authenticating with Google, reading curated/latest items from Firestore,
 and managing a connected TorrServer library.
 
+The latest version is available at [moviestracker.net](https://moviestracker.net).
+
 Any Google account with a verified email address may sign in. This is broad
 authenticated access, not a private email allowlist.
 
@@ -27,7 +29,7 @@ authenticated access, not a private email allowlist.
 ## App Areas
 
 - `/auth` - branded Google sign-in / landing page
-- `/` - authenticated discovery dashboard with spotlight, continue-browsing, and carousel sections
+- `/` - authenticated discovery dashboard with spotlight and carousel sections
 - `/movie/**` - movie discovery and detail pages
 - `/tv/**` - TV discovery and detail pages
 - `/person/**` - person detail pages

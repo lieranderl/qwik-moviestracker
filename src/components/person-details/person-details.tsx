@@ -1,5 +1,5 @@
 import { message } from "~/utils/i18n";
-import { component$, useVisibleTask$ } from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 import {
   BsGenderFemale,
   BsGenderMale,
@@ -12,7 +12,6 @@ import { MediaType, type PersonFull } from "~/services/models";
 import { formatYear } from "~/utils/format";
 
 import { paths } from "~/utils/paths";
-import { writeLastViewed } from "~/utils/recent-activity";
 import { ExternalIds } from "../external_ids";
 import { MediaCard } from "../media-card";
 import { MediaCarousel } from "../media-carousel";
@@ -31,17 +30,6 @@ const sectionBodyClass = "card-body gap-4 p-4 md:p-6";
 
 export const PersonDetails = component$(
   ({ person, perMovies, perTv, lang }: MovieDetailsProps) => {
-    // eslint-disable-next-line qwik/no-use-visible-task
-    useVisibleTask$(() => {
-      writeLastViewed({
-        href: paths.media(MediaType.Person, person.id, lang),
-        title: person.name ?? message(lang, "ui.personDetails"),
-        kind: "person",
-        meta: person.known_for_department || message(lang, "ui.person"),
-        imagePath: person.profile_path,
-      });
-    });
-
     return (
       <DetailPageContainer>
         {/* ── HERO: Profile Image + Name + Personal Info ── */}
@@ -138,7 +126,7 @@ export const PersonDetails = component$(
                     <MediaCard
                       title={m.title ? m.title : ""}
                       width={500}
-                      rating={m.vote_average ? m.vote_average : 0}
+                      rating={m.vote_average}
                       year={formatYear(m.release_date)}
                       picfile={m.poster_path}
                       variant="poster"
@@ -166,7 +154,7 @@ export const PersonDetails = component$(
                     <MediaCard
                       title={m.name ? m.name : ""}
                       width={500}
-                      rating={m.vote_average ? m.vote_average : 0}
+                      rating={m.vote_average}
                       year={formatYear(m.first_air_date)}
                       picfile={m.poster_path}
                       variant="poster"
@@ -194,7 +182,7 @@ export const PersonDetails = component$(
                     <MediaCard
                       title={m.title ? m.title : ""}
                       width={500}
-                      rating={m.vote_average ? m.vote_average : 0}
+                      rating={m.vote_average}
                       year={formatYear(m.release_date)}
                       picfile={m.poster_path}
                       variant="poster"
@@ -222,7 +210,7 @@ export const PersonDetails = component$(
                     <MediaCard
                       title={m.name ? m.name : ""}
                       width={500}
-                      rating={m.vote_average ? m.vote_average : 0}
+                      rating={m.vote_average}
                       year={formatYear(m.first_air_date)}
                       picfile={m.poster_path}
                       variant="poster"

@@ -4,7 +4,7 @@ import { openImdbPagePattern } from "./helpers/i18n";
 import { DEV_TV_DETAIL_ID } from "../../src/routes/dev-session";
 
 test.describe("authenticated tv detail", () => {
-  test("renders the dev fixture and writes last viewed state", async ({
+  test("renders the dev fixture without saving last viewed state", async ({
     page,
   }) => {
     await addBypassCookie(page);
@@ -35,16 +35,10 @@ test.describe("authenticated tv detail", () => {
       page.getByRole("link", { name: /state machines/i }),
     ).toBeVisible();
 
-    await expect
-      .poll(async () => {
-        try {
-          return await page.evaluate(() =>
-            window.localStorage.getItem("moviestracker:last-viewed"),
-          );
-        } catch {
-          return null;
-        }
-      })
-      .toContain(`"/tv/${DEV_TV_DETAIL_ID}/?lang=en-US"`);
+    expect(
+      await page.evaluate(() =>
+        window.localStorage.getItem("moviestracker:last-viewed"),
+      ),
+    ).toBeNull();
   });
 });

@@ -3,7 +3,7 @@ import { addBypassCookie } from "./helpers/auth-bypass";
 import { DEV_PERSON_DETAIL_ID } from "../../src/routes/dev-session";
 
 test.describe("authenticated person detail", () => {
-  test("renders the dev fixture and writes last viewed state", async ({
+  test("renders the dev fixture without saving last viewed state", async ({
     page,
   }) => {
     await addBypassCookie(page);
@@ -22,12 +22,10 @@ test.describe("authenticated person detail", () => {
     ).toBeVisible();
     await expect(page.getByRole("link", { name: /selectors/i })).toBeVisible();
 
-    await expect
-      .poll(() =>
-        page.evaluate(() =>
-          window.localStorage.getItem("moviestracker:last-viewed"),
-        ),
-      )
-      .toContain(`"/person/${DEV_PERSON_DETAIL_ID}/?lang=en-US"`);
+    expect(
+      await page.evaluate(() =>
+        window.localStorage.getItem("moviestracker:last-viewed"),
+      ),
+    ).toBeNull();
   });
 });

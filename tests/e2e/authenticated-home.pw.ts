@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { addBypassCookie } from "./helpers/auth-bypass";
+import { expectFeaturedSlidesAligned } from "./helpers/featured-carousel";
 
 test.describe("authenticated home", () => {
-  test("renders the deterministic dashboard feed and restores continue browsing state", async ({
+  test("renders the dashboard without browsing-history sections", async ({
     page,
   }) => {
     await addBypassCookie(page);
@@ -41,15 +42,35 @@ test.describe("authenticated home", () => {
       }),
     ).toBeVisible();
     await expect(
+      page.locator('#featured-spotlight button[aria-label*="/ 8:"]'),
+    ).toHaveCount(8);
+    await expectFeaturedSlidesAligned(page, "Featured");
+    await page.getByRole("button", { name: /next page/i }).click();
+    await expect(
+      page.getByRole("heading", {
+        name: "Runtime Romance",
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", {
+        name: /last viewed/i,
+      }),
+    ).toHaveCount(0);
+    await expect(
       page.getByRole("link", {
         name: /tv selectors 2025 • series resume/i,
       }),
-    ).toBeVisible();
+    ).toHaveCount(0);
     await expect(
       page.getByRole("link", {
         name: /arrival/i,
       }),
-    ).toBeVisible();
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole("heading", {
+        name: /recent searches/i,
+      }),
+    ).toHaveCount(0);
     await expect(
       page.getByRole("region", {
         name: /latest movies/i,
@@ -65,10 +86,10 @@ test.describe("authenticated home", () => {
         name: /trending series/i,
       }),
     ).toBeVisible();
-    await expect(
-      page.getByRole("link", {
-        name: /hydration station/i,
-      }),
-    ).toBeVisible();
+    const unratedMovie = page.getByRole("link", {
+      name: /hydration station/i,
+    });
+    await expect(unratedMovie).toBeVisible();
+    await expect(unratedMovie.locator(".badge-warning")).toHaveCount(0);
   });
 });

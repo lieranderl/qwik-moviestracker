@@ -14,15 +14,15 @@ export const onGet: RequestHandler = async ({ json, query }) => {
         : null;
 
   if (!Number.isSafeInteger(id) || id <= 0 || !type) {
-    json(400, { filePath: null });
+    json(400, { backdropPath: null });
     return;
   }
 
   try {
-    const filePath = await getHorizontalPosterPath({ id, language, type });
-    json(200, { filePath });
+    const artwork = await getHorizontalPosterPath({ id, language, type });
+    json(200, { backdropPath: artwork.backdropPath });
   } catch (error) {
     console.error("Unable to load TMDB horizontal poster", error);
-    json(503, { filePath: null });
+    json(503, { backdropPath: null });
   }
 };

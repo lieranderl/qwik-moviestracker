@@ -40,6 +40,20 @@
   before opening `/stream` so TorrServer starts torrent reading first.
 - Discovery landing pages under `movie/` and `tv/` blend TMDB shelves with the
   existing localized routing pattern (`?lang=...`).
+- The home feed selects up to eight complete movies from TMDB's weekly trending
+  results and enriches their artwork concurrently. Featured backdrops are
+  selected only from language-neutral TMDB images, while logos remain
+  localized. Featured slides do not render foreground posters. Individual image
+  failures remove only the affected featured slide.
+- The movie landing omits Popular and Now Playing, and builds an eight-item
+  featured rotation by alternating unique, complete HDR10 and Dolby Vision
+  catalog entries. It enriches those entries with the same clean, neutral
+  backdrop and localized logo policy as the home feature. Upcoming is the final
+  shelf on that landing; the dedicated category routes remain available.
+- The series landing omits Airing Today and builds up to eight featured slides
+  by alternating unique, complete Trending and Popular series, starting with
+  Trending. The regular Trending rail remains available, and the dedicated
+  Airing Today category route is unchanged.
 - Dedicated TMDB discover routes now live at `movie/discover/` and
   `tv/discover/`. They use GET query params so filters, pagination, and `lang`
   stay in the URL.
@@ -49,6 +63,11 @@
 - TV category routes are TMDB-backed discovery shelves (`trending`,
   `popular`, `toprated`, `airingtoday`, `ontheair`) and should reject unknown
   slugs instead of falling back to unrelated content.
+- Landscape cards across home, movie, TV, HDR, Dolby Vision, collection, and
+  recommendation rails share the protected TMDB horizontal-artwork endpoint.
+  The browser requests artwork only when a card becomes visible; the endpoint
+  returns only the selected-language or neutral backdrop. Branded logo and
+  text overlays are reserved for the large Featured carousels.
 
 ## Auth Model
 

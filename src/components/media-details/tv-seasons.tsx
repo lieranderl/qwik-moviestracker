@@ -51,7 +51,7 @@ export const TvSeasons = component$<TvSeasonsProps>(({ lang, seasons }) => {
                     title={s.name ?? ""}
                     width={300}
                     year={s.air_date ? formatYear(s.air_date) : 0}
-                    rating={s.vote_average ? s.vote_average : 0}
+                    rating={s.vote_average}
                     picfile={s.poster_path}
                     variant="poster"
                   />

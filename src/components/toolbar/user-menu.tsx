@@ -47,6 +47,8 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
             <div class="border-base-200 bg-base-100 h-10 w-10 overflow-hidden rounded-full border shadow-sm">
               <Image
                 src={userImage}
+                width={40}
+                height={40}
                 alt={`${userLabel} ${message(lang, "langAvatar")}`}
                 class="h-full w-full object-cover"
               />
@@ -73,6 +75,8 @@ export const UserMenu = component$(({ lang }: ToolbarProps) => {
                   <div class="h-11 w-11 overflow-hidden rounded-full">
                     <Image
                       src={userImage}
+                      width={44}
+                      height={44}
                       alt={`${userLabel} ${message(lang, "langAvatar")}`}
                       class="h-full w-full object-cover"
                     />

@@ -2,8 +2,7 @@ import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
-import { ContinueBrowsingWidget } from "~/components/discovery/continue-browsing";
-import { FeaturedSpotlight } from "~/components/discovery/featured-spotlight";
+import { FeaturedCarousel } from "~/components/discovery/featured-spotlight";
 import { FeedSectionFailure } from "~/components/feed-section-failure";
 import { QuickFilterStrip } from "~/components/discovery/quick-filter-strip";
 import { MediaCard } from "~/components/media-card";
@@ -16,7 +15,7 @@ import {
 import type { MovieCatalog, MovieShort, TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { loadHomeFeed } from "~/services/feed-loaders";
-import type { FeedFailures } from "~/services/feed-loaders";
+import type { FeaturedMovie, FeedFailures } from "~/services/feed-loaders";
 import { formatYear } from "~/utils/format";
 
 import { paths } from "~/utils/paths";
@@ -28,6 +27,7 @@ type HomeFeedData =
       movies: MovieShort[];
       tv: TvShort[];
       torMovies: MovieCatalog[];
+      featuredMovies: FeaturedMovie[];
       failures: FeedFailures;
     }
   | {
@@ -52,16 +52,25 @@ export const useHomeFeedLoader = routeLoader$(async (event) => {
     return {
       status: "ready",
       ...devHomeFeed,
+      featuredMovies: devHomeFeed.movies.map((movie) => ({
+        artwork: {
+          backdropPath: movie.backdrop_path ?? null,
+          logoPath: null,
+          posterPath: movie.poster_path ?? null,
+        },
+        movie,
+      })),
       failures: {} as FeedFailures,
     } satisfies HomeFeedData;
   }
 
   try {
-    const { movies, tv, torMovies, failures } = await loadHomeFeed({
-      lang,
-      projectId,
-      databaseId,
-    });
+    const { featuredMovies, movies, tv, torMovies, failures } =
+      await loadHomeFeed({
+        lang,
+        projectId,
+        databaseId,
+      });
 
     return {
       status: "ready",
@@ -69,6 +78,7 @@ export const useHomeFeedLoader = routeLoader$(async (event) => {
       movies,
       tv,
       torMovies,
+      featuredMovies,
       failures,
     } satisfies HomeFeedData;
   } catch (error) {
@@ -94,8 +104,6 @@ export default component$(() => {
     );
   }
 
-  const featuredMovie =
-    value.movies[(new Date().getDate() - 1) % value.movies.length];
   return (
     <div class="space-y-5">
       <div class="section-reveal flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -125,10 +133,6 @@ export default component$(() => {
             href: "#featured-spotlight",
             label: message(lang, "langFeaturedSpotlight"),
           },
-          {
-            href: "#continue-browsing",
-            label: message(lang, "langContinueBrowsing"),
-          },
           { href: "#latest-movies", label: message(lang, "langLatestMovies") },
           {
             href: "#trending-movies",
@@ -137,30 +141,27 @@ export default component$(() => {
           { href: "#trending-tv", label: message(lang, "langTrengingTVShows") },
         ]}
       />
-      {value.movies.length > 0 && featuredMovie && (
-        <FeaturedSpotlight
+      {value.featuredMovies.length > 0 && (
+        <FeaturedCarousel
           ctaLabel={message(lang, "langOpenDetails")}
-          description={
-            featuredMovie.overview ||
-            message(lang, "langFeaturedSpotlightDescription")
-          }
-          href={paths.media(MediaType.Movie, featuredMovie.id, lang)}
-          imagePath={featuredMovie.backdrop_path}
-          meta={[
-            message(lang, "langTrendingMovies"),
-            String(formatYear(featuredMovie.release_date) || "2026"),
-          ]}
-          overline={message(lang, "langFeaturedSpotlight")}
-          rating={featuredMovie.vote_average}
-          title={featuredMovie.title || "Featured release"}
+          items={value.featuredMovies.map(({ artwork, movie }) => ({
+            description: movie.overview,
+            href: paths.media(MediaType.Movie, movie.id, lang),
+            imagePath: artwork.backdropPath,
+            logoPath: artwork.logoPath,
+            meta: [
+              message(lang, "langTrendingMovies"),
+              String(formatYear(movie.release_date) || ""),
+            ],
+            overline: message(lang, "langFeaturedSpotlight"),
+            rating: movie.vote_average,
+            title: movie.title || "Featured release",
+          }))}
+          label={message(lang, "langFeaturedSpotlight")}
+          nextLabel={message(lang, "ui.nextPage")}
+          previousLabel={message(lang, "ui.previousPage")}
         />
       )}
-      <ContinueBrowsingWidget
-        lang={lang}
-        lastViewedLabel={message(lang, "langJumpBackIn")}
-        recentSearchesLabel={message(lang, "langRecentSearches")}
-        resumeLabel={message(lang, "langResume")}
-      />
       <MediaCarousel
         sectionId="latest-movies"
         title={message(lang, "langLatestMovies")}
@@ -177,7 +178,7 @@ export default component$(() => {
               <MediaCard
                 title={m.title ? m.title : ""}
                 width={500}
-                rating={m.vote_average ? m.vote_average : 0}
+                rating={m.vote_average}
                 year={formatYear(m.release_date)}
                 picfile={m.backdrop_path}
                 tmdbId={m.id}
@@ -210,7 +211,7 @@ export default component$(() => {
               <MediaCard
                 title={m.title ? m.title : ""}
                 width={500}
-                rating={m.vote_average ? m.vote_average : 0}
+                rating={m.vote_average}
                 year={formatYear(m.release_date)}
                 picfile={m.backdrop_path}
                 tmdbId={m.id}
@@ -243,7 +244,7 @@ export default component$(() => {
               <MediaCard
                 title={m.name ? m.name : ""}
                 width={500}
-                rating={m.vote_average ? m.vote_average : 0}
+                rating={m.vote_average}
                 year={formatYear(m.first_air_date)}
                 picfile={m.backdrop_path}
                 tmdbId={m.id}

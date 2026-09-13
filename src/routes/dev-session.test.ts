@@ -1,9 +1,11 @@
 import { describe, expect, it } from "bun:test";
 import {
   createDevHomeFeed,
+  createDevMovieCollections,
   createDevMovieDetail,
   createDevPersonDetail,
   createDevSession,
+  createDevTvCollections,
   createDevTvDetail,
   DEV_MOVIE_DETAIL_ID,
   DEV_PERSON_DETAIL_ID,
@@ -119,6 +121,37 @@ describe("dev session bypass", () => {
     expect(fixture?.movies[0]?.title).toBe("Playwright in Paris");
     expect(fixture?.tv[0]?.name).toBe("Selectors");
     expect(fixture?.torMovies[0]?.title).toBe("Hydration Station");
+  });
+
+  it("creates eight featured HDR and Dolby Vision movies for the movie landing", () => {
+    const fixture = createDevMovieCollections({
+      bypassCookie: DEV_SESSION_BYPASS_VALUE,
+      bypassFlag: "1",
+      lang: "en-US",
+      nodeEnv: "development",
+    });
+
+    expect(fixture?.featuredMovies).toHaveLength(8);
+    expect(fixture?.hdrMovies).toHaveLength(4);
+    expect(fixture?.dolbyMovies).toHaveLength(4);
+    expect(fixture?.upcomingMovies[0]?.title).toBe("Runtime Romance");
+  });
+
+  it("creates eight featured Trending and Popular series for the series landing", () => {
+    const fixture = createDevTvCollections({
+      bypassCookie: DEV_SESSION_BYPASS_VALUE,
+      bypassFlag: "1",
+      lang: "en-US",
+      nodeEnv: "development",
+    });
+
+    expect(fixture?.featuredTv).toHaveLength(8);
+    expect(fixture?.tvtrend).toHaveLength(4);
+    expect(fixture?.tvpopular).toHaveLength(4);
+    expect(fixture?.featuredTv.map(({ tv }) => tv.id)).toEqual([
+      990101, 990102, 990103, 990104, 990105, 990106, 990107, 990108,
+    ]);
+    expect(fixture?.featuredTv[1]?.tv.overview).toBeUndefined();
   });
 
   it("creates a deterministic tv detail fixture only for the expected route id", () => {

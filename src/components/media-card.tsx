@@ -78,7 +78,7 @@ export const getSafeRating = (rating: MediaCardProps["rating"]) => {
     typeof rating === "number"
       ? rating
       : Number.parseFloat(String(rating ?? ""));
-  return Number.isFinite(parsed) ? parsed : 0;
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
 };
 
 export const getDefaultMediaCardLoading = (
@@ -102,10 +102,11 @@ export const MediaCard = component$(
   }: MediaCardProps) => {
     const isLandscape = variant === "landscape";
     const selectedImage = useSignal(picfile);
-    const hasPoster = Boolean(selectedImage.value);
+    const safeTitle = title.trim();
+    const safeMetaLabel = metaLabel?.trim() || null;
 
-    // Language-specific title artwork is optional enhancement. Waiting until
-    // the card enters the viewport keeps it out of the SSR/feed critical path.
+    // The localized backdrop is an optional enhancement. Waiting until the
+    // card enters the viewport keeps it out of the SSR/feed critical path.
     // eslint-disable-next-line qwik/no-use-visible-task
     useVisibleTask$(async ({ cleanup }) => {
       let active = true;
@@ -120,7 +121,9 @@ export const MediaCard = component$(
           language,
           type: mediaType,
         });
-        if (active && horizontalPoster) selectedImage.value = horizontalPoster;
+        if (active) {
+          selectedImage.value = horizontalPoster.backdropPath;
+        }
       } catch {
         // Keep the feed backdrop as a resilient visual fallback.
       }
@@ -144,24 +147,24 @@ export const MediaCard = component$(
     const cardClass = `focus-ringable media-card-surface card bg-base-100 border-base-300/60 rounded-box relative overflow-hidden border shadow-sm transform-gpu ${
       layout === "grid" ? "h-full" : ""
     }`;
-    const placeholderLabel = getPlaceholderLabel(title);
+    const placeholderLabel = getPlaceholderLabel(safeTitle);
     const safeRating = getSafeRating(rating);
     const imageLoading = getDefaultMediaCardLoading(loading);
 
     return (
       <div class={containerClass}>
-        {metaLabel && (
+        {safeMetaLabel && (
           <span
-            title={metaLabel}
+            title={safeMetaLabel}
             class={`text-base-content/70 before:text-base-content/40 ${META_ROW_CLASS} before:mr-2 before:content-['•']`}
           >
-            {metaLabel}
+            {safeMetaLabel}
           </span>
         )}
-        {!metaLabel && <span aria-hidden="true" class={META_ROW_CLASS} />}
+        {!safeMetaLabel && <span aria-hidden="true" class={META_ROW_CLASS} />}
         <div class={cardClass}>
           <figure class={`relative w-full overflow-hidden ${aspectClass}`}>
-            {hasPoster ? (
+            {selectedImage.value ? (
               <Image
                 class="media-card-poster absolute inset-0 h-full w-full transform-gpu object-cover"
                 src={`${TMDB_IMAGE_BASE_URL}w${imageWidth}${selectedImage.value}`}
@@ -183,9 +186,11 @@ export const MediaCard = component$(
                   <div class="border-base-content/20 bg-base-100/75 rounded-full border px-3 py-1.5 text-xs font-semibold tracking-widest">
                     {placeholderLabel}
                   </div>
-                  <span class="text-base-content/65 max-w-[90%] truncate text-xs font-medium">
-                    {title}
-                  </span>
+                  {!isLandscape && safeTitle && (
+                    <span class="text-base-content/65 max-w-[90%] truncate text-xs font-medium">
+                      {safeTitle}
+                    </span>
+                  )}
                 </div>
               </div>
             )}
@@ -193,7 +198,7 @@ export const MediaCard = component$(
               aria-hidden="true"
               class="media-card-overlay pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-20 bg-linear-to-t from-black/45 to-transparent opacity-75"
             />
-            {safeRating > 0 && (
+            {safeRating !== null && (
               <div
                 aria-label={`Rated ${safeRating.toFixed(1)} out of 10`}
                 class="badge badge-warning badge-sm absolute bottom-3 left-3 z-20 inline-flex items-center justify-center gap-1 rounded-full px-3 py-3 font-bold shadow-sm"
@@ -218,12 +223,14 @@ export const MediaCard = component$(
           <div
             class={`media-card-body card-body bg-base-200/70 border-base-300/60 relative min-w-0 border-t px-3 py-2.5 ${bodyHeightClass}`}
           >
-            <span
-              class="card-title text-base-content line-clamp-2 block text-sm leading-tight"
-              title={title}
-            >
-              {title}
-            </span>
+            {safeTitle && (
+              <span
+                class="card-title text-base-content line-clamp-2 block text-sm leading-tight"
+                title={safeTitle}
+              >
+                {safeTitle}
+              </span>
+            )}
           </div>
         </div>
       </div>

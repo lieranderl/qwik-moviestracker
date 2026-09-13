@@ -3,15 +3,20 @@ import { component$ } from "@builder.io/qwik";
 
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
+import { FeaturedCarousel } from "~/components/discovery/featured-spotlight";
 import { QuickFilterStrip } from "~/components/discovery/quick-filter-strip";
 import { FeedSectionFailure } from "~/components/feed-section-failure";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
-import { ErrorState, SectionHeading } from "~/components/page-feedback";
+import { ErrorState } from "~/components/page-feedback";
+import {
+  createDevMovieCollections,
+  DEV_SESSION_BYPASS_COOKIE,
+} from "~/routes/dev-session";
 import type { MovieCatalog, MovieShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { loadMovieCollections } from "~/services/feed-loaders";
-import type { FeedFailures } from "~/services/feed-loaders";
+import type { FeaturedMovie, FeedFailures } from "~/services/feed-loaders";
 import { formatYear } from "~/utils/format";
 
 import { paths } from "~/utils/paths";
@@ -20,9 +25,8 @@ type MovieCollectionsData =
   | {
       status: "ready";
       lang: string;
+      featuredMovies: FeaturedMovie[];
       movies: MovieShort[];
-      popularMovies: MovieShort[];
-      nowPlayingMovies: MovieShort[];
       upcomingMovies: MovieShort[];
       torMovies: MovieCatalog[];
       hdrMovies: MovieCatalog[];
@@ -39,11 +43,25 @@ export const useMovieCollectionsLoader = routeLoader$(async (event) => {
   const projectId =
     event.env.get("GCP_PROJECT") ?? event.env.get("GOOGLE_CLOUD_PROJECT") ?? "";
   const databaseId = event.env.get("FIRESTORE_DATABASE") ?? "moviestracker";
+  const devMovieCollections = createDevMovieCollections({
+    bypassCookie: event.cookie.get(DEV_SESSION_BYPASS_COOKIE)?.value ?? null,
+    bypassFlag: event.env.get("PLAYWRIGHT_AUTH_BYPASS"),
+    lang,
+    nodeEnv: event.env.get("NODE_ENV") ?? process.env.NODE_ENV,
+  });
+
+  if (devMovieCollections) {
+    return {
+      status: "ready",
+      ...devMovieCollections,
+      failures: {} as FeedFailures,
+    } satisfies MovieCollectionsData;
+  }
+
   try {
     const {
+      featuredMovies,
       movies,
-      popularMovies,
-      nowPlayingMovies,
       upcomingMovies,
       torMovies,
       hdrMovies,
@@ -54,9 +72,8 @@ export const useMovieCollectionsLoader = routeLoader$(async (event) => {
     return {
       status: "ready",
       lang,
+      featuredMovies,
       movies: movies as MovieShort[],
-      popularMovies: popularMovies as MovieShort[],
-      nowPlayingMovies: nowPlayingMovies as MovieShort[],
       upcomingMovies: upcomingMovies as MovieShort[],
       torMovies,
       hdrMovies,
@@ -87,34 +104,31 @@ export default component$(() => {
   }
 
   return (
-    <div class="space-y-8">
-      <SectionHeading
-        eyebrow={message(lang, "ui.movieCollections")}
-        title={message(lang, "langMovies")}
-        description={message(
-          lang,
-          "ui.browseLatestPopularNowPlayingUpcomingHdr10DolbyVisionAndTrendingMovieCol",
-        )}
-      />
+    <div class="space-y-5">
+      <div class="section-reveal flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <h1 class="text-3xl font-semibold tracking-tight md:text-4xl">
+          {message(lang, "langMovies")}
+        </h1>
+        <div class="flex flex-wrap items-center gap-2">
+          <a
+            href={paths.movieDiscover(lang)}
+            class="btn btn-primary btn-sm h-10 min-h-10 rounded-full"
+          >
+            {message(lang, "langDiscoverMovies")}
+          </a>
+        </div>
+      </div>
       <QuickFilterStrip
         label={message(lang, "langQuickFilters")}
         items={[
           {
             active: true,
+            href: "#featured-spotlight",
+            label: message(lang, "langHdrDolbyFeatured"),
+          },
+          {
             href: "#latest-movies",
             label: message(lang, "langLatestMovies"),
-          },
-          {
-            href: "#popular-movies",
-            label: message(lang, "langPopularMovies"),
-          },
-          {
-            href: "#now-playing-movies",
-            label: message(lang, "langNowPlayingMovies"),
-          },
-          {
-            href: "#upcoming-movies",
-            label: message(lang, "langUpcomingMovies"),
           },
           {
             href: "#hdr10-movies",
@@ -128,29 +142,33 @@ export default component$(() => {
             href: "#trending-movies",
             label: message(lang, "langTrendingMovies"),
           },
+          {
+            href: "#upcoming-movies",
+            label: message(lang, "langUpcomingMovies"),
+          },
         ]}
       />
-      <section
-        aria-label={message(lang, "langDiscoverMovies")}
-        class="section-reveal card border-base-200 bg-base-100 border shadow-sm"
-      >
-        <div class="card-body items-start gap-3 p-4 sm:flex-row sm:items-center sm:justify-between md:p-6">
-          <div class="space-y-1">
-            <h2 class="card-title text-base">
-              {message(lang, "ui.movieDiscovery")}
-            </h2>
-            <p class="text-base-content/65 text-sm leading-relaxed">
-              {message(lang, "ui.filterMoviesByRegionYearProvidersAndRating")}
-            </p>
-          </div>
-          <a
-            href={paths.movieDiscover(lang)}
-            class="btn btn-primary btn-sm w-full rounded-full sm:w-auto"
-          >
-            {message(lang, "langDiscoverMovies")}
-          </a>
-        </div>
-      </section>
+      {value.featuredMovies.length > 0 && (
+        <FeaturedCarousel
+          ctaLabel={message(lang, "langOpenDetails")}
+          items={value.featuredMovies.map(({ artwork, movie }) => ({
+            description: movie.overview,
+            href: paths.media(MediaType.Movie, movie.id, lang),
+            imagePath: artwork.backdropPath,
+            logoPath: artwork.logoPath,
+            meta: [
+              message(lang, "langHdrDolbyFeatured"),
+              String(formatYear(movie.release_date) || ""),
+            ],
+            overline: message(lang, "langHdrDolbyFeatured"),
+            rating: movie.vote_average,
+            title: movie.title || message(lang, "langHdrDolbyFeatured"),
+          }))}
+          label={message(lang, "langHdrDolbyFeatured")}
+          nextLabel={message(lang, "ui.nextPage")}
+          previousLabel={message(lang, "ui.previousPage")}
+        />
+      )}
       <FeedSectionFailure
         failure={value.failures.torMovies}
         lang={lang}
@@ -172,109 +190,7 @@ export default component$(() => {
               <MediaCard
                 title={m.title ? m.title : ""}
                 width={500}
-                rating={m.vote_average ? m.vote_average : 0}
-                year={formatYear(m.release_date)}
-                picfile={m.backdrop_path}
-                tmdbId={m.id}
-                mediaType={MediaType.Movie}
-                language={lang}
-                variant="landscape"
-              />
-            </a>
-          </div>
-        ))}
-      </MediaCarousel>
-
-      <FeedSectionFailure
-        failure={value.failures.popularMovies}
-        lang={lang}
-        title={message(lang, "langPopularMovies")}
-      />
-      <MediaCarousel
-        sectionId="popular-movies"
-        title={message(lang, "langPopularMovies")}
-        type={MediaType.Movie}
-        category="popular"
-        lang={lang}
-      >
-        {value.popularMovies.map((m) => (
-          <div class="carousel-item" key={m.id}>
-            <a
-              href={paths.media(MediaType.Movie, m.id, lang)}
-              class="media-card-link block"
-            >
-              <MediaCard
-                title={m.title ? m.title : ""}
-                width={500}
-                rating={m.vote_average ? m.vote_average : 0}
-                year={formatYear(m.release_date)}
-                picfile={m.backdrop_path}
-                tmdbId={m.id}
-                mediaType={MediaType.Movie}
-                language={lang}
-                variant="landscape"
-              />
-            </a>
-          </div>
-        ))}
-      </MediaCarousel>
-
-      <FeedSectionFailure
-        failure={value.failures.nowPlayingMovies}
-        lang={lang}
-        title={message(lang, "langNowPlayingMovies")}
-      />
-      <MediaCarousel
-        sectionId="now-playing-movies"
-        title={message(lang, "langNowPlayingMovies")}
-        type={MediaType.Movie}
-        category="nowplaying"
-        lang={lang}
-      >
-        {value.nowPlayingMovies.map((m) => (
-          <div class="carousel-item" key={m.id}>
-            <a
-              href={paths.media(MediaType.Movie, m.id, lang)}
-              class="media-card-link block"
-            >
-              <MediaCard
-                title={m.title ? m.title : ""}
-                width={500}
-                rating={m.vote_average ? m.vote_average : 0}
-                year={formatYear(m.release_date)}
-                picfile={m.backdrop_path}
-                tmdbId={m.id}
-                mediaType={MediaType.Movie}
-                language={lang}
-                variant="landscape"
-              />
-            </a>
-          </div>
-        ))}
-      </MediaCarousel>
-
-      <FeedSectionFailure
-        failure={value.failures.upcomingMovies}
-        lang={lang}
-        title={message(lang, "langUpcomingMovies")}
-      />
-      <MediaCarousel
-        sectionId="upcoming-movies"
-        title={message(lang, "langUpcomingMovies")}
-        type={MediaType.Movie}
-        category="upcoming"
-        lang={lang}
-      >
-        {value.upcomingMovies.map((m) => (
-          <div class="carousel-item" key={m.id}>
-            <a
-              href={paths.media(MediaType.Movie, m.id, lang)}
-              class="media-card-link block"
-            >
-              <MediaCard
-                title={m.title ? m.title : ""}
-                width={500}
-                rating={m.vote_average ? m.vote_average : 0}
+                rating={m.vote_average}
                 year={formatYear(m.release_date)}
                 picfile={m.backdrop_path}
                 tmdbId={m.id}
@@ -308,7 +224,7 @@ export default component$(() => {
               <MediaCard
                 title={m.title ? m.title : ""}
                 width={500}
-                rating={m.vote_average ? m.vote_average : 0}
+                rating={m.vote_average}
                 year={formatYear(m.release_date)}
                 picfile={m.backdrop_path}
                 tmdbId={m.id}
@@ -342,7 +258,7 @@ export default component$(() => {
               <MediaCard
                 title={m.title ? m.title : ""}
                 width={500}
-                rating={m.vote_average ? m.vote_average : 0}
+                rating={m.vote_average}
                 year={formatYear(m.release_date)}
                 picfile={m.backdrop_path}
                 tmdbId={m.id}
@@ -376,7 +292,41 @@ export default component$(() => {
               <MediaCard
                 title={m.title ? m.title : ""}
                 width={500}
-                rating={m.vote_average ? m.vote_average : 0}
+                rating={m.vote_average}
+                year={formatYear(m.release_date)}
+                picfile={m.backdrop_path}
+                tmdbId={m.id}
+                mediaType={MediaType.Movie}
+                language={lang}
+                variant="landscape"
+              />
+            </a>
+          </div>
+        ))}
+      </MediaCarousel>
+
+      <FeedSectionFailure
+        failure={value.failures.upcomingMovies}
+        lang={lang}
+        title={message(lang, "langUpcomingMovies")}
+      />
+      <MediaCarousel
+        sectionId="upcoming-movies"
+        title={message(lang, "langUpcomingMovies")}
+        type={MediaType.Movie}
+        category="upcoming"
+        lang={lang}
+      >
+        {value.upcomingMovies.map((m) => (
+          <div class="carousel-item" key={m.id}>
+            <a
+              href={paths.media(MediaType.Movie, m.id, lang)}
+              class="media-card-link block"
+            >
+              <MediaCard
+                title={m.title ? m.title : ""}
+                width={500}
+                rating={m.vote_average}
                 year={formatYear(m.release_date)}
                 picfile={m.backdrop_path}
                 tmdbId={m.id}

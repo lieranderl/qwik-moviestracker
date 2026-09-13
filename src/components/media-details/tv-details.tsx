@@ -1,5 +1,5 @@
 import { message } from "~/utils/i18n";
-import { component$, useVisibleTask$ } from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 import { Image } from "@unpic/qwik";
 
 import { LuDisc3, LuLayers3 } from "@qwikest/icons/lucide";
@@ -14,7 +14,6 @@ import {
 import { formatYear } from "~/utils/format";
 import { langEpisodesCount, langSeasonsCount } from "~/utils/languages";
 import { paths } from "~/utils/paths";
-import { writeLastViewed } from "~/utils/recent-activity";
 import { ExternalIds } from "../external_ids";
 import { MediaCard } from "../media-card";
 import { MediaCarousel } from "../media-carousel";
@@ -48,19 +47,6 @@ export const TvDetails = component$(
     watchProviders,
     lang,
   }: TvDetailsProps) => {
-    // eslint-disable-next-line qwik/no-use-visible-task
-    useVisibleTask$(() => {
-      writeLastViewed({
-        href: paths.media(MediaType.Tv, tv.id, lang),
-        title: tv.name ?? message(lang, "ui.tvDetails"),
-        kind: "tv",
-        meta: tv.first_air_date
-          ? `${formatYear(tv.first_air_date)} • ${message(lang, "ui.tv")}`
-          : message(lang, "ui.tv"),
-        imagePath: tv.poster_path ?? tv.backdrop_path,
-      });
-    });
-
     const hasActions = (tv.videos && tv.videos.results.length > 0) || true;
 
     return (
@@ -242,8 +228,8 @@ export const TvDetails = component$(
                     <MediaCard
                       title={c.name ?? ""}
                       width={300}
-                      year={0}
-                      rating={0}
+                      year={null}
+                      rating={null}
                       picfile={c.profile_path}
                       variant="person"
                     />
@@ -267,8 +253,8 @@ export const TvDetails = component$(
                   <MediaCard
                     title={c.name ?? ""}
                     width={300}
-                    year={0}
-                    rating={0}
+                    year={null}
+                    rating={null}
                     picfile={c.profile_path}
                     variant="person"
                     metaLabel={c.character}
@@ -294,7 +280,7 @@ export const TvDetails = component$(
                     <MediaCard
                       title={m.name ? m.name : ""}
                       width={500}
-                      rating={m.vote_average ? m.vote_average : 0}
+                      rating={m.vote_average}
                       year={formatYear(m.first_air_date)}
                       picfile={m.backdrop_path}
                       tmdbId={m.id}

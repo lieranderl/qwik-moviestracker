@@ -1,4 +1,5 @@
 import type { Session } from "@auth/core/types";
+import type { FeaturedMovie, FeaturedTv } from "~/services/feed-loaders";
 import {
   type LocalizedCertification,
   MediaType,
@@ -75,7 +76,7 @@ export const createDevSession = ({
     language: lang,
     user: {
       email: "playwright@local.test",
-      image: null,
+      image: "/favicon.svg",
       name: "Playwright User",
     },
   };
@@ -102,6 +103,25 @@ type DevHomeFeedFixture = {
   movies: MovieShort[];
   tv: TvShort[];
   torMovies: MovieCatalog[];
+};
+
+type DevMovieCollectionsFixture = {
+  lang: string;
+  featuredMovies: FeaturedMovie[];
+  movies: MovieShort[];
+  upcomingMovies: MovieShort[];
+  torMovies: MovieCatalog[];
+  hdrMovies: MovieCatalog[];
+  dolbyMovies: MovieCatalog[];
+};
+
+type DevTvCollectionsFixture = {
+  lang: string;
+  featuredTv: FeaturedTv[];
+  tvtrend: TvShort[];
+  tvpopular: TvShort[];
+  tvtoprated: TvShort[];
+  tvontheair: TvShort[];
 };
 
 type DevTvDetailFixture = {
@@ -222,8 +242,80 @@ const DEV_HOME_MOVIES = [
     title: "Playwright in Paris",
     overview:
       "Open a deterministic featured movie when authenticated browser tests need a stable home feed.",
+    backdrop_path: "/hZkgoQYus5vegHoetLkCJzb17zJ.jpg",
+    poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
     release_date: "2024-02-14",
     vote_average: 7.8,
+  },
+  {
+    id: 990002,
+    media_type: MediaType.Movie,
+    title: "Runtime Romance",
+    overview: "Two processes discover that timing is everything.",
+    backdrop_path: "/44immBwzhDVyjn87b3x3l9mlhAD.jpg",
+    poster_path: "/wDWwtvkRRlgTiUr6TyLSMX8FCuZ.jpg",
+    release_date: "2025-03-21",
+    vote_average: 7.4,
+  },
+  {
+    id: 990003,
+    media_type: MediaType.Movie,
+    title: "Cache Me If You Can",
+    overview: "A fast-moving mystery about memory, identity, and expiry.",
+    backdrop_path: "/hZkgoQYus5vegHoetLkCJzb17zJ.jpg",
+    poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+    release_date: "2025-06-12",
+    vote_average: 7.2,
+  },
+  {
+    id: 990004,
+    media_type: MediaType.Movie,
+    title: "The Last Assertion",
+    overview: "One final test stands between a team and release day.",
+    backdrop_path: "/44immBwzhDVyjn87b3x3l9mlhAD.jpg",
+    poster_path: "/wDWwtvkRRlgTiUr6TyLSMX8FCuZ.jpg",
+    release_date: "2026-01-16",
+    vote_average: 8.1,
+  },
+  {
+    id: 990005,
+    media_type: MediaType.Movie,
+    title: "The Fifth Frame",
+    overview: "A pristine final frame expands the featured rotation.",
+    backdrop_path: "/hZkgoQYus5vegHoetLkCJzb17zJ.jpg",
+    poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+    release_date: "2026-04-24",
+    vote_average: 7.9,
+  },
+  {
+    id: 990006,
+    media_type: MediaType.Movie,
+    title: "A Deliberately Longer Featured Movie Title",
+    overview:
+      "A longer title verifies that every featured movie keeps the same visual structure.",
+    backdrop_path: "/44immBwzhDVyjn87b3x3l9mlhAD.jpg",
+    poster_path: "/wDWwtvkRRlgTiUr6TyLSMX8FCuZ.jpg",
+    release_date: "2026-06-05",
+    vote_average: 7.6,
+  },
+  {
+    id: 990007,
+    media_type: MediaType.Movie,
+    title: "Quiet Metadata",
+    backdrop_path: "/hZkgoQYus5vegHoetLkCJzb17zJ.jpg",
+    poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+    release_date: "2026-08-14",
+    vote_average: 7.3,
+  },
+  {
+    id: 990008,
+    media_type: MediaType.Movie,
+    title: "Eight Seconds Later",
+    overview: "The eighth selection completes the cinematic rotation.",
+    backdrop_path: "/44immBwzhDVyjn87b3x3l9mlhAD.jpg",
+    poster_path: "/wDWwtvkRRlgTiUr6TyLSMX8FCuZ.jpg",
+    release_date: "2026-10-02",
+    vote_average: 8.0,
   },
 ] satisfies MovieShort[];
 
@@ -233,11 +325,107 @@ const DEV_HOME_TV = [
     media_type: MediaType.Tv,
     name: "Selectors",
     overview: "A reliable series fixture for authenticated dashboard coverage.",
+    backdrop_path: "/hZkgoQYus5vegHoetLkCJzb17zJ.jpg",
+    poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
     first_air_date: "2025-01-10",
     release_date: "2025-01-10",
     vote_average: 7.4,
   },
 ] satisfies TvShort[];
+
+const DEV_SERIES_ITEMS = [
+  DEV_HOME_TV[0],
+  {
+    id: 990102,
+    media_type: MediaType.Tv,
+    name: "Popular Paths",
+    backdrop_path: "/44immBwzhDVyjn87b3x3l9mlhAD.jpg",
+    poster_path: "/wDWwtvkRRlgTiUr6TyLSMX8FCuZ.jpg",
+    first_air_date: "2025-02-14",
+    release_date: "2025-02-14",
+    vote_average: 7.5,
+  },
+  {
+    id: 990103,
+    media_type: MediaType.Tv,
+    name: "Signal Season",
+    overview: "A trending signal reaches an unexpectedly large audience.",
+    backdrop_path: "/hZkgoQYus5vegHoetLkCJzb17zJ.jpg",
+    poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+    first_air_date: "2025-06-20",
+    release_date: "2025-06-20",
+    vote_average: 8.0,
+  },
+  {
+    id: 990104,
+    media_type: MediaType.Tv,
+    name: "Audience Query",
+    overview: "A popular mystery driven by one unanswered question.",
+    backdrop_path: "/44immBwzhDVyjn87b3x3l9mlhAD.jpg",
+    poster_path: "/wDWwtvkRRlgTiUr6TyLSMX8FCuZ.jpg",
+    first_air_date: "2026-01-09",
+    release_date: "2026-01-09",
+    vote_average: 7.7,
+  },
+  {
+    id: 990105,
+    media_type: MediaType.Tv,
+    name: "The Fifth Episode",
+    overview: "One final episode completes the featured rotation.",
+    backdrop_path: "/hZkgoQYus5vegHoetLkCJzb17zJ.jpg",
+    poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+    first_air_date: "2026-03-13",
+    release_date: "2026-03-13",
+    vote_average: 7.9,
+  },
+  {
+    id: 990106,
+    media_type: MediaType.Tv,
+    name: "A Deliberately Longer Featured Series Title",
+    overview:
+      "A long-running story verifies that every series slide remains aligned.",
+    backdrop_path: "/44immBwzhDVyjn87b3x3l9mlhAD.jpg",
+    poster_path: "/wDWwtvkRRlgTiUr6TyLSMX8FCuZ.jpg",
+    first_air_date: "2026-05-22",
+    release_date: "2026-05-22",
+    vote_average: 7.8,
+  },
+  {
+    id: 990107,
+    media_type: MediaType.Tv,
+    name: "Silent Synopsis",
+    backdrop_path: "/hZkgoQYus5vegHoetLkCJzb17zJ.jpg",
+    poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+    first_air_date: "2026-07-17",
+    release_date: "2026-07-17",
+    vote_average: 7.6,
+  },
+  {
+    id: 990108,
+    media_type: MediaType.Tv,
+    name: "The Eighth Signal",
+    overview: "The final signal completes the featured series rotation.",
+    backdrop_path: "/44immBwzhDVyjn87b3x3l9mlhAD.jpg",
+    poster_path: "/wDWwtvkRRlgTiUr6TyLSMX8FCuZ.jpg",
+    first_air_date: "2026-09-11",
+    release_date: "2026-09-11",
+    vote_average: 8.2,
+  },
+] satisfies TvShort[];
+
+const DEV_TRENDING_TV = [
+  DEV_SERIES_ITEMS[0],
+  DEV_SERIES_ITEMS[2],
+  DEV_SERIES_ITEMS[4],
+  DEV_SERIES_ITEMS[6],
+];
+
+const DEV_POPULAR_TV = [
+  DEV_SERIES_ITEMS[1],
+  DEV_SERIES_ITEMS[3],
+  DEV_SERIES_ITEMS[5],
+  DEV_SERIES_ITEMS[7],
+];
 
 const DEV_HOME_TOR_MOVIES = [
   {
@@ -246,8 +434,22 @@ const DEV_HOME_TOR_MOVIES = [
     title: "Hydration Station",
     release_date: "2025-02-20",
     year: "2025",
-    vote_average: 6.9,
+    vote_average: 0,
   },
+] satisfies MovieCatalog[];
+
+const DEV_HDR_MOVIES = [
+  { ...DEV_HOME_MOVIES[0], year: "2024" },
+  { ...DEV_HOME_MOVIES[2], year: "2025" },
+  { ...DEV_HOME_MOVIES[4], year: "2026" },
+  { ...DEV_HOME_MOVIES[6], year: "2026" },
+] satisfies MovieCatalog[];
+
+const DEV_DOLBY_MOVIES = [
+  { ...DEV_HOME_MOVIES[1], year: "2025" },
+  { ...DEV_HOME_MOVIES[3], year: "2026" },
+  { ...DEV_HOME_MOVIES[5], year: "2026" },
+  { ...DEV_HOME_MOVIES[7], year: "2026" },
 ] satisfies MovieCatalog[];
 
 const DEV_TV_DETAIL = {
@@ -499,6 +701,101 @@ export const createDevHomeFeed = ({
     movies: DEV_HOME_MOVIES,
     tv: DEV_HOME_TV,
     torMovies: DEV_HOME_TOR_MOVIES,
+  };
+};
+
+export const createDevMovieCollections = ({
+  bypassCookie,
+  bypassFlag,
+  lang,
+  nodeEnv,
+}: Pick<
+  DevSessionOptions,
+  "bypassCookie" | "bypassFlag" | "lang" | "nodeEnv"
+>): DevMovieCollectionsFixture | null => {
+  if (
+    !hasDevSessionBypassCookie({
+      bypassCookie,
+      bypassFlag,
+      nodeEnv,
+    })
+  ) {
+    return null;
+  }
+
+  const featuredMovieItems = [
+    DEV_HDR_MOVIES[0],
+    DEV_DOLBY_MOVIES[0],
+    DEV_HDR_MOVIES[1],
+    DEV_DOLBY_MOVIES[1],
+    DEV_HDR_MOVIES[2],
+    DEV_DOLBY_MOVIES[2],
+    DEV_HDR_MOVIES[3],
+    DEV_DOLBY_MOVIES[3],
+  ];
+
+  return {
+    lang,
+    featuredMovies: featuredMovieItems.map((movie) => ({
+      artwork: {
+        backdropPath: movie.backdrop_path ?? null,
+        logoPath: null,
+        posterPath: movie.poster_path ?? null,
+      },
+      movie,
+    })),
+    movies: DEV_HOME_MOVIES,
+    upcomingMovies: DEV_HOME_MOVIES.slice(1),
+    torMovies: DEV_HOME_TOR_MOVIES,
+    hdrMovies: DEV_HDR_MOVIES,
+    dolbyMovies: DEV_DOLBY_MOVIES,
+  };
+};
+
+export const createDevTvCollections = ({
+  bypassCookie,
+  bypassFlag,
+  lang,
+  nodeEnv,
+}: Pick<
+  DevSessionOptions,
+  "bypassCookie" | "bypassFlag" | "lang" | "nodeEnv"
+>): DevTvCollectionsFixture | null => {
+  if (
+    !hasDevSessionBypassCookie({
+      bypassCookie,
+      bypassFlag,
+      nodeEnv,
+    })
+  ) {
+    return null;
+  }
+
+  const featuredItems = [
+    DEV_SERIES_ITEMS[0],
+    DEV_SERIES_ITEMS[1],
+    DEV_SERIES_ITEMS[2],
+    DEV_SERIES_ITEMS[3],
+    DEV_SERIES_ITEMS[4],
+    DEV_SERIES_ITEMS[5],
+    DEV_SERIES_ITEMS[6],
+    DEV_SERIES_ITEMS[7],
+  ];
+
+  return {
+    lang,
+    featuredTv: featuredItems.map((tv) => ({
+      artwork: {
+        backdropPath: tv.backdrop_path ?? null,
+        logoPath: null,
+        posterPath: tv.poster_path ?? null,
+      },
+      tv,
+    })),
+    tvtrend: DEV_TRENDING_TV,
+    tvpopular: DEV_POPULAR_TV,
+    tvtoprated: DEV_SERIES_ITEMS.slice(0, 3),
+    tvontheair: DEV_SERIES_ITEMS.slice(2),
   };
 };
 

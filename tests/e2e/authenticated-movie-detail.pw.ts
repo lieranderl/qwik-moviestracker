@@ -36,7 +36,7 @@ test.describe("authenticated movie detail", () => {
     await page.unrouteAll({ behavior: "wait" });
   });
 
-  test("renders the dev fixture and writes last viewed state", async ({
+  test("renders the dev fixture without saving last viewed state", async ({
     page,
   }) => {
     await addBypassCookie(page);
@@ -73,16 +73,10 @@ test.describe("authenticated movie detail", () => {
     ).toBeVisible();
     await expect(page.getByLabel("IMDb loading")).not.toBeVisible();
 
-    await expect
-      .poll(async () => {
-        try {
-          return await page.evaluate(() =>
-            window.localStorage.getItem("moviestracker:last-viewed"),
-          );
-        } catch {
-          return null;
-        }
-      })
-      .toContain(`"/movie/${DEV_MOVIE_DETAIL_ID}/?lang=en-US"`);
+    expect(
+      await page.evaluate(() =>
+        window.localStorage.getItem("moviestracker:last-viewed"),
+      ),
+    ).toBeNull();
   });
 });

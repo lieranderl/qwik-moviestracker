@@ -91,25 +91,52 @@ const getImageLanguage = (language: string) => {
     : DEFAULT_IMAGE_LANGUAGE;
 };
 
-export const selectHorizontalPosterPath = (
-  images: Images["backdrops"],
+export type FeaturedArtwork = {
+  backdropPath: string | null;
+  logoPath: string | null;
+  posterPath: string | null;
+};
+
+export type LandscapeArtwork = Pick<
+  FeaturedArtwork,
+  "backdropPath" | "logoPath"
+>;
+
+const findLocalizedImagePath = (items: Images["backdrops"], language: string) =>
+  items.find(
+    ({ file_path, iso_639_1 }) =>
+      Boolean(file_path) && iso_639_1?.toLowerCase() === language,
+  )?.file_path ?? null;
+
+const findNeutralBackdropPath = (backdrops: Images["backdrops"]) =>
+  backdrops.find(
+    ({ file_path, iso_639_1 }) => Boolean(file_path) && iso_639_1 === null,
+  )?.file_path ?? null;
+
+export const selectFeaturedArtwork = (
+  images: Images,
   language: string,
-) => {
+): FeaturedArtwork => {
   const primaryLanguage = getImageLanguage(language);
-  const languages =
-    primaryLanguage === DEFAULT_IMAGE_LANGUAGE
-      ? [DEFAULT_IMAGE_LANGUAGE]
-      : [primaryLanguage, DEFAULT_IMAGE_LANGUAGE];
 
-  for (const candidateLanguage of languages) {
-    const image = images.find(
-      ({ file_path, iso_639_1 }) =>
-        Boolean(file_path) && iso_639_1?.toLowerCase() === candidateLanguage,
-    );
-    if (image) return image.file_path;
-  }
+  return {
+    backdropPath: findNeutralBackdropPath(images.backdrops),
+    logoPath: findLocalizedImagePath(images.logos, primaryLanguage),
+    posterPath: findLocalizedImagePath(images.posters, primaryLanguage),
+  };
+};
 
-  return null;
+export const selectHorizontalPosterPath = (
+  images: Images,
+  language: string,
+): LandscapeArtwork => {
+  const primaryLanguage = getImageLanguage(language);
+  return {
+    backdropPath:
+      findLocalizedImagePath(images.backdrops, primaryLanguage) ??
+      findNeutralBackdropPath(images.backdrops),
+    logoPath: findLocalizedImagePath(images.logos, primaryLanguage),
+  };
 };
 
 export const getHorizontalPosterPath = async ({
@@ -120,18 +147,33 @@ export const getHorizontalPosterPath = async ({
   id: number;
   language: string;
   type: MediaType.Movie | MediaType.Tv;
-}) => {
+}): Promise<LandscapeArtwork> => {
   const primaryLanguage = getImageLanguage(language);
-  const imageLanguages =
-    primaryLanguage === DEFAULT_IMAGE_LANGUAGE
-      ? DEFAULT_IMAGE_LANGUAGE
-      : `${primaryLanguage},${DEFAULT_IMAGE_LANGUAGE}`;
   const result = await fetchTMDB<Images>(
     `${type}/${id}/images`,
-    { include_image_language: imageLanguages },
+    { include_image_language: `${primaryLanguage},null` },
     { ttl: CACHE_TTL_MS.tmdbDetail, parse: parseTmdbImages },
   );
-  return selectHorizontalPosterPath(result.backdrops, primaryLanguage);
+  return selectHorizontalPosterPath(result, primaryLanguage);
+};
+
+export const getFeaturedArtwork = async ({
+  id,
+  language,
+  type,
+}: {
+  id: number;
+  language: string;
+  type: MediaType.Movie | MediaType.Tv;
+}) => {
+  const primaryLanguage = getImageLanguage(language);
+  const result = await fetchTMDB<Images>(
+    `${type}/${id}/images`,
+    {},
+    { ttl: CACHE_TTL_MS.tmdbDetail, parse: parseTmdbImages },
+  );
+
+  return selectFeaturedArtwork(result, primaryLanguage);
 };
 
 type GetTrendingMedia = {

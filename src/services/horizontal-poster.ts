@@ -1,5 +1,6 @@
 import * as v from "valibot";
 import type { MediaType } from "./models";
+import type { LandscapeArtwork } from "./tmdb";
 
 export type HorizontalPosterRequest = {
   id: number | string;
@@ -12,10 +13,12 @@ type PosterFetcher = (
 ) => Promise<Response>;
 
 const responseSchema = v.object({
-  filePath: v.nullable(v.pipe(v.string(), v.startsWith("/"))),
+  backdropPath: v.nullable(v.pipe(v.string(), v.startsWith("/"))),
 });
 
-const requests = new Map<string, Promise<string | null>>();
+type HorizontalBackdrop = Pick<LandscapeArtwork, "backdropPath">;
+
+const requests = new Map<string, Promise<HorizontalBackdrop>>();
 const MAX_CLIENT_ENTRIES = 200;
 
 export const clearHorizontalPosterRequestsForTests = () => requests.clear();
@@ -36,7 +39,7 @@ export const buildHorizontalPosterRequestUrl = ({
 export const parseHorizontalPosterResponse = (input: unknown) => {
   const result = v.safeParse(responseSchema, input);
   if (!result.success) throw new Error("Invalid horizontal poster response");
-  return result.output.filePath;
+  return result.output;
 };
 
 export const loadHorizontalPosterPath = (

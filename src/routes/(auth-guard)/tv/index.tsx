@@ -2,35 +2,48 @@ import { message } from "~/utils/i18n";
 import { component$ } from "@builder.io/qwik";
 
 import { type DocumentHead, routeLoader$ } from "@builder.io/qwik-city";
+import { FeaturedCarousel } from "~/components/discovery/featured-spotlight";
 import { QuickFilterStrip } from "~/components/discovery/quick-filter-strip";
 import { FeedSectionFailure } from "~/components/feed-section-failure";
 import { MediaCard } from "~/components/media-card";
 import { MediaCarousel } from "~/components/media-carousel";
-import { SectionHeading } from "~/components/page-feedback";
+import {
+  createDevTvCollections,
+  DEV_SESSION_BYPASS_COOKIE,
+} from "~/routes/dev-session";
 import type { TvShort } from "~/services/models";
 import { MediaType } from "~/services/models";
 import { loadTvCollections } from "~/services/feed-loaders";
+import type { FeedFailures } from "~/services/feed-loaders";
 import { formatYear } from "~/utils/format";
 
 import { paths } from "~/utils/paths";
 
 export const useContentLoader = routeLoader$(async (event) => {
   const lang = event.query.get("lang") || "en-US";
+  const devTvCollections = createDevTvCollections({
+    bypassCookie: event.cookie.get(DEV_SESSION_BYPASS_COOKIE)?.value ?? null,
+    bypassFlag: event.env.get("PLAYWRIGHT_AUTH_BYPASS"),
+    lang,
+    nodeEnv: event.env.get("NODE_ENV") ?? process.env.NODE_ENV,
+  });
+
+  if (devTvCollections) {
+    return {
+      ...devTvCollections,
+      failures: {} as FeedFailures,
+    };
+  }
+
   try {
-    const {
-      tvtrend,
-      tvtoprated,
-      tvpopular,
-      tvairingtoday,
-      tvontheair,
-      failures,
-    } = await loadTvCollections({ lang });
+    const { featuredTv, tvtrend, tvtoprated, tvpopular, tvontheair, failures } =
+      await loadTvCollections({ lang });
 
     return {
+      featuredTv,
       tvtrend: tvtrend as TvShort[],
       tvtoprated: tvtoprated as TvShort[],
       tvpopular: tvpopular as TvShort[],
-      tvairingtoday: tvairingtoday as TvShort[],
       tvontheair: tvontheair as TvShort[],
       failures,
       lang,
@@ -47,6 +60,10 @@ export default component$(() => {
   const quickFilterItems = [
     {
       active: true,
+      href: "#featured-spotlight",
+      label: message(lang, "langFeaturedSpotlight"),
+    },
+    {
       href: "#trending-tv",
       label: message(lang, "langTrengingTVShows"),
     },
@@ -57,10 +74,6 @@ export default component$(() => {
     {
       href: "#top-rated-tv",
       label: message(lang, "langTopRatedTvShows"),
-    },
-    {
-      href: "#airing-today-tv",
-      label: message(lang, "langAiringTodayTvShows"),
     },
     {
       href: "#on-the-air-tv",
@@ -90,13 +103,6 @@ export default component$(() => {
       failure: value.failures.tvtoprated,
     },
     {
-      category: "airingtoday",
-      items: value.tvairingtoday,
-      sectionId: "airing-today-tv",
-      title: message(lang, "langAiringTodayTvShows"),
-      failure: value.failures.tvairingtoday,
-    },
-    {
       category: "ontheair",
       items: value.tvontheair,
       sectionId: "on-the-air-tv",
@@ -106,40 +112,45 @@ export default component$(() => {
   ];
 
   return (
-    <div class="space-y-8">
-      <SectionHeading
-        eyebrow={message(lang, "ui.tvCollections")}
-        title={message(lang, "ui.series2")}
-        description={message(
-          lang,
-          "ui.browseTrendingPopularTopRatedAiringTodayAndOnTheAirSeriesCollections",
-        )}
-      />
-      <QuickFilterStrip
-        label={message(lang, "langQuickFilters")}
-        items={quickFilterItems}
-      />
-      <section
-        aria-label={message(lang, "langDiscoverTv")}
-        class="section-reveal card border-base-200 bg-base-100 border shadow-sm"
-      >
-        <div class="card-body items-start gap-3 p-4 sm:flex-row sm:items-center sm:justify-between md:p-6">
-          <div class="space-y-1">
-            <h2 class="card-title text-base">
-              {message(lang, "ui.tvDiscovery")}
-            </h2>
-            <p class="text-base-content/65 text-sm leading-relaxed">
-              {message(lang, "ui.filterSeriesByRegionYearProvidersAndRating")}
-            </p>
-          </div>
+    <div class="space-y-5">
+      <div class="section-reveal flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <h1 class="text-3xl font-semibold tracking-tight md:text-4xl">
+          {message(lang, "langSeries")}
+        </h1>
+        <div class="flex flex-wrap items-center gap-2">
           <a
             href={paths.tvDiscover(lang)}
-            class="btn btn-primary btn-sm w-full rounded-full sm:w-auto"
+            class="btn btn-primary btn-sm h-10 min-h-10 rounded-full"
           >
             {message(lang, "langDiscoverTv")}
           </a>
         </div>
-      </section>
+      </div>
+      <QuickFilterStrip
+        label={message(lang, "langQuickFilters")}
+        items={quickFilterItems}
+      />
+      {value.featuredTv.length > 0 && (
+        <FeaturedCarousel
+          ctaLabel={message(lang, "langOpenDetails")}
+          items={value.featuredTv.map(({ artwork, tv }) => ({
+            description: tv.overview,
+            href: paths.media(MediaType.Tv, tv.id, lang),
+            imagePath: artwork.backdropPath,
+            logoPath: artwork.logoPath,
+            meta: [
+              message(lang, "langTrengingTVShows"),
+              String(formatYear(tv.first_air_date) || ""),
+            ],
+            overline: message(lang, "langTrengingTVShows"),
+            rating: tv.vote_average,
+            title: tv.name || message(lang, "langTrengingTVShows"),
+          }))}
+          label={message(lang, "langTrengingTVShows")}
+          nextLabel={message(lang, "ui.nextPage")}
+          previousLabel={message(lang, "ui.previousPage")}
+        />
+      )}
       {tvSections.map((section) => (
         <div class="contents" key={section.sectionId}>
           <FeedSectionFailure
@@ -163,7 +174,7 @@ export default component$(() => {
                   <MediaCard
                     title={m.name ? m.name : ""}
                     width={500}
-                    rating={m.vote_average ? m.vote_average : 0}
+                    rating={m.vote_average}
                     year={formatYear(m.first_air_date)}
                     picfile={m.backdrop_path}
                     tmdbId={m.id}

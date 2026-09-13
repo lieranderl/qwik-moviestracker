@@ -60,11 +60,13 @@ describe("media card helpers", () => {
     expect(getPlaceholderLabel("")).toBe("NA");
   });
 
-  it("coerces invalid ratings to zero", () => {
+  it("omits empty and zero ratings from card metadata", () => {
     expect(getSafeRating(7.8)).toBe(7.8);
     expect(getSafeRating("8.1")).toBe(8.1);
-    expect(getSafeRating(null)).toBe(0);
-    expect(getSafeRating("nope")).toBe(0);
+    expect(getSafeRating(0)).toBeNull();
+    expect(getSafeRating("0")).toBeNull();
+    expect(getSafeRating(null)).toBeNull();
+    expect(getSafeRating("nope")).toBeNull();
   });
 
   it("defaults image loading to lazy", () => {

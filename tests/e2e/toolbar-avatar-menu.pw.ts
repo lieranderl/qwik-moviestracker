@@ -24,11 +24,17 @@ test.describe("toolbar avatar menu", () => {
       name: openAccountMenuPattern,
     });
     const menu = page.getByRole("menu", { name: accountMenuPattern });
+    const toolbarAvatar = trigger.getByRole("img");
 
+    await expect(toolbarAvatar).toHaveAttribute("width", "40");
+    await expect(toolbarAvatar).toHaveAttribute("height", "40");
     await trigger.focus();
     await page.keyboard.press("Enter");
 
     await expect(menu).toBeVisible();
+    const menuAvatar = menu.getByRole("img");
+    await expect(menuAvatar).toHaveAttribute("width", "44");
+    await expect(menuAvatar).toHaveAttribute("height", "44");
     await expect(menu.getByText("Playwright User")).toBeVisible();
     await expect(menu.getByText("playwright@local.test")).toBeVisible();
     await expect(

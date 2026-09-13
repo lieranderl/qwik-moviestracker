@@ -1,5 +1,5 @@
 import { message } from "~/utils/i18n";
-import { component$, useVisibleTask$ } from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 import { Image } from "@unpic/qwik";
 
 import { DetailPageContainer } from "~/components/detail-page-layout";
@@ -13,7 +13,6 @@ import {
 import { formatCrew, formatCurrency, formatYear } from "~/utils/format";
 
 import { paths } from "~/utils/paths";
-import { writeLastViewed } from "~/utils/recent-activity";
 import { ExternalIds } from "../external_ids";
 import { MediaCard } from "../media-card";
 import { MediaCarousel } from "../media-carousel";
@@ -47,19 +46,6 @@ export const MovieDetails = component$(
     watchProviders,
     lang,
   }: MovieDetailsProps) => {
-    // eslint-disable-next-line qwik/no-use-visible-task
-    useVisibleTask$(() => {
-      writeLastViewed({
-        href: paths.media(MediaType.Movie, movie.id, lang),
-        title: movie.title ?? message(lang, "ui.movieDetails"),
-        kind: "movie",
-        meta: movie.release_date
-          ? `${formatYear(movie.release_date)} • ${message(lang, "ui.movie")}`
-          : message(lang, "ui.movie"),
-        imagePath: movie.poster_path ?? movie.backdrop_path,
-      });
-    });
-
     const hasBoxOffice =
       (movie.budget !== undefined && movie.budget > 0) ||
       (movie.revenue !== undefined && movie.revenue > 0);
@@ -244,8 +230,8 @@ export const MovieDetails = component$(
                   <MediaCard
                     title={c.name ? c.name : ""}
                     width={300}
-                    year={0}
-                    rating={0}
+                    year={null}
+                    rating={null}
                     picfile={c.profile_path}
                     variant="person"
                     metaLabel={c.character}
@@ -272,8 +258,8 @@ export const MovieDetails = component$(
                       <MediaCard
                         title={c.name ?? ""}
                         width={300}
-                        year={0}
-                        rating={0}
+                        year={null}
+                        rating={null}
                         picfile={c.profile_path}
                         variant="person"
                         metaLabel={c.job}
@@ -300,7 +286,7 @@ export const MovieDetails = component$(
                     <MediaCard
                       title={m.title ? m.title : ""}
                       width={500}
-                      rating={m.vote_average ? m.vote_average : 0}
+                      rating={m.vote_average}
                       year={formatYear(m.release_date)}
                       picfile={m.backdrop_path}
                       tmdbId={m.id}
@@ -330,7 +316,7 @@ export const MovieDetails = component$(
                     <MediaCard
                       title={m.title ? m.title : ""}
                       width={500}
-                      rating={m.vote_average ? m.vote_average : 0}
+                      rating={m.vote_average}
                       year={formatYear(m.release_date)}
                       picfile={m.backdrop_path}
                       tmdbId={m.id}

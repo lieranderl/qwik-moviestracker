@@ -4,12 +4,14 @@ import type { MovieShort, TvShort } from "./models";
 import {
   clearTmdbCacheForTests,
   getCollectionMovies,
+  getFeaturedArtwork,
   getMovieCertificationList,
   getMovieDetails,
   getHorizontalPosterPath,
   getMediaRecom,
   getMedias,
   getTrendingMedia,
+  selectFeaturedArtwork,
 } from "./tmdb";
 
 const originalFetch = globalThis.fetch;
@@ -34,7 +36,111 @@ afterEach(() => {
 });
 
 describe("tmdb service", () => {
-  it("selects a language-specific horizontal poster before English fallback", async () => {
+  it("builds featured artwork with a clean neutral backdrop", () => {
+    const artwork = selectFeaturedArtwork(
+      {
+        id: 1,
+        backdrops: [
+          { file_path: "/plain.jpg", iso_639_1: null },
+          { file_path: "/english.jpg", iso_639_1: "en" },
+          { file_path: "/russian.jpg", iso_639_1: "ru" },
+        ],
+        logos: [
+          { file_path: "/english-logo.png", iso_639_1: "en" },
+          { file_path: "/russian-logo.png", iso_639_1: "ru" },
+        ],
+        posters: [
+          { file_path: "/english-poster.jpg", iso_639_1: "en" },
+          { file_path: "/russian-poster.jpg", iso_639_1: "ru" },
+        ],
+      },
+      "ru-RU",
+    );
+
+    expect(artwork).toEqual({
+      backdropPath: "/plain.jpg",
+      logoPath: "/russian-logo.png",
+      posterPath: "/russian-poster.jpg",
+    });
+  });
+
+  it("adds a localized logo to a language-neutral featured backdrop", () => {
+    expect(
+      selectFeaturedArtwork(
+        {
+          id: 1,
+          backdrops: [
+            { file_path: "/plain.jpg", iso_639_1: null },
+            { file_path: "/english.jpg", iso_639_1: "en" },
+          ],
+          logos: [
+            { file_path: "/english-logo.png", iso_639_1: "en" },
+            { file_path: "/russian-logo.png", iso_639_1: "ru" },
+          ],
+          posters: [{ file_path: "/english-poster.jpg", iso_639_1: "en" }],
+        },
+        "ru-RU",
+      ),
+    ).toEqual({
+      backdropPath: "/plain.jpg",
+      logoPath: "/russian-logo.png",
+      posterPath: null,
+    });
+  });
+
+  it("does not use a named localized backdrop when no neutral backdrop exists", () => {
+    expect(
+      selectFeaturedArtwork(
+        {
+          id: 1,
+          backdrops: [
+            { file_path: "/english.jpg", iso_639_1: "en" },
+            { file_path: "/russian.jpg", iso_639_1: "ru" },
+          ],
+          logos: [{ file_path: "/russian-logo.png", iso_639_1: "ru" }],
+          posters: [{ file_path: "/russian-poster.jpg", iso_639_1: "ru" }],
+        },
+        "ru-RU",
+      ),
+    ).toEqual({
+      backdropPath: null,
+      logoPath: "/russian-logo.png",
+      posterPath: "/russian-poster.jpg",
+    });
+  });
+
+  it("requests all featured images without a language filter", async () => {
+    process.env.TMDB_API_KEY = "tmdb-test-key";
+    const fetchMock = mock(async () =>
+      createJsonResponse({
+        id: 42,
+        backdrops: [{ file_path: "/plain.jpg", iso_639_1: null }],
+        logos: [{ file_path: "/russian-logo.png", iso_639_1: "ru" }],
+        posters: [{ file_path: "/russian-poster.jpg", iso_639_1: "ru" }],
+      }),
+    );
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+    await expect(
+      getFeaturedArtwork({
+        id: 42,
+        language: "ru-RU",
+        type: MediaType.Movie,
+      }),
+    ).resolves.toEqual({
+      backdropPath: "/plain.jpg",
+      logoPath: "/russian-logo.png",
+      posterPath: "/russian-poster.jpg",
+    });
+
+    const firstCall = fetchMock.mock.calls[0] as unknown[] | undefined;
+    if (!firstCall) throw new Error("Expected fetch to be called");
+    const request = new URL(String(firstCall[0]));
+    expect(request.pathname).toBe("/3/movie/42/images");
+    expect(request.searchParams.has("include_image_language")).toBe(false);
+    expect(request.searchParams.has("language")).toBe(false);
+  });
+
+  it("returns selected-language landscape artwork without cross-language fallback", async () => {
     process.env.TMDB_API_KEY = "tmdb-test-key";
     const fetchMock = mock(async () =>
       createJsonResponse({
@@ -44,27 +150,33 @@ describe("tmdb service", () => {
           { file_path: "/english.jpg", iso_639_1: "en", aspect_ratio: 1.778 },
           { file_path: "/russian.jpg", iso_639_1: "ru", aspect_ratio: 1.778 },
         ],
-        logos: [],
+        logos: [
+          { file_path: "/english-logo.png", iso_639_1: "en" },
+          { file_path: "/russian-logo.png", iso_639_1: "ru" },
+        ],
         posters: [],
       }),
     );
     globalThis.fetch = fetchMock as unknown as typeof fetch;
 
-    const path = await getHorizontalPosterPath({
+    const artwork = await getHorizontalPosterPath({
       id: 95350,
       language: "ru-RU",
       type: MediaType.Tv,
     });
 
-    expect(path).toBe("/russian.jpg");
+    expect(artwork).toEqual({
+      backdropPath: "/russian.jpg",
+      logoPath: "/russian-logo.png",
+    });
     const firstCall = fetchMock.mock.calls[0] as unknown[] | undefined;
     if (!firstCall) throw new Error("Expected fetch to be called");
     const request = new URL(String(firstCall[0]));
     expect(request.pathname).toBe("/3/tv/95350/images");
-    expect(request.searchParams.get("include_image_language")).toBe("ru,en");
+    expect(request.searchParams.get("include_image_language")).toBe("ru,null");
   });
 
-  it("uses English title artwork when the requested language is unavailable", async () => {
+  it("uses a neutral backdrop and selected-language logo when localized backdrop is unavailable", async () => {
     process.env.TMDB_API_KEY = "tmdb-test-key";
     globalThis.fetch = (async () =>
       createJsonResponse({
@@ -73,7 +185,10 @@ describe("tmdb service", () => {
           { file_path: "/plain.jpg", iso_639_1: null },
           { file_path: "/english.jpg", iso_639_1: "en" },
         ],
-        logos: [],
+        logos: [
+          { file_path: "/english-logo.png", iso_639_1: "en" },
+          { file_path: "/russian-logo.png", iso_639_1: "ru" },
+        ],
         posters: [],
       })) as unknown as typeof fetch;
 
@@ -83,10 +198,13 @@ describe("tmdb service", () => {
         language: "ru-RU",
         type: MediaType.Movie,
       }),
-    ).resolves.toBe("/english.jpg");
+    ).resolves.toEqual({
+      backdropPath: "/plain.jpg",
+      logoPath: "/russian-logo.png",
+    });
   });
 
-  it("does not mistake a language-neutral backdrop for a horizontal poster", async () => {
+  it("keeps a language-neutral backdrop when no localized logo exists", async () => {
     process.env.TMDB_API_KEY = "tmdb-test-key";
     globalThis.fetch = (async () =>
       createJsonResponse({
@@ -102,7 +220,7 @@ describe("tmdb service", () => {
         language: "en-US",
         type: MediaType.Movie,
       }),
-    ).resolves.toBeNull();
+    ).resolves.toEqual({ backdropPath: "/plain.jpg", logoPath: null });
   });
 
   it("falls back to English for unsupported application locales", async () => {
@@ -126,7 +244,7 @@ describe("tmdb service", () => {
     const firstCall = fetchMock.mock.calls[0] as unknown[] | undefined;
     if (!firstCall) throw new Error("Expected fetch to be called");
     const request = new URL(String(firstCall[0]));
-    expect(request.searchParams.get("include_image_language")).toBe("en");
+    expect(request.searchParams.get("include_image_language")).toBe("en,null");
   });
 
   it("coalesces equivalent feed requests and validates the response", async () => {

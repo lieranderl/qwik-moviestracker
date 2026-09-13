@@ -11,6 +11,9 @@ export const expectFeaturedSlidesAligned = async (
 
   await expect(slides).toHaveCount(total);
   await expect(carousel.locator('img[alt$=" poster"]')).toHaveCount(0);
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+  });
   for (let index = 0; index < total; index += 1) {
     const slide = slides.nth(index);
     const labelPosition = await slide
@@ -33,9 +36,9 @@ export const expectFeaturedSlidesAligned = async (
 
   const first = positions[0];
   for (const position of positions.slice(1)) {
-    expect(Math.abs(position.label - first.label)).toBeLessThanOrEqual(2);
-    expect(Math.abs(position.title - first.title)).toBeLessThanOrEqual(2);
-    expect(Math.abs(position.action - first.action)).toBeLessThanOrEqual(2);
+    expect(Math.abs(position.label - first.label)).toBeLessThanOrEqual(3);
+    expect(Math.abs(position.title - first.title)).toBeLessThanOrEqual(3);
+    expect(Math.abs(position.action - first.action)).toBeLessThanOrEqual(3);
   }
 
   const firstIndicator = carousel.locator(

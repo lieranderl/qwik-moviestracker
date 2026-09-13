@@ -134,7 +134,6 @@ export const TvDetails = component$(
           </div>
         </section>
 
-        <div class="divider" />
 
         {/* ── OVERVIEW ── */}
         <section class={sectionCardClass}>
@@ -150,7 +149,13 @@ export const TvDetails = component$(
           </div>
         </section>
 
-        <div class="divider" />
+        <section class={sectionCardClass}>
+          <div class={sectionBodyClass}>
+            <h3 class="card-title text-base-content/80 text-lg">{message(lang, "media.socialMedia")}</h3>
+            <ExternalIds external_ids={tv.external_ids} lang={lang} type={"tv"} />
+
+          </div>
+        </section>
 
         {/* ── DETAILS: Production + Availability side-by-side on desktop ── */}
         <div class="grid gap-6 md:grid-cols-2">
@@ -169,45 +174,46 @@ export const TvDetails = component$(
               next_episode_to_air={tv.next_episode_to_air}
               in_production={tv.in_production}
             />
-          </div>
-          <MediaAvailability
-            certification={certification}
-            watchProviders={watchProviders}
-            lang={lang}
-          />
-        </div>
 
-        {/* ── SERIES STATS ── */}
-        <section class={sectionCardClass}>
-          <div class={sectionBodyClass}>
-            <h3 class="card-title text-base-content/80 text-lg">
-              {message(lang, "ui.seriesStats")}
-            </h3>
-            <div class="stats stats-vertical bg-transparent">
-              <div class="stat px-0 py-3">
-                <div class="stat-title">{message(lang, "ui.seasons")}</div>
-                <div class="stat-value text-lg">{tv.number_of_seasons}</div>
-              </div>
-              <div class="stat px-0 py-3">
-                <div class="stat-title">{message(lang, "ui.episodes")}</div>
-                <div class="stat-value text-lg">{tv.number_of_episodes}</div>
-              </div>
-              <div class="stat px-0 py-3">
-                <div class="stat-title">{message(lang, "ui.status")}</div>
-                <div class="stat-value text-lg">
-                  {tv.status || message(lang, "ui.unknown")}
+          </div>
+
+          <div class="space-y-6">
+            <MediaAvailability
+              certification={certification}
+              watchProviders={watchProviders}
+              lang={lang}
+            />
+            <section class={sectionCardClass}>
+              <div class={sectionBodyClass}>
+                <h3 class="card-title text-base-content/80">
+                  {message(lang, "ui.seriesStats")}
+                </h3>
+                <div class="stats bg-transparent">
+                  <div class="stat px-3">
+                    <div class="stat-title">{message(lang, "ui.seasons")}</div>
+                    <div class="stat-value text-base">{tv.number_of_seasons}</div>
+                  </div>
+                  <div class="stat px-3">
+                    <div class="stat-title">{message(lang, "ui.episodes")}</div>
+                    <div class="stat-value text-base">{tv.number_of_episodes}</div>
+                  </div>
+                  <div class="stat px-3">
+                    <div class="stat-title">{message(lang, "ui.status")}</div>
+                    <div class="stat-value text-base">
+                      {tv.status || message(lang, "ui.unknown")}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            </section>
           </div>
-        </section>
 
-        <div class="divider" />
 
-        {/* ── EXTERNAL LINKS ── */}
-        <ExternalIds external_ids={tv.external_ids} lang={lang} type={"tv"} />
 
-        <div class="divider" />
+        </div>
+
+
+
 
         {/* ── SEASONS / CREATED BY / CAST / RECOMMENDED ── */}
         <div class="space-y-6">

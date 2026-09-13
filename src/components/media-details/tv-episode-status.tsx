@@ -13,6 +13,15 @@ export const TvEpisodeStatus = component$<TvEpisodeStatusProps>(
   ({ lang, last_episode_to_air, next_episode_to_air, in_production }) => {
     const episodeStatusTitle = message(lang, "media.episodeStatus");
 
+    const calculateDaysUntil = (airDate: string) => {
+      const today = new Date();
+      const episodeDate = new Date(airDate);
+      const diffTime = Math.abs(episodeDate.getTime() - today.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      // if 0, return "Today", else return diffDays, also add "day" suffix if diffDays is not 1
+      return diffDays === 1 ? "Today" : `${diffDays}${diffDays !== 1 ? " days" : ""}`;
+    };
+
     return (
       <section class="card border-base-200 bg-base-100/95 border shadow-sm">
         <div class="card-body gap-4 p-4 md:p-6">
@@ -54,6 +63,15 @@ export const TvEpisodeStatus = component$<TvEpisodeStatusProps>(
                       </span>
                     </td>
                     <td class="ps-4">{next_episode_to_air.air_date}</td>
+                  </tr>
+                )}
+                {next_episode_to_air?.air_date && (
+                  <tr>
+                    <td>
+                      {message(lang, "langDaysUntilNextEpisode")}
+                    </td>
+                    {/*calculate how many days until next episode*/}
+                    <td class="ps-4">{calculateDaysUntil(next_episode_to_air.air_date)}</td>
                   </tr>
                 )}
               </tbody>

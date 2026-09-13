@@ -113,6 +113,7 @@ export const MovieDetails = component$(
               ))}
             </div>
 
+
             {/* Rating */}
             <MediaRating
               vote_average={movie.vote_average}
@@ -120,6 +121,7 @@ export const MovieDetails = component$(
               imdbId={imdbId}
               lang={lang}
             />
+
 
             {/* Primary actions */}
             {hasActions && (
@@ -140,7 +142,6 @@ export const MovieDetails = component$(
           </div>
         </section>
 
-        <div class="divider" />
 
         {/* ── OVERVIEW ── */}
         <section class={sectionCardClass}>
@@ -156,7 +157,18 @@ export const MovieDetails = component$(
           </div>
         </section>
 
-        <div class="divider" />
+        <section class={sectionCardClass}>
+          <div class={sectionBodyClass}>
+            <h3 class="card-title text-base-content/80 text-lg">{message(lang, "media.socialMedia")}</h3>
+            <ExternalIds
+              external_ids={movie.external_ids}
+              lang={lang}
+              type={"movie"}
+            />
+          </div>
+        </section>
+
+
 
         {/* ── DETAILS: Production + Availability side-by-side on desktop ── */}
         <div class="grid gap-6 md:grid-cols-2">
@@ -203,16 +215,6 @@ export const MovieDetails = component$(
           </section>
         )}
 
-        <div class="divider" />
-
-        {/* ── EXTERNAL LINKS ── */}
-        <ExternalIds
-          external_ids={movie.external_ids}
-          lang={lang}
-          type={"movie"}
-        />
-
-        <div class="divider" />
 
         {/* ── CAST / CREW / COLLECTION / RECOMMENDED ── */}
         <div class="space-y-6">

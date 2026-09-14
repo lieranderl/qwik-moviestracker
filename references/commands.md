@@ -55,6 +55,9 @@ First-time local browser setup:
 - The checked-in Playwright config starts the dev server with
   `PLAYWRIGHT_AUTH_BYPASS=1` so authenticated home, search, and movie/TV/person
   detail smoke tests can run against dev-only fixtures.
+- Keep browser-loaded dynamic dependencies in `vite.config.ts`'s
+  `optimizeDeps.include`; otherwise a cold Playwright run can trigger a Vite
+  dependency-discovery reload after the page becomes interactive.
 
 ## GitHub Actions CI/CD
 

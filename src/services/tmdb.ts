@@ -44,10 +44,6 @@ const tmdbClient = createJsonApiClient({
   baseUrl: TMDB_API_BASE_URL,
   name: "TMDB",
   source: "tmdb",
-  auth: {
-    param: "api_key",
-    value: () => process.env.TMDB_API_KEY,
-  },
 });
 
 const tmdbCache = new BoundedAsyncCache();
@@ -65,7 +61,10 @@ const fetchTMDB = async <T = unknown>(
   policy?: TmdbCachePolicy<T>,
 ): Promise<T> => {
   const load = async () => {
-    const input = await tmdbClient.request<unknown>(path, { search });
+    const input = await tmdbClient.request<unknown>(path, {
+      search,
+      headers: { Authorization: `Bearer ${process.env.TMDB_API_KEY ?? ""}` },
+    });
     return policy?.parse ? policy.parse(input) : (input as T);
   };
   if (!policy) return load();

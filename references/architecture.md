@@ -84,6 +84,9 @@
 ## Service Boundaries
 
 - TMDB client: `src/services/tmdb.ts`
+  All API requests use the TMDB API Read Access Token stored in the existing
+  `TMDB_API_KEY` variable as an `Authorization: Bearer` header; credentials must
+  not be sent as an `api_key` query parameter.
 - IAM-private IMDb Cloud Run client: `src/services/cloud-func-api.ts`. API
   Gateway and `GC_API_KEY` are retired and must not be restored.
 - JacRed torrent-search adapter: `src/services/torrent-search.ts`

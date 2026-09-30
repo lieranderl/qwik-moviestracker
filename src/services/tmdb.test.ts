@@ -311,8 +311,8 @@ describe("tmdb service", () => {
     ).rejects.toMatchObject({ kind: "invalid-response", source: "tmdb" });
   });
 
-  it("builds TMDB requests with the API key and search params", async () => {
-    process.env.TMDB_API_KEY = "tmdb-test-key";
+  it("builds TMDB requests with the read access token and search params", async () => {
+    process.env.TMDB_API_KEY = "tmdb-test-read-access-token";
 
     const fetchMock = mock(async () =>
       createJsonResponse({
@@ -344,7 +344,12 @@ describe("tmdb service", () => {
     expect(`${url.origin}${url.pathname}`).toBe(
       "https://api.themoviedb.org/3/trending/movie/week",
     );
-    expect(url.searchParams.get("api_key")).toBe("tmdb-test-key");
+    expect(url.searchParams.has("api_key")).toBe(false);
+    expect(url.toString()).not.toContain("tmdb-test-read-access-token");
+    const requestInit = firstCall[1] as RequestInit;
+    expect(new Headers(requestInit.headers).get("Authorization")).toBe(
+      "Bearer tmdb-test-read-access-token",
+    );
     expect(url.searchParams.get("language")).toBe("en-US");
     expect(url.searchParams.get("page")).toBe("2");
   });
